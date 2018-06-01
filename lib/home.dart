@@ -22,13 +22,44 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     var leadingMenuButton = new VizElevatedButton(title: 'Menu', onPressed: goToMenu, textColor: Colors.green,);
 
+
+    var searchIcon = new Icon(Icons.search, color: Colors.white);
+    var searchIconWidget = new VizElevatedButton(flex: 1, customWidget: searchIcon);
+
+    var zonesWidget = new Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        new Text('My Zones', style: const TextStyle(color: Colors.lightGreen)),
+        new Text('A B', style: const TextStyle(color: Colors.white, fontSize: 18.0))
+      ],
+    );
+
+    var statusWidget = new Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        new Text('My Status', style: const TextStyle(color: Colors.lightGreen)),
+        new Text('Available', style: const TextStyle(color: Colors.white, fontSize: 18.0))
+      ],
+    );
+
+    var zonesWidgetBtn = new VizElevatedButton(flex: 2, customWidget: zonesWidget);
+    var statusWidgetBtn = new VizElevatedButton(flex: 2, customWidget: statusWidget);
+
+    var centralWidgets = <Widget>[
+      zonesWidgetBtn,
+      new VizElevatedButton(title: 'Jackpot', textColor: Colors.blue, flex: 4),
+      statusWidgetBtn,
+      searchIconWidget
+    ];
+
     return new Scaffold(
-      appBar: new ActionBar('TechViz', leadingWidget: leadingMenuButton),
+      backgroundColor: Colors.black,
+      appBar: new ActionBar('TechViz', leadingWidget: leadingMenuButton, centralWidgets: centralWidgets),
       body: new Center(
         child: new Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            new Text('main'),
+            new Text('home', style: const TextStyle(color: Colors.white)),
           ],
         ),
       ), // This trailing comma makes auto-formatting nicer for build methods.

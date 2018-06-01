@@ -4,14 +4,15 @@ import 'package:techviz/components/vizElevatedButton.dart';
 
 class ActionBar extends StatefulWidget implements PreferredSizeWidget {
 
-  ActionBar(this.title, {this.leadingWidget, this.tailWidget, this.actionWidgets});
+  ActionBar(this.title, {this.leadingWidget, this.tailWidget, this.centralWidgets, this.titleColor});
 
   final double barHeight = 65.0;
-  final String title;
   final Widget tailWidget;
   final Widget leadingWidget;
-  final List<Widget> actionWidgets;
+  final List<Widget> centralWidgets;
 
+  final String title;
+  final Color titleColor;
 
   _ActionBarState createState() => new _ActionBarState();
 
@@ -29,22 +30,23 @@ class _ActionBarState extends State<ActionBar>{
 
     List<Widget> children = new List<Widget>();
 
+    var leadingContainer;
     //the backbutton when the view can pop
-    var containsLeading = false;
     if(canPop){
-      children.add(new VizBackButton());
-      containsLeading = true;
+      leadingContainer  = new SizedBox(width: 100.0, child: new Flex(direction: Axis.horizontal ,children: <Widget>[new VizBackButton()]));
     }
     else if(widget.leadingWidget != null){
-      children.add(widget.leadingWidget);
-      containsLeading = true;
+      leadingContainer  = new SizedBox(width: 100.0, child: new Flex(direction: Axis.horizontal ,children: <Widget>[widget.leadingWidget]));
     }
-
-
+    children.add(leadingContainer);
 
     //centered title
-    var titleWidget = new VizElevatedButton(title: widget.title);
-    children.add(titleWidget);
+    if(widget.centralWidgets == null){
+      children.add(new VizElevatedButton(title: widget.title, textColor: widget.titleColor));
+    }
+    else{
+      children = new List.from(children)..addAll(widget.centralWidgets);
+    }
 
    var container = new Container(
         height: widget.barHeight,
