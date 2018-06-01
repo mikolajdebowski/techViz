@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 
 class VizElevatedButton extends StatelessWidget {
-  VizElevatedButton({Key key, this.title, this.onPressed, this.textColor, this.customWidget, this.flex = 1})
-      : super(key: key);
+  VizElevatedButton({Key key, this.title, this.onTap, this.textColor, this.customWidget}) : super(key: key);
 
-  final VoidCallback onPressed;
+  final VoidCallback onTap;
   final String title;
   final Color textColor;
   final Widget customWidget;
-  final int flex;
 
   @override
   Widget build(BuildContext context) {
@@ -20,16 +18,16 @@ class VizElevatedButton extends StatelessWidget {
         fontSize: 22.0);
 
 
-    var titleWidget;
+    var innerWidget;
     if(this.customWidget != null){
-      titleWidget = this.customWidget;
+      innerWidget = this.customWidget;
     }
     else {
       if(this.textColor != null){
-        titleWidget = new Text(title, textAlign: TextAlign.center, style: defaultTextStyle.copyWith(color: textColor));
+        innerWidget = new Text(title, textAlign: TextAlign.center, style: defaultTextStyle.copyWith(color: textColor));
       }
       else{
-        titleWidget = new Text(title, textAlign: TextAlign.center, style: defaultTextStyle);
+        innerWidget = new Text(title, textAlign: TextAlign.center, style: defaultTextStyle);
       }
     }
 
@@ -46,17 +44,16 @@ class VizElevatedButton extends StatelessWidget {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               tileMode: TileMode.repeated)),
-      child: new Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[titleWidget],
+      child: new Center(
+        child: innerWidget,
       ),
     );
 
     var tapper = new GestureDetector(
       child: container,
-      onTap: onPressed,
+      onTap: onTap,
     );
 
-    return new Expanded(child: tapper, flex: flex);
+    return tapper;
   }
 }

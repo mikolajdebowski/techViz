@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:techviz/components/vizBackButton.dart';
 import 'package:techviz/components/vizElevatedButton.dart';
+import 'package:techviz/components/vizExpandedButton.dart';
 
 class ActionBar extends StatefulWidget implements PreferredSizeWidget {
 
@@ -42,7 +43,7 @@ class _ActionBarState extends State<ActionBar>{
 
     //centered title
     if(widget.centralWidgets == null){
-      children.add(new VizElevatedButton(title: widget.title, textColor: widget.titleColor));
+      children.add(new VizExpandedButton(title: widget.title, textColor: widget.titleColor));
     }
     else{
       children = new List.from(children)..addAll(widget.centralWidgets);
