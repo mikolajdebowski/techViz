@@ -6,21 +6,21 @@ class Menu extends StatefulWidget {
   Menu({Key key}) : super(key: key);
 
   @override
-  _MenuState createState() => new _MenuState();
+  _MenuState createState() => _MenuState();
 }
 
 class _MenuState extends State<Menu> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return Scaffold(
       backgroundColor: Colors.black,
-      appBar: new ActionBar('Menu', titleColor: Colors.blue),
-      body: new Center(
-        child: new Column(
+      appBar: ActionBar(title: 'Menu', titleColor: Colors.blue),
+      body: Center(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-              new Text('menu', style: const TextStyle(color: Colors.white)),
+            Text('menu', style: const TextStyle(color: Colors.white)),
 
           ],
         ),

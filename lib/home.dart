@@ -3,53 +3,47 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:techviz/components/vizSearch.dart';
 import 'package:techviz/components/vizActionBar.dart';
-import 'package:techviz/components/vizExpandedButton.dart';
 import 'package:techviz/components/vizSelector.dart';
-import 'package:techviz/components/vizElevatedButton.dart';
+import 'package:techviz/components/vizElevated.dart';
 import 'package:techviz/menu.dart';
 
 class Home extends StatefulWidget {
   Home({Key key}) : super(key: key);
 
   @override
-  _HomeState createState() => new _HomeState();
+  _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
-
   String currentZones = '-';
   String currentStatus = 'Available';
-  var availableZones = new List<VizSelectorOption>();
+  var availableZones = List<VizSelectorOption>();
 
   var availableStatuses = [
-    new VizSelectorOption("1", "Available"),
-    new VizSelectorOption("2", "Off shift"),
+    VizSelectorOption("1", "Available"),
+    VizSelectorOption("2", "Off shift"),
   ];
 
-
-  _HomeState(){
-    for(var i = 0; i < 1000; i++){
-      availableZones.add(new VizSelectorOption(i.toString(), i.toString()));
+  _HomeState() {
+    for (var i = 0; i < 1000; i++) {
+      availableZones.add(VizSelectorOption(i.toString(), i.toString()));
     }
   }
-
 
   void goToMenu() {
     Navigator.push(
       context,
-      new MaterialPageRoute(builder: (context) => new Menu()),
+      MaterialPageRoute(builder: (context) => Menu()),
     );
   }
-
 
   void onZoneSelectorCallbackOK(List<VizSelectorOption> selected) {
     setState(() {
       currentZones = "";
 
-      if(selected.length>4){
+      if (selected.length > 4) {
         currentZones = "4+";
-      }
-      else{
+      } else {
         selected.forEach((element) {
           currentZones += element.description + " ";
         });
@@ -62,10 +56,9 @@ class _HomeState extends State<Home> {
     setState(() {
       currentStatus = "";
 
-      if(selected.length>4){
+      if (selected.length > 4) {
         currentStatus = "4+";
-      }
-      else{
+      } else {
         selected.forEach((element) {
           currentStatus += element.description + " ";
         });
@@ -75,75 +68,104 @@ class _HomeState extends State<Home> {
   }
 
   void goToZonesSelector() {
-    var selector = new VizSelector(title: 'My Zones', multiple: true, onOKTapTapped: onZoneSelectorCallbackOK, options: availableZones);
+    var selector = VizSelector(
+        title: 'My Zones',
+        multiple: true,
+        onOKTapTapped: onZoneSelectorCallbackOK,
+        options: availableZones);
     Navigator.push(
       context,
-      new MaterialPageRoute(builder: (context) => selector),
+      MaterialPageRoute(builder: (context) => selector),
     );
   }
 
   void goToStatusSelector() {
-    var selector = new VizSelector(title: 'My Status', onOKTapTapped: onMyStatusSelectorCallbackOK,  options: availableStatuses);
+    var selector = VizSelector(
+        title: 'My Status',
+        onOKTapTapped: onMyStatusSelectorCallbackOK,
+        options: availableStatuses);
     Navigator.push(
       context,
-      new MaterialPageRoute(builder: (context) => selector),
+      MaterialPageRoute(builder: (context) => selector),
     );
   }
 
   void goToSearchSelector() {
     Navigator.push(
       context,
-      new MaterialPageRoute(builder: (context) => new VizSearch(title: 'Search...')),
+      MaterialPageRoute(builder: (context) => VizSearch(title: 'Search...')),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    var leadingMenuButton = new VizExpandedButton(title: 'Menu', onTap: goToMenu, textColor: const Color(0xFF159680));
+    var leadingMenuButton = Expanded(
+        child: VizElevated(
+            title: 'Menu',
+            onTap: goToMenu,
+            textColor: const Color(0xFF159680)));
 
-    var zonesWidget = new Column(
+    var zonesWidget = Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        new Text('My Zones', style: const TextStyle(color: Colors.lightGreen, fontSize: 12.0)),
-        new Text(currentZones, style: const TextStyle(color: Colors.white, fontSize: 18.0), overflow: TextOverflow.ellipsis)
+        Text('My Zones',
+            style: const TextStyle(color: Colors.lightGreen, fontSize: 12.0)),
+        Text(currentZones,
+            style: const TextStyle(color: Colors.white, fontSize: 18.0),
+            overflow: TextOverflow.ellipsis)
       ],
     );
 
-    var statusWidget = new Column(
+    var statusWidget = Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        new Text('My Status', style: const TextStyle(color: Colors.lightGreen, fontSize: 12.0)),
-        new Text(currentStatus, style: const TextStyle(color: Colors.white, fontSize: 18.0), overflow: TextOverflow.ellipsis)
+        Text('My Status',
+            style: const TextStyle(color: Colors.lightGreen, fontSize: 12.0)),
+        Text(currentStatus,
+            style: const TextStyle(color: Colors.white, fontSize: 18.0),
+            overflow: TextOverflow.ellipsis)
       ],
     );
-
 
     //ZONES AND STATUS
-    var zonesWidgetBtn = new VizExpandedButton(flex: 2, customWidget: zonesWidget, onTap: goToZonesSelector);
-    var statusWidgetBtn = new VizExpandedButton(flex: 2, customWidget: statusWidget, onTap: goToStatusSelector);
-
+    var zonesWidgetBtn = Expanded(
+        flex: 2,
+        child:
+            VizElevated(customWidget: zonesWidget, onTap: goToZonesSelector));
+    var statusWidgetBtn = Expanded(
+        flex: 2,
+        child:
+            VizElevated(customWidget: statusWidget, onTap: goToStatusSelector));
 
     //SEARCH
-    var searchIcon = new Icon(Icons.search, color: Colors.white);
-    var searchIconWidget = new VizExpandedButton(flex: 1, customWidget: searchIcon, onTap: goToSearchSelector);
+    var searchIcon = Icon(Icons.search, color: Colors.white);
+    var searchIconWidget = Expanded(
+        flex: 1,
+        child:
+            VizElevated(customWidget: searchIcon, onTap: goToSearchSelector));
 
     var centralWidgets = <Widget>[
       zonesWidgetBtn,
-      new VizExpandedButton(title: 'Jackpot', textColor: Colors.blue, flex: 4),
+      Expanded(
+          flex: 4,
+          child: VizElevated(title: 'Jackpot', textColor: Colors.blue)),
       statusWidgetBtn,
       searchIconWidget
     ];
 
-    return new Scaffold(
+    return Scaffold(
       backgroundColor: Colors.black,
-      appBar: new ActionBar('TechViz', leadingWidget: leadingMenuButton, centralWidgets: centralWidgets),
-      body: new Center(
-        child: new Column(
+      appBar: ActionBar(
+          title: 'TechViz',
+          leadingWidget: leadingMenuButton,
+          centralWidgets: centralWidgets),
+      body: Center(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            new Text('home', style: const TextStyle(color: Colors.white)),
+            Text('home', style: const TextStyle(color: Colors.white)),
           ],
         ),
       ), // This trailing comma makes auto-formatting nicer for build methods.

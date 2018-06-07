@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:techviz/home.dart';
 
-void main() => runApp(new MyApp());
+void main() => runApp( TechVizApp());
 
-class MyApp extends StatelessWidget {
+class TechVizApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'TechViz',
-      home: new Home(),
+      home: Home(),
     );
   }
 }
