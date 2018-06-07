@@ -1,5 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'package:techviz/components/VizSearch.dart';
+import 'package:techviz/components/vizSearch.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizExpandedButton.dart';
 import 'package:techviz/components/vizSelector.dart';
@@ -15,21 +17,21 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 
-  String currentZones = 'A B';
+  String currentZones = '-';
   String currentStatus = 'Available';
-
-  var availableZones = [
-    new VizSelectorOption("A", "A"),
-    new VizSelectorOption("B", "B"),
-    new VizSelectorOption("C", "C"),
-    new VizSelectorOption("D", "D"),
-    new VizSelectorOption("E", "E"),
-  ];
+  var availableZones = new List<VizSelectorOption>();
 
   var availableStatuses = [
     new VizSelectorOption("1", "Available"),
-    new VizSelectorOption("2", "Off-shift"),
+    new VizSelectorOption("2", "Off shift"),
   ];
+
+
+  _HomeState(){
+    for(var i = 0; i < 1000; i++){
+      availableZones.add(new VizSelectorOption(i.toString(), i.toString()));
+    }
+  }
 
 
   void goToMenu() {
@@ -56,6 +58,22 @@ class _HomeState extends State<Home> {
     });
   }
 
+  void onMyStatusSelectorCallbackOK(List<VizSelectorOption> selected) {
+    setState(() {
+      currentStatus = "";
+
+      if(selected.length>4){
+        currentStatus = "4+";
+      }
+      else{
+        selected.forEach((element) {
+          currentStatus += element.description + " ";
+        });
+        currentStatus = currentStatus.trim();
+      }
+    });
+  }
+
   void goToZonesSelector() {
     var selector = new VizSelector(title: 'My Zones', multiple: true, onOKTapTapped: onZoneSelectorCallbackOK, options: availableZones);
     Navigator.push(
@@ -65,7 +83,7 @@ class _HomeState extends State<Home> {
   }
 
   void goToStatusSelector() {
-    var selector = new VizSelector(title: 'My Status');
+    var selector = new VizSelector(title: 'My Status', onOKTapTapped: onMyStatusSelectorCallbackOK,  options: availableStatuses);
     Navigator.push(
       context,
       new MaterialPageRoute(builder: (context) => selector),
@@ -81,14 +99,14 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    var leadingMenuButton = new VizExpandedButton(title: 'Menu', onTap: goToMenu, textColor: Colors.green,);
+    var leadingMenuButton = new VizExpandedButton(title: 'Menu', onTap: goToMenu, textColor: const Color(0xFF159680));
 
     var zonesWidget = new Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        new Text('My Zones', style: const TextStyle(color: Colors.lightGreen)),
-        new Text(currentZones, style: const TextStyle(color: Colors.white, fontSize: 20.0))
+        new Text('My Zones', style: const TextStyle(color: Colors.lightGreen, fontSize: 12.0)),
+        new Text(currentZones, style: const TextStyle(color: Colors.white, fontSize: 18.0), overflow: TextOverflow.ellipsis)
       ],
     );
 
@@ -96,8 +114,8 @@ class _HomeState extends State<Home> {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        new Text('My Status', style: const TextStyle(color: Colors.lightGreen)),
-        new Text(currentStatus, style: const TextStyle(color: Colors.white, fontSize: 20.0))
+        new Text('My Status', style: const TextStyle(color: Colors.lightGreen, fontSize: 12.0)),
+        new Text(currentStatus, style: const TextStyle(color: Colors.white, fontSize: 18.0), overflow: TextOverflow.ellipsis)
       ],
     );
 
