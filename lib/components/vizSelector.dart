@@ -20,7 +20,7 @@ class VizSelector extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return  VizSelectorState(options);
+    return VizSelectorState(options);
   }
 }
 
@@ -43,20 +43,26 @@ class VizSelectorState extends State<VizSelector> {
     var actions = <Widget>[];
 
     if (widget.multiple) {
-      actions.add( Expanded(child:  VizElevated(title: 'All',onTap: onSelectAllTapped)));
-      actions.add( Expanded(child:  VizElevated(title: 'None',onTap: onSelectNoneTapped)));
+      actions.add(
+          Expanded(child: VizElevated(title: 'All', onTap: onSelectAllTapped)));
+      actions.add(Expanded(
+          child: VizElevated(title: 'None', onTap: onSelectNoneTapped)));
     }
-    actions.add( Expanded(child:  VizElevated(title: 'OK',onTap: callOnOKTapTapped, customBackground: colorBtnOK)));
+    actions.add(Expanded(
+        child: VizElevated(
+            title: 'OK',
+            onTap: callOnOKTapTapped,
+            customBackground: colorBtnOK)));
 
-    return  Scaffold(
+    return Scaffold(
         backgroundColor: Colors.black,
-        appBar:  ActionBar(title: widget.title, titleColor: Colors.blue),
-        body:  Stack(
+        appBar: ActionBar(title: widget.title, titleColor: Colors.blue),
+        body: Stack(
           fit: StackFit.expand,
           children: <Widget>[
-             Padding(
+            Padding(
                 padding: const EdgeInsets.only(bottom: 60.0),
-                child:  GridView.count(
+                child: GridView.count(
                     mainAxisSpacing: 5.0,
                     crossAxisSpacing: 5.0,
                     shrinkWrap: true,
@@ -65,17 +71,17 @@ class VizSelectorState extends State<VizSelector> {
                     addAutomaticKeepAlives: false,
                     crossAxisCount: options.length > 5 ? 5 : options.length,
                     children: options.map((VizSelectorOption option) {
-                      return  VizElevated(
-                          key:  GlobalKey(),
+                      return VizElevated(
+                          key: GlobalKey(),
                           title: option.description,
                           selectable: true,
                           selected: option.selected);
                     }).toList())),
-             Positioned(
+            Positioned(
                 height: 60.0,
                 width: MediaQuery.of(context).size.width,
                 bottom: 0.0,
-                child:  Row(children: actions))
+                child: Row(children: actions))
           ],
         ));
   }

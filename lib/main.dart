@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:techviz/home.dart';
 
-void main() => runApp( TechVizApp());
+void main() => runApp(TechVizApp());
 
 class TechVizApp extends StatelessWidget {
   @override

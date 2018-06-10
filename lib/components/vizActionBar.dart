@@ -34,13 +34,13 @@ class _ActionBarState extends State<ActionBar> {
     List<Widget> children = List<Widget>();
 
     var leadingContainer;
+
     //the backbutton when the view can pop
     if (canPop) {
       leadingContainer = SizedBox(
           width: 100.0,
           child: Flex(
-              direction: Axis.horizontal,
-              children: <Widget>[VizBackButton()]));
+              direction: Axis.horizontal, children: <Widget>[VizBackButton()]));
     } else if (widget.leadingWidget != null) {
       leadingContainer = SizedBox(
           width: 100.0,
@@ -53,8 +53,8 @@ class _ActionBarState extends State<ActionBar> {
     //centered title
     if (widget.centralWidgets == null) {
       children.add(Expanded(
-          child: VizElevated(
-              title: widget.title, textColor: widget.titleColor)));
+          child:
+              VizElevated(title: widget.title, textColor: widget.titleColor)));
     } else {
       children = List.from(children)..addAll(widget.centralWidgets);
     }

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:techviz/adapters/machineAdapter.dart';
 import 'package:techviz/components/vizSearch.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizSelector.dart';
@@ -93,7 +94,7 @@ class _HomeState extends State<Home> {
   void goToSearchSelector() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => VizSearch(title: 'Search...')),
+      MaterialPageRoute(builder: (context) => VizSearch(domain: 'Machine, Players, etc', searchAdapter: new MachineAdapter())),
     );
   }
 

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:techviz/components/vizActionBar.dart';
 
-
 class Menu extends StatefulWidget {
   Menu({Key key}) : super(key: key);
 
@@ -10,7 +9,6 @@ class Menu extends StatefulWidget {
 }
 
 class _MenuState extends State<Menu> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,7 +19,6 @@ class _MenuState extends State<Menu> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text('menu', style: const TextStyle(color: Colors.white)),
-
           ],
         ),
       ), // This trailing comma makes auto-formatting nicer for build methods.
