@@ -8,7 +8,7 @@ class ActionBar extends StatefulWidget implements PreferredSizeWidget {
       this.leadingWidget,
       this.tailWidget,
       this.centralWidgets,
-      this.titleColor});
+      this.titleColor = const Color(0xFF0073C1)});
 
   final double barHeight = 65.0;
   final Widget tailWidget;
@@ -33,7 +33,7 @@ class _ActionBarState extends State<ActionBar> {
 
     List<Widget> children = List<Widget>();
 
-    var leadingContainer;
+    SizedBox leadingContainer;
 
     //the backbutton when the view can pop
     if (canPop) {
@@ -52,16 +52,36 @@ class _ActionBarState extends State<ActionBar> {
 
     //centered title
     if (widget.centralWidgets == null) {
+
+      var customBackground = [const Color(0xFF515151), const Color(0xFF060606)];
+      var customBorderColor = Colors.black;
+
       children.add(Expanded(
           child:
-              VizElevated(title: widget.title, textColor: widget.titleColor)));
+              VizElevated(title: widget.title, textColor: widget.titleColor, customBackground: customBackground, customBorderColor: customBorderColor)));
     } else {
       children = List.from(children)..addAll(widget.centralWidgets);
     }
 
+
+    var _colors = [
+      const Color(0xFFE4EDEF),
+      const Color(0xFFB1C6CF),
+    ];
+
+    var gradient = LinearGradient(
+        colors: _colors,
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        tileMode: TileMode.repeated);
+
+    var boxDecoration = BoxDecoration(
+        gradient: gradient);
+
     var container = Container(
       height: widget.barHeight,
-      color: Colors.black,
+      padding: const EdgeInsets.all(4.0),
+      decoration: boxDecoration,
       child: Row(
         children: children,
       ),

@@ -44,10 +44,13 @@ class VizSelectorState extends State<VizSelector> {
 
     if (widget.multiple) {
       actions.add(
-          Expanded(child: VizElevated(title: 'All', onTap: onSelectAllTapped)));
-      actions.add(Expanded(
-          child: VizElevated(title: 'None', onTap: onSelectNoneTapped)));
+          Expanded(
+              child: VizElevated(title: 'All', onTap: onSelectAllTapped)));
+      actions.add(
+          Expanded(
+              child: VizElevated(title: 'None', onTap: onSelectNoneTapped)));
     }
+
     actions.add(Expanded(
         child: VizElevated(
             title: 'OK',

@@ -1,9 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:techviz/adapters/searchAdapter.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizElevated.dart';
 
-class VizSearch extends StatefulWidget {
+class VizSearch<T> extends StatefulWidget {
   VizSearch({Key key, this.domain, this.onOKTapTapped, this.onBackTapped, this.searchAdapter})
       : super(key: key);
 
@@ -11,11 +13,11 @@ class VizSearch extends StatefulWidget {
   final VoidCallback onOKTapTapped;
   final VoidCallback onBackTapped;
 
-  final SearchAdapter searchAdapter;
+  final SearchAdapter<T> searchAdapter;
 
   @override
   State<StatefulWidget> createState() {
-    return VizSearchState();
+    return VizSearchState<T>();
   }
 }
 
@@ -40,7 +42,7 @@ class VizSearchState<T> extends State<VizSearch> {
       backgroundColor: Colors.black,
       appBar: ActionBar(centralWidgets: searchComponent),
       body: FutureBuilder<List<T>>(
-        future: widget.searchAdapter.find(),
+        future: widget.searchAdapter.find() as Future<List<T>>,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return ListView(children: widget.searchAdapter.render(snapshot.data));

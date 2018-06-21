@@ -4,6 +4,7 @@ import 'package:techviz/home.dart';
 void main() => runApp(TechVizApp());
 
 class TechVizApp extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -12,4 +13,6 @@ class TechVizApp extends StatelessWidget {
       home: Home(),
     );
   }
+
+
 }

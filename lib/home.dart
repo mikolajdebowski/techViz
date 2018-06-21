@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:techviz/adapters/machineAdapter.dart';
 import 'package:techviz/components/vizSearch.dart';
@@ -7,6 +5,7 @@ import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizSelector.dart';
 import 'package:techviz/components/vizElevated.dart';
 import 'package:techviz/menu.dart';
+import 'package:techviz/helpers/slideRightRoute.dart';
 
 class Home extends StatefulWidget {
   Home({Key key}) : super(key: key);
@@ -32,11 +31,12 @@ class _HomeState extends State<Home> {
   }
 
   void goToMenu() {
-    Navigator.push(
+    Navigator.push<Menu>(
       context,
-      MaterialPageRoute(builder: (context) => Menu()),
+      SlideRightRoute(widget: Menu()),
     );
   }
+
 
   void onZoneSelectorCallbackOK(List<VizSelectorOption> selected) {
     setState(() {
@@ -74,7 +74,7 @@ class _HomeState extends State<Home> {
         multiple: true,
         onOKTapTapped: onZoneSelectorCallbackOK,
         options: availableZones);
-    Navigator.push(
+    Navigator.push<VizSelector>(
       context,
       MaterialPageRoute(builder: (context) => selector),
     );
@@ -85,35 +85,36 @@ class _HomeState extends State<Home> {
         title: 'My Status',
         onOKTapTapped: onMyStatusSelectorCallbackOK,
         options: availableStatuses);
-    Navigator.push(
+    Navigator.push<VizSelector>(
       context,
       MaterialPageRoute(builder: (context) => selector),
     );
   }
 
   void goToSearchSelector() {
-    Navigator.push(
+    Navigator.push<VizSelector>(
       context,
-      MaterialPageRoute(builder: (context) => VizSearch(domain: 'Machine, Players, etc', searchAdapter: new MachineAdapter())),
+      MaterialPageRoute(
+          builder: (context) => VizSearch<MachineModel>(
+              domain: 'Machine, Players, etc',
+              searchAdapter: new MachineAdapter())),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    var leadingMenuButton = Expanded(
-        child: VizElevated(
-            title: 'Menu',
-            onTap: goToMenu,
-            textColor: const Color(0xFF159680)));
+    var leadingMenuButton =
+        Expanded(child: VizElevated(title: 'Menu', onTap: goToMenu));
 
     var zonesWidget = Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Text('My Zones',
-            style: const TextStyle(color: Colors.lightGreen, fontSize: 12.0)),
+            style: const TextStyle(
+                color: const Color(0xFF566474), fontSize: 12.0)),
         Text(currentZones,
-            style: const TextStyle(color: Colors.white, fontSize: 18.0),
+            style: const TextStyle(color: Colors.black, fontSize: 18.0),
             overflow: TextOverflow.ellipsis)
       ],
     );
@@ -123,9 +124,10 @@ class _HomeState extends State<Home> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Text('My Status',
-            style: const TextStyle(color: Colors.lightGreen, fontSize: 12.0)),
+            style: const TextStyle(
+                color: const Color(0xFF566474), fontSize: 12.0)),
         Text(currentStatus,
-            style: const TextStyle(color: Colors.white, fontSize: 18.0),
+            style: const TextStyle(color: Colors.black, fontSize: 18.0),
             overflow: TextOverflow.ellipsis)
       ],
     );
@@ -141,18 +143,20 @@ class _HomeState extends State<Home> {
             VizElevated(customWidget: statusWidget, onTap: goToStatusSelector));
 
     //SEARCH
-    var searchIcon = Icon(Icons.search, color: Colors.white);
+    var searchIcon = ImageIcon(new AssetImage("assets/images/ic_search.png"),
+        size: 30.0, color: const Color(0xFF426184));
+
     var searchIconWidget = Expanded(
         flex: 1,
         child:
             VizElevated(customWidget: searchIcon, onTap: goToSearchSelector));
 
     var centralWidgets = <Widget>[
+      statusWidgetBtn,
       zonesWidgetBtn,
       Expanded(
           flex: 4,
-          child: VizElevated(title: 'Jackpot', textColor: Colors.blue)),
-      statusWidgetBtn,
+          child: VizElevated(title: 'Jackpot', textColor: Colors.black)),
       searchIconWidget
     ];
 

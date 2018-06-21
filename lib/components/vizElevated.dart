@@ -8,6 +8,7 @@ class VizElevated extends StatefulWidget {
       this.textColor,
       this.customWidget,
       this.customBackground,
+      this.customBorderColor,
       this.selectable = false,
       this.selected = false})
       : super(key: key);
@@ -17,6 +18,7 @@ class VizElevated extends StatefulWidget {
   final Color textColor;
   final Widget customWidget;
   final List<Color> customBackground;
+  final Color customBorderColor;
   final bool selectable;
   final bool selected;
 
@@ -40,12 +42,12 @@ class VizElevatedState extends State<VizElevated> {
   @override
   Widget build(BuildContext context) {
     const TextStyle defaultTextStyle = const TextStyle(
-        color: Colors.white,
+        color: const Color(0xFF495666),
         fontFamily: 'Poppins',
         fontWeight: FontWeight.w600,
         fontSize: 22.0);
 
-    var innerWidget;
+    Widget innerWidget;
     if (widget.customWidget != null) {
       innerWidget = widget.customWidget;
     } else {
@@ -59,12 +61,11 @@ class VizElevatedState extends State<VizElevated> {
       }
     }
 
-    var gradient;
+    LinearGradient gradient;
     if (widget.customBackground == null) {
       var _colors = [
-        //default color
-        const Color(0xFF252930),
-        const Color(0xFF1a1b1f),
+        const Color(0xFFE4EDEF),
+        const Color(0xFFB1C6CF),
       ];
 
       if (selected) {
@@ -79,15 +80,25 @@ class VizElevatedState extends State<VizElevated> {
     } else {
       gradient = LinearGradient(
           colors: widget.customBackground,
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
           tileMode: TileMode.repeated);
     }
 
-    var boxDecoration = BoxDecoration(
-        borderRadius: BorderRadius.circular(4.0),
-        border: Border.all(color: const Color(0xFF333333)),
-        gradient: gradient);
+
+    Border borderColor;
+    if(widget.customBorderColor != null){
+      borderColor = Border.all(color: widget.customBorderColor); //default
+    }
+    else{
+      borderColor = Border.all(color: const Color(0xFFFFFFFF)); //default
+    }
+
+    BoxDecoration boxDecoration = BoxDecoration(
+          borderRadius: BorderRadius.circular(6.0),
+          border: borderColor,
+          gradient: gradient);
+
 
     var container = Container(
       margin: const EdgeInsets.all(2.0),
