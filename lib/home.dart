@@ -6,6 +6,8 @@ import 'package:techviz/components/vizSelector.dart';
 import 'package:techviz/components/vizElevated.dart';
 import 'package:techviz/menu.dart';
 import 'package:techviz/helpers/slideRightRoute.dart';
+import 'package:techviz/attendant.home.dart';
+
 
 class Home extends StatefulWidget {
   Home({Key key}) : super(key: key);
@@ -156,7 +158,7 @@ class _HomeState extends State<Home> {
       zonesWidgetBtn,
       Expanded(
           flex: 4,
-          child: VizElevated(title: 'Jackpot', textColor: Colors.black)),
+          child: VizElevated(title: '<title>', textColor: Colors.black)),
       searchIconWidget
     ];
 
@@ -166,14 +168,7 @@ class _HomeState extends State<Home> {
           title: 'TechViz',
           leadingWidget: leadingMenuButton,
           centralWidgets: centralWidgets),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text('home', style: const TextStyle(color: Colors.white)),
-          ],
-        ),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      body: AttendantHome(), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
