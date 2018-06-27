@@ -6,6 +6,7 @@ import 'package:techviz/components/vizSelector.dart';
 import 'package:techviz/components/vizElevated.dart';
 import 'package:techviz/menu.dart';
 import 'package:techviz/helpers/slideRightRoute.dart';
+import 'package:techviz/attendant.home.dart';
 
 class Home extends StatefulWidget {
   Home({Key key}) : super(key: key);
@@ -36,7 +37,6 @@ class _HomeState extends State<Home> {
       SlideRightRoute(widget: Menu()),
     );
   }
-
 
   void onZoneSelectorCallbackOK(List<VizSelectorOption> selected) {
     setState(() {
@@ -106,57 +106,55 @@ class _HomeState extends State<Home> {
     var leadingMenuButton =
         Expanded(child: VizElevated(title: 'Menu', onTap: goToMenu));
 
-    var zonesWidget = Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Text('My Zones',
-            style: const TextStyle(
-                color: const Color(0xFF566474), fontSize: 12.0)),
-        Text(currentZones,
-            style: const TextStyle(color: Colors.black, fontSize: 18.0),
-            overflow: TextOverflow.ellipsis)
-      ],
-    );
-
-    var statusWidget = Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Text('My Status',
-            style: const TextStyle(
-                color: const Color(0xFF566474), fontSize: 12.0)),
-        Text(currentStatus,
-            style: const TextStyle(color: Colors.black, fontSize: 18.0),
-            overflow: TextOverflow.ellipsis)
-      ],
-    );
-
     //ZONES AND STATUS
     var zonesWidgetBtn = Expanded(
         flex: 2,
-        child:
-            VizElevated(customWidget: zonesWidget, onTap: goToZonesSelector));
+        child: VizElevated(
+            customWidget: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text('My Zones',
+                    style: const TextStyle(
+                        color: const Color(0xFF566474), fontSize: 12.0)),
+                Text(currentZones,
+                    style: const TextStyle(color: Colors.black, fontSize: 18.0),
+                    overflow: TextOverflow.ellipsis)
+              ],
+            ),
+            onTap: goToZonesSelector));
     var statusWidgetBtn = Expanded(
         flex: 2,
-        child:
-            VizElevated(customWidget: statusWidget, onTap: goToStatusSelector));
-
-    //SEARCH
-    var searchIcon = ImageIcon(new AssetImage("assets/images/ic_search.png"),
-        size: 30.0, color: const Color(0xFF426184));
+        child: VizElevated(
+            customWidget: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text('My Status',
+                    style: const TextStyle(
+                        color: const Color(0xFF566474), fontSize: 12.0)),
+                Text(currentStatus,
+                    style: const TextStyle(color: Colors.black, fontSize: 18.0),
+                    overflow: TextOverflow.ellipsis)
+              ],
+            ),
+            onTap: goToStatusSelector));
 
     var searchIconWidget = Expanded(
         flex: 1,
-        child:
-            VizElevated(customWidget: searchIcon, onTap: goToSearchSelector));
+        child: VizElevated(
+            customWidget: ImageIcon(
+                new AssetImage("assets/images/ic_search.png"),
+                size: 30.0,
+                color: const Color(0xFF426184)),
+            onTap: goToSearchSelector));
 
-    var centralWidgets = <Widget>[
+    var actionBarCentralWidgets = <Widget>[
       statusWidgetBtn,
       zonesWidgetBtn,
       Expanded(
           flex: 4,
-          child: VizElevated(title: 'Jackpot', textColor: Colors.black)),
+          child: VizElevated(title: '<title>', textColor: Colors.black)),
       searchIconWidget
     ];
 
@@ -165,15 +163,8 @@ class _HomeState extends State<Home> {
       appBar: ActionBar(
           title: 'TechViz',
           leadingWidget: leadingMenuButton,
-          centralWidgets: centralWidgets),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text('home', style: const TextStyle(color: Colors.white)),
-          ],
-        ),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+          centralWidgets: actionBarCentralWidgets),
+      body: AttendantHome(), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
