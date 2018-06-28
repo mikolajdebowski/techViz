@@ -79,7 +79,8 @@ class AttendantHomeState extends State<AttendantHome> {
 
     //task list part
     var listTasks = <Widget>[];
-    for (var i = 1; i < 100; i++) {
+
+    for (var i = 1; i < 2; i++) {
       var taskItem = Row(
         children: <Widget>[
           Expanded(
