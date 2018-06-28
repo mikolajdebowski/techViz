@@ -9,6 +9,9 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
   http: ^0.11.3
+  shared_preferences: ^0.4.2
+
+
   charts_flutter: ^0.3.0
   dart_amqp:
     git: http://git.colo.bis2.net/Mobile/Plugins/dart_amqp.git

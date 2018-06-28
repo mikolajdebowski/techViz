@@ -3,7 +3,7 @@
 .idea/
 .packages
 .pub/
-
+ios/Podfile.lock
 build/
-
+pubspec.lock
 .flutter-plugins
