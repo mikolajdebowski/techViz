@@ -1,9 +1,9 @@
 .DS_Store
 .dart_tool/
-.idea/
 .packages
 .pub/
-ios/Podfile.lock
+.idea/libraries/
 build/
-pubspec.lock
+
 .flutter-plugins
+ios/Podfile.lock
