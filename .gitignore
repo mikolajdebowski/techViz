@@ -6,3 +6,4 @@
 build/
 
 .flutter-plugins
+ios/Podfile.lock
