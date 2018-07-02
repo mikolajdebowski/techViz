@@ -3,6 +3,7 @@
 .packages
 .pub/
 .idea/libraries/
+.idea/workspace.xml
 build/
 
 .flutter-plugins
