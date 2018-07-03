@@ -5,6 +5,6 @@
 .idea/libraries/
 .idea/workspace.xml
 build/
-
+pubspec.lock
 .flutter-plugins
 ios/Podfile.lock
