@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:techviz/model/task.dart';
+import 'package:techviz/model/taskType.dart';
 
 class AttendantHome extends StatefulWidget {
   @override
@@ -6,6 +8,14 @@ class AttendantHome extends StatefulWidget {
 }
 
 class AttendantHomeState extends State<AttendantHome> {
+
+  void _onTapped(){
+    //load task details
+
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     //the header
@@ -80,50 +90,59 @@ class AttendantHomeState extends State<AttendantHome> {
     //task list part
     var listTasks = <Widget>[];
 
-    for (var i = 1; i < 2; i++) {
-      var taskItem = Row(
-        children: <Widget>[
-          Expanded(
-            flex: 1,
-            child: Container(
-              height: 70.0,
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                      colors: [
-                    const Color(0xFF45505D),
-                    const Color(0xFF282B34)
-                  ],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      tileMode: TileMode.repeated)),
-              child: Center(
-                  child: Text(i.toString(),
-                      style: TextStyle(color: Colors.white))),
-            ),
-          ),
-          Expanded(
-            flex: 3,
-            child: Container(
-              height: 70.0,
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                      colors: [
-                    const Color(0xFFB2C7CF),
-                    const Color(0xFFE4EDEF)
-                  ],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      tileMode: TileMode.repeated)),
-              child: Center(child: Text('01-01-0' + i.toString(), style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18.0),)),
-            ),
-          ),
-        ],
+
+    List<Task> taskListData = kTask;
+
+    for (var i = 0; i < taskListData.length; i++) {
+      Task task = taskListData[i];
+      var taskItem = GestureDetector(
+          onTap: _onTapped,
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                flex: 1,
+                child: Container(
+                  height: 70.0,
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                          colors: [
+                            const Color(0xFF45505D),
+                            const Color(0xFF282B34)
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          tileMode: TileMode.repeated)),
+                  child: Center(
+                      child: Text(i.toString(),
+                          style: TextStyle(color: Colors.white))),
+                ),
+              ),
+              Expanded(
+                flex: 3,
+                child: Container(
+                  height: 70.0,
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                          colors: [
+                            const Color(0xFFB2C7CF),
+                            const Color(0xFFE4EDEF)
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          tileMode: TileMode.repeated)),
+                  child: Center(child: Text(task.id, style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18.0),)),
+                ),
+              ),
+            ],
+          )
+
+
       );
 
       listTasks.add(taskItem);
     }
 
-    var taskList = Flexible(
+    var taskListWidget = Flexible(
       flex: 1,
       child: ListView(
         children: listTasks,
@@ -285,7 +304,7 @@ class AttendantHomeState extends State<AttendantHome> {
         child: Container(
       decoration: boxDecorationBody,
       child: Row(
-        children: <Widget>[taskList, mainContainer],
+        children: <Widget>[taskListWidget, mainContainer],
       ),
     ));
 
