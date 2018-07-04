@@ -1,7 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:techviz/components/vizElevated.dart';
-import 'package:techviz/home.dart';
 import 'package:techviz/login.dart';
 
 class Config extends StatefulWidget {
@@ -102,7 +101,7 @@ class ConfigState extends State<Config> {
                             height: 110.0,
                             child: VizElevated(
                                 onTap: onNextTap,
-                                title: 'Login',
+                                title: 'Next',
                                 customBackground: [Color(0xFFFFFFFF), Color(0xFFAAAAAA)]))
                       ],
                     ),

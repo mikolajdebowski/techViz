@@ -28,7 +28,7 @@ class LoginState extends State<Login> {
             end: Alignment.bottomCenter,
             tileMode: TileMode.repeated));
 
-    void onNextTap() async {
+    void loginTap() async {
       Navigator.push<Home>(
         context,
         MaterialPageRoute(builder: (context) => Home()),
@@ -91,7 +91,7 @@ class LoginState extends State<Login> {
                             width: 110.0,
                             height: 110.0,
                             child: VizElevated(
-                                onTap: onNextTap,
+                                onTap: loginTap,
                                 title: 'Login',
                                 customBackground: [Color(0xFFFFFFFF), Color(0xFFAAAAAA)]))
                       ],
