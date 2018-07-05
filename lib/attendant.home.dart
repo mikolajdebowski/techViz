@@ -12,41 +12,10 @@ class AttendantHome extends StatefulWidget {
 
 class AttendantHomeState extends State<AttendantHome> {
 
-  String userModel;
-  int count = 0;
+
   void _onTapped() async{
 
-    SessionClient client = SessionClient.getInstance();
 
-    if(this.userModel==null){
-      client.init(ClientType.PROCESSOR, 'http://tvdev2.internal.bis2.net');
-      Future<String> authResponse = client.auth('irina', 'developeer');
-
-      authResponse.then((String userModelResponse) {
-        setState(() {
-          userModel = userModelResponse;
-        });
-      }).catchError((dynamic error) {
-          print(error.toString());
-          return;
-      });
-
-
-    }
-
-    setState(() {
-      count++;
-    });
-
-    if(count>=3){
-      await client.abandon();
-      setState(() {
-        count = 0;
-        userModel = null;
-      });
-    }
-    String data = await client.get('live/57bc13688a7-1613069bd49/57bc1368904-1613069bdb6/select.json');
-    print(data);
   }
 
   @override
