@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:techviz/model/task.dart';
 import 'package:techviz/model/taskType.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
@@ -11,72 +12,76 @@ class AttendantHome extends StatefulWidget {
 }
 
 class AttendantHomeState extends State<AttendantHome> {
+  String timeTakenStr = '00:00';
 
-
-  void _onTapped() async{
-
-
+  void _onTapped() {
+    const oneSec = const Duration(seconds: 1);
+    Timer.periodic(oneSec, (Timer t) {
+      DateTime dt = DateFormat('mm:ss').parse(timeTakenStr);
+      dt = dt.add(Duration(seconds: 1));
+      setState(() {
+        timeTakenStr = DateFormat('mm:ss').format(dt);
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     //the header
-    var rowHeader = Row(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        Expanded(
-          flex: 1,
-          child: Column(
-            children: <Widget>[
-              Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: Text('Active Task',
-                      style: TextStyle(color: Colors.grey))),
-              Text('01-01-21',
-                  style: TextStyle(color: Colors.lightBlue, fontSize: 22.0))
-            ],
-          ),
-        ),
-        Expanded(
-          flex: 1,
-          child: Column(
-            children: <Widget>[
-              Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child:
-                      Text('Task Type', style: TextStyle(color: const Color(0xFF8CAFB6)))),
-              Text('Jackpot',
-                  style: TextStyle(color: Colors.white, fontSize: 22.0))
-            ],
-          ),
-        ),
-        Expanded(
-          flex: 2,
-          child: Column(
-            children: <Widget>[
-              Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: Text('Task Status',
-                      style: TextStyle(color: Colors.grey))),
-              Text('Acknowledged',
-                  style: TextStyle(color: Colors.white, fontSize: 22.0, fontWeight: FontWeight.bold))
-            ],
-          ),
-        ),
-        Expanded(
-          flex: 1,
-          child: Column(
-            children: <Widget>[
-              Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child:
-                      Text('Time Taken', style: TextStyle(color: Colors.grey))),
-              Text('0:22', style: TextStyle(color: Colors.teal, fontSize: 30.0))
-            ],
-          ),
-        )
-      ],
-    );
+    var rowHeader = Padding(
+        padding: EdgeInsets.only(left: 30.0, top: 7.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Expanded(
+              flex: 1,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text('Active Task', style: TextStyle(color: Colors.grey)),
+                  Padding(
+                      padding: const EdgeInsets.only(top: 2.0),
+                      child: Text('01-01-21', style: TextStyle(color: Colors.lightBlue, fontSize: 22.0)))
+                ],
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text('Task Type', style: TextStyle(color: const Color(0xFF8CAFB6))),
+                  Padding(
+                      padding: const EdgeInsets.only(top: 2.0),
+                      child: Text('Jackpot', style: TextStyle(color: Colors.white, fontSize: 22.0)))
+                ],
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text('Task Status', style: TextStyle(color: Colors.grey)),
+                  Padding(
+                      padding: const EdgeInsets.only(top: 2.0),
+                      child: Text('Acknowledged',
+                          style: TextStyle(color: Colors.white, fontSize: 22.0, fontWeight: FontWeight.bold)))
+                ],
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text('Time Taken', style: TextStyle(color: Colors.grey)),
+                  Text(timeTakenStr, style: TextStyle(color: Colors.teal, fontSize: 35.0, fontFamily: 'DigitalClock'))
+                ],
+              ),
+            )
+          ],
+        ));
 
     var headerBody = Container(
       height: 65.0,
@@ -92,7 +97,6 @@ class AttendantHomeState extends State<AttendantHome> {
     //task list part
     var listTasks = <Widget>[];
 
-
     List<Task> taskListData = kTask;
 
     for (var i = 0; i < taskListData.length; i++) {
@@ -107,16 +111,11 @@ class AttendantHomeState extends State<AttendantHome> {
                   height: 70.0,
                   decoration: BoxDecoration(
                       gradient: LinearGradient(
-                          colors: [
-                            const Color(0xFF45505D),
-                            const Color(0xFF282B34)
-                          ],
+                          colors: [const Color(0xFF45505D), const Color(0xFF282B34)],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           tileMode: TileMode.repeated)),
-                  child: Center(
-                      child: Text(i.toString(),
-                          style: TextStyle(color: Colors.white))),
+                  child: Center(child: Text(i.toString(), style: TextStyle(color: Colors.white))),
                 ),
               ),
               Expanded(
@@ -125,21 +124,19 @@ class AttendantHomeState extends State<AttendantHome> {
                   height: 70.0,
                   decoration: BoxDecoration(
                       gradient: LinearGradient(
-                          colors: [
-                            const Color(0xFFB2C7CF),
-                            const Color(0xFFE4EDEF)
-                          ],
+                          colors: [const Color(0xFFB2C7CF), const Color(0xFFE4EDEF)],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           tileMode: TileMode.repeated)),
-                  child: Center(child: Text(task.id, style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18.0),)),
+                  child: Center(
+                      child: Text(
+                    task.id,
+                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18.0),
+                  )),
                 ),
               ),
             ],
-          )
-
-
-      );
+          ));
 
       listTasks.add(taskItem);
     }
@@ -163,9 +160,7 @@ class AttendantHomeState extends State<AttendantHome> {
     var requiredAction = Column(
       children: <Widget>[
         Padding(
-            padding: const EdgeInsets.all(5.0),
-            child:
-                Text('Required Action', style: TextStyle(color: Colors.white))),
+            padding: const EdgeInsets.all(5.0), child: Text('Required Action', style: TextStyle(color: Colors.white))),
         Expanded(
             child: Padding(
                 padding: const EdgeInsets.all(15.0),
@@ -175,10 +170,8 @@ class AttendantHomeState extends State<AttendantHome> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      ImageIcon(
-                          new AssetImage("assets/images/ic_barcodescanner.png"),
-                          size: 150.0,
-                          color: Colors.white),
+                      ImageIcon(new AssetImage("assets/images/ic_barcodescanner.png"),
+                          size: 150.0, color: Colors.white),
                       Center(
                           child: Text('Scan Machine',
                               style: TextStyle(
@@ -212,18 +205,15 @@ class AttendantHomeState extends State<AttendantHome> {
                           child: Container(
                         decoration: BoxDecoration(
                             gradient: LinearGradient(
-                                colors: [
-                              const Color(0xFFB2C7CF),
-                              const Color(0xFFE4EDEF)
-                            ],
+                                colors: [const Color(0xFFB2C7CF), const Color(0xFFE4EDEF)],
                                 begin: Alignment.topCenter,
                                 end: Alignment.bottomCenter,
                                 tileMode: TileMode.repeated)),
                         child: Center(child: Text('Complete')),
                       )),
                       Container(
-                          width: 10.0,
-                          color: const Color(0xFF6EBD24),
+                        width: 10.0,
+                        color: const Color(0xFF6EBD24),
                       )
                     ],
                   )),
@@ -234,10 +224,7 @@ class AttendantHomeState extends State<AttendantHome> {
                           child: Container(
                         decoration: BoxDecoration(
                             gradient: LinearGradient(
-                                colors: [
-                              const Color(0xFFB2C7CF),
-                              const Color(0xFFE4EDEF)
-                            ],
+                                colors: [const Color(0xFFB2C7CF), const Color(0xFFE4EDEF)],
                                 begin: Alignment.topCenter,
                                 end: Alignment.bottomCenter,
                                 tileMode: TileMode.repeated)),
@@ -247,10 +234,7 @@ class AttendantHomeState extends State<AttendantHome> {
                           width: 10.0,
                           decoration: BoxDecoration(
                               gradient: LinearGradient(
-                                  colors: [
-                                const Color(0xFFFF6600),
-                                const Color(0xFFFFE100)
-                              ],
+                                  colors: [const Color(0xFFFF6600), const Color(0xFFFFE100)],
                                   begin: Alignment.topCenter,
                                   end: Alignment.bottomCenter,
                                   tileMode: TileMode.repeated)))
@@ -263,10 +247,7 @@ class AttendantHomeState extends State<AttendantHome> {
                           child: Container(
                             decoration: BoxDecoration(
                                 gradient: LinearGradient(
-                                    colors: [
-                                  const Color(0xFFB2C7CF),
-                                  const Color(0xFFE4EDEF)
-                                ],
+                                    colors: [const Color(0xFFB2C7CF), const Color(0xFFE4EDEF)],
                                     begin: Alignment.topCenter,
                                     end: Alignment.bottomCenter,
                                     tileMode: TileMode.repeated)),
@@ -277,10 +258,7 @@ class AttendantHomeState extends State<AttendantHome> {
                             width: 10.0,
                             decoration: BoxDecoration(
                                 gradient: LinearGradient(
-                                    colors: [
-                                  const Color(0xFF433177),
-                                  const Color(0xFFF2003C)
-                                ],
+                                    colors: [const Color(0xFF433177), const Color(0xFFF2003C)],
                                     begin: Alignment.topCenter,
                                     end: Alignment.bottomCenter,
                                     tileMode: TileMode.repeated)))
