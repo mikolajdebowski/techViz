@@ -34,8 +34,28 @@ flutter:
 
 #  # To add assets to your application, add an assets section, like this:
   assets:
+    - assets/images/ic_about.png
+    - assets/images/ic_alert.png
+    - assets/images/ic_available_machine.png
+    - assets/images/ic_down_arrow.png
+    - assets/images/ic_duration.png
+    - assets/images/ic_help.png
+    - assets/images/ic_in_use.png
+    - assets/images/ic_logout.png
+    - assets/images/ic_my_profile.png
+    - assets/images/ic_new_note.png
+    - assets/images/ic_no_connection.png
+    - assets/images/ic_note.png
+    - assets/images/ic_offline_machine.png
+    - assets/images/ic_out_of_service.png
+    - assets/images/ic_processing.png
+    - assets/images/ic_reserve.png
     - assets/images/ic_search.png
-    - assets/images/ic_barcodescanner.png
+    - assets/images/ic_settings.png
+    - assets/images/ic_up_download.png
+    - assets/images/ic_barcode.png
+    - assets/images/ic_camera.png
+
 #    - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

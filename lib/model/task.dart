@@ -23,6 +23,6 @@ const kTask = const <Task>[
   const Task(
       '01-01-03',
       TaskType('3', 'Unknown'),
-      TaskStatus('1','Aknowledged')
-  )
+      TaskStatus('2','Pending')
+  ),
 ];

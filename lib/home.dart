@@ -70,10 +70,7 @@ class _HomeState extends State<Home> {
 
   void goToZonesSelector() {
     var selector = VizSelector(
-        title: 'My Zones',
-        multiple: true,
-        onOKTapTapped: onZoneSelectorCallbackOK,
-        options: availableZones);
+        title: 'My Zones', multiple: true, onOKTapTapped: onZoneSelectorCallbackOK, options: availableZones);
     Navigator.push<VizSelector>(
       context,
       MaterialPageRoute(builder: (context) => selector),
@@ -81,10 +78,8 @@ class _HomeState extends State<Home> {
   }
 
   void goToStatusSelector() {
-    var selector = VizSelector(
-        title: 'My Status',
-        onOKTapTapped: onMyStatusSelectorCallbackOK,
-        options: availableStatuses);
+    var selector =
+        VizSelector(title: 'My Status', onOKTapTapped: onMyStatusSelectorCallbackOK, options: availableStatuses);
     Navigator.push<VizSelector>(
       context,
       MaterialPageRoute(builder: (context) => selector),
@@ -95,75 +90,71 @@ class _HomeState extends State<Home> {
     Navigator.push<VizSelector>(
       context,
       MaterialPageRoute(
-          builder: (context) => VizSearch<MachineModel>(
-              domain: 'Machine, Players, etc',
-              searchAdapter: new MachineAdapter())),
+          builder: (context) =>
+              VizSearch<MachineModel>(domain: 'Machine, Players, etc', searchAdapter: new MachineAdapter())),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    var leadingMenuButton =
-        Expanded(child: VizElevated(title: 'Menu', onTap: goToMenu));
+    var leadingMenuButton = Expanded(child: VizElevated(title: 'Menu', onTap: goToMenu));
 
     //ZONES AND STATUS
     var zonesWidgetBtn = Expanded(
-        flex: 2,
+        flex: 3,
         child: VizElevated(
             customWidget: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text('My Zones',
-                    style: const TextStyle(
-                        color: const Color(0xFF566474), fontSize: 12.0)),
+                Text('My Zones', style: TextStyle(color: Color(0xFF566474), fontSize: 13.0)),
                 Text(currentZones,
-                    style: const TextStyle(color: Colors.black, fontSize: 18.0),
-                    overflow: TextOverflow.ellipsis)
+                    style: TextStyle(color: Colors.black, fontSize: 18.0), overflow: TextOverflow.ellipsis)
               ],
             ),
             onTap: goToZonesSelector));
     var statusWidgetBtn = Expanded(
-        flex: 2,
+        flex: 3,
         child: VizElevated(
             customWidget: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text('My Status',
-                    style: const TextStyle(
-                        color: const Color(0xFF566474), fontSize: 12.0)),
+                Text('My Status', style: TextStyle(color: Color(0xFF566474), fontSize: 13.0)),
                 Text(currentStatus,
-                    style: const TextStyle(color: Colors.black, fontSize: 18.0),
-                    overflow: TextOverflow.ellipsis)
+                    style: TextStyle(color: Colors.black, fontSize: 18.0), overflow: TextOverflow.ellipsis)
               ],
             ),
             onTap: goToStatusSelector));
 
-    var searchIconWidget = Expanded(
-        flex: 1,
+    var notificationWidgetBtn = Expanded(
+        flex: 3,
         child: VizElevated(
-            customWidget: ImageIcon(
-                new AssetImage("assets/images/ic_search.png"),
-                size: 30.0,
-                color: const Color(0xFF426184)),
-            onTap: goToSearchSelector));
+            customWidget: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text('Notifications', style: TextStyle(color: Color(0xFF566474), fontSize: 13.0)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text('7', style: TextStyle(color: Colors.black, fontSize: 18.0), overflow: TextOverflow.ellipsis),
+                ImageIcon(AssetImage("assets/images/ic_alert.png"), size: 15.0, color: Color(0xFFCD0000))
+              ],
+            )
+          ],
+        )));
 
-    var actionBarCentralWidgets = <Widget>[
-      statusWidgetBtn,
-      zonesWidgetBtn,
-      Expanded(
-          flex: 4,
-          child: VizElevated(title: '<title>', textColor: Colors.black)),
-      searchIconWidget
-    ];
+    var searchIconWidget = Expanded(
+        flex: 2,
+        child: VizElevated(
+            customWidget: ImageIcon(AssetImage("assets/images/ic_search.png"), size: 30.0), onTap: goToSearchSelector));
+
+    var actionBarCentralWidgets = <Widget>[statusWidgetBtn, zonesWidgetBtn, notificationWidgetBtn, searchIconWidget];
 
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: ActionBar(
-          title: 'TechViz',
-          leadingWidget: leadingMenuButton,
-          centralWidgets: actionBarCentralWidgets),
+      appBar: ActionBar(title: 'TechViz', leadingWidget: leadingMenuButton, centralWidgets: actionBarCentralWidgets),
       body: AttendantHome(), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
