@@ -4,9 +4,8 @@ class TaskStatus{
 
   const TaskStatus(this.id, this.description);
 
-
   @override
   toString(){
-    return 'ae';
+    return description;
   }
 }

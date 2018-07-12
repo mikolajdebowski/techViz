@@ -23,7 +23,7 @@ class TechVizApp extends StatelessWidget {
 
 
 
-  void loingProcess() {
+  void loginProcess() {
 
 
     //get instance
@@ -37,6 +37,8 @@ class TechVizApp extends StatelessWidget {
     //auth
     Future<String> authResponse = client.auth('irina', 'developeer');
 
+    //request task data
+    client.get('http://tvdev2.internal.bis2.net/rest/live/57bc13688a7-1613069bd49/57bc1368904-1613069bdb6/select.json');
 
     //logout
     client.abandon();

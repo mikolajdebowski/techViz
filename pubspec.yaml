@@ -11,8 +11,13 @@ dependencies:
   http: ^0.11.3
   charts_flutter: ^0.3.0
   enumeration: ^0.0.2
+  sqflite: any
+#  vizexplorer_mobile_common:
+#    git: http://git.colo.bis2.net/Mobile/Plugins/common.git
+
   vizexplorer_mobile_common:
-    git: http://git.colo.bis2.net/Mobile/Plugins/common.git
+    path: '../com.vizexplorer.mobile/common'
+
   dart_amqp:
     git: http://git.colo.bis2.net/Mobile/Plugins/dart_amqp.git
 

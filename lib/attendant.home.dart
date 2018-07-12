@@ -3,7 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:techviz/model/task.dart';
-import 'package:techviz/model/taskType.dart';
+import 'package:techviz/presenter/taskPresenter.dart';
+import 'package:techviz/repository/common/repositoryContract.dart';
+import 'package:techviz/repository/repository.dart';
+import 'package:techviz/repository/rest/restTaskRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 class AttendantHome extends StatefulWidget {
@@ -11,8 +14,47 @@ class AttendantHome extends StatefulWidget {
   State<StatefulWidget> createState() => AttendantHomeState();
 }
 
-class AttendantHomeState extends State<AttendantHome> {
+class AttendantHomeState extends State<AttendantHome> implements RepositoryContract<Task>{
   String timeTakenStr = '00:00';
+
+  List<Task> _taskList = [];
+  TaskPresenter _presenter;
+
+
+  var _taskListStatus = "assets/images/ic_processing.png";
+
+  @override
+  initState(){
+    _taskList = [];
+
+
+    SessionClient client = SessionClient.getInstance();
+    client.init(ClientType.PROCESSOR, 'http://tvdev2.internal.bis2.net');
+    Future<String> authResponse = client.auth('irina', 'developer').then((String r) {
+      Repository.configure(Flavor.REST);
+      _presenter = TaskPresenter(this);
+      _presenter.loadData();
+
+      _taskListStatus = "assets/images/ic_processing.png";
+    });
+
+    super.initState();
+  }
+
+  @override
+  void onLoadData(List<Task> result) {
+    setState(() {
+      _taskList = result;
+
+      _taskListStatus = null;
+    });
+  }
+
+  @override
+  void onLoadError(Error error) {
+    // TODO: implement onLoadError
+  }
+
 
   void _onTapped() {
     var oneSec =  Duration(seconds: 1);
@@ -26,7 +68,8 @@ class AttendantHomeState extends State<AttendantHome> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context)  {
+
     final defaultHeaderDecoration = BoxDecoration(
         border: Border.all(color: Colors.black, width: 0.5),
         gradient: LinearGradient(
@@ -37,11 +80,11 @@ class AttendantHomeState extends State<AttendantHome> {
 
     //LEFT PANEL WIDGETS
     //task list header and task list
-    var listTasks = <Widget>[];
-    List<Task> taskListData = kTask;
 
-    for (var i = 1; i <= taskListData.length; i++) {
-      Task task = taskListData[i - 1];
+    var listTasks = <Widget>[];
+
+    for (var i = 1; i <= _taskList.length; i++) {
+      Task task = _taskList[i - 1];
       var taskItem = GestureDetector(
           onTap: _onTapped,
           child: Row(
@@ -71,9 +114,9 @@ class AttendantHomeState extends State<AttendantHome> {
                           tileMode: TileMode.repeated)),
                   child: Center(
                       child: Text(
-                    task.id,
-                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18.0),
-                  )),
+                        task.location,
+                        style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18.0),
+                      )),
                 ),
               ),
             ],
@@ -83,14 +126,23 @@ class AttendantHomeState extends State<AttendantHome> {
     }
 
 
-    var taskTextStr = kTask.length == 0? 'No tasks' : (kTask.length==1 ? '1 Task' : '${kTask.length} Tasks');
+    var taskTextStr = listTasks.length == 0? 'No tasks' : (listTasks.length==1 ? '1 Task' : '${listTasks.length} Tasks');
+
+    Widget listContainer = ImageIcon( AssetImage("assets/images/ic_processing.png"), size: 30.0);
+
+
+
+    if(listTasks.length > 0)
+      listContainer = ListView(
+      children: listTasks,
+    );
 
     var leftPanel = Flexible(
       flex: 1,
       child: Column(
         children: <Widget>[
           Container(
-            constraints: BoxConstraints.expand(height: 80.0),
+            constraints: BoxConstraints.expand(height: 70.0),
             decoration: defaultHeaderDecoration,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -102,22 +154,20 @@ class AttendantHomeState extends State<AttendantHome> {
                       Text(taskTextStr, style: TextStyle(color: Colors.white)),
                       Padding(
                         padding: EdgeInsets.only(left: 10.0),
-                        child: ImageIcon( AssetImage("assets/images/ic_processing.png"), size: 15.0, color: Colors.blueGrey),
+                        child: _taskListStatus != null? ImageIcon( AssetImage(_taskListStatus), size: 15.0, color: Colors.blueGrey) : null,
                       )
 
                     ],
                   ),
                 ),
-                Text('6 Pending', style: TextStyle(color: Colors.orange)),
+                Text('0 Pending', style: TextStyle(color: Colors.orange)),
                 Text('Priority', style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic)),
 
               ],
             ),
           ),
           Expanded(
-            child: ListView(
-              children: listTasks,
-            ),
+            child: listContainer,
           )
         ],
       ),
@@ -264,7 +314,7 @@ class AttendantHomeState extends State<AttendantHome> {
       child: Column(
         children: <Widget>[
           Container(
-            constraints: BoxConstraints.expand(height: 80.0),
+            constraints: BoxConstraints.expand(height: 70.0),
             decoration: defaultHeaderDecoration,
             child: rowCenterHeader,
           ),
@@ -368,7 +418,7 @@ class AttendantHomeState extends State<AttendantHome> {
       child: Column(
         children: <Widget>[
           Container(
-            constraints: BoxConstraints.expand(height: 80.0),
+            constraints: BoxConstraints.expand(height: 70.0),
             decoration: defaultHeaderDecoration,
             child: timerWidget,
           ),
@@ -390,4 +440,7 @@ class AttendantHomeState extends State<AttendantHome> {
           children: <Widget>[leftPanel, centerPanel, rightPanel],
         ));
   }
+
+
+
 }
