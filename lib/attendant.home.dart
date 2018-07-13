@@ -3,10 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:techviz/model/task.dart';
-import 'package:techviz/presenter/taskPresenter.dart';
-import 'package:techviz/repository/common/repositoryContract.dart';
+import 'package:techviz/presenter/taskListPresenter.dart';
 import 'package:techviz/repository/repository.dart';
-import 'package:techviz/repository/rest/restTaskRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 class AttendantHome extends StatefulWidget {
@@ -14,12 +12,11 @@ class AttendantHome extends StatefulWidget {
   State<StatefulWidget> createState() => AttendantHomeState();
 }
 
-class AttendantHomeState extends State<AttendantHome> implements RepositoryContract<Task>{
+class AttendantHomeState extends State<AttendantHome> implements TaskListPresenterContract<Task>{
   String timeTakenStr = '00:00';
 
   List<Task> _taskList = [];
-  TaskPresenter _presenter;
-
+  TaskListPresenter _presenter;
 
   var _taskListStatus = "assets/images/ic_processing.png";
 
@@ -27,13 +24,14 @@ class AttendantHomeState extends State<AttendantHome> implements RepositoryContr
   initState(){
     _taskList = [];
 
-
     SessionClient client = SessionClient.getInstance();
     client.init(ClientType.PROCESSOR, 'http://tvdev2.internal.bis2.net');
     Future<String> authResponse = client.auth('irina', 'developer').then((String r) {
       Repository.configure(Flavor.REST);
-      _presenter = TaskPresenter(this);
-      _presenter.loadData();
+      _presenter = TaskListPresenter(this);
+
+
+      _presenter.loadTaskList();
 
       _taskListStatus = "assets/images/ic_processing.png";
     });
@@ -41,11 +39,11 @@ class AttendantHomeState extends State<AttendantHome> implements RepositoryContr
     super.initState();
   }
 
+
   @override
-  void onLoadData(List<Task> result) {
+  void onTaskListLoaded(List<Task> result) {
     setState(() {
       _taskList = result;
-
       _taskListStatus = null;
     });
   }

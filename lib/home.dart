@@ -5,7 +5,7 @@ import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizSelector.dart';
 import 'package:techviz/components/vizElevated.dart';
 import 'package:techviz/menu.dart';
-import 'package:techviz/helpers/slideRightRoute.dart';
+import 'package:techviz/common/slideRightRoute.dart';
 import 'package:techviz/attendant.home.dart';
 
 class Home extends StatefulWidget {
@@ -16,6 +16,11 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  bool initialLoading = false;
+
+
+
+
   String currentZones = '-';
   String currentStatus = 'Available';
   var availableZones = List<VizSelectorOption>();
@@ -24,6 +29,14 @@ class _HomeState extends State<Home> {
     VizSelectorOption("1", "Available"),
     VizSelectorOption("2", "Off shift"),
   ];
+
+
+  @override
+  void initState(){
+    super.initState();
+  }
+
+
 
   _HomeState() {
     for (var i = 0; i < 1000; i++) {
@@ -97,6 +110,18 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+
+
+
+
+
+
+
+
+
+
+
+
     var leadingMenuButton = Expanded(child: VizElevated(title: 'Menu', onTap: goToMenu));
 
     //ZONES AND STATUS
