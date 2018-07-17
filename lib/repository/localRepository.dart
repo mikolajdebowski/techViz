@@ -44,7 +44,7 @@ class LocalRepository {
                 _ID TEXT, 
                 LookupName TEXT NOT NULL,
                 DefaultValue INT NOT NULL,
-                TaskStatusID NUMERIC PRIMARY KEY,
+                TaskStatusID INT PRIMARY KEY,
                 TaskStatusDescription TEXT NOT NULL
                 )
             ''');
@@ -55,7 +55,7 @@ class LocalRepository {
                 _ID TEXT, 
                 LookupName TEXT NOT NULL,
                 DefaultValue INT NOT NULL,
-                TaskTypeID NUMERIC PRIMARY KEY,
+                TaskTypeID INT PRIMARY KEY,
                 TaskTypeDescription TEXT NOT NULL,
                 RoleID NUMERIC
                 )

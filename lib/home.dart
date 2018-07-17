@@ -109,17 +109,6 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
 
-
-
-
-
-
-
-
-
-
-
-
     var leadingMenuButton = Expanded(child: VizElevated(title: 'Menu', onTap: goToMenu));
 
     //ZONES AND STATUS

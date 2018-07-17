@@ -15,6 +15,7 @@ class TaskStatusRepository implements ITaskStatusRepository{
   @override
   Future<List<TaskStatus>> getAll() async {
     LocalRepository localRepo = LocalRepository();
+
     await localRepo.open();
 
     List<Map<String, dynamic>> queryResult = await localRepo.rawQuery('SELECT * FROM TaskStatus');
@@ -22,13 +23,12 @@ class TaskStatusRepository implements ITaskStatusRepository{
     List<TaskStatus> toReturn = List<TaskStatus>();
     queryResult.forEach((Map<String, dynamic> task) {
       var t = TaskStatus(
-        id: task['TaskStatusID'] as String,
+        id: task['TaskStatusID'] as int,
         description: task['TaskStatusDescription'] as String,
       );
       toReturn.add(t);
     });
 
-    await localRepo.close();
 
     return toReturn;
   }
@@ -40,8 +40,4 @@ class TaskStatusRepository implements ITaskStatusRepository{
   Future<List<dynamic>> fetch() {
     throw new UnimplementedError('Needs to be overwritten');
   }
-
-
-
-
 }

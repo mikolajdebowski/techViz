@@ -1,5 +1,5 @@
 class TaskStatus{
-  final String id;
+  final int id;
   final String description;
 
   const TaskStatus({this.id, this.description});

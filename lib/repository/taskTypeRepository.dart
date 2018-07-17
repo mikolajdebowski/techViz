@@ -15,6 +15,7 @@ class TaskTypeRepository implements ITaskTypeRepository{
   @override
   Future<List<TaskType>> getAll() async {
     LocalRepository localRepo = LocalRepository();
+
     await localRepo.open();
 
     List<Map<String, dynamic>> queryResult = await localRepo.rawQuery('SELECT * FROM TaskType');
@@ -22,13 +23,12 @@ class TaskTypeRepository implements ITaskTypeRepository{
     List<TaskType> toReturn = List<TaskType>();
     queryResult.forEach((Map<String, dynamic> task) {
       var t = TaskType(
-        id: task['TaskTypeID'] as String,
+        id: task['TaskTypeID'] as int,
         description: task['TaskTypeDescription'] as String,
       );
       toReturn.add(t);
     });
 
-    await localRepo.close();
 
     return toReturn;
   }

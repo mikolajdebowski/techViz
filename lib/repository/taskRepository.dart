@@ -28,8 +28,8 @@ class TaskRepository implements ITaskRepository{
       var t = Task(
         id: task['_ID'] as String,
         location: task['Location'] as String,
-        taskTypeID: task['TaskStatusID'] as int,
-        taskStatusID: task['TaskTypeID'] as int,
+        taskTypeID: task['TaskTypeID'] as int,
+        taskStatusID: task['TaskStatusID'] as int,
         amount: amount,
         eventDesc: task['EventDesc'] as String,
       );
