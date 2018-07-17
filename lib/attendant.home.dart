@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:techviz/components/vizTimer.dart';
 import 'package:techviz/model/task.dart';
 import 'package:techviz/presenter/taskListPresenter.dart';
 import 'package:techviz/repository/repository.dart';
@@ -13,7 +14,7 @@ class AttendantHome extends StatefulWidget {
 }
 
 class AttendantHomeState extends State<AttendantHome> implements TaskListPresenterContract<Task>{
-  String timeTakenStr = '00:00';
+
 
   List<Task> _taskList = [];
   TaskListPresenter _presenter;
@@ -26,7 +27,7 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
 
     SessionClient client = SessionClient.getInstance();
     client.init(ClientType.PROCESSOR, 'http://tvdev2.internal.bis2.net');
-    Future<String> authResponse = client.auth('irina', 'developer').then((String r) {
+    client.auth('irina', 'developer').then((String r) {
       Repository.configure(Flavor.REST);
       _presenter = TaskListPresenter(this);
 
@@ -54,15 +55,8 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
   }
 
 
-  void _onTapped() {
-    var oneSec =  Duration(seconds: 1);
-    Timer.periodic(oneSec, (Timer t) {
-      DateTime dt = DateFormat('mm:ss').parse(timeTakenStr);
-      dt = dt.add(Duration(seconds: 1));
-      setState(() {
-        timeTakenStr = DateFormat('mm:ss').format(dt);
-      });
-    });
+  void _onTaskItemTapped(Task task) {
+    print(task.location);
   }
 
   @override
@@ -84,7 +78,9 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
     for (var i = 1; i <= _taskList.length; i++) {
       Task task = _taskList[i - 1];
       var taskItem = GestureDetector(
-          onTap: _onTapped,
+          onTap: (){
+            _onTaskItemTapped(task);
+          },
           child: Row(
             children: <Widget>[
               Expanded(
@@ -330,7 +326,7 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Text('Time Taken', style: TextStyle(color: Colors.grey)),
-          Text(timeTakenStr, style: TextStyle(color: Colors.teal, fontSize: 45.0, fontFamily: 'DigitalClock'))
+          VizTimer()
         ],
       ),
     );

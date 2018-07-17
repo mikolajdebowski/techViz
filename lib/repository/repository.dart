@@ -1,7 +1,7 @@
 
 
 import 'package:techviz/repository/common/IRepository.dart';
-import 'package:techviz/repository/iTaskRepository.dart';
+import 'package:techviz/repository/taskRepository.dart';
 import 'package:techviz/repository/mock/mockTaskRepository.dart';
 import 'package:techviz/repository/rest/restTaskRepository.dart';
 import 'package:techviz/repository/rest/restTaskStatusRepository.dart';

@@ -22,9 +22,43 @@ class LocalRepository {
     db = await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
           await db.execute('''
-            create table TASK ( 
-                ID text primary key, 
-                Location text not null)
+            create table Task ( 
+                _ID TEXT, 
+                EventID INT,
+                MachineID TEXT,
+                TaskStatusID INT NOT NULL,
+                TaskTypeID INT,
+                TaskCreated DATETIME,
+                TaskAssigned DATETIME,
+                PlayerID TEXT,
+                TaskNote TEXT,
+                TaskResponded DATETIME,
+                Amount NUMERIC,
+                Location TEXT,
+                EventDesc TEXT)
+            ''');
+
+
+          await db.execute('''
+            create table TaskStatus ( 
+                _ID TEXT, 
+                LookupName TEXT NOT NULL,
+                DefaultValue INT NOT NULL,
+                TaskStatusID NUMERIC PRIMARY KEY,
+                TaskStatusDescription TEXT NOT NULL
+                )
+            ''');
+
+
+          await db.execute('''
+            create table TaskType ( 
+                _ID TEXT, 
+                LookupName TEXT NOT NULL,
+                DefaultValue INT NOT NULL,
+                TaskTypeID NUMERIC PRIMARY KEY,
+                TaskTypeDescription TEXT NOT NULL,
+                RoleID NUMERIC
+                )
             ''');
         });
   }

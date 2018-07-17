@@ -36,8 +36,6 @@ class _HomeState extends State<Home> {
     super.initState();
   }
 
-
-
   _HomeState() {
     for (var i = 0; i < 1000; i++) {
       availableZones.add(VizSelectorOption(i.toString(), i.toString()));

@@ -5,7 +5,7 @@ import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/home.dart';
 import 'package:techviz/model/task.dart';
 import 'package:techviz/repository/common/IRepository.dart';
-import 'package:techviz/repository/iTaskRepository.dart';
+import 'package:techviz/repository/taskRepository.dart';
 import 'package:techviz/repository/localRepository.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
@@ -34,10 +34,10 @@ class _LoaderState extends State<Loader> {
     });
     Future<String> authResponse = client.auth('irina', 'developer');
     authResponse.then((String response) async {
-
+      Repository.configure(Flavor.REST);
 
       setState(() {
-        statusMsg = 'Cleaning local database';
+        statusMsg = 'Cleaning local database...';
       });
 
       LocalRepository localRepo = LocalRepository();
@@ -45,19 +45,19 @@ class _LoaderState extends State<Loader> {
       await localRepo.dropDatabase();
 
       setState(() {
-        statusMsg = 'Loading Tasks!';
+        statusMsg = 'Loading Tasks...';
       });
 
       await Repository().taskRepository.fetch();
 
 
       setState(() {
-        statusMsg = 'Loading Task Statuses!';
+        statusMsg = 'Loading Task Statuses...';
       });
       await Repository().taskStatusRepository.fetch();
 
       setState(() {
-        statusMsg = 'Loading Task Types!';
+        statusMsg = 'Loading Task Types...';
       });
       await Repository().taskTypeRepository.fetch();
 
@@ -67,15 +67,9 @@ class _LoaderState extends State<Loader> {
       });
 
 
-      Future.delayed(Duration(seconds: 2), () {
-        Navigator.push<Home>(
-          context,
-          MaterialPageRoute(builder: (context) => Home()),
-        );
+      Future.delayed(Duration(milliseconds: 500), () {
+        Navigator.pushReplacementNamed(context, '/home');
       });
-
-
-
     });
 
     super.initState();

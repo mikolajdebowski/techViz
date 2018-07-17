@@ -1,12 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:techviz/model/task.dart';
-import 'package:techviz/repository/common/IRepository.dart';
-import 'package:techviz/repository/iTaskRepository.dart';
+import 'package:techviz/repository/taskRepository.dart';
 import 'package:techviz/repository/localRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
-class RestTaskRepository implements IRepository<dynamic>, ITaskRepository {
+class RestTaskRepository extends TaskRepository {
   String liveTable = 'live/57bc13688a7-1613069bd49/57bc1368904-1613069bdb6/select.json';
 
   /**
@@ -36,10 +34,18 @@ class RestTaskRepository implements IRepository<dynamic>, ITaskRepository {
         dynamic values = d['Values'];
 
         Map<String, dynamic> map = Map<String, dynamic>();
-        map['ID'] = values[_columnNames.indexOf("_ID")] as String;
-        map['Location'] = values[_columnNames.indexOf("Location")] as String;
-
-        localRepo.insert('TASK', map);
+        map['_ID'] = values[_columnNames.indexOf("_ID")] as String;
+        map['MachineID'] = values[_columnNames.indexOf("MachineID")];
+        map['Location'] = values[_columnNames.indexOf("Location")];
+        map['TaskStatusID'] = values[_columnNames.indexOf("TaskStatusID")];
+        map['TaskTypeID'] = values[_columnNames.indexOf("TaskTypeID")];
+        map['TaskCreated'] = values[_columnNames.indexOf("TaskCreated")];
+        map['TaskAssigned'] = values[_columnNames.indexOf("TaskAssigned")];
+        map['PlayerID'] = values[_columnNames.indexOf("PlayerID")];
+        map['TaskNote'] = values[_columnNames.indexOf("TaskNote")];
+        map['Amount'] = values[_columnNames.indexOf("Amount")];
+        map['EventDesc'] = values[_columnNames.indexOf("EventDesc")];
+        localRepo.insert('Task', map);
       });
 
       return Future.value(_toReturn);
@@ -49,31 +55,8 @@ class RestTaskRepository implements IRepository<dynamic>, ITaskRepository {
     });
   }
 
-  @override
-  Future<List<Task>> getTaskList() async {
-    LocalRepository localRepo = LocalRepository();
-    await localRepo.open();
-
-    List<Map<String, dynamic>> queryResult = await localRepo.rawQuery('SELECT ID, location FROM TASK');
-
-    List<Task> list = List<Task>();
-    queryResult.forEach((Map<String, dynamic> task) {
-      var t = Task(
-        id: task['ID'] as String,
-        location: task['Location'] as String,
-      );
-      list.add(t);
-    });
-
-    await localRepo.close();
-
-    return list;
-  }
 
 
-  /**
-   * fetch local task list
-   */
 
 
 

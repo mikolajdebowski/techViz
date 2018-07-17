@@ -1,5 +1,5 @@
 import 'package:techviz/model/task.dart';
-import 'package:techviz/repository/iTaskRepository.dart';
+import 'package:techviz/repository/taskRepository.dart';
 import 'package:techviz/repository/repository.dart';
 
 abstract class TaskListPresenterContract<Task> {

@@ -5,10 +5,13 @@ class Task {
   final String id;
   final String location;
   final String machineId;
-  final TaskType taskType;
-  final TaskStatus taskStatus;
+  final int taskTypeID;
+  final int taskStatusID;
+  final DateTime taskCreated;
+  final DateTime taskAssigned;
+  final double amount;
+  final String eventDesc;
 
-  const Task({this.id, this.location, this.taskType, this.taskStatus, this.machineId});
-
+  const Task({this.id, this.location, this.taskTypeID, this.taskStatusID, this.machineId, this.taskCreated, this.taskAssigned, this.amount, this.eventDesc});
 
 }
