@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:techviz/components/vizTaskActionButton.dart';
 import 'package:techviz/components/vizTimer.dart';
 import 'package:techviz/model/task.dart';
 import 'package:techviz/model/taskStatus.dart';
@@ -72,7 +73,6 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
     setState(() {
       _selectedTask = task;
     });
-
   }
 
   @override
@@ -183,12 +183,12 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
       ),
     );
 
-    
+
     var taskTypeDescr = _selectedTask!=null? _taskTypeList.where((t)=> t.id ==_selectedTask.taskTypeID).first.description: '';
     var taskStatusDescr = _selectedTask!=null? _taskStatusList.where((t)=> t.id ==_selectedTask.taskStatusID).first.description: '';
 
-    
-    
+
+
     //CENTER PANEL WIDGETS
     var rowCenterHeader = Padding(
         padding: EdgeInsets.only(left: 5.0, top: 7.0),
@@ -360,10 +360,6 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
 
 
 
-
-
-
-
     //RIGHT PANEL WIDGETS
     var timerWidget = Padding(
       padding: EdgeInsets.only(top: 7.0),
@@ -371,86 +367,27 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Text('Time Taken', style: TextStyle(color: Colors.grey)),
-          VizTimer(currentTime: _selectedTask!=null? '00:00' : null)
+          VizTimer(timeStarted: _selectedTask!=null? _selectedTask.location : null)
         ],
       ),
     );
 
-    var rightActionWidgets = Column(
-      children: <Widget>[
-        Expanded(
-            child: Row(
-          children: <Widget>[
-            Expanded(
-                child: Container(
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                      colors: [ Color(0xFFB2C7CF),  Color(0xFFE4EDEF)],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      tileMode: TileMode.repeated)),
-              child: Center(
-                  child: Text(
-                'Complete',
-                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600),
-              )),
-            )),
-            Container(
-              width: 10.0,
-              color:  Color(0xFF6EBD24),
-            )
-          ],
-        )),
-        Expanded(
-            child: Row(
-          children: <Widget>[
-            Expanded(
-                child: Container(
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                      colors: [ Color(0xFFB2C7CF), Color(0xFFE4EDEF)],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      tileMode: TileMode.repeated)),
-              child: Center(child: Text('Cancel', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600))),
-            )),
-            Container(
-                width: 10.0,
-                decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        colors: [ Color(0xFFFF6600), Color(0xFFFFE100)],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        tileMode: TileMode.repeated)))
-          ],
-        )),
-        Expanded(
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                          colors: [ Color(0xFFB2C7CF),  Color(0xFFE4EDEF)],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          tileMode: TileMode.repeated)),
-                  child: Center(child: Text('Escalate', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600))),
-                ),
-              ),
-              Container(
-                  width: 10.0,
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                          colors: [ Color(0xFF433177),  Color(0xFFF2003C)],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          tileMode: TileMode.repeated)))
-            ],
-          ),
-        ),
-      ],
-    );
+
+
+    Column rightActionWidgets;
+
+    if(_selectedTask != null){
+      rightActionWidgets = Column(
+        children: <Widget>[
+          VizTaskActionButton('Complete', [Color(0xFF6EBD24), Color(0xFF6EBD24)], onTapCallback: () => print('Complete')),
+          VizTaskActionButton('Cancel', [Color(0xFFFF6600), Color(0xFFFFE100)], onTapCallback: () => print('Cancel')),
+          VizTaskActionButton('Escalate', [Color(0xFF433177), Color(0xFFF2003C)], onTapCallback: () => print('Escalate'))
+        ],
+      );
+    }
+    else{
+      rightActionWidgets = Column();
+    }
 
 
     var rightPanel = Flexible(
@@ -463,7 +400,7 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
             child: timerWidget,
           ),
           Expanded(
-            child: (_selectedTask!=null ? rightActionWidgets : Column()),
+            child: rightActionWidgets,
           )
         ],
       ),
