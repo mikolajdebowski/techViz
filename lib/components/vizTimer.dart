@@ -12,20 +12,21 @@ class VizTimer extends StatefulWidget {
   VizTimer({this.timeStarted}){
     print(this.timeStarted);
   }
-
 }
 
 class VizTimerState extends State<VizTimer> {
-  String _lastTimeStarted = '00:00';
+  String _timerStrStarted = '00:00';
   String _timerStr = '00:00';
   Timer _peridic = null;
 
   @override
   Widget build(BuildContext context) {
-    if(_peridic==null || _lastTimeStarted != widget.timeStarted){
-      setState(() {
-        _lastTimeStarted = widget.timeStarted;
-        _timerStr = '00:00';
+    if(widget.timeStarted != null){
+      if(_peridic==null || _timerStrStarted != widget.timeStarted){
+        setState(() {
+          _timerStrStarted = widget.timeStarted;
+          _timerStr = widget.timeStarted;
+        });
 
         if(_peridic!=null){
           _peridic.cancel();
@@ -37,8 +38,8 @@ class VizTimerState extends State<VizTimer> {
             _timerStr = DateFormat('mm:ss').format(dt);
           });
         });
-      });
 
+      }
     }
     return Text( _timerStr, style: TextStyle(color: Colors.teal, fontSize: 35.0, fontFamily: 'DigitalClock'));
   }

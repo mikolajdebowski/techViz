@@ -359,6 +359,18 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
     );
 
 
+    DateTime _timeDt = _selectedTask!=null? _selectedTask.taskCreated : null;
+    String _timeStr = null;
+
+    if(_timeDt !=null){
+
+      Duration difference = DateTime.now().difference(_timeDt);
+
+      var mins = difference.inMinutes.toString().padLeft(2, '0');
+      var secs = (difference.inSeconds - (difference.inMinutes*60)).toString().padLeft(2, '0');
+
+      _timeStr = '${mins}:${secs}';
+    }
 
     //RIGHT PANEL WIDGETS
     var timerWidget = Padding(
@@ -367,7 +379,7 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Text('Time Taken', style: TextStyle(color: Colors.grey)),
-          VizTimer(timeStarted: _selectedTask!=null? _selectedTask.location : null)
+          VizTimer(timeStarted: _timeStr)
         ],
       ),
     );

@@ -32,6 +32,7 @@ class TaskRepository implements ITaskRepository{
         taskStatusID: task['TaskStatusID'] as int,
         amount: amount,
         eventDesc: task['EventDesc'] as String,
+        taskCreated: DateTime.parse(task['TaskCreated'] as String),
       );
       list.add(t);
     });
