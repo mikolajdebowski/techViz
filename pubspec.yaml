@@ -12,9 +12,6 @@ dependencies:
   charts_flutter: ^0.3.0
   enumeration: ^0.0.2
   sqflite: any
-  json_serializable: 0.5.0
-
-
 
 #  vizexplorer_mobile_common:
 #    git: http://git.colo.bis2.net/Mobile/Plugins/common.git
@@ -26,8 +23,8 @@ dependencies:
     git: http://git.colo.bis2.net/Mobile/Plugins/dart_amqp.git
 
 dev_dependencies:
-#  flutter_test:
-#    sdk: flutter
+  flutter_test:
+    sdk: flutter
 
 
 # For information on the generic Dart part of this file, see the
