@@ -3,18 +3,22 @@ import 'dart:convert';
 
 import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/repository/localRepository.dart';
+import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
 import 'package:techviz/repository/taskStatusRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
-class RestTaskStatusRepository extends TaskStatusRepository {
-  String liveTable = 'live/57bc13688a7-1613069bd49/57bc13688ec-1613069bdb6/select.json';
+class ProcessorTaskStatusRepository extends TaskStatusRepository {
 
   @override
   Future<List<dynamic>> fetch() {
 
     SessionClient client = SessionClient.getInstance();
 
-    return client.get(liveTable).then((String rawResult) async {
+    var config = ProcessorRepositoryConfig();
+    String liveTableID = config.GetLiveTable(LiveTableType.TECHVIZ_MOBILE_TASK_STATUS.toString()).ID;
+    String url = 'live/${config.DocumentID}/${liveTableID}/select.json';
+
+    return client.get(url).then((String rawResult) async {
 
       List<TaskStatus> _toReturn = List<TaskStatus>();
       Map<String,dynamic> decoded = json.decode(rawResult);

@@ -2,20 +2,23 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:techviz/model/taskType.dart';
-import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/localRepository.dart';
+import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
 import 'package:techviz/repository/taskTypeRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
-class RestTaskTypeRepository extends TaskTypeRepository{
-  String liveTable = 'live/57bc13688a7-1613069bd49/57bc13688d3-1613069bdb6/select.json';
+class ProcessorTaskTypeRepository extends TaskTypeRepository{
 
   @override
   Future<List<dynamic>> fetch() {
 
     SessionClient client = SessionClient.getInstance();
 
-    return client.get(liveTable).then((String rawResult) async {
+    var config = ProcessorRepositoryConfig();
+    String liveTableID = config.GetLiveTable(LiveTableType.TECHVIZ_MOBILE_TASK_STATUS.toString()).ID;
+    String url = 'live/${config.DocumentID}/${liveTableID}/select.json';
+
+    return client.get(url).then((String rawResult) async {
 
       List<TaskType> _toReturn = List<TaskType>();
       Map<String,dynamic> decoded = json.decode(rawResult);

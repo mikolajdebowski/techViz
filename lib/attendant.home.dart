@@ -31,23 +31,16 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
   initState(){
     _taskList = [];
 
-    SessionClient client = SessionClient.getInstance();
-    client.init(ClientType.PROCESSOR, 'http://tvdev2.internal.bis2.net');
-    client.auth('irina', 'developer').then((String r) {
-      Repository.configure(Flavor.REST);
-      _presenter = TaskListPresenter(this);
+    _presenter = TaskListPresenter(this);
+    _presenter.loadTaskList();
 
+    _taskListStatus = "assets/images/ic_processing.png";
 
-      _presenter.loadTaskList();
+    TaskStatusRepository().getAll().then((List<TaskStatus> list) {
+      _taskStatusList = list;
 
-      _taskListStatus = "assets/images/ic_processing.png";
-
-      TaskStatusRepository().getAll().then((List<TaskStatus> list) {
-        _taskStatusList = list;
-
-        TaskTypeRepository().getAll().then((List<TaskType> list) {
-          _taskTypeList = list;
-        });
+      TaskTypeRepository().getAll().then((List<TaskType> list) {
+        _taskTypeList = list;
       });
     });
 
@@ -200,7 +193,7 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  Text('Active Task', style: TextStyle(color: Color(0xFF9aa8b0))),
+                  Text('Active Task', style: TextStyle(color: Color(0xFF9aa8b0), fontSize: 12.0)),
                   Padding(
                       padding:  EdgeInsets.only(top: 5.0),
                       child: Text((_selectedTask!=null? _selectedTask.location: ''), style: TextStyle(color: Colors.lightBlue, fontSize: 16.0), softWrap: false,))
@@ -212,7 +205,7 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  Text('Task Type', style: TextStyle(color:  Color(0xFF9aa8b0))),
+                  Text('Task Type', style: TextStyle(color:  Color(0xFF9aa8b0), fontSize: 12.0)),
                   Padding(
                       padding:  EdgeInsets.only(top: 5.0),
                       child: Text(taskTypeDescr, style: TextStyle(color: Colors.white, fontSize: 16.0), softWrap: false))
@@ -224,7 +217,7 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  Text('Task Status', style: TextStyle(color: Color(0xFF9aa8b0))),
+                  Text('Task Status', style: TextStyle(color: Color(0xFF9aa8b0), fontSize: 12.0)),
                   Padding(
                       padding:  EdgeInsets.only(top: 5.0),
                       child: Text(taskStatusDescr,
@@ -378,7 +371,7 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Text('Time Taken', style: TextStyle(color: Colors.grey)),
+          Text('Time Taken', style: TextStyle(color: Colors.grey, fontSize: 12.0)),
           VizTimer(timeStarted: _timeStr)
         ],
       ),

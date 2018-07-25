@@ -1,47 +1,56 @@
 
 
 import 'package:techviz/repository/common/IRepository.dart';
+import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
 import 'package:techviz/repository/taskRepository.dart';
 import 'package:techviz/repository/mock/mockTaskRepository.dart';
-import 'package:techviz/repository/rest/restTaskRepository.dart';
-import 'package:techviz/repository/rest/restTaskStatusRepository.dart';
-import 'package:techviz/repository/rest/restTaskTypeRepository.dart';
+import 'package:techviz/repository/processor/processorTaskRepository.dart';
+import 'package:techviz/repository/processor/processorTaskStatusRepository.dart';
+import 'package:techviz/repository/processor/processorTaskTypeRepository.dart';
+import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 enum Flavor {
   MOCK,
-  REST
+  PROCESSOR,
+  IHUB
 }
 
 class Repository{
-  static final Repository _singleton = new Repository._internal();
   static Flavor _flavor;
 
-  static void configure(Flavor flavor) {
-    _flavor = flavor;
-  }
-
+  static final Repository _singleton = new Repository._internal();
   factory Repository() {
     return _singleton;
   }
-
   Repository._internal();
+
+
+  void configure(Flavor flavor, {String configJSON}) async {
+    _flavor = flavor;
+
+    if(_flavor == Flavor.PROCESSOR){
+      SessionClient client = SessionClient.getInstance();
+      var config = ProcessorRepositoryConfig();
+      await config.Setup(client);
+    }
+  }
 
   ITaskRepository get taskRepository {
     switch(_flavor) {
-      case Flavor.MOCK: return MockTaskRepository();
-      default: return RestTaskRepository();
+      case Flavor.PROCESSOR: return ProcessorTaskRepository();
+      default:return MockTaskRepository();
     }
   }
 
   IRepository get taskStatusRepository {
     switch(_flavor) {
-      default: return RestTaskStatusRepository();
+      default: return ProcessorTaskStatusRepository();
     }
   }
 
   IRepository get taskTypeRepository {
     switch(_flavor) {
-      default: return RestTaskTypeRepository();
+      default: return ProcessorTaskTypeRepository();
     }
   }
 }

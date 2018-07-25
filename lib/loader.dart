@@ -1,12 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:techviz/components/vizActionBar.dart';
-import 'package:techviz/home.dart';
-import 'package:techviz/model/task.dart';
-import 'package:techviz/repository/common/IRepository.dart';
-import 'package:techviz/repository/taskRepository.dart';
 import 'package:techviz/repository/localRepository.dart';
+import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
@@ -25,8 +21,6 @@ class _LoaderState extends State<Loader> {
   void initState(){
     // TODO: implement initState
 
-
-
     SessionClient client = SessionClient.getInstance();
     client.init(ClientType.PROCESSOR, 'http://tvdev2.internal.bis2.net');
     setState(() {
@@ -34,7 +28,8 @@ class _LoaderState extends State<Loader> {
     });
     Future<String> authResponse = client.auth('irina', 'developer');
     authResponse.then((String response) async {
-      Repository.configure(Flavor.REST);
+      Repository repo = Repository();
+      await repo.configure(Flavor.PROCESSOR);
 
       setState(() {
         statusMsg = 'Cleaning local database...';
@@ -48,24 +43,23 @@ class _LoaderState extends State<Loader> {
         statusMsg = 'Loading Tasks...';
       });
 
-      await Repository().taskRepository.fetch();
+      await repo.taskRepository.fetch();
 
 
       setState(() {
         statusMsg = 'Loading Task Statuses...';
       });
-      await Repository().taskStatusRepository.fetch();
+      await repo.taskStatusRepository.fetch();
 
       setState(() {
         statusMsg = 'Loading Task Types...';
       });
-      await Repository().taskTypeRepository.fetch();
+      await repo.taskTypeRepository.fetch();
 
 
       setState(() {
         statusMsg = 'All good!';
       });
-
 
       Future.delayed(Duration(milliseconds: 500), () {
         Navigator.pushReplacementNamed(context, '/home');
