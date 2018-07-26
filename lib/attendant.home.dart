@@ -177,8 +177,8 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
     );
 
 
-    var taskTypeDescr = _selectedTask!=null? _taskTypeList.where((t)=> t.id ==_selectedTask.taskTypeID).first.description: '';
-    var taskStatusDescr = _selectedTask!=null? _taskStatusList.where((t)=> t.id ==_selectedTask.taskStatusID).first.description: '';
+    TaskType taskType = _selectedTask!=null? _taskTypeList.where((t)=> t.id ==_selectedTask.taskTypeID).first : null; //.first.description: '';
+    TaskStatus taskStatus = _selectedTask!=null? _taskStatusList.where((t)=> t.id ==_selectedTask.taskStatusID).first : null;//.description: '';
 
 
 
@@ -208,7 +208,7 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
                   Text('Task Type', style: TextStyle(color:  Color(0xFF9aa8b0), fontSize: 12.0)),
                   Padding(
                       padding:  EdgeInsets.only(top: 5.0),
-                      child: Text(taskTypeDescr, style: TextStyle(color: Colors.white, fontSize: 16.0), softWrap: false))
+                      child: Text(taskType!=null? taskType.description : '', style: TextStyle(color: Colors.white, fontSize: 16.0), softWrap: false))
                 ],
               ),
             ),
@@ -220,7 +220,7 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
                   Text('Task Status', style: TextStyle(color: Color(0xFF9aa8b0), fontSize: 12.0)),
                   Padding(
                       padding:  EdgeInsets.only(top: 5.0),
-                      child: Text(taskStatusDescr,
+                      child: Text(taskStatus!=null? taskStatus.description : '',
                           style: TextStyle(color: Colors.white, fontSize: 16.0, fontWeight: FontWeight.bold)))
                 ],
               ),

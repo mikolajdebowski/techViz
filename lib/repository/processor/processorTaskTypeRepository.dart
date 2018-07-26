@@ -15,7 +15,7 @@ class ProcessorTaskTypeRepository extends TaskTypeRepository{
     SessionClient client = SessionClient.getInstance();
 
     var config = ProcessorRepositoryConfig();
-    String liveTableID = config.GetLiveTable(LiveTableType.TECHVIZ_MOBILE_TASK_STATUS.toString()).ID;
+    String liveTableID = config.GetLiveTable(LiveTableType.TECHVIZ_MOBILE_TASK_TYPE.toString()).ID;
     String url = 'live/${config.DocumentID}/${liveTableID}/select.json';
 
     return client.get(url).then((String rawResult) async {

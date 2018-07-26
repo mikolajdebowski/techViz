@@ -38,7 +38,6 @@ class VizTimerState extends State<VizTimer> {
             _timerStr = DateFormat('mm:ss').format(dt);
           });
         });
-
       }
     }
     return Text( _timerStr, style: TextStyle(color: Colors.teal, fontSize: 35.0, fontFamily: 'DigitalClock'));

@@ -26,8 +26,10 @@ class _LoaderState extends State<Loader> {
     setState(() {
       statusMsg = 'Authenticating';
     });
+
     Future<String> authResponse = client.auth('irina', 'developer');
     authResponse.then((String response) async {
+
       Repository repo = Repository();
       await repo.configure(Flavor.PROCESSOR);
 
