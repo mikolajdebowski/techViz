@@ -130,10 +130,7 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
 
 
     var taskTextStr = listTasks.length == 0? 'No tasks' : (listTasks.length==1 ? '1 Task' : '${listTasks.length} Tasks');
-
     Widget listContainer = ImageIcon( AssetImage("assets/images/ic_processing.png"), size: 30.0);
-
-
 
     if(listTasks.length > 0)
       listContainer = ListView(
@@ -177,10 +174,8 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
     );
 
 
-    TaskType taskType = _selectedTask!=null? _taskTypeList.where((t)=> t.id ==_selectedTask.taskTypeID).first : null; //.first.description: '';
-    TaskStatus taskStatus = _selectedTask!=null? _taskStatusList.where((t)=> t.id ==_selectedTask.taskStatusID).first : null;//.description: '';
-
-
+    TaskType taskType = _selectedTask!=null? _taskTypeList.where((t)=> t.id ==_selectedTask.taskTypeID).first : null;
+    TaskStatus taskStatus = _selectedTask!=null? _taskStatusList.where((t)=> t.id ==_selectedTask.taskStatusID).first : null;
 
     //CENTER PANEL WIDGETS
     var rowCenterHeader = Padding(
@@ -352,19 +347,6 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
     );
 
 
-    DateTime _timeDt = _selectedTask!=null? _selectedTask.taskCreated : null;
-    String _timeStr = null;
-
-    if(_timeDt !=null){
-
-      Duration difference = DateTime.now().difference(_timeDt);
-
-      var mins = difference.inMinutes.toString().padLeft(2, '0');
-      var secs = (difference.inSeconds - (difference.inMinutes*60)).toString().padLeft(2, '0');
-
-      _timeStr = '${mins}:${secs}';
-    }
-
     //RIGHT PANEL WIDGETS
     var timerWidget = Padding(
       padding: EdgeInsets.only(top: 7.0),
@@ -372,7 +354,7 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Text('Time Taken', style: TextStyle(color: Colors.grey, fontSize: 12.0)),
-          VizTimer(timeStarted: _timeStr)
+          VizTimer(timeStarted: _selectedTask!=null? _selectedTask.taskCreated : null)
         ],
       ),
     );

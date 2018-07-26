@@ -14,22 +14,27 @@ class Loader extends StatefulWidget {
 }
 
 class _LoaderState extends State<Loader> {
-
   String statusMsg = '';
+  bool processing = true;
 
   @override
-  void initState(){
-    // TODO: implement initState
+  void initState() {
+    loadData();
+    super.initState();
+  }
 
+  void authErrorHandler(AuthError err) {}
+
+  void loadData() async {
     SessionClient client = SessionClient.getInstance();
     client.init(ClientType.PROCESSOR, 'http://tvdev2.internal.bis2.net');
+
     setState(() {
       statusMsg = 'Authenticating';
     });
 
     Future<String> authResponse = client.auth('irina', 'developer');
     authResponse.then((String response) async {
-
       Repository repo = Repository();
       await repo.configure(Flavor.PROCESSOR);
 
@@ -47,7 +52,6 @@ class _LoaderState extends State<Loader> {
 
       await repo.taskRepository.fetch();
 
-
       setState(() {
         statusMsg = 'Loading Task Statuses...';
       });
@@ -58,7 +62,6 @@ class _LoaderState extends State<Loader> {
       });
       await repo.taskTypeRepository.fetch();
 
-
       setState(() {
         statusMsg = 'All good!';
       });
@@ -66,26 +69,27 @@ class _LoaderState extends State<Loader> {
       Future.delayed(Duration(milliseconds: 500), () {
         Navigator.pushReplacementNamed(context, '/home');
       });
+    }).catchError((Object error) {
+      setState(() {
+        processing = false;
+        statusMsg = error.toString();
+      });
     });
-
-    super.initState();
   }
-
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Center(
-          child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-              CircularProgressIndicator(),
-              Padding(padding: EdgeInsets.only(left: 10.0), child: Text(statusMsg, style: TextStyle(color: Colors.white)))
-        ]
-      )
-    )
-    );
-  }
+    List<Widget> children = <Widget>[];
 
+    if (processing) children.add(CircularProgressIndicator());
+
+    children.add(Flexible(
+        child: Padding(
+            padding: EdgeInsets.only(left: 10.0),
+            child:
+                Text(statusMsg, overflow: TextOverflow.fade, style: TextStyle(color: Colors.white), softWrap: false))));
+
+    return Scaffold(
+        backgroundColor: Colors.black, body: Center(child: Row(mainAxisSize: MainAxisSize.min, children: children)));
+  }
 }
