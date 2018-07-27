@@ -18,25 +18,22 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   bool initialLoading = false;
 
-
-
-
   String currentZones = '-';
   String currentStatus = 'Available';
-  var availableZones = List<VizSelectorOption>();
-
-  var availableStatuses = [
-    VizSelectorOption("1", "Available"),
-    VizSelectorOption("2", "Off shift"),
-  ];
-
+  List<VizSelectorOption> availableZones = List<VizSelectorOption>();
+  List<VizSelectorOption> availableStatuses =  List<VizSelectorOption>();
 
   @override
   void initState(){
     super.initState();
+
+    mockZoneAndStatus(); //TODO: IMPLEMENT ZONE AND STATUS
   }
 
-  _HomeState() {
+  void mockZoneAndStatus() {
+    availableStatuses.add(VizSelectorOption("1", "Available"));
+    availableStatuses.add(VizSelectorOption("2", "Off shift"));
+
     for (var i = 0; i < 1000; i++) {
       availableZones.add(VizSelectorOption(i.toString(), i.toString()));
     }
@@ -48,7 +45,6 @@ class _HomeState extends State<Home> {
       SlideRightRoute(widget: Menu()),
     );
   }
-
   void onZoneSelectorCallbackOK(List<VizSelectorOption> selected) {
     setState(() {
       currentZones = "";
@@ -170,4 +166,6 @@ class _HomeState extends State<Home> {
       body: AttendantHome(), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
+
+
 }

@@ -1,17 +1,14 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:techviz/components/vizTaskActionButton.dart';
 import 'package:techviz/components/vizTimer.dart';
 import 'package:techviz/model/task.dart';
 import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/model/taskType.dart';
 import 'package:techviz/presenter/taskListPresenter.dart';
-import 'package:techviz/repository/repository.dart';
+import 'package:techviz/repository/session.dart';
 import 'package:techviz/repository/taskStatusRepository.dart';
 import 'package:techviz/repository/taskTypeRepository.dart';
-import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
+import 'package:event_bus/event_bus.dart';
 
 class AttendantHome extends StatefulWidget {
   @override
@@ -24,7 +21,7 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
   List<Task> _taskList = [];
   List<TaskStatus> _taskStatusList = [];
   List<TaskType> _taskTypeList = [];
-
+  EventBus eventBus;
   var _taskListStatus = "assets/images/ic_processing.png";
 
   @override
@@ -44,7 +41,21 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
       });
     });
 
+
+    bindQueues();
+
     super.initState();
+  }
+
+
+  void bindQueues(){
+    Session session = Session();
+    session.eventBus.on<Task>().listen((Task event) {
+      setState(() {
+        _taskList.add(event);
+
+      });
+    });
   }
 
 
@@ -106,7 +117,7 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
                 ),
               ),
               Expanded(
-                flex: 5,
+                flex: 4,
                 child: Container(
                   height: 60.0,
                   decoration: BoxDecoration(
@@ -127,7 +138,6 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
 
       listTasks.add(taskItem);
     }
-
 
     var taskTextStr = listTasks.length == 0? 'No tasks' : (listTasks.length==1 ? '1 Task' : '${listTasks.length} Tasks');
     Widget listContainer = ImageIcon( AssetImage("assets/images/ic_processing.png"), size: 30.0);

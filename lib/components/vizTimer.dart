@@ -14,17 +14,16 @@ class VizTimer extends StatefulWidget {
 class VizTimerState extends State<VizTimer> {
   Timer _peridic = null;
   String _timerStr = '00:00';
-  int currentHash = 0;
-  bool containsHours = false;
+  int _currentHash = 0;
+  bool _containsHours = false;
 
   @override
   Widget build(BuildContext context) {
     if(widget.timeStarted != null){
-      if(currentHash != widget.hashCode) {
-        currentHash = widget.hashCode;
+      if(_currentHash != widget.hashCode) {
+        _currentHash = widget.hashCode;
 
         if (_peridic != null) {
-          print('restarting timer');
           _peridic.cancel();
         }
 
@@ -45,9 +44,7 @@ class VizTimerState extends State<VizTimer> {
           DateTime dt = DateFormat(format).parse(timeStr);
           dt = dt.add(Duration(seconds: 1));
           setState(() {
-            if(hours>0)
-              containsHours = true;
-
+            _containsHours = hours>0;
             _timerStr = DateFormat(format).format(dt);
           });
         });
@@ -58,8 +55,8 @@ class VizTimerState extends State<VizTimer> {
     if(widget.timeStarted!=null)
         clockColor =  Colors.teal;
 
-    double fontSize = 32.0;
-    if(containsHours){
+    double fontSize = 35.0;
+    if(_containsHours){
       fontSize = 25.0;
     }
 
