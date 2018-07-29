@@ -1,28 +1,26 @@
-import 'package:techviz/model/taskStatus.dart';
-import 'package:techviz/model/taskType.dart';
-
-class Task{
+class Task {
   final String id;
-  final TaskType taskType;
-  final TaskStatus taskStatus;
+  final String location;
+  final String machineId;
+  final int taskTypeID;
+  final int taskStatusID;
+  final DateTime taskCreated;
+  final DateTime taskAssigned;
+  final double amount;
+  final String eventDesc;
 
-  const Task(this.id, this.taskType, this.taskStatus);
+  const Task({this.id, this.location, this.taskTypeID, this.taskStatusID, this.machineId, this.taskCreated, this.taskAssigned, this.amount, this.eventDesc});
+
 }
 
-const kTask = const <Task>[
-  const Task(
-      '01-01-01',
-      TaskType('1','Jackpot'),
-      TaskStatus('1','Aknowledged')
-  ),
-  const Task(
-      '01-01-02',
-      TaskType( '2', 'M. Failure'),
-      TaskStatus('1','Aknowledged')
-  ),
-  const Task(
-      '01-01-03',
-      TaskType('3', 'Unknown'),
-      TaskStatus('1','Aknowledged')
-  )
-];
+
+
+/*
+{
+	"_ID": "123",
+	"Location": "12-34-56",
+	"TaskStatusID": 1,
+	"TaskTypeID": 1,
+	"TaskCreated": "2018-07-27 09:26:48.043"
+}
+*/

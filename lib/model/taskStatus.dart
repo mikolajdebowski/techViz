@@ -1,12 +1,11 @@
 class TaskStatus{
-  final String id;
+  final int id;
   final String description;
 
-  const TaskStatus(this.id, this.description);
-
+  const TaskStatus({this.id, this.description});
 
   @override
   toString(){
-    return 'ae';
+    return description;
   }
 }

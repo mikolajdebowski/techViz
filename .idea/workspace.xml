@@ -5,8 +5,58 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5f7bf63d-6570-4489-ad95-0f6d45138db9" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/login.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/login.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/fonts/DigitalClock.ttf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/images/ic_about.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/images/ic_alert.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/images/ic_available_machine.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/images/ic_barcode.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/images/ic_camera.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/images/ic_down_arrow.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/images/ic_duration.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/images/ic_help.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/images/ic_in_use.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/images/ic_logout.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/images/ic_my_profile.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/images/ic_new_note.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/images/ic_no_connection.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/images/ic_note.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/images/ic_offline_machine.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/images/ic_out_of_service.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/images/ic_processing.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/images/ic_reserve.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/images/ic_settings.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/images/ic_up_download.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/components/vizTaskActionButton.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/components/vizTimer.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/loader.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/model/user.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/presenter/taskListPresenter.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/repository/common/iRepository.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/repository/common/repositoryContract.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/repository/localRepository.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/repository/mock/mockTaskRepository.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/repository/processor/processorRepositoryFactory.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/repository/processor/processorTaskRepository.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/repository/processor/processorTaskStatusRepository.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/repository/processor/processorTaskTypeRepository.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/repository/repository.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/repository/session.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/repository/taskRepository.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/repository/taskStatusRepository.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/repository/taskTypeRepository.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/images/ic_barcodescanner.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/images/ic_search.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/images/ic_search.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/attendant.home.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/attendant.home.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/components/vizElevated.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/components/vizElevated.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/helpers/slideRightRoute.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/common/slideRightRoute.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/home.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/home.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/menu.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/menu.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/model/task.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/model/task.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/model/taskStatus.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/model/taskStatus.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/model/taskType.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/model/taskType.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -17,27 +67,12 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="config.dart" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/lib/config.dart">
+    <leaf>
+      <file leaf-file-name="main.dart" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/lib/main.dart">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="232">
-              <caret line="21" column="4" lean-forward="true" selection-start-line="21" selection-start-column="4" selection-end-line="21" selection-end-column="4" />
-              <folding>
-                <element signature="e#0#60#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="login.dart" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/lib/login.dart">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="600">
-              <caret line="55" column="4" selection-start-line="55" selection-start-column="4" selection-end-line="55" selection-end-column="4" />
-              <folding>
-                <element signature="e#0#20#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="195">
+              <caret line="15" column="19" selection-start-line="15" selection-start-column="19" selection-end-line="15" selection-end-column="19" />
             </state>
           </provider>
         </entry>
@@ -122,10 +157,10 @@
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/lib/attedant.home.dart" />
         <option value="$PROJECT_DIR$/lib/home.dart" />
-        <option value="$PROJECT_DIR$/pubspec.yaml" />
         <option value="$PROJECT_DIR$/lib/main.dart" />
         <option value="$PROJECT_DIR$/lib/attendant.home.dart" />
         <option value="$PROJECT_DIR$/lib/login.dart" />
+        <option value="$PROJECT_DIR$/pubspec.yaml" />
       </list>
     </option>
   </component>
@@ -136,31 +171,36 @@
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
-    <navigator proportions="" version="1">
+    <navigator currentView="PackagesPane" proportions="" version="1">
       <showMembers ProjectPane="false" />
       <hideEmptyPackages ProjectPane="false" />
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="AndroidView" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
               <item name="techviz" type="b2602c69:ProjectViewProjectNode" />
-              <item name="techviz" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="techviz" type="b2602c69:ProjectViewProjectNode" />
-              <item name="techviz" type="462c0819:PsiDirectoryNode" />
-              <item name="lib" type="462c0819:PsiDirectoryNode" />
+              <item name="android" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
+      <pane id="Scope" />
+      <pane id="PackagesPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="techviz" type="58d84e3e:PackageViewProjectNode" />
+              <item name="techviz_android" type="616d4139:PackageViewModuleNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -265,72 +305,43 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1719" height="1318" extended-state="0" />
+    <frame x="0" y="23" width="2560" height="1373" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info anchor="right" id="Palette" order="3" />
       <window_info anchor="bottom" id="Android Profiler" order="7" show_stripe_button="false" />
       <window_info id="Build Variants" order="2" side_tool="true" />
-      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.31862974" side_tool="true" weight="0.3291536" />
-      <window_info anchor="right" id="Maven Projects" order="3" weight="0.18231046" />
-      <window_info anchor="bottom" id="Dart Analysis" order="7" sideWeight="0.4992961" weight="0.32836992" />
-      <window_info anchor="right" id="Flutter Outline" order="3" weight="0.32883072" />
-      <window_info anchor="bottom" id="Logcat" order="7" sideWeight="0.49945652" weight="0.32961932" />
+      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.2426529" side_tool="true" visible="true" weight="0.4357367" />
+      <window_info anchor="right" id="Maven Projects" order="3" />
+      <window_info anchor="bottom" id="Dart Analysis" order="7" sideWeight="0.49971443" weight="0.32887492" />
+      <window_info anchor="right" id="Flutter Outline" order="3" weight="0.32924882" />
+      <window_info anchor="bottom" id="Logcat" order="7" sideWeight="0.49945652" weight="0.32976973" />
       <window_info id="Capture Tool" order="2" />
       <window_info id="Designer" order="2" />
-      <window_info id="Structure" order="1" sideWeight="0.2736264" side_tool="true" visible="true" weight="0.20930232" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.24975751" />
-      <window_info id="UI Designer" order="2" />
-      <window_info anchor="right" id="Device File Explorer" order="3" side_tool="true" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.74673915" weight="0.2940213" />
-      <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.49945652" weight="0.3291536" />
-      <window_info anchor="bottom" id="Messages" order="8" sideWeight="0.68137026" weight="0.46683046" />
-      <window_info anchor="right" id="Palette&#9;" order="3" />
-      <window_info id="Image Layers" order="2" />
-      <window_info anchor="right" id="Capture Analysis" order="3" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.7337479" visible="true" weight="0.25470924" />
-      <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="Terminal" order="7" sideWeight="0.7574901" weight="0.41769043" />
-      <window_info id="Captures" order="2" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.7263736" visible="true" weight="0.20930232" />
-      <window_info anchor="bottom" id="Find" order="1" sideWeight="0.49971443" weight="0.32841933" />
-      <window_info anchor="right" id="Theme Preview" order="3" />
-      <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info anchor="right" id="Flutter Inspector" order="3" weight="0.03373356" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info id="Build Variants" order="2" side_tool="true" />
-      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.24146147" side_tool="true" visible="true" weight="0.4357367" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.23510723" />
-      <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.24975751" />
-      <window_info anchor="bottom" id="Dart Analysis" order="7" sideWeight="0.49971443" weight="0.32887492" />
-      <window_info anchor="right" id="Flutter Inspector" order="3" visible="true" weight="0.019459888" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.73443747" weight="0.23367427" />
-      <window_info anchor="bottom" id="Logcat" order="7" sideWeight="0.49945652" weight="0.32976973" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="right" id="Palette" order="3" />
-      <window_info anchor="right" id="Palette&#9;" order="3" />
-      <window_info anchor="right" id="Maven Projects" order="3" />
-      <window_info anchor="right" id="Flutter Outline" order="3" weight="0.32924882" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info id="Image Layers" order="2" />
-      <window_info anchor="right" id="Theme Preview" order="3" />
-      <window_info anchor="bottom" id="Android Profiler" order="7" show_stripe_button="false" />
-      <window_info id="Capture Tool" order="2" />
-      <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="right" id="Capture Analysis" order="3" />
-      <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.49945652" weight="0.32976973" />
-      <window_info anchor="bottom" id="Find" order="1" sideWeight="0.49971443" weight="0.3296617" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="Terminal" order="7" sideWeight="0.75853854" visible="true" weight="0.4357367" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.24975751" />
       <window_info id="UI Designer" order="2" />
       <window_info anchor="right" id="Device File Explorer" order="3" side_tool="true" />
       <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.74673915" weight="0.6315789" />
-      <window_info anchor="bottom" id="Messages" order="8" sideWeight="0.8223872" weight="0.3296617" />
+      <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.49945652" weight="0.32976973" />
+      <window_info anchor="right" id="Palette&#9;" order="3" />
+      <window_info id="Image Layers" order="2" />
+      <window_info anchor="right" id="Capture Analysis" order="3" />
+      <window_info anchor="bottom" id="Version Control" order="7" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.73443747" weight="0.23367427" />
+      <window_info anchor="bottom" id="Terminal" order="7" sideWeight="0.7573471" visible="true" weight="0.4357367" />
       <window_info id="Captures" order="2" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.23510723" />
+      <window_info anchor="right" id="Theme Preview" order="3" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="right" id="Flutter Inspector" order="3" visible="true" weight="0.019459888" />
+      <window_info anchor="bottom" id="Messages" order="8" sideWeight="0.8223872" weight="0.3296617" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info id="Designer" order="2" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="bottom" id="Find" order="1" sideWeight="0.49971443" weight="0.3296617" />
     </layout>
   </component>
   <component name="VcsContentAnnotationSettings">
@@ -465,19 +476,8 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/assets/images/ic_barcodescanner.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/assets/images/ic_barcodescanner.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pubspec.yaml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="420">
-          <caret line="36" selection-start-line="36" selection-end-line="36" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/assets/images/ic_barcodescanner.png" />
+    <entry file="file://$PROJECT_DIR$/assets/images/ic_barcodescanner.png" />
     <entry file="file://$PROJECT_DIR$/lib/components/vizBackButton.dart">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="90">
@@ -493,13 +493,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/helpers/slideRightRoute.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="5" column="17" selection-start-line="5" selection-start-column="2" selection-end-line="5" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/helpers/slideRightRoute.dart" />
     <entry file="file://$PROJECT_DIR$/.idea/misc.xml">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -510,13 +504,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="96">
           <caret line="4" column="51" selection-start-line="4" selection-start-column="44" selection-end-line="4" selection-end-column="51" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/main.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="312">
-          <caret line="15" column="19" selection-start-line="15" selection-start-column="19" selection-end-line="15" selection-end-column="19" />
         </state>
       </provider>
     </entry>
@@ -531,9 +518,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="192">
           <caret line="32" selection-start-line="32" selection-end-line="32" />
-          <folding>
-            <element signature="e#0#39#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -551,23 +535,31 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/config.dart">
+    <entry file="file://$PROJECT_DIR$/pubspec.yaml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="232">
-          <caret line="21" column="4" lean-forward="true" selection-start-line="21" selection-start-column="4" selection-end-line="21" selection-end-column="4" />
-          <folding>
-            <element signature="e#0#60#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="616">
+          <caret line="69" selection-start-line="69" selection-end-line="69" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/login.dart">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="600">
-          <caret line="55" column="4" selection-start-line="55" selection-start-column="4" selection-end-line="55" selection-end-column="4" />
-          <folding>
-            <element signature="e#0#20#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="-415">
+          <caret line="55" selection-start-line="55" selection-end-line="55" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/config.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="315">
+          <caret line="21" column="4" selection-start-line="21" selection-start-column="4" selection-end-line="21" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/main.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="15" column="19" selection-start-line="15" selection-start-column="19" selection-end-line="15" selection-end-column="19" />
         </state>
       </provider>
     </entry>
