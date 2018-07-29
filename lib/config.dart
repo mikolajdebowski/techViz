@@ -34,7 +34,7 @@ class ConfigState extends State<Config> {
   }
 
   void onNextTap() async {
-    if(_formKey.currentState.validate()){
+    if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
       await prefs.setString(Config.SERVERURL, serverAddressController.text);
 
@@ -47,87 +47,54 @@ class ConfigState extends State<Config> {
 
   @override
   Widget build(BuildContext context) {
-    var textFieldStyle = TextStyle(
-        fontStyle: FontStyle.italic,
-        fontSize: 28.0,
-        color: Color(0xFFffffff),
-        fontWeight: FontWeight.w500,
-        fontFamily: "Roboto");
+    var textFieldStyle = TextStyle(fontStyle: FontStyle.italic, fontSize: 20.0, color: Color(0xFFffffff), fontWeight: FontWeight.w500, fontFamily: "Roboto");
 
     var textFieldBorder = OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(4.0)));
-    var textFieldPadding = EdgeInsets.only(bottom: 5.0);
+    var defaultPadding = EdgeInsets.all(7.0);
     var textFieldContentPadding = new EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0);
 
-    var backgroundDecoration = BoxDecoration(
-        gradient: LinearGradient(
-            colors: [Color(0xFFd6dfe3), Color(0xFFb1c2cb)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            tileMode: TileMode.repeated));
+    var backgroundDecoration =
+        BoxDecoration(gradient: LinearGradient(colors: [Color(0xFFd6dfe3), Color(0xFFb1c2cb)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated));
+
+    var textField = Padding(
+        padding: defaultPadding,
+        child: TextFormField(
+            onSaved: (String value) {
+              print('saving url: $value');
+            },
+            autocorrect: false,
+            validator: (String value) {
+              if (!isURL(value, default_url_options)) {
+                return 'Please enter valid URL';
+              }
+            },
+            controller: serverAddressController,
+            decoration:
+                InputDecoration(fillColor: Colors.black87, filled: true, hintStyle: textFieldStyle, hintText: 'Server Address', border: textFieldBorder, contentPadding: textFieldContentPadding),
+            style: textFieldStyle));
+
+    var btnNext = Padding(padding: defaultPadding, child: VizElevated(onTap: onNextTap, title: 'Next', customBackground: [Color(0xFFFFFFFF), Color(0xFFAAAAAA)]));
 
     return Scaffold(
         body: Container(
             decoration: backgroundDecoration,
             child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Container(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Padding(
-                          padding: EdgeInsets.only(right: 10.0),
-                          child: Form(
-                            key: _formKey,
-                            child: Container(
-                              width: 400.0,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: <Widget>[
-                                  Padding(
-                                    padding: textFieldPadding,
-                                    child: TextFormField(
-                                        onSaved: (String value){
-                                          print('saving url: $value');
-                                        },
-                                        autocorrect: false,
-                                        validator: (String value) {
-                                          if (!isURL(value, default_url_options)) {
-                                            return 'Please enter valid URL';
-                                          }
-                                        },
-                                        controller: serverAddressController,
-                                        decoration: InputDecoration(
-                                            fillColor: Colors.black87,
-                                            filled: true,
-                                            hintStyle: textFieldStyle,
-                                            hintText: 'Server Address',
-                                            border: textFieldBorder,
-                                            contentPadding: textFieldContentPadding),
-                                        style: textFieldStyle),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        Container(
-                            width: 110.0,
-                            height: 110.0,
-                            child: VizElevated(
-                                onTap: onNextTap,
-                                title: 'Next',
-                                customBackground: [Color(0xFFFFFFFF), Color(0xFFAAAAAA)]))
-                      ],
-                    ),
+                  Expanded(
+                      flex: 5,
+                      child: Form(
+                        key: _formKey,
+                        child: textField,
+                      )),
+                  Expanded(
+                    child: Container(height: 60.0, child: btnNext),
                   ),
                 ],
               ),
             )));
+
   }
 }
