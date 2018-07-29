@@ -40,19 +40,21 @@ class LoginState extends State<Login> {
     'password': null,
   };
 
-  Future<Map<String, dynamic>> login(String username, String password) async {
-    final Map<String, dynamic> authData = {
+  Future<Map<String, String>> login(String username, String password) async {
+    final Map<String, String> authData = {
       'username': username,
       'password': password,
-      'returnSecureToken': true,
     };
 
-    final http.Response response = await http.post(
-        'https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=AIzaSyDNbb2X-TjJpOGEehhdET9ClHFR1ReyBvU',
-        body: json.encode(authData));
+//    final http.Response response = await http.post(
+//        'https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=AIzaSyDNbb2X-TjJpOGEehhdET9ClHFR1ReyBvU',
+//        body: json.encode(authData));
+//
+//    print(json.decode(response.body));
 
-    print(json.decode(response.body));
-    return {'success': true, 'message': 'Authentication succeeded!'};
+
+
+    return {'success': 'true', 'message': 'Authentication succeeded!'};
   }
 
   void fetchProducts() {
