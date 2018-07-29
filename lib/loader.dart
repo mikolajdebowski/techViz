@@ -25,15 +25,8 @@ class _LoaderState extends State<Loader> {
   void authErrorHandler(AuthError err) {}
 
   void loadData() async {
-    SessionClient client = SessionClient.getInstance();
-    client.init(ClientType.PROCESSOR, 'http://tvdev2.internal.bis2.net');
 
-    setState(() {
-      statusMsg = 'Authenticating';
-    });
 
-    Future<String> authResponse = client.auth('irina', 'developer');
-    authResponse.then((String response) async {
       Repository repo = Repository();
       await repo.configure(Flavor.PROCESSOR);
 
@@ -68,12 +61,7 @@ class _LoaderState extends State<Loader> {
       Future.delayed(Duration(milliseconds: 500), () {
         Navigator.pushReplacementNamed(context, '/home');
       });
-    }).catchError((Object error) {
-      setState(() {
-        processing = false;
-        statusMsg = error.toString();
-      });
-    });
+
   }
 
   @override

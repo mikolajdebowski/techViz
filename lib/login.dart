@@ -1,13 +1,17 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:techviz/common/LowerCaseTextFormatter.dart';
 import 'package:techviz/components/vizElevated.dart';
+import 'package:techviz/config.dart';
 import 'package:techviz/home.dart';
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:techviz/loader.dart';
+import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -26,16 +30,25 @@ class LoginState extends State<Login> {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
 
-      //final Map<String, String> info = await login(_formData['username'], _formData['password']);
+      SessionClient client = SessionClient.getInstance();
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      String serverUrl = prefs.get(Config.SERVERURL) as String;
+      print(serverUrl);
+
+      client.init(ClientType.PROCESSOR, serverUrl);   //'http://tvdev2.internal.bis2.net'
 
 
-
-      Navigator.push<Home>(
-        context,
-        MaterialPageRoute(builder: (context) => Loader()),
-      );
-
-
+      Future<String> authResponse = client.auth(_formData['username'], _formData['password']);
+      authResponse.then((String response) {
+        Navigator.push<Home>(
+          context,
+          MaterialPageRoute(builder: (context) => Loader()),
+        );
+      }).catchError((Object error){
+        print(error.toString());
+      });
     }
   }
 
@@ -54,6 +67,7 @@ class LoginState extends State<Login> {
     var txtFieldUser = Padding(
         padding: defaultPadding,
         child: TextFormField(
+            inputFormatters: [LowerCaseTextFormatter()],
             autocorrect: false,
             onSaved: (String value) {
               _formData['username'] = value;
@@ -87,7 +101,6 @@ class LoginState extends State<Login> {
               return 'Password is required';
             }
           },
-//                                      controller: _passwordController,
           obscureText: true,
           decoration: InputDecoration(
               fillColor: Colors.black87,

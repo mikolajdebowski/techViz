@@ -36,6 +36,11 @@ class ConfigState extends State<Config> {
   void onNextTap() async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
+
+      if(!serverAddressController.text.toLowerCase().contains('http')){
+        serverAddressController.text = 'http://${serverAddressController.text}';
+      }
+
       await prefs.setString(Config.SERVERURL, serverAddressController.text);
 
       Navigator.push<Login>(
