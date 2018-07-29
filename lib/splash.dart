@@ -5,36 +5,30 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techviz/config.dart';
 import 'package:techviz/login.dart';
 
-class Splash extends StatefulWidget{
+class Splash extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => SplashState();
 }
 
-class SplashState extends State<Splash>{
-
+class SplashState extends State<Splash> {
   @override
   void initState() {
-
-    Timer(const Duration(seconds: 2), () {
+    Timer(const Duration(seconds: 5), () {
       loadConfig();
     });
 
     super.initState();
   }
 
-
-  void loadConfig(){
+  void loadConfig() {
     SharedPreferences.getInstance().then((onValuePrefs) {
       SharedPreferences prefs = onValuePrefs;
-      if (!prefs.getKeys().contains(Config.SERVERURL) || prefs
-          .getString(Config.SERVERURL)
-          .length == 0) {
+      if (!prefs.getKeys().contains(Config.SERVERURL) || prefs.getString(Config.SERVERURL).length == 0) {
         Navigator.push<Config>(
           context,
           MaterialPageRoute(builder: (context) => Config()),
         );
-      }
-      else {
+      } else {
         Navigator.push<Login>(
           context,
           MaterialPageRoute(builder: (context) => Login()),
@@ -45,8 +39,12 @@ class SplashState extends State<Splash>{
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(child: Text('Splash', style: TextStyle(fontSize: 30.0)))
+    return new Scaffold(
+      body: Image.asset('assets/images/splash.png',
+      fit: BoxFit.cover,
+      height: double.infinity,
+      width: double.infinity,
+      alignment: Alignment.center),
     );
   }
 }

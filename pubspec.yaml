@@ -10,7 +10,7 @@ dependencies:
   cupertino_icons: ^0.1.2
   http: ^0.11.3
   shared_preferences: ^0.4.2
-
+  validator: ^0.0.7
 
   charts_flutter: ^0.3.0
   enumeration: ^0.0.2
@@ -39,6 +39,7 @@ flutter:
   assets:
     - assets/images/ic_search.png
     - assets/images/ic_barcodescanner.png
+    - assets/images/splash.png
 #    - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

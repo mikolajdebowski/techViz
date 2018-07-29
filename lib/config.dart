@@ -2,6 +2,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:techviz/components/vizElevated.dart';
 import 'package:techviz/login.dart';
+import 'package:validator/validator.dart';
 
 class Config extends StatefulWidget {
   static final String SERVERURL = 'SERVERURL';
@@ -13,6 +14,12 @@ class Config extends StatefulWidget {
 class ConfigState extends State<Config> {
   SharedPreferences prefs;
   final serverAddressController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  var default_url_options = {
+    'protocols': ['Http', 'http', 'Https', 'https'],
+    'require_protocol': false,
+  };
 
   @override
   void initState() {
@@ -27,18 +34,19 @@ class ConfigState extends State<Config> {
   }
 
   void onNextTap() async {
-    await prefs.setString(Config.SERVERURL, serverAddressController.text);
+    if(_formKey.currentState.validate()){
+      _formKey.currentState.save();
+      await prefs.setString(Config.SERVERURL, serverAddressController.text);
 
-    Navigator.push<Login>(
-      context,
-      MaterialPageRoute(builder: (context) => Login()),
-    );
-
+      Navigator.push<Login>(
+        context,
+        MaterialPageRoute(builder: (context) => Login()),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-
     var textFieldStyle = TextStyle(
         fontStyle: FontStyle.italic,
         fontSize: 28.0,
@@ -72,27 +80,39 @@ class ConfigState extends State<Config> {
                       children: <Widget>[
                         Padding(
                           padding: EdgeInsets.only(right: 10.0),
-                          child: Container(
-                            width: 400.0,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                Padding(
-                                  padding: textFieldPadding,
-                                  child: TextField(
-                                      controller: serverAddressController,
-                                      decoration: InputDecoration(
-                                          fillColor: Colors.black87,
-                                          filled: true,
-                                          hintStyle: textFieldStyle,
-                                          hintText: 'Server Address',
-                                          border: textFieldBorder,
-                                          contentPadding: textFieldContentPadding),
-                                      style: textFieldStyle),
-                                ),
-                              ],
+                          child: Form(
+                            key: _formKey,
+                            child: Container(
+                              width: 400.0,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Padding(
+                                    padding: textFieldPadding,
+                                    child: TextFormField(
+                                        onSaved: (String value){
+                                          print('saving url: $value');
+                                        },
+                                        autocorrect: false,
+                                        validator: (String value) {
+                                          if (!isURL(value, default_url_options)) {
+                                            return 'Please enter valid URL';
+                                          }
+                                        },
+                                        controller: serverAddressController,
+                                        decoration: InputDecoration(
+                                            fillColor: Colors.black87,
+                                            filled: true,
+                                            hintStyle: textFieldStyle,
+                                            hintText: 'Server Address',
+                                            border: textFieldBorder,
+                                            contentPadding: textFieldContentPadding),
+                                        style: textFieldStyle),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
