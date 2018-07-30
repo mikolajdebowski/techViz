@@ -42,11 +42,7 @@ class ConfigState extends State<Config> {
       }
 
       await prefs.setString(Config.SERVERURL, serverAddressController.text);
-
-      Navigator.push<Login>(
-        context,
-        MaterialPageRoute(builder: (context) => Login()),
-      );
+      Navigator.pushReplacementNamed(context, '/login');
     }
   }
 
