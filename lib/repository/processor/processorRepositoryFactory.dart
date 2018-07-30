@@ -27,7 +27,7 @@ class ProcessorRepositoryConfig {
     }
 
     if(documentMobile == null){
-      throw Error();
+      throw Exception('No mobile document');
     }
 
 
@@ -65,8 +65,6 @@ class ProcessorRepositoryConfig {
 
     return LiveTables.where((LiveTable lt) => lt.Tags == Tag).first;
   }
-
-
 
 
   String advancedSearchXML = '''<SearchCriteria>

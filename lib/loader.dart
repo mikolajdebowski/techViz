@@ -27,6 +27,8 @@ class _LoaderState extends State<Loader> {
   void loadData() async {
 
 
+
+    try{
       Repository repo = Repository();
       await repo.configure(Flavor.PROCESSOR);
 
@@ -61,7 +63,11 @@ class _LoaderState extends State<Loader> {
       Future.delayed(Duration(milliseconds: 500), () {
         Navigator.pushReplacementNamed(context, '/home');
       });
-
+    }
+    catch(e){
+      print(e.toString());
+      Navigator.pop(context);
+    }
   }
 
   @override
