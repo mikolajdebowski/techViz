@@ -42,9 +42,8 @@ class VizElevatedState extends State<VizElevated> {
   @override
   Widget build(BuildContext context) {
 
-
-    const TextStyle defaultTextStyle = const TextStyle(
-        color: const Color(0xFF495666),
+    TextStyle defaultTextStyle = TextStyle(
+        color:  Color(0xFF495666),
         fontFamily: 'Poppins',
         fontWeight: FontWeight.w600,
         fontSize: 22.0);
@@ -66,12 +65,12 @@ class VizElevatedState extends State<VizElevated> {
     LinearGradient gradient;
     if (widget.customBackground == null) {
       var _colors = [
-        const Color(0xFFE4EDEF),
-        const Color(0xFFB1C6CF),
+         Color(0xFFE4EDEF),
+         Color(0xFFB1C6CF),
       ];
 
       if (selected) {
-        _colors = [const Color(0xFF0c72ba), const Color(0xFF0c72ba)];
+        _colors = [ Color(0xFF0c72ba), Color(0xFF0c72ba)];
       }
 
       gradient = LinearGradient(
@@ -87,13 +86,12 @@ class VizElevatedState extends State<VizElevated> {
           tileMode: TileMode.repeated);
     }
 
-
     Border borderColor;
     if(widget.customBorderColor != null){
       borderColor = Border.all(color: widget.customBorderColor); //default
     }
     else{
-      borderColor = Border.all(color: const Color(0xFFFFFFFF)); //default
+      borderColor = Border.all(color: Color(0xFFEEEEEE)); //default
     }
 
     BoxDecoration boxDecoration = BoxDecoration(
@@ -103,7 +101,7 @@ class VizElevatedState extends State<VizElevated> {
 
 
     var container = Container(
-      margin: const EdgeInsets.all(2.0),
+      margin: EdgeInsets.all(2.0),
       decoration: boxDecoration,
       child: Center(
         child: innerWidget,
