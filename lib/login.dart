@@ -14,6 +14,9 @@ import 'package:techviz/loader.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 class Login extends StatefulWidget {
+  static final String USERNAME = 'USERNAME';
+  static final String PASSWORD = 'PASSWORD';
+
   @override
   State<StatefulWidget> createState() => LoginState();
 }
@@ -25,6 +28,10 @@ class LoginState extends State<Login> {
     'password': null,
   };
 
+  final usernameAddressController = TextEditingController();
+  final passwordAddressController = TextEditingController();
+
+  SharedPreferences prefs;
 
   void loginTap() async {
     if (_formKey.currentState.validate()) {
@@ -35,62 +42,90 @@ class LoginState extends State<Login> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
 
       String serverUrl = prefs.get(Config.SERVERURL) as String;
-      print(serverUrl);
 
-      client.init(ClientType.PROCESSOR, serverUrl);   //'http://tvdev2.internal.bis2.net'
-
+      client.init(ClientType.PROCESSOR, serverUrl); //'http://tvdev2.internal.bis2.net'
 
       Future<String> authResponse = client.auth(_formData['username'], _formData['password']);
-      authResponse.then((String response) {
+      authResponse.then((String response) async {
+        await prefs.setString(Login.USERNAME, usernameAddressController.text);
+        await prefs.setString(Login.PASSWORD, passwordAddressController.text);
+
         Navigator.push<Home>(
           context,
           MaterialPageRoute(builder: (context) => Loader()),
         );
-      }).catchError((Object error){
+      }).catchError((Object error) {
         print(error.toString());
       });
     }
   }
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    SharedPreferences.getInstance().then((onValue) {
+      prefs = onValue;
 
-    var textFieldStyle = TextStyle(fontStyle: FontStyle.italic, fontSize: 20.0, color: Color(0xFFffffff), fontWeight: FontWeight.w500, fontFamily: "Roboto");
+      if (prefs.getKeys().contains(Login.USERNAME)) {
+        usernameAddressController.text = prefs.getString(Login.USERNAME);
+      }
+
+      if (prefs.getKeys().contains(Login.PASSWORD)) {
+        passwordAddressController.text = prefs.getString(Login.PASSWORD);
+      }
+    });
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var textFieldStyle = TextStyle(
+        fontStyle: FontStyle.italic,
+        fontSize: 20.0,
+        color: Color(0xFFffffff),
+        fontWeight: FontWeight.w500,
+        fontFamily: "Roboto");
 
     var textFieldBorder = OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(4.0)));
     var defaultPadding = EdgeInsets.all(7.0);
     var textFieldContentPadding = new EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0);
 
-    var backgroundDecoration =
-    BoxDecoration(gradient: LinearGradient(colors: [Color(0xFFd6dfe3), Color(0xFFb1c2cb)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated));
+    var backgroundDecoration = BoxDecoration(
+        gradient: LinearGradient(
+            colors: [Color(0xFFd6dfe3), Color(0xFFb1c2cb)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            tileMode: TileMode.repeated));
 
     var txtFieldUser = Padding(
-        padding: defaultPadding,
-        child: TextFormField(
-            inputFormatters: [LowerCaseTextFormatter()],
-            autocorrect: false,
-            onSaved: (String value) {
-              _formData['username'] = value;
-              print('saving username: $value');
-            },
-            validator: (String value) {
-              if (value.isEmpty) {
-                return 'Username is required';
-              }
-            },
-            decoration: InputDecoration(
-                fillColor: Colors.black87,
-                filled: true,
-                hintStyle: textFieldStyle,
-                hintText: 'Username',
-                border: textFieldBorder,
-                contentPadding: textFieldContentPadding),
-            style: textFieldStyle),
+      padding: defaultPadding,
+      child: TextFormField(
+          controller: usernameAddressController,
+          inputFormatters: [LowerCaseTextFormatter()],
+          autocorrect: false,
+          onSaved: (String value) {
+            _formData['username'] = value;
+            print('saving username: $value');
+          },
+          validator: (String value) {
+            if (value.isEmpty) {
+              return 'Username is required';
+            }
+          },
+          decoration: InputDecoration(
+              fillColor: Colors.black87,
+              filled: true,
+              hintStyle: textFieldStyle,
+              hintText: 'Username',
+              border: textFieldBorder,
+              contentPadding: textFieldContentPadding),
+          style: textFieldStyle),
     );
 
     var txtPassword = Padding(
       padding: defaultPadding,
       child: TextFormField(
+          controller: passwordAddressController,
           onSaved: (String value) {
             print('saving password: $value');
             _formData['password'] = value;
@@ -112,125 +147,49 @@ class LoginState extends State<Login> {
           style: textFieldStyle),
     );
 
-    var btnLogin = Padding(padding: defaultPadding, child: VizElevated(onTap: loginTap, title: 'Login', customBackground: [Color(0xFFFFFFFF), Color(0xFFAAAAAA)]));
+    var btnLogin = Padding(
+        padding: defaultPadding,
+        child: VizElevated(
+            onTap: loginTap, title: 'Login', customBackground: [Color(0xFFFFFFFF), Color(0xFFAAAAAA)]));
 
     return Scaffold(
-        body: Container(
-            decoration: backgroundDecoration,
-            child: Center(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Expanded(
-                      flex: 5,
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            txtFieldUser, txtPassword
-                          ],
-                        ),
-                      )),
-                  Expanded(
-                    child: Container(height: 60.0, child: btnLogin),
-                  ),
-                ],
+      body: Container(
+          decoration: backgroundDecoration,
+          child: Column(
+            children: <Widget>[
+              Align(
+                alignment: AlignmentDirectional.bottomEnd,
+                child: IconButton(
+                  icon: Icon(Icons.settings),
+                  onPressed: () {
+                    Navigator.pushReplacementNamed(context, '/config');
+                  },
+                ),
               ),
-            )));
-
-
-//
-//
-//    return Scaffold(
-//        body: Container(
-//            decoration: backgroundDecoration,
-//            child: Center(
-//              child: Column(
-//                mainAxisSize: MainAxisSize.min,
-//                mainAxisAlignment: MainAxisAlignment.center,
-//                crossAxisAlignment: CrossAxisAlignment.center,
-//                children: <Widget>[
-//                  Container(
-//                    child: Row(
-//                      mainAxisAlignment: MainAxisAlignment.center,
-//                      children: <Widget>[
-//                        Padding(
-//                          padding: EdgeInsets.only(right: 10.0),
-//                          child: Form(
-//                            key: _formKey,
-//                            child: Container(
-//                              width: 400.0,
-//                              child: Column(
-//                                mainAxisSize: MainAxisSize.min,
-//                                mainAxisAlignment: MainAxisAlignment.center,
-//                                crossAxisAlignment: CrossAxisAlignment.center,
-//                                children: <Widget>[
-//                                  Padding(
-//                                    padding: textFieldPadding,
-//                                    child: TextFormField(
-//                                        autocorrect: false,
-//                                        onSaved: (String value) {
-//                                          _formData['username'] = value;
-//                                          print('saving username: $value');
-//                                        },
-//                                        validator: (String value) {
-//                                          if (value.isEmpty) {
-//                                            return 'Username is required';
-//                                          }
-//                                        },
-////                                      controller: _usernameController,
-//                                        decoration: InputDecoration(
-//                                            fillColor: Colors.black87,
-//                                            filled: true,
-//                                            hintStyle: textFieldStyle,
-//                                            hintText: 'Username',
-//                                            border: textFieldBorder,
-//                                            contentPadding: textFieldContentPadding),
-//                                        style: textFieldStyle),
-//                                  ),
-//                                  Padding(
-//                                    padding: textFieldPadding,
-//                                    child: TextFormField(
-//                                        onSaved: (String value) {
-//                                          print('saving password: $value');
-//                                          _formData['password'] = value;
-//                                        },
-//                                        autocorrect: false,
-//                                        validator: (String value) {
-//                                          if (value.isEmpty) {
-//                                            return 'Password is required';
-//                                          }
-//                                        },
-////                                      controller: _passwordController,
-//                                        obscureText: true,
-//                                        decoration: InputDecoration(
-//                                            fillColor: Colors.black87,
-//                                            filled: true,
-//                                            hintText: 'Password',
-//                                            hintStyle: textFieldStyle,
-//                                            border: textFieldBorder,
-//                                            contentPadding: textFieldContentPadding),
-//                                        style: textFieldStyle),
-//                                  ),
-//                                ],
-//                              ),
-//                            ),
-//                          ),
-//                        ),
-//                        Container(
-//                            width: 110.0,
-//                            height: 110.0,
-//                            child: VizElevated(
-//                                onTap: loginTap,
-//                                title: 'Login',
-//                                customBackground: [Color(0xFFFFFFFF), Color(0xFFAAAAAA)]))
-//                      ],
-//                    ),
-//                  ),
-//                ],
-//              ),
-//            )));
+              Expanded(
+                child: Center(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Expanded(
+                          flex: 5,
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[txtFieldUser, txtPassword],
+                            ),
+                          )),
+                      Expanded(
+                        child: Container(height: 60.0, child: btnLogin),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            ],
+          )),
+    );
   }
 }
