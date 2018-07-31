@@ -1,5 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
+import 'package:techviz/common/LowerCaseTextFormatter.dart';
 import 'package:techviz/components/vizElevated.dart';
 import 'package:techviz/login.dart';
 import 'package:validator/validator.dart';
@@ -60,6 +61,7 @@ class ConfigState extends State<Config> {
     var textField = Padding(
         padding: defaultPadding,
         child: TextFormField(
+            inputFormatters: [LowerCaseTextFormatter()],
             onSaved: (String value) {
               print('saving url: $value');
             },

@@ -128,19 +128,15 @@ class LoginState extends State<Login> {
           decoration: backgroundDecoration,
           child: Column(
             children: <Widget>[
-              Padding(
-                  padding: EdgeInsets.only(left: 10.0, top: 10.0),
-                  child: Align(
-                    alignment: AlignmentDirectional.bottomStart,
-                    child: RaisedButton.icon(
-                        onPressed: () {
-                          Navigator.pushReplacementNamed(context, '/config');
-                        },
-                        icon: Icon(Icons.settings),
-                        label: Text('Settings')),
-                  ),
-                  ),
-
+              Align(
+                alignment: AlignmentDirectional.bottomEnd,
+                child: IconButton(
+                  icon: Icon(Icons.settings),
+                  onPressed: () {
+                    Navigator.pushReplacementNamed(context, '/config');
+                  },
+                ),
+              ),
               Expanded(
                 child: Center(
                   child: Row(
