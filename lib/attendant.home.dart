@@ -15,7 +15,7 @@ class AttendantHome extends StatefulWidget {
   State<StatefulWidget> createState() => AttendantHomeState();
 }
 
-class AttendantHomeState extends State<AttendantHome> implements TaskListPresenterContract<Task>{
+class AttendantHomeState extends State<AttendantHome> implements TaskListPresenterContract<Task> {
   TaskListPresenter _presenter;
   Task _selectedTask = null;
   List<Task> _taskList = [];
@@ -25,7 +25,7 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
   var _taskListStatus = "assets/images/ic_processing.png";
 
   @override
-  initState(){
+  initState() {
     _taskList = [];
 
     _presenter = TaskListPresenter(this);
@@ -41,23 +41,19 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
       });
     });
 
-
     bindQueues();
 
     super.initState();
   }
 
-
-  void bindQueues(){
+  void bindQueues() {
     Session session = Session();
     session.eventBus.on<Task>().listen((Task event) {
       setState(() {
         _taskList.add(event);
-
       });
     });
   }
-
 
   @override
   void onTaskListLoaded(List<Task> result) {
@@ -72,7 +68,6 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
     // TODO: implement onLoadError
   }
 
-
   void _onTaskItemTapped(Task task) {
     setState(() {
       _selectedTask = task;
@@ -80,15 +75,10 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
   }
 
   @override
-  Widget build(BuildContext context)  {
-
+  Widget build(BuildContext context) {
     final defaultHeaderDecoration = BoxDecoration(
         border: Border.all(color: Colors.black, width: 0.5),
-        gradient: LinearGradient(
-            colors: [ Color(0xFF4D4D4D),  Color(0xFF000000)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            tileMode: TileMode.repeated));
+        gradient: LinearGradient(colors: [Color(0xFF4D4D4D), Color(0xFF000000)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated));
 
     //LEFT PANEL WIDGETS
     //task list header and task list
@@ -98,7 +88,7 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
     for (var i = 1; i <= _taskList.length; i++) {
       Task task = _taskList[i - 1];
       var taskItem = GestureDetector(
-          onTap: (){
+          onTap: () {
             _onTaskItemTapped(task);
           },
           child: Row(
@@ -109,7 +99,7 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
                   height: 60.0,
                   decoration: BoxDecoration(
                       gradient: LinearGradient(
-                          colors: _selectedTask == task ? [Color(0xFF65b1d9),  Color(0xFF0268a2)]: [Color(0xFF45505D),  Color(0xFF282B34)],
+                          colors: _selectedTask == task ? [Color(0xFF65b1d9), Color(0xFF0268a2)] : [Color(0xFF45505D), Color(0xFF282B34)],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           tileMode: TileMode.repeated)),
@@ -120,17 +110,13 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
                 flex: 4,
                 child: Container(
                   height: 60.0,
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                          colors: [Color(0xFFB2C7CF),Color(0xFFE4EDEF)],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          tileMode: TileMode.repeated)),
+                  decoration:
+                      BoxDecoration(gradient: LinearGradient(colors: [Color(0xFFB2C7CF), Color(0xFFE4EDEF)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
                   child: Center(
                       child: Text(
-                        task.location,
-                        style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16.0),
-                      )),
+                    task.location,
+                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16.0),
+                  )),
                 ),
               ),
             ],
@@ -139,13 +125,13 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
       listTasks.add(taskItem);
     }
 
-    var taskTextStr = listTasks.length == 0? 'No tasks' : (listTasks.length==1 ? '1 Task' : '${listTasks.length} Tasks');
-    Widget listContainer = ImageIcon( AssetImage("assets/images/ic_processing.png"), size: 30.0);
+    var taskTextStr = listTasks.length == 0 ? 'No tasks' : (listTasks.length == 1 ? '1 Task' : '${listTasks.length} Tasks');
+    Widget listContainer = ImageIcon(AssetImage("assets/images/ic_processing.png"), size: 30.0);
 
-    if(listTasks.length > 0)
+    if (listTasks.length > 0)
       listContainer = ListView(
-      children: listTasks,
-    );
+        children: listTasks,
+      );
 
     var leftPanel = Flexible(
       flex: 1,
@@ -164,15 +150,13 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
                       Text(taskTextStr, style: TextStyle(color: Colors.white)),
                       Padding(
                         padding: EdgeInsets.only(left: 10.0),
-                        child: _taskListStatus != null? ImageIcon( AssetImage(_taskListStatus), size: 15.0, color: Colors.blueGrey) : null,
+                        child: _taskListStatus != null ? ImageIcon(AssetImage(_taskListStatus), size: 15.0, color: Colors.blueGrey) : null,
                       )
-
                     ],
                   ),
                 ),
                 Text('0 Pending', style: TextStyle(color: Colors.orange)),
                 Text('Priority', style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic)),
-
               ],
             ),
           ),
@@ -183,9 +167,8 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
       ),
     );
 
-
-    TaskType taskType = _selectedTask!=null? _taskTypeList.where((t)=> t.id ==_selectedTask.taskTypeID).first : null;
-    TaskStatus taskStatus = _selectedTask!=null? _taskStatusList.where((t)=> t.id ==_selectedTask.taskStatusID).first : null;
+    TaskType taskType = _selectedTask != null ? _taskTypeList.where((t) => t.id == _selectedTask.taskTypeID).first : null;
+    TaskStatus taskStatus = _selectedTask != null ? _taskStatusList.where((t) => t.id == _selectedTask.taskStatusID).first : null;
 
     //CENTER PANEL WIDGETS
     var rowCenterHeader = Padding(
@@ -200,8 +183,12 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
                 children: <Widget>[
                   Text('Active Task', style: TextStyle(color: Color(0xFF9aa8b0), fontSize: 12.0)),
                   Padding(
-                      padding:  EdgeInsets.only(top: 5.0),
-                      child: Text((_selectedTask!=null? _selectedTask.location: ''), style: TextStyle(color: Colors.lightBlue, fontSize: 16.0), softWrap: false,))
+                      padding: EdgeInsets.only(top: 5.0),
+                      child: Text(
+                        (_selectedTask != null ? _selectedTask.location : ''),
+                        style: TextStyle(color: Colors.lightBlue, fontSize: 16.0),
+                        softWrap: false,
+                      ))
                 ],
               ),
             ),
@@ -210,10 +197,8 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  Text('Task Type', style: TextStyle(color:  Color(0xFF9aa8b0), fontSize: 12.0)),
-                  Padding(
-                      padding:  EdgeInsets.only(top: 5.0),
-                      child: Text(taskType!=null? taskType.description : '', style: TextStyle(color: Colors.white, fontSize: 16.0), softWrap: false))
+                  Text('Task Type', style: TextStyle(color: Color(0xFF9aa8b0), fontSize: 12.0)),
+                  Padding(padding: EdgeInsets.only(top: 5.0), child: Text(taskType != null ? taskType.description : '', style: TextStyle(color: Colors.white, fontSize: 16.0), softWrap: false))
                 ],
               ),
             ),
@@ -224,9 +209,8 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
                 children: <Widget>[
                   Text('Task Status', style: TextStyle(color: Color(0xFF9aa8b0), fontSize: 12.0)),
                   Padding(
-                      padding:  EdgeInsets.only(top: 5.0),
-                      child: Text(taskStatus!=null? taskStatus.description : '',
-                          style: TextStyle(color: Colors.white, fontSize: 16.0, fontWeight: FontWeight.bold)))
+                      padding: EdgeInsets.only(top: 5.0),
+                      child: Text(taskStatus != null ? taskStatus.description : '', style: TextStyle(color: Colors.white, fontSize: 16.0, fontWeight: FontWeight.bold)))
                 ],
               ),
             ),
@@ -235,110 +219,135 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
 
     var actionBoxDecoration = BoxDecoration(
         borderRadius: BorderRadius.circular(6.0),
-        border: Border.all(color:  Color(0xFFFFFFFF)),
-        gradient: LinearGradient(
-            colors: [ Color(0xFF81919D),  Color(0xFFAAB7BD)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            tileMode: TileMode.repeated));
-
+        border: Border.all(color: Color(0xFFFFFFFF)),
+        gradient: LinearGradient(colors: [Color(0xFF81919D), Color(0xFFAAB7BD)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated));
 
     Padding taskBody = null;
 
-    if(_selectedTask!=null){
-      if(_selectedTask.taskTypeID == 2){
-        var requiredAction = Padding(
-            padding: EdgeInsets.all(5.0),
+    if (_selectedTask != null) {
+      var requiredAction = Padding(
+          padding: EdgeInsets.all(5.0),
+          child: Container(
+              decoration: actionBoxDecoration,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  ImageIcon(AssetImage("assets/images/ic_barcode.png"), size: 60.0, color: Colors.white),
+                  Center(child: Text('Scan Machine', style: TextStyle(color: Color(0xFFFFFFFF), fontStyle: FontStyle.italic, fontSize: 20.0, fontWeight: FontWeight.bold)))
+                ],
+              )));
+
+      String taskInfoDescription = '';
+      if (_selectedTask != null) {
+        if (_selectedTask.amount > 0) {
+          taskInfoDescription = '\$${_selectedTask.amount.toStringAsFixed(2)}';
+        } else {
+          taskInfoDescription = _selectedTask.eventDesc;
+        }
+      }
+
+      var taskInfo = Expanded(
+          flex: 2,
+          child: Padding(
+              padding: EdgeInsets.all(4.0),
+              child: Container(
+                  constraints: BoxConstraints.tightFor(height: 60.0),
+                  decoration: actionBoxDecoration,
+                  child: Column(
+                    children: <Widget>[
+                      Padding(
+                          padding: EdgeInsets.only(top: 5.0),
+                          child: Text('Task Info',
+                              style: TextStyle(
+                                color: Color(0xFF444444),
+                                fontSize: 14.0,
+                              ))),
+                      Padding(padding: EdgeInsets.only(top: 5.0, left: 4.0), child: Text(taskInfoDescription, overflow: TextOverflow.fade, softWrap: false, style: TextStyle(color: Color(0xFFFFFFFF), fontSize: (taskInfoDescription.length>10? 14.0:20.0), fontWeight: FontWeight.bold)))
+                    ],
+                  ))));
+
+
+
+
+      List<Widget> taskDetailsHeader = <Widget>[];
+      if(_selectedTask!=null){
+        taskDetailsHeader.add(taskInfo);
+        if(_selectedTask.playerID !=null && _selectedTask.playerID.length > 0){
+
+          String playerName = '${_selectedTask.playerFirstName} ${_selectedTask.playerLastName}';
+
+          BoxDecoration boxDecoForTierWidget = null;
+          String tier = _selectedTask.playerTier;
+          if(tier!=null){
+            boxDecoForTierWidget = BoxDecoration(
+                borderRadius: BorderRadius.circular(6.0),
+                color: Colors.amber);
+          }
+          else{
+            boxDecoForTierWidget = BoxDecoration(
+                borderRadius: BorderRadius.circular(6.0),
+                border: Border.all(color: Colors.white));
+          }
+
+
+          var playerTierWidget =  Align(
+            alignment: Alignment.centerRight,
             child: Container(
-                decoration: actionBoxDecoration,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    ImageIcon( AssetImage("assets/images/ic_barcode.png"), size: 60.0, color: Colors.white),
-                    Center(
-                        child: Text('Scan Machine',
-                            style: TextStyle(
-                                color:  Color(0xFFFFFFFF),
-                                fontStyle: FontStyle.italic,
-                                fontSize: 20.0,
-                                fontWeight: FontWeight.bold)))
-                  ],
-                )));
-
-        var taskInfo = Expanded(
-            flex: 2,
-            child: Padding(
-                padding: EdgeInsets.all(4.0),
-                child: Container(
-                    constraints: BoxConstraints.tightFor(height: 60.0),
-                    decoration: actionBoxDecoration,
-                    child: Column(
-                      children: <Widget>[
-                        Padding(
-                            padding: EdgeInsets.only(top: 5.0),
-                            child: Text('Task Info',
-                                style: TextStyle(
-                                  color:  Color(0xFF444444),
-                                  fontSize: 14.0,
-                                ))),
-                        Padding(
-                            padding: EdgeInsets.only(top: 5.0),
-                            child: Text('\$1723.00',
-                                style:
-                                TextStyle(color:  Color(0xFFFFFFFF), fontSize: 20.0, fontWeight: FontWeight.bold)))
-                      ],
-                    ))));
-
-        var taskCustomer = Expanded(
-            flex: 3,
-            child: Padding(
-                padding: EdgeInsets.all(4.0),
-                child: Container(
-                    constraints: BoxConstraints.tightFor(height: 60.0),
-                    decoration: actionBoxDecoration,
-                    child: Column(
-                      children: <Widget>[
-                        Padding(
-                            padding: EdgeInsets.only(top: 5.0),
-                            child: Text('Customer',
-                                style: TextStyle(
-                                  color:  Color(0xFF444444),
-                                  fontSize: 14.0,
-                                ))),
-                        Padding(
-                            padding: EdgeInsets.only(top: 5.0),
-                            child: Text('Mike Walker',
-                                style:
-                                TextStyle(color:  Color(0xFFFFFFFF), fontSize: 20.0, fontWeight: FontWeight.bold)))
-                      ],
-                    ))));
-
-        taskBody = Padding(
-          padding: EdgeInsets.only(left: 25.0, top: 5.0, right: 25.0, bottom: 5.0),
-          child: Column(
-            children: <Widget>[
-              Row(
-                children: (_selectedTask!=null ? <Widget>[taskInfo, taskCustomer] :  <Widget>[]),
+              padding: EdgeInsets.all(5.0),
+              child: Container(
+                width: 10.0,
+                decoration: boxDecoForTierWidget,
               ),
-              Flexible(
-                  child: requiredAction
-              )
-            ],
-          ),
-        );
+            ),
+          );
+
+          var playerDetailsWidget = Align(
+            alignment: Alignment.center,
+            child: Column(
+              children: <Widget>[
+                Padding(
+                    padding: EdgeInsets.only(top: 5.0),
+                    child: Text('Customer',
+                        style: TextStyle(
+                          color: Color(0xFF444444),
+                          fontSize: 14.0,
+                        ))),
+                Padding(padding: EdgeInsets.only(top: 5.0), child: Text(playerName, style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 20.0, fontWeight: FontWeight.bold)))
+              ],
+            ),
+          );
+
+
+
+          var taskCustomer = Expanded(
+              flex: 3,
+              child: Padding(
+                  padding: EdgeInsets.all(4.0),
+                  child: Container(
+                      constraints: BoxConstraints.tightFor(height: 60.0),
+                      decoration: actionBoxDecoration,
+                      child: Stack(
+                        children: <Widget>[playerDetailsWidget,playerTierWidget],
+                      ))));
+
+          taskDetailsHeader.add(taskCustomer);
+        }
       }
 
-      else{ //other task type
-        taskBody = Padding(
-          padding: EdgeInsets.only(left: 25.0, top: 5.0, right: 25.0, bottom: 5.0),
-          child: Text('Task type under development'),
-        );
-      }
 
+      taskBody = Padding(
+        padding: EdgeInsets.only(left: 25.0, top: 5.0, right: 25.0, bottom: 5.0),
+        child: Column(
+          children: <Widget>[
+            Row(
+              children: taskDetailsHeader,
+            ),
+            Flexible(child: requiredAction)
+          ],
+        ),
+      );
     }
-
-
 
     var centerPanel = Flexible(
       flex: 4,
@@ -350,30 +359,29 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
             child: rowCenterHeader,
           ),
           Expanded(
-            child: _selectedTask!=null? taskBody: Center(child: Text('Select a Task', style: TextStyle(color: Colors.white, fontStyle: FontStyle.italic),))
-          )
+              child: _selectedTask != null
+                  ? taskBody
+                  : Center(
+                      child: Text(
+                      'Select a Task',
+                      style: TextStyle(color: Colors.white, fontStyle: FontStyle.italic),
+                    )))
         ],
       ),
     );
-
 
     //RIGHT PANEL WIDGETS
     var timerWidget = Padding(
       padding: EdgeInsets.only(top: 7.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Text('Time Taken', style: TextStyle(color: Colors.grey, fontSize: 12.0)),
-          VizTimer(timeStarted: _selectedTask!=null? _selectedTask.taskCreated : null)
-        ],
+        children: <Widget>[Text('Time Taken', style: TextStyle(color: Colors.grey, fontSize: 12.0)), VizTimer(timeStarted: _selectedTask != null ? _selectedTask.taskCreated : null)],
       ),
     );
 
-
-
     Column rightActionWidgets;
 
-    if(_selectedTask != null){
+    if (_selectedTask != null) {
       rightActionWidgets = Column(
         children: <Widget>[
           VizTaskActionButton('Complete', [Color(0xFF6EBD24), Color(0xFF6EBD24)], onTapCallback: () => print('Complete')),
@@ -381,11 +389,9 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
           VizTaskActionButton('Escalate', [Color(0xFF433177), Color(0xFFF2003C)], onTapCallback: () => print('Escalate'))
         ],
       );
-    }
-    else{
+    } else {
       rightActionWidgets = Column();
     }
-
 
     var rightPanel = Flexible(
       flex: 1,
@@ -404,17 +410,9 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
     );
 
     return Container(
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-                colors: [Color(0xFF586676), Color(0xFF8B9EA7)],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                tileMode: TileMode.repeated)),
+        decoration: BoxDecoration(gradient: LinearGradient(colors: [Color(0xFF586676), Color(0xFF8B9EA7)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
         child: Row(
           children: <Widget>[leftPanel, centerPanel, rightPanel],
         ));
   }
-
-
-
 }

@@ -30,11 +30,7 @@ class ActionBar extends StatefulWidget implements PreferredSizeWidget {
 class _ActionBarState extends State<ActionBar> {
   @override
   Widget build(BuildContext context) {
-    final ModalRoute<dynamic> parentRoute = ModalRoute.of(context);
-    //final bool canPop = parentRoute?.canPop ?? false;
-
     List<Widget> children = List<Widget>();
-
     SizedBox leadingContainer;
 
     //the backbutton when the view can pop

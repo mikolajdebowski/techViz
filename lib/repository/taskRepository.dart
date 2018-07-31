@@ -33,6 +33,10 @@ class TaskRepository implements ITaskRepository{
         amount: amount,
         eventDesc: task['EventDesc'] as String,
         taskCreated: DateTime.parse(task['TaskCreated'] as String),
+        playerID: task['PlayerID']!=null ? task['PlayerID'] as String : '',
+        playerFirstName: task['PlayerFirstName']!=null ? task['PlayerFirstName'] as String : '',
+        playerLastName: task['PlayerLastName']!=null ? task['PlayerLastName'] as String : '',
+        playerTier: task['PlayerTier']!=null ? task['PlayerTier'] as String : '',
       );
       list.add(t);
     });

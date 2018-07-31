@@ -30,12 +30,15 @@ class LocalRepository {
                 TaskTypeID INT,
                 TaskCreated DATETIME,
                 TaskAssigned DATETIME,
-                PlayerID TEXT,
                 TaskNote TEXT,
                 TaskResponded DATETIME,
                 Amount NUMERIC,
                 Location TEXT,
-                EventDesc TEXT)
+                EventDesc TEXT,
+                PlayerID TEXT,
+                PlayerFirstName TEXT,
+                PlayerLastName TEXT,
+                PlayerTier TEXT)
             ''');
 
 

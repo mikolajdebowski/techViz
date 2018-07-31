@@ -47,6 +47,10 @@ class ProcessorTaskRepository extends TaskRepository  {
         map['TaskNote'] = values[_columnNames.indexOf("TaskNote")];
         map['Amount'] = values[_columnNames.indexOf("Amount")];
         map['EventDesc'] = values[_columnNames.indexOf("EventDesc")];
+        map['PlayerID'] = values[_columnNames.indexOf("PlayerID")];
+        map['PlayerFirstName'] = values[_columnNames.indexOf("FirstName")];
+        map['PlayerLastName'] = values[_columnNames.indexOf("LastName")];
+        map['PlayerTier'] = values[_columnNames.indexOf("Tier")];
         localRepo.insert('Task', map);
       });
 

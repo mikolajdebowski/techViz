@@ -8,11 +8,16 @@ class Task {
   final DateTime taskAssigned;
   final double amount;
   final String eventDesc;
+  final String playerID;
 
-  const Task({this.id, this.location, this.taskTypeID, this.taskStatusID, this.machineId, this.taskCreated, this.taskAssigned, this.amount, this.eventDesc});
+  final String playerFirstName;
+  final String playerLastName;
+  final String playerTier;
+
+  const Task({this.id, this.location, this.taskTypeID, this.taskStatusID, this.machineId, this.taskCreated, this.taskAssigned, this.amount, this.eventDesc, this.playerID,
+  this.playerFirstName, this.playerLastName, this.playerTier});
 
 }
-
 
 
 /*
