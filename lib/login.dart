@@ -14,6 +14,9 @@ import 'package:techviz/loader.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 class Login extends StatefulWidget {
+  static final String USERNAME = 'USERNAME';
+  static final String PASSWORD = 'PASSWORD';
+
   @override
   State<StatefulWidget> createState() => LoginState();
 }
@@ -25,6 +28,11 @@ class LoginState extends State<Login> {
     'password': null,
   };
 
+  final usernameAddressController = TextEditingController();
+  final passwordAddressController = TextEditingController();
+
+  SharedPreferences prefs;
+
   void loginTap() async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
@@ -34,12 +42,14 @@ class LoginState extends State<Login> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
 
       String serverUrl = prefs.get(Config.SERVERURL) as String;
-      print(serverUrl);
 
       client.init(ClientType.PROCESSOR, serverUrl); //'http://tvdev2.internal.bis2.net'
 
       Future<String> authResponse = client.auth(_formData['username'], _formData['password']);
-      authResponse.then((String response) {
+      authResponse.then((String response) async {
+        await prefs.setString(Login.USERNAME, usernameAddressController.text);
+        await prefs.setString(Login.PASSWORD, passwordAddressController.text);
+
         Navigator.push<Home>(
           context,
           MaterialPageRoute(builder: (context) => Loader()),
@@ -48,6 +58,23 @@ class LoginState extends State<Login> {
         print(error.toString());
       });
     }
+  }
+
+  @override
+  void initState() {
+    SharedPreferences.getInstance().then((onValue) {
+      prefs = onValue;
+
+      if (prefs.getKeys().contains(Login.USERNAME)) {
+        usernameAddressController.text = prefs.getString(Login.USERNAME);
+      }
+
+      if (prefs.getKeys().contains(Login.PASSWORD)) {
+        passwordAddressController.text = prefs.getString(Login.PASSWORD);
+      }
+    });
+
+    super.initState();
   }
 
   @override
@@ -73,6 +100,7 @@ class LoginState extends State<Login> {
     var txtFieldUser = Padding(
       padding: defaultPadding,
       child: TextFormField(
+          controller: usernameAddressController,
           inputFormatters: [LowerCaseTextFormatter()],
           autocorrect: false,
           onSaved: (String value) {
@@ -97,6 +125,7 @@ class LoginState extends State<Login> {
     var txtPassword = Padding(
       padding: defaultPadding,
       child: TextFormField(
+          controller: passwordAddressController,
           onSaved: (String value) {
             print('saving password: $value');
             _formData['password'] = value;
