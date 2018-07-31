@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:techviz/components/vizBackButton.dart';
+import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/vizElevated.dart';
 
 class ActionBar extends StatefulWidget implements PreferredSizeWidget {
@@ -28,6 +28,12 @@ class ActionBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _ActionBarState extends State<ActionBar> {
+
+
+  void goBack(){
+    Navigator.maybePop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     List<Widget> children = List<Widget>();
@@ -35,10 +41,12 @@ class _ActionBarState extends State<ActionBar> {
 
     //the backbutton when the view can pop
     if (widget.isRoot == false) {
+      VizButton backBtn = VizButton('Back', onTap: goBack);
+
       leadingContainer = SizedBox(
           width: 100.0,
           child: Flex(
-              direction: Axis.horizontal, children: <Widget>[VizBackButton()]));
+              direction: Axis.horizontal, children: <Widget>[backBtn]));
     } else if (widget.leadingWidget != null) {
       leadingContainer = SizedBox(
           width: 100.0,
