@@ -162,7 +162,7 @@ class _HomeState extends State<Home> {
 
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: ActionBar(title: 'TechViz', leadingWidget: leadingMenuButton, centralWidgets: actionBarCentralWidgets),
+      appBar: ActionBar(title: 'TechViz', leadingWidget: leadingMenuButton, centralWidgets: actionBarCentralWidgets, isRoot: true),
       body: AttendantHome(), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }

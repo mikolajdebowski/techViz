@@ -8,12 +8,14 @@ class ActionBar extends StatefulWidget implements PreferredSizeWidget {
       this.leadingWidget,
       this.tailWidget,
       this.centralWidgets,
-      this.titleColor = const Color(0xFF0073C1)});
+      this.titleColor = const Color(0xFF0073C1),
+      this.isRoot = false});
 
   final double barHeight = 65.0;
   final Widget tailWidget;
   final Widget leadingWidget;
   final List<Widget> centralWidgets;
+  final bool isRoot;
 
   final String title;
   final Color titleColor;
@@ -29,14 +31,14 @@ class _ActionBarState extends State<ActionBar> {
   @override
   Widget build(BuildContext context) {
     final ModalRoute<dynamic> parentRoute = ModalRoute.of(context);
-    final bool canPop = parentRoute?.canPop ?? false;
+    //final bool canPop = parentRoute?.canPop ?? false;
 
     List<Widget> children = List<Widget>();
 
     SizedBox leadingContainer;
 
     //the backbutton when the view can pop
-    if (canPop) {
+    if (widget.isRoot == false) {
       leadingContainer = SizedBox(
           width: 100.0,
           child: Flex(
