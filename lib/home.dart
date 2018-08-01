@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:techviz/adapters/machineAdapter.dart';
+import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/vizSearch.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizSelector.dart';
@@ -33,6 +34,12 @@ class _HomeState extends State<Home> {
   void mockZoneAndStatus() {
     availableStatuses.add(VizSelectorOption("1", "Available"));
     availableStatuses.add(VizSelectorOption("2", "Off shift"));
+    availableStatuses.add(VizSelectorOption("2", "Off shift"));
+    availableStatuses.add(VizSelectorOption("2", "Off shift"));
+    availableStatuses.add(VizSelectorOption("2", "Off shift"));
+    availableStatuses.add(VizSelectorOption("2", "Off shift"));
+    availableStatuses.add(VizSelectorOption("2", "Off shift"));
+
 
     for (var i = 0; i < 1000; i++) {
       availableZones.add(VizSelectorOption(i.toString(), i.toString()));
@@ -105,7 +112,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
 
-    var leadingMenuButton = Expanded(child: VizElevated(title: 'Menu', onTap: goToMenu));
+    var leadingMenuButton = VizButton('Menu', onTap: goToMenu);
 
     //ZONES AND STATUS
     var zonesWidgetBtn = Expanded(
