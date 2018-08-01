@@ -91,12 +91,8 @@ class ConfigState extends State<Config> {
                 contentPadding: textFieldContentPadding),
             style: textFieldStyle));
 
-//    var btnNext = Padding(
-//        padding: defaultPadding,
-//        child: VizElevated(
-//            onTap: onNextTap, title: 'Next', customBackground: [Color(0xFFFFFFFF), Color(0xFFAAAAAA)]));
 
-    var btnNext = VizButton('Menu', onTap: onNextTap, highlighted: true);
+    var btnNext = VizButton('Next', onTap: onNextTap, highlighted: true);
 
     final colors = <Color>[
       Color(0xFFd6de27),
@@ -121,35 +117,41 @@ class ConfigState extends State<Config> {
       ),
     );
 
+
+
+    var btnBox = Padding(padding: defaultPadding, child: SizedBox(
+        height: 45.0,
+        width: 100.0,
+        child: Flex(
+            direction: Axis.horizontal, children: <Widget>[btnNext])));
+
+    var formColumn = Expanded(
+      child: Column(
+        children: <Widget>[
+          Flexible(child: Form(
+            key: _formKey,
+            child: textField,
+          )),
+          Text(
+            'Your server address needs to be set before you can login for the first time.',
+            style: TextStyle(color: Color(0xff474f5b)),textAlign: TextAlign.center,
+          )
+        ],
+      ),
+    );
+
+    var row = Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[Container(width: 40.0,),formColumn,btnBox],
+    );
+
     return Scaffold(
         body: Container(
             decoration: backgroundDecoration,
             child: Stack(
               children: <Widget>[
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Expanded(
-                            flex: 5,
-                            child: Form(
-                              key: _formKey,
-                              child: textField,
-                            )),
-                        Expanded(
-                          child: Container(height: 60.0, child: btnNext),
-                        ),
-                      ],
-                    ),
-                    Text(
-                      'Your server address needs to be set before you can login for the first time.',
-                      style: TextStyle(color: Color(0xff474f5b)),
-                    ),
-                  ],
-                ),
+                Align(alignment: Alignment.center, child: Container(height: 100.0, child: row,)),
                 Align(alignment: Alignment.bottomCenter, child: rainbow),
               ],
             )));
