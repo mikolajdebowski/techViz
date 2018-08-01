@@ -34,6 +34,12 @@ class _HomeState extends State<Home> {
   void mockZoneAndStatus() {
     availableStatuses.add(VizSelectorOption("1", "Available"));
     availableStatuses.add(VizSelectorOption("2", "Off shift"));
+    availableStatuses.add(VizSelectorOption("2", "Off shift"));
+    availableStatuses.add(VizSelectorOption("2", "Off shift"));
+    availableStatuses.add(VizSelectorOption("2", "Off shift"));
+    availableStatuses.add(VizSelectorOption("2", "Off shift"));
+    availableStatuses.add(VizSelectorOption("2", "Off shift"));
+
 
     for (var i = 0; i < 1000; i++) {
       availableZones.add(VizSelectorOption(i.toString(), i.toString()));

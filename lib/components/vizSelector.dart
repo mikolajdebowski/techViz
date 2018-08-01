@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:techviz/components/VizButton.dart';
+import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizElevated.dart';
 
@@ -25,78 +27,55 @@ class VizSelector extends StatefulWidget {
 }
 
 class VizSelectorState extends State<VizSelector> {
+  List<VizSelectorOption> options;
+
   VizSelectorState(List<VizSelectorOption> options) {
     if (this.options == null) {
       this.options = options;
     }
   }
 
-  List<VizSelectorOption> options;
+  void onOkTap(){
+    widget.onOKTapTapped(options);
+    Navigator.maybePop(context);
+  }
 
   @override
   Widget build(BuildContext context) {
-    var colorBtnOK = [
-      const Color(0xFF86bf39),
-      const Color(0xFF0f7c6a),
-    ];
+    var defaultBgDeco = BoxDecoration(gradient: LinearGradient(colors: [Color(0xFF636f7e), Color(0xFF9aa8b0)], begin: Alignment.topCenter, end: Alignment.bottomCenter));
 
     var actions = <Widget>[];
-
     if (widget.multiple) {
-      actions.add(
-          Expanded(
-              child: VizElevated(title: 'All', onTap: onSelectAllTapped)));
-      actions.add(
-          Expanded(
-              child: VizElevated(title: 'None', onTap: onSelectNoneTapped)));
+      actions.add(VizButton('All', onTap: onSelectAllTapped));
+      actions.add(VizButton('None', onTap: onSelectNoneTapped));
     }
 
-    actions.add(Expanded(
-        child: VizElevated(
-            title: 'OK',
-            onTap: callOnOKTapTapped,
-            customBackground: colorBtnOK)));
+    var body = GridView.count(
+        shrinkWrap: true,
+        padding: EdgeInsets.all(4.0),
+        childAspectRatio: options.length > 4 ? 1.0 : 2.0,
+        addAutomaticKeepAlives: false,
+        crossAxisCount: options.length > 6 ? 6 : options.length,
+        children: options.map((VizSelectorOption option) {
+          return VizOptionButton(
+              option.description,
+              key: GlobalKey(),
+              selected: option.selected);
+        }).toList());
 
     return Scaffold(
         backgroundColor: Colors.black,
-        appBar: ActionBar(title: widget.title, titleColor: Colors.blue),
-        body: Stack(
-          fit: StackFit.expand,
-          children: <Widget>[
-            Padding(
-                padding: const EdgeInsets.only(bottom: 60.0),
-                child: GridView.count(
-                    mainAxisSpacing: 5.0,
-                    crossAxisSpacing: 5.0,
-                    shrinkWrap: true,
-                    padding: const EdgeInsets.all(4.0),
-                    childAspectRatio: 2.0,
-                    addAutomaticKeepAlives: false,
-                    crossAxisCount: options.length > 5 ? 5 : options.length,
-                    children: options.map((VizSelectorOption option) {
-                      return VizElevated(
-                          key: GlobalKey(),
-                          title: option.description,
-                          selectable: true,
-                          selected: option.selected);
-                    }).toList())),
-            Positioned(
-                height: 60.0,
-                width: MediaQuery.of(context).size.width,
-                bottom: 0.0,
-                child: Row(children: actions))
-          ],
-        ));
+        appBar: ActionBar(title: widget.title, titleColor: Colors.blue, tailWidget: VizButton('OK', onTap: onOkTap, highlighted: true)),
+        body: Container(
+          decoration: defaultBgDeco,
+          constraints: BoxConstraints.expand(),
+          child: body,
+        ),
+    );
+
+
   }
 
-  void callOnOKTapTapped() {
-    widget.onOKTapTapped(options);
-    goBack();
-  }
-
-  void goBack() {
-    Navigator.maybePop(context);
-  }
 
   void onSelectAllTapped() {
     if (options != null) {

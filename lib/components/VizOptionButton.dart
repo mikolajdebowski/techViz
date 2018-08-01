@@ -5,6 +5,7 @@ class VizOptionButton extends StatelessWidget {
       {Key key,
         this.onTap,
         this.flex = 1,
+        this.flexible = false,
         this.selected = false,
         this.iconName})
       : super(key: key);
@@ -14,10 +15,12 @@ class VizOptionButton extends StatelessWidget {
   final bool selected;
   final String iconName;
   final int flex;
+  final bool flexible;
 
   @override
   Widget build(BuildContext context) {
     BoxDecoration bg = BoxDecoration(
+        boxShadow: [BoxShadow(color: Color(0xAA000000), offset: Offset(4.0, 4.0), blurRadius: 4.0)],
         color: Colors.grey,
         gradient: LinearGradient(
             colors: [Color(0xFFbdccd4), Color(0xFFebf0f2)],
@@ -39,21 +42,27 @@ class VizOptionButton extends StatelessWidget {
       );
     }
 
-    return Flexible(
-        fit: FlexFit.tight,
-        flex: flex,
-        child: Padding(
-          child: GestureDetector(
-            onTap: onTap,
-            child: Container(
-                constraints: BoxConstraints.expand(),
-                decoration: bg,
-                child: Center(child: innerWidget)
-            ),
-          ),
-          padding: EdgeInsets.all(5.0),
-        )
+    var btn = Padding(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+            constraints: BoxConstraints.expand(),
+            decoration: bg,
+            child: Center(child: innerWidget)
+        ),
+      ),
+      padding: EdgeInsets.all(5.0),
     );
+
+    if(flexible){
+      return Flexible(
+          fit: FlexFit.tight,
+          flex: flex,
+          child: btn
+      );
+    }
+
+    return btn;
 
   }
 }

@@ -12,26 +12,39 @@ class Menu extends StatefulWidget {
 }
 
 class _MenuState extends State<Menu> {
-
-
   void logOut(){
-    //clear
     Navigator.pushReplacementNamed(context, '/login');
+  }
+
+  void goToMyProfile(){
+    //Navigator.pushReplacementNamed(context, '/profile');
+  }
+
+  void goToSettings(){
+    //Navigator.pushReplacementNamed(context, '/settings');
+  }
+
+  void goToHelp(){
+    //Navigator.pushReplacementNamed(context, '/help');
+  }
+
+  void goToAbout(){
+    //Navigator.pushReplacementNamed(context, '/about');
   }
 
 
   @override
   Widget build(BuildContext context) {
     Row rowProfileSettings = Row(
-      children: <Widget>[VizOptionButton('My Profile', iconName: 'ic_my_profile.png'), VizOptionButton('Settings', iconName: 'ic_settings.png')],
+      children: <Widget>[VizOptionButton('My Profile', iconName: 'ic_my_profile.png', flexible: true), VizOptionButton('Settings', iconName: 'ic_settings.png',flexible: true)],
     );
 
     Row rowHelpAbout = Row(
-      children: <Widget>[VizOptionButton('Help', iconName: 'ic_help.png'), VizOptionButton('About', iconName: 'ic_about.png', )],
+      children: <Widget>[VizOptionButton('Help', iconName: 'ic_help.png',flexible: true), VizOptionButton('About', iconName: 'ic_about.png', flexible: true)],
     );
 
 
-    VizOptionButton rowLogoff = VizOptionButton('Log Out', iconName: 'ic_logout.png', onTap: logOut);
+    VizOptionButton rowLogoff = VizOptionButton('Log Out', iconName: 'ic_logout.png', onTap: logOut, flexible: true);
 
     Container container = Container(
       child: Padding(
