@@ -1,6 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:techviz/common/LowerCaseTextFormatter.dart';
+import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/vizElevated.dart';
 import 'package:techviz/login.dart';
 import 'package:validator/validator.dart';
@@ -38,7 +39,7 @@ class ConfigState extends State<Config> {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
 
-      if(!serverAddressController.text.toLowerCase().contains('http')){
+      if (!serverAddressController.text.toLowerCase().contains('http')) {
         serverAddressController.text = 'http://${serverAddressController.text}';
       }
 
@@ -49,14 +50,23 @@ class ConfigState extends State<Config> {
 
   @override
   Widget build(BuildContext context) {
-    var textFieldStyle = TextStyle(fontStyle: FontStyle.italic, fontSize: 20.0, color: Color(0xFFffffff), fontWeight: FontWeight.w500, fontFamily: "Roboto");
+    var textFieldStyle = TextStyle(
+        fontStyle: FontStyle.italic,
+        fontSize: 20.0,
+        color: Color(0xFFffffff),
+        fontWeight: FontWeight.w500,
+        fontFamily: "Roboto");
 
     var textFieldBorder = OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(4.0)));
     var defaultPadding = EdgeInsets.all(7.0);
     var textFieldContentPadding = new EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0);
 
-    var backgroundDecoration =
-        BoxDecoration(gradient: LinearGradient(colors: [Color(0xFFd6dfe3), Color(0xFFb1c2cb)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated));
+    var backgroundDecoration = BoxDecoration(
+        gradient: LinearGradient(
+            colors: [Color(0xFFd6dfe3), Color(0xFFb1c2cb)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            tileMode: TileMode.repeated));
 
     var textField = Padding(
         padding: defaultPadding,
@@ -72,32 +82,76 @@ class ConfigState extends State<Config> {
               }
             },
             controller: serverAddressController,
-            decoration:
-                InputDecoration(fillColor: Colors.black87, filled: true, hintStyle: textFieldStyle, hintText: 'Server Address', border: textFieldBorder, contentPadding: textFieldContentPadding),
+            decoration: InputDecoration(
+                fillColor: Colors.black87,
+                filled: true,
+                hintStyle: textFieldStyle,
+                hintText: 'Server Address',
+                border: textFieldBorder,
+                contentPadding: textFieldContentPadding),
             style: textFieldStyle));
 
-    var btnNext = Padding(padding: defaultPadding, child: VizElevated(onTap: onNextTap, title: 'Next', customBackground: [Color(0xFFFFFFFF), Color(0xFFAAAAAA)]));
+//    var btnNext = Padding(
+//        padding: defaultPadding,
+//        child: VizElevated(
+//            onTap: onNextTap, title: 'Next', customBackground: [Color(0xFFFFFFFF), Color(0xFFAAAAAA)]));
+
+    var btnNext = VizButton('Menu', onTap: onNextTap, highlighted: true);
+
+    final colors = <Color>[
+      Color(0xFFd6de27),
+      Color(0xFF96c93f),
+      Color(0xFF09a593),
+      Color(0xFF0c7dc2),
+      Color(0xFF564992),
+      Color(0xFFea1c42),
+      Color(0xFFf69320),
+      Color(0xFFfedd00)
+    ];
+
+    var rainbow = Container(
+      height: 10.0,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight, // 10% of the width, so there are ten blinds.
+          colors: colors,
+//          stops: colorStops// repeats the gradient over the canvas
+        ),
+      ),
+    );
 
     return Scaffold(
         body: Container(
             decoration: backgroundDecoration,
-            child: Center(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Expanded(
-                      flex: 5,
-                      child: Form(
-                        key: _formKey,
-                        child: textField,
-                      )),
-                  Expanded(
-                    child: Container(height: 60.0, child: btnNext),
-                  ),
-                ],
-              ),
+            child: Stack(
+              children: <Widget>[
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Expanded(
+                            flex: 5,
+                            child: Form(
+                              key: _formKey,
+                              child: textField,
+                            )),
+                        Expanded(
+                          child: Container(height: 60.0, child: btnNext),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      'Your server address needs to be set before you can login for the first time.',
+                      style: TextStyle(color: Color(0xff474f5b)),
+                    ),
+                  ],
+                ),
+                Align(alignment: Alignment.bottomCenter, child: rainbow),
+              ],
             )));
-
   }
 }
