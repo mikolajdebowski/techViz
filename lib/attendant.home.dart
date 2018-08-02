@@ -227,16 +227,17 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
     if (_selectedTask != null) {
       var requiredAction = Padding(
           padding: EdgeInsets.all(5.0),
-          child: Container(
-              decoration: actionBoxDecoration,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  ImageIcon(AssetImage("assets/images/ic_barcode.png"), size: 60.0, color: Colors.white),
-                  Center(child: Text('Scan Machine', style: TextStyle(color: Color(0xFFFFFFFF), fontStyle: FontStyle.italic, fontSize: 20.0, fontWeight: FontWeight.bold)))
-                ],
-              )));
+//          child: Container(
+//              decoration: actionBoxDecoration,
+//              child: Column(
+//                crossAxisAlignment: CrossAxisAlignment.center,
+//                mainAxisAlignment: MainAxisAlignment.center,
+//                children: <Widget>[
+//                  ImageIcon(AssetImage("assets/images/ic_barcode.png"), size: 60.0, color: Colors.white),
+//                  Center(child: Text('Scan Machine', style: TextStyle(color: Color(0xFFFFFFFF), fontStyle: FontStyle.italic, fontSize: 20.0, fontWeight: FontWeight.bold)))
+//                ],
+//              ))
+      );
 
       String taskInfoDescription = '';
       if (_selectedTask != null) {
@@ -263,35 +264,30 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
                                 color: Color(0xFF444444),
                                 fontSize: 14.0,
                               ))),
-                      Padding(padding: EdgeInsets.only(top: 5.0, left: 4.0), child: Text(taskInfoDescription, overflow: TextOverflow.fade, softWrap: false, style: TextStyle(color: Color(0xFFFFFFFF), fontSize: (taskInfoDescription.length>10? 14.0:20.0), fontWeight: FontWeight.bold)))
+                      Padding(
+                          padding: EdgeInsets.only(top: 5.0, left: 4.0),
+                          child: Text(taskInfoDescription,
+                              overflow: TextOverflow.fade,
+                              softWrap: false,
+                              style: TextStyle(color: Color(0xFFFFFFFF), fontSize: (taskInfoDescription.length > 10 ? 14.0 : 20.0), fontWeight: FontWeight.bold)))
                     ],
                   ))));
 
-
-
-
       List<Widget> taskDetailsHeader = <Widget>[];
-      if(_selectedTask!=null){
+      if (_selectedTask != null) {
         taskDetailsHeader.add(taskInfo);
-        if(_selectedTask.playerID !=null && _selectedTask.playerID.length > 0){
-
+        if (_selectedTask.playerID != null && _selectedTask.playerID.length > 0) {
           String playerName = '${_selectedTask.playerFirstName} ${_selectedTask.playerLastName}';
 
           BoxDecoration boxDecoForTierWidget = null;
           String tier = _selectedTask.playerTier;
-          if(tier!=null){
-            boxDecoForTierWidget = BoxDecoration(
-                borderRadius: BorderRadius.circular(6.0),
-                color: Colors.amber);
-          }
-          else{
-            boxDecoForTierWidget = BoxDecoration(
-                borderRadius: BorderRadius.circular(6.0),
-                border: Border.all(color: Colors.white));
+          if (tier != null) {
+            boxDecoForTierWidget = BoxDecoration(borderRadius: BorderRadius.circular(6.0), color: Colors.amber);
+          } else {
+            boxDecoForTierWidget = BoxDecoration(borderRadius: BorderRadius.circular(6.0), border: Border.all(color: Colors.white));
           }
 
-
-          var playerTierWidget =  Align(
+          var playerTierWidget = Align(
             alignment: Alignment.centerRight,
             child: Container(
               padding: EdgeInsets.all(5.0),
@@ -318,8 +314,6 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
             ),
           );
 
-
-
           var taskCustomer = Expanded(
               flex: 3,
               child: Padding(
@@ -328,13 +322,12 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
                       constraints: BoxConstraints.tightFor(height: 60.0),
                       decoration: actionBoxDecoration,
                       child: Stack(
-                        children: <Widget>[playerDetailsWidget,playerTierWidget],
+                        children: <Widget>[playerDetailsWidget, playerTierWidget],
                       ))));
 
           taskDetailsHeader.add(taskCustomer);
         }
       }
-
 
       taskBody = Padding(
         padding: EdgeInsets.only(left: 25.0, top: 5.0, right: 25.0, bottom: 5.0),
@@ -379,19 +372,22 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
       ),
     );
 
-    Column rightActionWidgets;
+    List<VizTaskActionButton> rightActionWidgets = List<VizTaskActionButton>();
 
     if (_selectedTask != null) {
-      rightActionWidgets = Column(
-        children: <Widget>[
-          VizTaskActionButton('Complete', [Color(0xFF6EBD24), Color(0xFF6EBD24)], onTapCallback: () => print('Complete')),
-          VizTaskActionButton('Cancel', [Color(0xFFFF6600), Color(0xFFFFE100)], onTapCallback: () => print('Cancel')),
-          VizTaskActionButton('Escalate', [Color(0xFF433177), Color(0xFFF2003C)], onTapCallback: () => print('Escalate'))
-        ],
-      );
-    } else {
-      rightActionWidgets = Column();
+      if (_selectedTask.taskStatusID == 1) {
+        rightActionWidgets.add(VizTaskActionButton('Acknowledge', [Color(0xFF6EBD24), Color(0xFF6EBD24)], onTapCallback: () => print('go to Acknowledged status')));
+      } else if (_selectedTask.taskStatusID == 2) {
+        rightActionWidgets.add(VizTaskActionButton('Card in/Scan', [Color(0xFFFF6600), Color(0xFFFFE100)], onTapCallback: () => print('go to Carded status')));
+        rightActionWidgets.add(VizTaskActionButton('Cancel', [Color(0xFF433177), Color(0xFFF2003C)], onTapCallback: () => print('go to Cancelled status')));
+      } else if (_selectedTask.taskStatusID == 3) {
+        rightActionWidgets.add(VizTaskActionButton('Complete', [Color(0xFFFF6600), Color(0xFFFFE100)], onTapCallback: () => print('go to Completed status')));
+        rightActionWidgets.add(VizTaskActionButton('Cancel', [Color(0xFF433177), Color(0xFFF2003C)], onTapCallback: () => print('go to Cancelled status')));
+        rightActionWidgets.add(VizTaskActionButton('Escalate', [Color(0xFF433177), Color(0xFFF2003C)], onTapCallback: () => print('go to Esc status')));
+      }
     }
+
+    Column rightActionsColumn = Column(children: rightActionWidgets);
 
     var rightPanel = Flexible(
       flex: 1,
@@ -403,7 +399,7 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
             child: timerWidget,
           ),
           Expanded(
-            child: rightActionWidgets,
+            child: rightActionsColumn,
           )
         ],
       ),
