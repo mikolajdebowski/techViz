@@ -10,6 +10,11 @@ class VizTaskActionButton extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
+
+    double fontSize = 16.0;
+    if(this.title.length>10){
+      fontSize = 12.0;
+    }
     return Expanded(
         child: GestureDetector(
           onTap: (){
@@ -28,7 +33,7 @@ class VizTaskActionButton extends StatelessWidget{
                   child: Center(
                       child: Text(
                         title,
-                        style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600),
+                        style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.w600),
                       )),
                 )),
             Container(
