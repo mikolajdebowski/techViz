@@ -11,7 +11,7 @@ class ActionBar extends StatefulWidget implements PreferredSizeWidget {
       this.titleColor = const Color(0xFF0073C1),
       this.isRoot = false});
 
-  final double barHeight = 65.0;
+  final double barHeight = 70.0;
   final Widget tailWidget;
   final Widget leadingWidget;
   final List<Widget> centralWidgets;
@@ -86,7 +86,7 @@ class _ActionBarState extends State<ActionBar> {
 
     var container = Container(
       height: widget.barHeight,
-      padding: const EdgeInsets.all(4.0),
+      padding: const EdgeInsets.only(left: 2.0, bottom: 2.0, right: 2.0, top: 18.0),
       decoration: boxDecoration,
       child: Row(
         children: children,
