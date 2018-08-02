@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techviz/common/LowerCaseTextFormatter.dart';
+import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/vizElevated.dart';
+import 'package:techviz/components/vizRainbow.dart';
 import 'package:techviz/config.dart';
 import 'package:techviz/home.dart';
 
@@ -147,18 +149,41 @@ class LoginState extends State<Login> {
           style: textFieldStyle),
     );
 
-    var btnLogin = Padding(
+    var btnNext = VizButton('Login', onTap: loginTap, highlighted: false);
+
+    var btnBox = Padding(
         padding: defaultPadding,
-        child: VizElevated(
-            onTap: loginTap, title: 'Login', customBackground: [Color(0xFFFFFFFF), Color(0xFFAAAAAA)]));
+        child: SizedBox(
+            height: 45.0,
+            width: 100.0,
+            child: Flex(direction: Axis.horizontal, children: <Widget>[btnNext])));
+
+    var row = Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Expanded(
+            flex: 5,
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[txtFieldUser, txtPassword],
+              ),
+            )),
+        Expanded(
+          child: Container(height: 120.0, child: btnBox),
+        ),
+      ],
+    );
 
     return Scaffold(
       body: Container(
           decoration: backgroundDecoration,
-          child: Column(
+          child: Stack(
             children: <Widget>[
               Align(
-                alignment: AlignmentDirectional.bottomEnd,
+                alignment: Alignment.topRight,
                 child: IconButton(
                   icon: Icon(Icons.settings),
                   onPressed: () {
@@ -166,28 +191,8 @@ class LoginState extends State<Login> {
                   },
                 ),
               ),
-              Expanded(
-                child: Center(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Expanded(
-                          flex: 5,
-                          child: Form(
-                            key: _formKey,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[txtFieldUser, txtPassword],
-                            ),
-                          )),
-                      Expanded(
-                        child: Container(height: 60.0, child: btnLogin),
-                      ),
-                    ],
-                  ),
-                ),
-              )
+              Align(alignment: Alignment.center, child: row),
+              Align(alignment: Alignment.bottomCenter, child: VizRainbow()),
             ],
           )),
     );

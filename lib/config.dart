@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:techviz/common/LowerCaseTextFormatter.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/vizElevated.dart';
+import 'package:techviz/components/vizRainbow.dart';
 import 'package:techviz/login.dart';
 import 'package:validator/validator.dart';
 
@@ -91,50 +92,27 @@ class ConfigState extends State<Config> {
                 contentPadding: textFieldContentPadding),
             style: textFieldStyle));
 
-
     var btnNext = VizButton('Next', onTap: onNextTap, highlighted: true);
 
-    final colors = <Color>[
-      Color(0xFFd6de27),
-      Color(0xFF96c93f),
-      Color(0xFF09a593),
-      Color(0xFF0c7dc2),
-      Color(0xFF564992),
-      Color(0xFFea1c42),
-      Color(0xFFf69320),
-      Color(0xFFfedd00)
-    ];
-
-    var rainbow = Container(
-      height: 10.0,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight, // 10% of the width, so there are ten blinds.
-          colors: colors,
-//          stops: colorStops// repeats the gradient over the canvas
-        ),
-      ),
-    );
-
-
-
-    var btnBox = Padding(padding: defaultPadding, child: SizedBox(
-        height: 45.0,
-        width: 100.0,
-        child: Flex(
-            direction: Axis.horizontal, children: <Widget>[btnNext])));
+    var btnBox = Padding(
+        padding: defaultPadding,
+        child: SizedBox(
+            height: 45.0,
+            width: 100.0,
+            child: Flex(direction: Axis.horizontal, children: <Widget>[btnNext])));
 
     var formColumn = Expanded(
       child: Column(
         children: <Widget>[
-          Flexible(child: Form(
+          Flexible(
+              child: Form(
             key: _formKey,
             child: textField,
           )),
           Text(
             'Your server address needs to be set before you can login for the first time.',
-            style: TextStyle(color: Color(0xff474f5b)),textAlign: TextAlign.center,
+            style: TextStyle(color: Color(0xff474f5b)),
+            textAlign: TextAlign.center,
           )
         ],
       ),
@@ -143,7 +121,13 @@ class ConfigState extends State<Config> {
     var row = Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[Container(width: 40.0,),formColumn,btnBox],
+      children: <Widget>[
+        Container(
+          width: 40.0,
+        ),
+        formColumn,
+        btnBox
+      ],
     );
 
     return Scaffold(
@@ -151,8 +135,13 @@ class ConfigState extends State<Config> {
             decoration: backgroundDecoration,
             child: Stack(
               children: <Widget>[
-                Align(alignment: Alignment.center, child: Container(height: 100.0, child: row,)),
-                Align(alignment: Alignment.bottomCenter, child: rainbow),
+                Align(
+                    alignment: Alignment.center,
+                    child: Container(
+                      height: 100.0,
+                      child: row,
+                    )),
+                Align(alignment: Alignment.bottomCenter, child: VizRainbow()),
               ],
             )));
   }
