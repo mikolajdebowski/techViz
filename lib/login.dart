@@ -57,7 +57,15 @@ class LoginState extends State<Login> {
           MaterialPageRoute(builder: (context) => Loader()),
         );
       }).catchError((Object error) {
-        print(error.toString());
+        showModalBottomSheet<String>(
+            context: context,
+            builder: (BuildContext context) {
+              return Center(
+                  child: Padding(
+                padding: EdgeInsets.all(80.0),
+                child: Text(error.toString()),
+              ));
+            });
       });
     }
   }
