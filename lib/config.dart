@@ -2,7 +2,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:techviz/common/LowerCaseTextFormatter.dart';
 import 'package:techviz/components/VizButton.dart';
-import 'package:techviz/components/vizElevated.dart';
+import 'package:flutter/services.dart';
 import 'package:techviz/components/vizRainbow.dart';
 import 'package:techviz/login.dart';
 import 'package:validator/validator.dart';
@@ -51,6 +51,9 @@ class ConfigState extends State<Config> {
 
   @override
   Widget build(BuildContext context) {
+
+    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+
     var textFieldStyle = TextStyle(
         fontStyle: FontStyle.italic,
         fontSize: 20.0,

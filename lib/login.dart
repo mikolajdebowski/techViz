@@ -1,17 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techviz/common/LowerCaseTextFormatter.dart';
 import 'package:techviz/components/VizButton.dart';
-import 'package:techviz/components/vizElevated.dart';
 import 'package:techviz/components/vizRainbow.dart';
 import 'package:techviz/config.dart';
 import 'package:techviz/home.dart';
-
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
 import 'package:techviz/loader.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
@@ -89,6 +85,8 @@ class LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+
     var textFieldStyle = TextStyle(
         fontStyle: FontStyle.italic,
         fontSize: 20.0,
@@ -190,15 +188,17 @@ class LoginState extends State<Login> {
           decoration: backgroundDecoration,
           child: Stack(
             children: <Widget>[
-              Align(
-                alignment: Alignment.topRight,
-                child: IconButton(
-                  icon: Icon(Icons.settings),
-                  onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/config');
-                  },
-                ),
-              ),
+              Padding(
+                  padding: EdgeInsets.only(top:20.0),
+                  child: Align(
+                    alignment: Alignment.topRight,
+                    child: IconButton(
+                      icon: Icon(Icons.settings),
+                      onPressed: () {
+                        Navigator.pushReplacementNamed(context, '/config');
+                      },
+                    ),
+                  )),
               Align(alignment: Alignment.center, child: row),
               Align(alignment: Alignment.bottomCenter, child: VizRainbow()),
             ],
