@@ -28,7 +28,9 @@ class VizTimerState extends State<VizTimer> {
         }
 
         _peridic = Timer.periodic(Duration(seconds: 1), (Timer t) {
-          var _difference = DateTime.now().difference(widget.timeStarted);
+          var now = DateTime.now().toUtc();
+          var _difference = now.difference(widget.timeStarted);
+
 
           var hours = (_difference.inHours);
           var mins = (_difference.inMinutes - (_difference.inHours * 60));

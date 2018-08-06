@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/vizElevated.dart';
@@ -11,7 +13,7 @@ class ActionBar extends StatefulWidget implements PreferredSizeWidget {
       this.titleColor = const Color(0xFF0073C1),
       this.isRoot = false});
 
-  final double barHeight = 70.0;
+  final double barHeight = Platform.isIOS? 70.0: 65.0;
   final Widget tailWidget;
   final Widget leadingWidget;
   final List<Widget> centralWidgets;
@@ -84,9 +86,15 @@ class _ActionBarState extends State<ActionBar> {
     var boxDecoration = BoxDecoration(
         gradient: gradient);
 
+    var topMargin = Platform.isIOS? 0.0: 21.0;
+
+    const paddingIOS = EdgeInsets.only(left: 2.0, bottom: 2.0, right: 2.0, top: 18.0);
+    const paddingAndroid = EdgeInsets.only(left: 2.0, bottom: 2.0, right: 2.0);
+
     var container = Container(
+      margin: EdgeInsets.only(top: topMargin),
       height: widget.barHeight,
-      padding: const EdgeInsets.only(left: 2.0, bottom: 2.0, right: 2.0, top: 18.0),
+      padding: Platform.isIOS ? paddingIOS: paddingAndroid,
       decoration: boxDecoration,
       child: Row(
         children: children,
@@ -95,4 +103,6 @@ class _ActionBarState extends State<ActionBar> {
 
     return container;
   }
+
+
 }

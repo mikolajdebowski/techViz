@@ -8,7 +8,12 @@ import 'package:techviz/menu.dart';
 import 'package:techviz/splash.dart';
 
 
-void main() => runApp(TechVizApp());
+void main() {
+  SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight])
+      .then((_) {
+    runApp(TechVizApp());
+  });
+}
 
 class TechVizApp extends StatelessWidget {
   @override

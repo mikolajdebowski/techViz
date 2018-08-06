@@ -4,7 +4,6 @@ import 'package:techviz/common/LowerCaseTextFormatter.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:flutter/services.dart';
 import 'package:techviz/components/vizRainbow.dart';
-import 'package:techviz/login.dart';
 import 'package:validator/validator.dart';
 
 class Config extends StatefulWidget {

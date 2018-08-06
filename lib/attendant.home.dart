@@ -22,7 +22,7 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
   List<TaskStatus> _taskStatusList = [];
   List<TaskType> _taskTypeList = [];
   EventBus eventBus;
-  var _taskListStatus = "assets/images/ic_processing.png";
+  var _taskListStatusIcon = "assets/images/ic_processing.png";
 
   @override
   initState() {
@@ -31,19 +31,21 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
     _presenter = TaskListPresenter(this);
     _presenter.loadTaskList();
 
-    _taskListStatus = "assets/images/ic_processing.png";
+    _taskListStatusIcon = "assets/images/ic_processing.png";
 
-    TaskStatusRepository().getAll().then((List<TaskStatus> list) {
-      _taskStatusList = list;
 
-      TaskTypeRepository().getAll().then((List<TaskType> list) {
-        _taskTypeList = list;
-      });
-    });
+    loadLookups();
 
-    bindQueues();
+
 
     super.initState();
+  }
+
+  void loadLookups() async{
+    _taskStatusList = await TaskStatusRepository().getAll();
+    _taskTypeList = await TaskTypeRepository().getAll();
+
+    bindQueues();
   }
 
   void bindQueues() {
@@ -59,7 +61,7 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
   void onTaskListLoaded(List<Task> result) {
     setState(() {
       _taskList = result;
-      _taskListStatus = null;
+      _taskListStatusIcon = null;
     });
   }
 
@@ -150,7 +152,7 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
                       Text(taskTextStr, style: TextStyle(color: Colors.white)),
                       Padding(
                         padding: EdgeInsets.only(left: 10.0),
-                        child: _taskListStatus != null ? ImageIcon(AssetImage(_taskListStatus), size: 15.0, color: Colors.blueGrey) : null,
+                        child: _taskListStatusIcon != null ? ImageIcon(AssetImage(_taskListStatusIcon), size: 15.0, color: Colors.blueGrey) : null,
                       )
                     ],
                   ),
@@ -167,8 +169,8 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
       ),
     );
 
-    TaskType taskType = _selectedTask != null ? _taskTypeList.where((t) => t.id == _selectedTask.taskTypeID).first : null;
-    TaskStatus taskStatus = _selectedTask != null ? _taskStatusList.where((t) => t.id == _selectedTask.taskStatusID).first : null;
+    TaskType taskType = _selectedTask != null && _taskTypeList!=null && _taskTypeList.length> 0 ? _taskTypeList.where((t) => t.id == _selectedTask.taskTypeID).first : null;
+    TaskStatus taskStatus = _selectedTask != null && _taskStatusList!=null &&  _taskStatusList.length> 0? _taskStatusList.where((t) => t.id == _selectedTask.taskStatusID).first : null;
 
     //CENTER PANEL WIDGETS
     var rowCenterHeader = Padding(

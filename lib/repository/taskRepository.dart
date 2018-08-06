@@ -17,7 +17,6 @@ class TaskRepository implements ITaskRepository{
   @override
   Future<List<Task>> getTaskList() async {
     LocalRepository localRepo = LocalRepository();
-    await localRepo.open();
 
     List<Map<String, dynamic>> queryResult = await localRepo.rawQuery('SELECT * FROM Task');
 
@@ -40,8 +39,6 @@ class TaskRepository implements ITaskRepository{
       );
       list.add(t);
     });
-
-    await localRepo.close();
 
     return list;
   }

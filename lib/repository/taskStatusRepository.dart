@@ -16,8 +16,6 @@ class TaskStatusRepository implements ITaskStatusRepository{
   Future<List<TaskStatus>> getAll() async {
     LocalRepository localRepo = LocalRepository();
 
-    await localRepo.open();
-
     List<Map<String, dynamic>> queryResult = await localRepo.rawQuery('SELECT * FROM TaskStatus');
 
     List<TaskStatus> toReturn = List<TaskStatus>();
@@ -28,7 +26,6 @@ class TaskStatusRepository implements ITaskStatusRepository{
       );
       toReturn.add(t);
     });
-
 
     return toReturn;
   }
