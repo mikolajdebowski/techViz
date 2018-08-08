@@ -13,9 +13,10 @@ class Task {
   final String playerFirstName;
   final String playerLastName;
   final String playerTier;
+  final String playerTierColorHEX;
 
   const Task({this.id, this.location, this.taskTypeID, this.taskStatusID, this.machineId, this.taskCreated, this.taskAssigned, this.amount, this.eventDesc, this.playerID,
-  this.playerFirstName, this.playerLastName, this.playerTier});
+  this.playerFirstName, this.playerLastName, this.playerTier, this.playerTierColorHEX});
 
 }
 

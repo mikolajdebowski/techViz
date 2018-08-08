@@ -284,7 +284,8 @@ class AttendantHomeState extends State<AttendantHome> implements TaskListPresent
           BoxDecoration boxDecoForTierWidget = null;
           String tier = _selectedTask.playerTier;
           if (tier != null) {
-            boxDecoForTierWidget = BoxDecoration(borderRadius: BorderRadius.circular(6.0), color: Colors.amber);
+            var hexColor = Color(int.parse('0xFF${_selectedTask.playerTierColorHEX}'));
+            boxDecoForTierWidget = BoxDecoration(borderRadius: BorderRadius.circular(6.0), color: hexColor);
           } else {
             boxDecoForTierWidget = BoxDecoration(borderRadius: BorderRadius.circular(6.0), border: Border.all(color: Colors.white));
           }

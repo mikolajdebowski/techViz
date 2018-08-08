@@ -36,6 +36,7 @@ class TaskRepository implements ITaskRepository{
         playerFirstName: task['PlayerFirstName']!=null ? task['PlayerFirstName'] as String : '',
         playerLastName: task['PlayerLastName']!=null ? task['PlayerLastName'] as String : '',
         playerTier: task['PlayerTier']!=null ? task['PlayerTier'] as String : '',
+        playerTierColorHEX: task['PlayerTierColorHEX']!=null ? task['PlayerTierColorHEX'] as String : 'FFD700'
       );
       list.add(t);
     });
