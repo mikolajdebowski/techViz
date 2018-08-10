@@ -5,21 +5,29 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techviz/common/LowerCaseTextFormatter.dart';
 import 'package:techviz/components/VizButton.dart';
+import 'package:techviz/components/VizLoadingIndicator.dart';
 import 'package:techviz/components/vizRainbow.dart';
 import 'package:techviz/config.dart';
 import 'package:techviz/home.dart';
-import 'package:techviz/loader.dart';
+import 'package:techviz/repository/localRepository.dart';
+import 'package:techviz/repository/repository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 class Login extends StatefulWidget {
+
   static final String USERNAME = 'USERNAME';
   static final String PASSWORD = 'PASSWORD';
+
 
   @override
   State<StatefulWidget> createState() => LoginState();
 }
 
 class LoginState extends State<Login> {
+
+  bool _isLoading = false;
+  String _loadingMessage = '...';
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final Map<String, String> _formData = {
     'username': null,
@@ -35,24 +43,61 @@ class LoginState extends State<Login> {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
 
+      setState(() {
+        _isLoading = true;
+        _loadingMessage = 'Authenticating...';
+      });
+
       SessionClient client = SessionClient.getInstance();
-
       SharedPreferences prefs = await SharedPreferences.getInstance();
-
       String serverUrl = prefs.get(Config.SERVERURL) as String;
 
-      client.init(ClientType.PROCESSOR, serverUrl); //'http://tvdev2.internal.bis2.net'
+      client.init(ClientType.PROCESSOR, serverUrl);
 
       Future<String> authResponse = client.auth(_formData['username'], _formData['password']);
       authResponse.then((String response) async {
         await prefs.setString(Login.USERNAME, usernameAddressController.text);
         await prefs.setString(Login.PASSWORD, passwordAddressController.text);
 
-        Navigator.push<Home>(
-          context,
-          MaterialPageRoute(builder: (context) => Loader()),
-        );
+        Repository repo = Repository();
+        await repo.configure(Flavor.PROCESSOR);
+
+        setState(() {
+          _loadingMessage = 'Cleaning up local database...';
+        });
+
+        LocalRepository localRepo = LocalRepository();
+        await localRepo.open();
+        await localRepo.dropDatabase();
+
+        setState(() {
+          _loadingMessage = 'Loading Tasks...';
+        });
+
+        await repo.taskRepository.fetch();
+
+        setState(() {
+          _loadingMessage = 'Loading Task Statuses...';
+        });
+        await repo.taskStatusRepository.fetch();
+
+        setState(() {
+          _loadingMessage = 'Loading Task Types...';
+        });
+        await repo.taskTypeRepository.fetch();
+
+        setState(() {
+          _loadingMessage = 'Done!';
+        });
+
+        Future.delayed( Duration(seconds: 1), () {
+
+          Navigator.pushReplacement(context, MaterialPageRoute<Home>(builder: (BuildContext context) => Home()));
+        });
       }).catchError((Object error) {
+        setState(() {
+          _isLoading = false;
+        });
         showModalBottomSheet<String>(
             context: context,
             builder: (BuildContext context) {
@@ -79,7 +124,6 @@ class LoginState extends State<Login> {
         passwordAddressController.text = prefs.getString(Login.PASSWORD);
       }
     });
-
     super.initState();
   }
 
@@ -185,24 +229,25 @@ class LoginState extends State<Login> {
 
     return Scaffold(
       body: Container(
-          decoration: backgroundDecoration,
-          child: Stack(
-            children: <Widget>[
-              Padding(
-                  padding: EdgeInsets.only(top:20.0),
-                  child: Align(
-                    alignment: Alignment.topRight,
-                    child: IconButton(
-                      icon: Icon(Icons.settings),
-                      onPressed: () {
-                        Navigator.pushReplacementNamed(context, '/config');
-                      },
-                    ),
-                  )),
-              Align(alignment: Alignment.center, child: row),
-              Align(alignment: Alignment.bottomCenter, child: VizRainbow()),
-            ],
-          )),
+            decoration: backgroundDecoration,
+            child: Stack(
+              children: <Widget>[
+                Padding(
+                    padding: EdgeInsets.only(top:20.0),
+                    child: Align(
+                      alignment: Alignment.topRight,
+                      child: IconButton(
+                        icon: Icon(Icons.settings),
+                        onPressed: () {
+                          Navigator.pushReplacementNamed(context, '/config');
+                        },
+                      ),
+                    )),
+                Align(alignment: Alignment.center, child: row),
+                Align(alignment: Alignment.bottomCenter, child: VizRainbow()),
+                VizLoadingIndicator(message: _loadingMessage, isLoading: _isLoading)
+              ],
+            )),
     );
   }
 }

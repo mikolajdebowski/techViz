@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:techviz/config.dart';
 import 'package:techviz/home.dart';
-import 'package:techviz/loader.dart';
 import 'package:techviz/login.dart';
 import 'package:techviz/menu.dart';
 import 'package:techviz/splash.dart';
@@ -28,8 +27,7 @@ class TechVizApp extends StatelessWidget {
         '/home': (BuildContext context) => Home(),
         '/menu': (BuildContext context) => Menu(),
         '/login': (BuildContext context) => Login(),
-        '/config': (BuildContext context) => Config(),
-        '/loader': (BuildContext context) => Loader(),
+        '/config': (BuildContext context) => Config()
       },
     );
   }
