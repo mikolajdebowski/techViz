@@ -1,14 +1,14 @@
-
-
 import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
 import 'package:techviz/repository/processor/processorRoleRepository.dart';
 import 'package:techviz/repository/processor/processorUserRoleRepository.dart';
+import 'package:techviz/repository/roleRepository.dart';
 import 'package:techviz/repository/taskRepository.dart';
 import 'package:techviz/repository/mock/mockTaskRepository.dart';
 import 'package:techviz/repository/processor/processorTaskRepository.dart';
 import 'package:techviz/repository/processor/processorTaskStatusRepository.dart';
 import 'package:techviz/repository/processor/processorTaskTypeRepository.dart';
+import 'package:techviz/repository/userRoleRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 enum Flavor {
@@ -56,13 +56,13 @@ class Repository{
     }
   }
 
-  IRepository get rolesRepository {
+  IRoleRepository get rolesRepository {
     switch(_flavor) {
       default: return ProcessorRoleRepository();
     }
   }
 
-  IRepository get userRolesRepository {
+  IUserRoleRepository get userRolesRepository {
     switch(_flavor) {
       default: return ProcessorUserRoleRepository();
     }

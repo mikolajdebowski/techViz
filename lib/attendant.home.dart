@@ -15,7 +15,7 @@ class AttendantHome extends StatefulWidget {
   State<StatefulWidget> createState() => AttendantHomeState();
 }
 
-class AttendantHomeState extends State<AttendantHome> implements TaskListPresenterContract<Task> {
+class AttendantHomeState extends State<AttendantHome> implements ITaskListPresenter<Task> {
   TaskListPresenter _presenter;
   Task _selectedTask = null;
   List<Task> _taskList = [];

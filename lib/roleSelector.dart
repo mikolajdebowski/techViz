@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
-import 'package:techviz/home.dart';
+import 'package:techviz/model/userRole.dart';
+import 'package:techviz/presenter/roleListPresenter.dart';
 
 class RoleSelector extends StatefulWidget {
   RoleSelector({Key key}) : super(key: key);
@@ -11,21 +12,25 @@ class RoleSelector extends StatefulWidget {
   State<StatefulWidget> createState() => RoleSelectorState();
 }
 
-class RoleSelectorState extends State<RoleSelector> {
-  List<VizSelectorOption> options = List<VizSelectorOption>();
+class RoleSelectorState extends State<RoleSelector> implements IRoleListPresenter<UserRole> {
+  List<UserRole> roleList = List<UserRole>();
+  RoleListPresenter roleListPresenter;
+  String selectedRoleID;
 
+  List<GlobalKey> listViewKeys = List<GlobalKey>();
   @override
   void initState(){
     super.initState();
 
-    options.add(VizSelectorOption("1", "Available"));
-    options.add(VizSelectorOption("2", "Off shift"));
+    roleListPresenter = new RoleListPresenter(this);
+    roleListPresenter.loadUserRoles("irina2");
 
   }
 
 
   void onOkTap() {
-    Navigator.pushReplacement(context, MaterialPageRoute<Home>(builder: (BuildContext context) => Home()));
+    print(selectedRoleID);
+    //Navigator.pushReplacement(context, MaterialPageRoute<Home>(builder: (BuildContext context) => Home()));
   }
 
   @override
@@ -34,22 +39,23 @@ class RoleSelectorState extends State<RoleSelector> {
 
     var okBtn = VizButton('OK', onTap: onOkTap, highlighted: true);
 
-
-
+    listViewKeys = List<GlobalKey>();
 
     var body = GridView.count(
       shrinkWrap: true,
       padding: EdgeInsets.all(4.0),
-      childAspectRatio: options.length > 4 ? 1.0 : 2.0,
+      childAspectRatio: 2.0,
       addAutomaticKeepAlives: false,
-      crossAxisCount: options.length > 6 ? 6 : options.length,
-      children: options.map((VizSelectorOption option) {
-      return VizOptionButton(
-      option.description,
-      key: GlobalKey(),
-      selected: option.selected);
-     }).toList());
+      crossAxisCount: 3,
+      children: roleList.map((UserRole role) {
+        bool selected = selectedRoleID!= null && selectedRoleID ==  role.roleID.toString();
 
+        return  VizOptionButton(
+            role.roleDescription,
+            onTap: onOptionSelected,
+            tag: role.roleID.toString(),
+            selected: selected);
+     }).toList());
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -63,32 +69,44 @@ class RoleSelectorState extends State<RoleSelector> {
   }
 
 
+  void onOptionSelected(String tag){
+    setState(() {
+      selectedRoleID = tag;
+    });
+  }
+
+  @override
+  void onLoadError(Error error) {
+    // TODO: implement onLoadError
+  }
+
+  @override
+  void onRoleListLoaded(List<UserRole> result) {
+    setState(() {
+      roleList = result;
+    });
+  }
+
   void onSelectAllTapped() {
-    if (options != null) {
-      setState(() {
-        options.forEach((option) {
-          option.selected = true;
-        });
-      });
-    }
+//    if (options != null) {
+//      setState(() {
+//        options.forEach((option) {
+//          option.selected = true;
+//        });
+//      });
+//    }
   }
 
   void onSelectNoneTapped() {
-    if (options != null) {
-      setState(() {
-        options.forEach((option) {
-          option.selected = false;
-        });
-      });
-    }
+//    if (options != null) {
+//      setState(() {
+//        options.forEach((option) {
+//          option.selected = false;
+//        });
+//      });
+//    }
   }
 
-}
 
-class VizSelectorOption {
-  VizSelectorOption(this.id, this.description, {this.selected = false});
 
-  Object id;
-  String description;
-  bool selected;
 }

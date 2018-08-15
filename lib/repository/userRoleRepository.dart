@@ -6,7 +6,7 @@ import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/localRepository.dart';
 
 abstract class IUserRoleRepository implements IRepository<dynamic>{
-  Future<List<UserRole>> getAll();
+  Future<List<UserRole>> getUserRoles(String userID);
 }
 
 class UserRoleRepository implements IUserRoleRepository{
@@ -15,10 +15,11 @@ class UserRoleRepository implements IUserRoleRepository{
    * fetch local
    */
   @override
-  Future<List<UserRole>> getAll() async {
+  Future<List<UserRole>> getUserRoles(String userID) async {
     LocalRepository localRepo = LocalRepository();
 
-    List<Map<String, dynamic>> queryResult = await localRepo.rawQuery("SELECT UserID, UserRoleID, UserRoleName FROM UserRole");
+    String sql = "SELECT UserID, UserRoleID, UserRoleName FROM UserRole WHERE UserID = '${userID}'";
+    List<Map<String, dynamic>> queryResult = await localRepo.rawQuery(sql);
 
     List<UserRole> toReturn = List<UserRole>();
     queryResult.forEach((Map<String, dynamic> role) {

@@ -64,15 +64,13 @@ class VizSelectorState extends State<VizSelector> {
         children: options.map((VizSelectorOption option) {
           return VizOptionButton(
               option.description,
-              key: GlobalKey(),
+              //key: GlobalKey(),
               selected: option.selected);
         }).toList());
 
     bool canPop = Navigator.canPop(context);
 
-    print(widget.onOKTapTapped);
-
-    var leading = canPop ? VizButton('Back', onTap: onBackTap, highlighted: true) : null;
+    var leading = canPop ? VizButton('Back', onTap: onBackTap, highlighted: false) : null;
     var tailing = widget.onOKTapTapped!=null ? VizButton('OK', onTap: onOkTap, highlighted: true) : null;
 
     return Scaffold(
