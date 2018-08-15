@@ -1,29 +1,31 @@
 import 'dart:async';
 import 'package:techviz/model/role.dart';
 import 'package:techviz/model/taskType.dart';
+import 'package:techviz/model/userRole.dart';
 import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/localRepository.dart';
 
-abstract class IRoleRepository implements IRepository<dynamic>{
-  Future<List<Role>> getAll();
+abstract class IUserRoleRepository implements IRepository<dynamic>{
+  Future<List<UserRole>> getAll();
 }
 
-class RoleRepository implements IRoleRepository{
+class UserRoleRepository implements IUserRoleRepository{
 
   /**
    * fetch local
    */
   @override
-  Future<List<Role>> getAll() async {
+  Future<List<UserRole>> getAll() async {
     LocalRepository localRepo = LocalRepository();
 
-    List<Map<String, dynamic>> queryResult = await localRepo.rawQuery("SELECT UserRoleID, UserRoleName FROM Role");
+    List<Map<String, dynamic>> queryResult = await localRepo.rawQuery("SELECT UserID, UserRoleID, UserRoleName FROM UserRole");
 
-    List<Role> toReturn = List<Role>();
+    List<UserRole> toReturn = List<UserRole>();
     queryResult.forEach((Map<String, dynamic> role) {
-      var t = Role(
-        id: role['UserRoleID'] as int,
-        description: role['UserRoleID'] as String,
+      var t = UserRole(
+        userID: role['UserID'] as String,
+        roleID: role['UserRoleID'] as int,
+        roleDescription: role['UserRoleName'] as String,
       );
       toReturn.add(t);
     });

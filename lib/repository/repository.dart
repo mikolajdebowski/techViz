@@ -2,6 +2,8 @@
 
 import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
+import 'package:techviz/repository/processor/processorRoleRepository.dart';
+import 'package:techviz/repository/processor/processorUserRoleRepository.dart';
 import 'package:techviz/repository/taskRepository.dart';
 import 'package:techviz/repository/mock/mockTaskRepository.dart';
 import 'package:techviz/repository/processor/processorTaskRepository.dart';
@@ -51,6 +53,18 @@ class Repository{
   IRepository get taskTypeRepository {
     switch(_flavor) {
       default: return ProcessorTaskTypeRepository();
+    }
+  }
+
+  IRepository get rolesRepository {
+    switch(_flavor) {
+      default: return ProcessorRoleRepository();
+    }
+  }
+
+  IRepository get userRolesRepository {
+    switch(_flavor) {
+      default: return ProcessorUserRoleRepository();
     }
   }
 }

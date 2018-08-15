@@ -41,7 +41,7 @@ class ProcessorRepositoryConfig {
     List<String> listTableTags = [
               LiveTableType.TECHVIZ_MOBILE_TASK.toString(),
     LiveTableType.TECHVIZ_MOBILE_TASK_STATUS.toString(),
-    LiveTableType.TECHVIZ_MOBILE_TASK_TYPE.toString()];
+    LiveTableType.TECHVIZ_MOBILE_TASK_TYPE.toString(), LiveTableType.TECHVIZ_MOBILE_ROLE.toString(), LiveTableType.TECHVIZ_MOBILE_USER_ROLE.toString()];
 
     for(Map<String,dynamic> liveTable in liveTableslist){
       String liveTableTag = liveTable['tags'];
@@ -63,7 +63,11 @@ class ProcessorRepositoryConfig {
     assert(DocumentID!=null);
     assert(LiveTables!=null);
 
-    return LiveTables.where((LiveTable lt) => lt.Tags == Tag).first;
+    var lt = LiveTables.where((LiveTable lt) => lt.Tags == Tag);
+    if(lt==null || lt.length==0){
+      throw Exception('No livetable for ${Tag}');
+    }
+    return lt.first;
   }
 
 
@@ -169,17 +173,14 @@ class ProcessorRepositoryConfig {
   </RightHandSide>
 </SearchCriteria>''';
 
-
-
-
 }
 
 enum LiveTableType{
   TECHVIZ_MOBILE_TASK,
   TECHVIZ_MOBILE_TASK_STATUS,
-  TECHVIZ_MOBILE_TASK_TYPE
-
-
+  TECHVIZ_MOBILE_TASK_TYPE,
+  TECHVIZ_MOBILE_ROLE,
+  TECHVIZ_MOBILE_USER_ROLE
 }
 
 class LiveTable{

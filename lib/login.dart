@@ -7,10 +7,12 @@ import 'package:techviz/common/LowerCaseTextFormatter.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizLoadingIndicator.dart';
 import 'package:techviz/components/vizRainbow.dart';
+import 'package:techviz/components/vizSelector.dart';
 import 'package:techviz/config.dart';
 import 'package:techviz/home.dart';
 import 'package:techviz/repository/localRepository.dart';
 import 'package:techviz/repository/repository.dart';
+import 'package:techviz/roleSelector.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 class Login extends StatefulWidget {
@@ -87,12 +89,17 @@ class LoginState extends State<Login> {
         await repo.taskTypeRepository.fetch();
 
         setState(() {
+          _loadingMessage = 'Loading Roles...';
+        });
+        await repo.rolesRepository.fetch();
+        await repo.userRolesRepository.fetch();
+
+        setState(() {
           _loadingMessage = 'Done!';
         });
 
         Future.delayed( Duration(seconds: 1), () {
-
-          Navigator.pushReplacement(context, MaterialPageRoute<Home>(builder: (BuildContext context) => Home()));
+          Navigator.pushReplacement(context, MaterialPageRoute<RoleSelector>(builder: (BuildContext context) => RoleSelector()));
         });
       }).catchError((Object error) {
         setState(() {
@@ -199,21 +206,21 @@ class LoginState extends State<Login> {
           style: textFieldStyle),
     );
 
-    var btnNext = VizButton('Login', onTap: loginTap, highlighted: false);
+    var btnLogin = VizButton('Login', onTap: loginTap, highlighted: false);
 
     var btnBox = Padding(
         padding: defaultPadding,
         child: SizedBox(
             height: 45.0,
             width: 100.0,
-            child: Flex(direction: Axis.horizontal, children: <Widget>[btnNext])));
+            child: Flex(direction: Axis.horizontal, children: <Widget>[btnLogin])));
 
     var row = Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Expanded(
-            flex: 5,
+            flex: 4,
             child: Form(
               key: _formKey,
               child: Column(

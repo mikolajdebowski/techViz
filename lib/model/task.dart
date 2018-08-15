@@ -18,14 +18,3 @@ class Task {
   this.playerFirstName, this.playerLastName, this.playerTier});
 
 }
-
-
-/*
-{
-	"_ID": "123",
-	"Location": "12-34-56",
-	"TaskStatusID": 1,
-	"TaskTypeID": 1,
-	"TaskCreated": "2018-07-27 09:26:48.043"
-}
-*/

@@ -83,21 +83,21 @@ class _HomeState extends State<Home> {
   }
 
   void goToZonesSelector() {
-    var selector = VizSelector(
-        title: 'My Zones', multiple: true, onOKTapTapped: onZoneSelectorCallbackOK, options: availableZones);
-    Navigator.push<VizSelector>(
-      context,
-      MaterialPageRoute(builder: (context) => selector),
-    );
+//    var selector = VizSelector(
+//        'My Zones', availableZones, multiple: true, onOKTapTapped: onZoneSelectorCallbackOK);
+//    Navigator.push<VizSelector>(
+//      context,
+//      MaterialPageRoute(builder: (context) => selector),
+//    );
   }
 
   void goToStatusSelector() {
-    var selector =
-        VizSelector(title: 'My Status', onOKTapTapped: onMyStatusSelectorCallbackOK, options: availableStatuses);
-    Navigator.push<VizSelector>(
-      context,
-      MaterialPageRoute(builder: (context) => selector),
-    );
+//    var selector =
+//        VizSelector('My Status', availableStatuses, onOKTapTapped: onMyStatusSelectorCallbackOK);
+//    Navigator.push<VizSelector>(
+//      context,
+//      MaterialPageRoute(builder: (context) => selector),
+//    );
   }
 
   void goToSearchSelector() {
