@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'package:techviz/model/role.dart';
-import 'package:techviz/model/taskType.dart';
 import 'package:techviz/model/userRole.dart';
 import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/localRepository.dart';
@@ -18,7 +16,7 @@ class UserRoleRepository implements IUserRoleRepository{
   Future<List<UserRole>> getUserRoles(String userID) async {
     LocalRepository localRepo = LocalRepository();
 
-    String sql = "SELECT UserID, UserRoleID, UserRoleName FROM UserRole WHERE UserID = '${userID}'";
+    String sql = "SELECT UserID, UserRoleID, UserRoleName FROM UserRole";
     List<Map<String, dynamic>> queryResult = await localRepo.rawQuery(sql);
 
     List<UserRole> toReturn = List<UserRole>();
@@ -38,7 +36,7 @@ class UserRoleRepository implements IUserRoleRepository{
    * fetch remote
    */
   @override
-  Future<List<dynamic>> fetch() {
+  Future<List> fetch() {
     throw new UnimplementedError('Needs to be overwritten');
   }
 }

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:techviz/model/role.dart';
-import 'package:techviz/model/taskType.dart';
 import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/localRepository.dart';
 

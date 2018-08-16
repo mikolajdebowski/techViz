@@ -7,26 +7,23 @@ import 'package:techviz/common/LowerCaseTextFormatter.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizLoadingIndicator.dart';
 import 'package:techviz/components/vizRainbow.dart';
-import 'package:techviz/components/vizSelector.dart';
 import 'package:techviz/config.dart';
-import 'package:techviz/home.dart';
 import 'package:techviz/repository/localRepository.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/roleSelector.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
+
 
 class Login extends StatefulWidget {
 
   static final String USERNAME = 'USERNAME';
   static final String PASSWORD = 'PASSWORD';
 
-
   @override
   State<StatefulWidget> createState() => LoginState();
 }
 
 class LoginState extends State<Login> {
-
   bool _isLoading = false;
   String _loadingMessage = '...';
 
@@ -40,6 +37,78 @@ class LoginState extends State<Login> {
   final passwordAddressController = TextEditingController();
 
   SharedPreferences prefs;
+
+  @override
+  void initState() {
+    SharedPreferences.getInstance().then((onValue) {
+      prefs = onValue;
+
+      if (prefs.getKeys().contains(Login.USERNAME)) {
+        usernameAddressController.text = prefs.getString(Login.USERNAME);
+      }
+
+
+      if(Utils.isDebug){
+        if (prefs.getKeys().contains(Login.PASSWORD)) {
+          passwordAddressController.text = prefs.getString(Login.PASSWORD);
+        }
+      }
+    });
+    super.initState();
+  }
+
+  void loadInitialData() async{
+    Repository repo = Repository();
+    await repo.configure(Flavor.PROCESSOR);
+
+    setState(() {
+      _loadingMessage = 'Cleaning up local database...';
+    });
+
+    LocalRepository localRepo = LocalRepository();
+    await localRepo.open();
+    await localRepo.dropDatabase();
+
+    setState(() {
+      _loadingMessage = 'Fetching User Data...';
+    });
+    await repo.userRepository.fetch();
+
+
+
+    setState(() {
+      _loadingMessage = 'Fetching Tasks...';
+    });
+
+    await repo.taskRepository.fetch();
+
+
+
+    setState(() {
+      _loadingMessage = 'Fetching Task Statuses...';
+    });
+    await repo.taskStatusRepository.fetch();
+
+
+
+    setState(() {
+      _loadingMessage = 'Fetching Task Types...';
+    });
+    await repo.taskTypeRepository.fetch();
+
+
+
+    setState(() {
+      _loadingMessage = 'Fetching Roles...';
+    });
+    await repo.rolesRepository.fetch();
+    await repo.userRolesRepository.fetch();
+
+    setState(() {
+      _loadingMessage = 'Done!';
+    });
+  }
+
 
   void loginTap() async {
     if (_formKey.currentState.validate()) {
@@ -58,47 +127,13 @@ class LoginState extends State<Login> {
 
       Future<String> authResponse = client.auth(_formData['username'], _formData['password']);
       authResponse.then((String response) async {
+
         await prefs.setString(Login.USERNAME, usernameAddressController.text);
         await prefs.setString(Login.PASSWORD, passwordAddressController.text);
 
-        Repository repo = Repository();
-        await repo.configure(Flavor.PROCESSOR);
+        await loadInitialData();
 
-        setState(() {
-          _loadingMessage = 'Cleaning up local database...';
-        });
-
-        LocalRepository localRepo = LocalRepository();
-        await localRepo.open();
-        await localRepo.dropDatabase();
-
-        setState(() {
-          _loadingMessage = 'Loading Tasks...';
-        });
-
-        await repo.taskRepository.fetch();
-
-        setState(() {
-          _loadingMessage = 'Loading Task Statuses...';
-        });
-        await repo.taskStatusRepository.fetch();
-
-        setState(() {
-          _loadingMessage = 'Loading Task Types...';
-        });
-        await repo.taskTypeRepository.fetch();
-
-        setState(() {
-          _loadingMessage = 'Loading Roles...';
-        });
-        await repo.rolesRepository.fetch();
-        await repo.userRolesRepository.fetch();
-
-        setState(() {
-          _loadingMessage = 'Done!';
-        });
-
-        Future.delayed( Duration(seconds: 1), () {
+        Future.delayed( Duration(milliseconds:  500), () {
           Navigator.pushReplacement(context, MaterialPageRoute<RoleSelector>(builder: (BuildContext context) => RoleSelector()));
         });
       }).catchError((Object error) {
@@ -110,28 +145,12 @@ class LoginState extends State<Login> {
             builder: (BuildContext context) {
               return Center(
                   child: Padding(
-                padding: EdgeInsets.all(80.0),
-                child: Text(error.toString()),
-              ));
+                    padding: EdgeInsets.all(80.0),
+                    child: Text(error.toString()),
+                  ));
             });
       });
     }
-  }
-
-  @override
-  void initState() {
-    SharedPreferences.getInstance().then((onValue) {
-      prefs = onValue;
-
-      if (prefs.getKeys().contains(Login.USERNAME)) {
-        usernameAddressController.text = prefs.getString(Login.USERNAME);
-      }
-
-      if (prefs.getKeys().contains(Login.PASSWORD)) {
-        passwordAddressController.text = prefs.getString(Login.PASSWORD);
-      }
-    });
-    super.initState();
   }
 
   @override

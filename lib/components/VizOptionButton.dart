@@ -9,7 +9,8 @@ class VizOptionButton extends StatelessWidget {
         this.flex = 1,
         this.flexible = false,
         this.selected = false,
-        this.iconName})
+        this.iconName,
+        this.enabled = true})
       : super();
 
   final OptionCallback onTap;
@@ -19,6 +20,7 @@ class VizOptionButton extends StatelessWidget {
   final int flex;
   final bool flexible;
   final String tag;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +44,7 @@ class VizOptionButton extends StatelessWidget {
         onTap: onTapFnc,
         child: Container(
             constraints: BoxConstraints.expand(),
-            decoration: selected ? HighlightedBoxDecoration: DefaultBoxDecoration,
+            decoration: enabled == false? DisabledBoxDecoration : (selected ? HighlightedBoxDecoration: DefaultBoxDecoration),
             child: Center(child: innerWidget)
         ),
       ),
@@ -61,6 +63,9 @@ class VizOptionButton extends StatelessWidget {
 
 
   void onTapFnc(){
+    if(!enabled)
+      return;
+
     if(onTap!=null){
       onTap(tag);
     }
@@ -79,6 +84,16 @@ class VizOptionButton extends StatelessWidget {
         boxShadow: [BoxShadow(color: Color(0xAA000000), offset: Offset(3.0, 3.0), blurRadius: 3.0)],
         gradient: LinearGradient(
             colors: [Color(0xFFBDCCD4), Color(0xFFEBF0F2)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter),
+        borderRadius: BorderRadius.circular(4.0));
+  }
+
+  BoxDecoration get DisabledBoxDecoration{
+    return BoxDecoration(
+        boxShadow: [BoxShadow(color: Color(0xAA000000), offset: Offset(3.0, 3.0), blurRadius: 3.0)],
+        gradient: LinearGradient(
+            colors: [Color(0xFF888888), Color(0xFFAAAAAA)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter),
         borderRadius: BorderRadius.circular(4.0));

@@ -33,10 +33,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
 
     _taskListStatusIcon = "assets/images/ic_processing.png";
 
-
     loadLookups();
-
-
 
     super.initState();
   }

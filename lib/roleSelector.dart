@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
+import 'package:techviz/home.dart';
 import 'package:techviz/model/userRole.dart';
 import 'package:techviz/presenter/roleListPresenter.dart';
+import 'package:techviz/repository/session.dart';
 
 class RoleSelector extends StatefulWidget {
   RoleSelector({Key key}) : super(key: key);
@@ -17,29 +19,28 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
   RoleListPresenter roleListPresenter;
   String selectedRoleID;
 
-  List<GlobalKey> listViewKeys = List<GlobalKey>();
   @override
   void initState(){
     super.initState();
 
+    Session session = Session();
     roleListPresenter = new RoleListPresenter(this);
-    roleListPresenter.loadUserRoles("irina2");
-
+    roleListPresenter.loadUserRoles(session.userID);
   }
 
+  void validate(BuildContext context) {
+    if(selectedRoleID == null)
+      return;
 
-  void onOkTap() {
-    print(selectedRoleID);
-    //Navigator.pushReplacement(context, MaterialPageRoute<Home>(builder: (BuildContext context) => Home()));
+    Navigator.pushReplacement(context, MaterialPageRoute<Home>(builder: (BuildContext context) => Home()));
   }
 
   @override
   Widget build(BuildContext context) {
+
     var defaultBgDeco = BoxDecoration(gradient: LinearGradient(colors: [Color(0xFF636f7e), Color(0xFF9aa8b0)], begin: Alignment.topCenter, end: Alignment.bottomCenter));
 
-    var okBtn = VizButton('OK', onTap: onOkTap, highlighted: true);
-
-    listViewKeys = List<GlobalKey>();
+    var okBtn = VizButton('OK', highlighted: true, onTap: () => validate(context));
 
     var body = GridView.count(
       shrinkWrap: true,
@@ -50,11 +51,18 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
       children: roleList.map((UserRole role) {
         bool selected = selectedRoleID!= null && selectedRoleID ==  role.roleID.toString();
 
+        bool enabled = false;
+        var where = AvailableViews.values.where((e)=>e.toString() == "AvailableViews.${role.roleDescription}");
+        if(where!=null && where.length>0){
+          enabled = true;
+        }
+
         return  VizOptionButton(
             role.roleDescription,
             onTap: onOptionSelected,
             tag: role.roleID.toString(),
-            selected: selected);
+            selected: selected,
+        enabled: enabled);
      }).toList());
 
     return Scaffold(
@@ -67,7 +75,6 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
       ),
     );
   }
-
 
   void onOptionSelected(String tag){
     setState(() {
@@ -82,31 +89,18 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
 
   @override
   void onRoleListLoaded(List<UserRole> result) {
+    if(result.length==1){
+      Navigator.pushReplacement(context, MaterialPageRoute<Home>(builder: (BuildContext context) => Home()));
+      return;
+
+    }
     setState(() {
       roleList = result;
     });
   }
-
-  void onSelectAllTapped() {
-//    if (options != null) {
-//      setState(() {
-//        options.forEach((option) {
-//          option.selected = true;
-//        });
-//      });
-//    }
-  }
-
-  void onSelectNoneTapped() {
-//    if (options != null) {
-//      setState(() {
-//        options.forEach((option) {
-//          option.selected = false;
-//        });
-//      });
-//    }
-  }
+}
 
 
-
+enum AvailableViews{
+  Attendant,
 }

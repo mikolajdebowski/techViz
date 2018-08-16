@@ -78,6 +78,15 @@ class LocalRepository {
                 UserRoleName TEXT NOT NULL
                 )
             ''');
+
+          await db.execute('''
+            create table User ( 
+                UserID TEXT NOT NULL,
+                SectionList TEXT NOT NULL,
+                UserRoleID TEXT NOT NULL,
+                UserStatusID TEXT NOT NULL
+                )
+            ''');
         });
   }
 

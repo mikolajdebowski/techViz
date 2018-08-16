@@ -38,10 +38,13 @@ class ProcessorRepositoryConfig {
     List<dynamic> liveTableslist = documentJson['liveDataDefinition']['liveTables'];
 
     LiveTables = List<LiveTable>();
-    List<String> listTableTags = [
-              LiveTableType.TECHVIZ_MOBILE_TASK.toString(),
-    LiveTableType.TECHVIZ_MOBILE_TASK_STATUS.toString(),
-    LiveTableType.TECHVIZ_MOBILE_TASK_TYPE.toString(), LiveTableType.TECHVIZ_MOBILE_ROLE.toString(), LiveTableType.TECHVIZ_MOBILE_USER_ROLE.toString()];
+    List<LiveTableType> listTableTags = List<LiveTableType>();
+    listTableTags.add(LiveTableType.TECHVIZ_MOBILE_TASK);
+    listTableTags.add(LiveTableType.TECHVIZ_MOBILE_TASK_STATUS);
+    listTableTags.add(LiveTableType.TECHVIZ_MOBILE_TASK_TYPE);
+    listTableTags.add(LiveTableType.TECHVIZ_MOBILE_ROLE);
+    listTableTags.add(LiveTableType.TECHVIZ_MOBILE_USER_ROLE);
+    listTableTags.add(LiveTableType.TECHVIZ_MOBILE_USER);
 
     for(Map<String,dynamic> liveTable in liveTableslist){
       String liveTableTag = liveTable['tags'];
@@ -50,7 +53,9 @@ class ProcessorRepositoryConfig {
 
       liveTableTag = 'LiveTableType.$liveTableTag';
 
-      if(listTableTags.contains(liveTableTag)){
+      LiveTableType liveTableTagTyped = LiveTableType.values.firstWhere((e)=> e.toString() == liveTableTag);
+
+      if(listTableTags.contains(liveTableTagTyped)){
         LiveTables.add(LiveTable(liveTable['ID'].toString(), liveTableTag, []));
       };
     }
@@ -180,7 +185,8 @@ enum LiveTableType{
   TECHVIZ_MOBILE_TASK_STATUS,
   TECHVIZ_MOBILE_TASK_TYPE,
   TECHVIZ_MOBILE_ROLE,
-  TECHVIZ_MOBILE_USER_ROLE
+  TECHVIZ_MOBILE_USER_ROLE,
+  TECHVIZ_MOBILE_USER
 }
 
 class LiveTable{
