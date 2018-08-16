@@ -10,7 +10,7 @@ class Menu extends StatefulWidget {
 }
 
 class _MenuState extends State<Menu> {
-  void logOut(){
+  void logOut(String tag){
     Navigator.pushReplacementNamed(context, '/login');
   }
 

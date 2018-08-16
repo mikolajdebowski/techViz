@@ -31,7 +31,6 @@ class ActionBar extends StatefulWidget implements PreferredSizeWidget {
 
 class _ActionBarState extends State<ActionBar> {
 
-
   void goBack(){
     Navigator.maybePop(context);
   }
@@ -56,11 +55,12 @@ class _ActionBarState extends State<ActionBar> {
               direction: Axis.horizontal,
               children: <Widget>[widget.leadingWidget]));
     }
-    children.add(leadingContainer);
+
+    if(leadingContainer!=null)
+      children.add(leadingContainer);
 
     //centered title
     if (widget.centralWidgets == null) {
-
       var customBackground = [const Color(0xFF515151), const Color(0xFF060606)];
       var customBorderColor = Colors.black;
 
@@ -71,6 +71,16 @@ class _ActionBarState extends State<ActionBar> {
       children = List.from(children)..addAll(widget.centralWidgets);
     }
 
+    if(widget.tailWidget != null){
+      var tailingContainer = SizedBox(
+          width: 100.0,
+          child: Flex(
+              direction: Axis.horizontal,
+              children: <Widget>[widget.tailWidget]));
+
+      children.add(tailingContainer);
+
+    }
 
     var _colors = [
       const Color(0xFFE4EDEF),

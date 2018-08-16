@@ -24,15 +24,10 @@ class SplashState extends State<Splash> {
     SharedPreferences.getInstance().then((onValuePrefs) {
       SharedPreferences prefs = onValuePrefs;
       if (!prefs.getKeys().contains(Config.SERVERURL) || prefs.getString(Config.SERVERURL).length == 0) {
-        Navigator.push<Config>(
-          context,
-          MaterialPageRoute(builder: (context) => Config()),
-        );
+
+        Navigator.pushReplacement(context, MaterialPageRoute<Config>(builder: (BuildContext context) => Config()));
       } else {
-        Navigator.push<Login>(
-          context,
-          MaterialPageRoute(builder: (context) => Login()),
-        );
+        Navigator.pushReplacement(context, MaterialPageRoute<Login>(builder: (BuildContext context) => Login()));
       }
     });
   }

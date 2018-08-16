@@ -41,7 +41,6 @@ class LocalRepository {
                 PlayerTier TEXT)
             ''');
 
-
           await db.execute('''
             create table TaskStatus ( 
                 _ID TEXT, 
@@ -52,7 +51,6 @@ class LocalRepository {
                 )
             ''');
 
-
           await db.execute('''
             create table TaskType ( 
                 _ID TEXT, 
@@ -61,6 +59,32 @@ class LocalRepository {
                 TaskTypeID INT PRIMARY KEY,
                 TaskTypeDescription TEXT NOT NULL,
                 RoleID NUMERIC
+                )
+            ''');
+
+          await db.execute('''
+            create table Role ( 
+                _ID TEXT, 
+                UserRoleID INT NOT NULL,
+                UserRoleName TEXT NOT NULL
+                )
+            ''');
+
+          await db.execute('''
+            create table UserRole ( 
+                _ID TEXT, 
+                UserID TEXT NOT NULL,
+                UserRoleID INT NOT NULL,
+                UserRoleName TEXT NOT NULL
+                )
+            ''');
+
+          await db.execute('''
+            create table User ( 
+                UserID TEXT NOT NULL,
+                SectionList TEXT NOT NULL,
+                UserRoleID TEXT NOT NULL,
+                UserStatusID TEXT NOT NULL
                 )
             ''');
         });

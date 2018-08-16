@@ -15,21 +15,11 @@ class VizButton extends StatelessWidget {
   final int flex;
   final bool highlighted;
 
+
   @override
   Widget build(BuildContext context) {
-    var defaultBg = [Color(0xFFebf0f2), Color(0xFFbdccd4)];
-    var highlightBg = [Color(0xFF96c93f), Color(0xFF09a593)];
-
     var txtDefaultColor = Color(0xFF636f7e);
     var txtHighlightColor = Colors.white;
-
-    BoxDecoration bg = BoxDecoration(
-        border: Border.all(color: highlighted? Colors.transparent : Colors.white),
-        gradient: LinearGradient(
-            colors: (highlighted ? highlightBg : defaultBg),
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter),
-        borderRadius: BorderRadius.circular(5.0));
 
     Text innerText = Text(title, style: TextStyle(color: (highlighted?txtHighlightColor:txtDefaultColor), fontSize: 20.0, fontWeight: FontWeight.w500));
 
@@ -51,14 +41,28 @@ class VizButton extends StatelessWidget {
       child: GestureDetector(
           onTap: onTap,
           child: Container(
-              margin: EdgeInsets.all(2.0),
+              margin: EdgeInsets.all(3.0),
               constraints: BoxConstraints.expand(),
-              decoration: bg,
+              decoration: DefaultBoxDecoration,
               child: Center(child: innerWidget)
           ),
         )
     );
+  }
 
+
+  BoxDecoration get DefaultBoxDecoration{
+    var defaultBg = [Color(0xFFebf0f2), Color(0xFFbdccd4)];
+    var highlightBg = [Color(0xFF96c93f), Color(0xFF09a593)];
+
+    return BoxDecoration(
+        boxShadow: [BoxShadow(color: Color(0xAA000000), offset: Offset(2.0, 2.0), blurRadius: 2.0)],
+        border: Border.all(color: highlighted? Colors.transparent : Colors.white),
+        gradient: LinearGradient(
+            colors: (highlighted ? highlightBg : defaultBg),
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter),
+        borderRadius: BorderRadius.circular(5.0));
   }
 
 

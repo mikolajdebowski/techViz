@@ -5,17 +5,18 @@ import 'package:techviz/components/vizActionBar.dart';
 
 class VizSelector extends StatefulWidget {
   VizSelector(
-      {Key key,
       this.title,
+      this.options,
+      {Key key,
       this.onOKTapTapped,
       this.onBackTapped,
       this.multiple = false,
-      this.options})
+      })
       : super(key: key);
 
   final String title;
   final bool multiple;
-  final void Function(List<VizSelectorOption>) onOKTapTapped;
+  final void Function(BuildContext ctx, List<VizSelectorOption>) onOKTapTapped;
   final VoidCallback onBackTapped;
   final List<VizSelectorOption> options;
 
@@ -35,7 +36,12 @@ class VizSelectorState extends State<VizSelector> {
   }
 
   void onOkTap(){
-    widget.onOKTapTapped(options);
+    widget.onOKTapTapped(context, options);
+    Navigator.maybePop(context);
+  }
+
+  void onBackTap(){
+    widget.onBackTapped();
     Navigator.maybePop(context);
   }
 
@@ -58,21 +64,24 @@ class VizSelectorState extends State<VizSelector> {
         children: options.map((VizSelectorOption option) {
           return VizOptionButton(
               option.description,
-              key: GlobalKey(),
+              //key: GlobalKey(),
               selected: option.selected);
         }).toList());
 
+    bool canPop = Navigator.canPop(context);
+
+    var leading = canPop ? VizButton('Back', onTap: onBackTap, highlighted: false) : null;
+    var tailing = widget.onOKTapTapped!=null ? VizButton('OK', onTap: onOkTap, highlighted: true) : null;
+
     return Scaffold(
         backgroundColor: Colors.black,
-        appBar: ActionBar(title: widget.title, titleColor: Colors.blue, tailWidget: VizButton('OK', onTap: onOkTap, highlighted: true)),
+        appBar: ActionBar(title: widget.title, titleColor: Colors.blue, isRoot: canPop == false, leadingWidget: leading, tailWidget: tailing),
         body: Container(
           decoration: defaultBgDeco,
           constraints: BoxConstraints.expand(),
           child: body,
         ),
     );
-
-
   }
 
 
