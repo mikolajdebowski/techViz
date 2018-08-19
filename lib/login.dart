@@ -47,12 +47,11 @@ class LoginState extends State<Login> {
         usernameAddressController.text = prefs.getString(Login.USERNAME);
       }
 
-
-      if(Utils.isDebug){
+      //if(Utils.isDebug){
         if (prefs.getKeys().contains(Login.PASSWORD)) {
           passwordAddressController.text = prefs.getString(Login.PASSWORD);
         }
-      }
+      //}
     });
     super.initState();
   }
