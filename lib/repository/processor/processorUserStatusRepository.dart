@@ -1,13 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:techviz/model/userRole.dart';
 import 'package:techviz/repository/localRepository.dart';
 import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
-import 'package:techviz/repository/userRoleRepository.dart';
+import 'package:techviz/repository/userStatusRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
-class ProcessorUserRoleRepository extends UserRoleRepository{
+class ProcessorUserStatusRepository extends UserStatusRepository{
 
   @override
   Future fetch() {
@@ -15,7 +14,7 @@ class ProcessorUserRoleRepository extends UserRoleRepository{
     SessionClient client = SessionClient.getInstance();
 
     var config = ProcessorRepositoryConfig();
-    String liveTableID = config.GetLiveTable(LiveTableType.TECHVIZ_MOBILE_USER_ROLE.toString()).ID;
+    String liveTableID = config.GetLiveTable(LiveTableType.TECHVIZ_MOBILE_USER_STATUS.toString()).ID;
     String url = 'live/${config.DocumentID}/${liveTableID}/select.json';
 
     client.get(url).catchError((Error onError){
@@ -23,6 +22,7 @@ class ProcessorUserRoleRepository extends UserRoleRepository{
       _completer.completeError(onError);
 
     }).then((String rawResult) async {
+
       try{
         Map<String,dynamic> decoded = json.decode(rawResult);
         List<dynamic> rows = decoded['Rows'];
@@ -36,10 +36,9 @@ class ProcessorUserRoleRepository extends UserRoleRepository{
           dynamic values = d['Values'];
 
           Map<String, dynamic> map = Map<String, dynamic>();
-          map['UserID'] = values[_columnNames.indexOf("UserID")];
-          map['UserRoleID'] = values[_columnNames.indexOf("UserRoleID")];
-          map['UserRoleName'] = values[_columnNames.indexOf("UserRoleName")];
-          localRepo.insert('UserRole', map);
+          map['UserStatusID'] = values[_columnNames.indexOf("LookupKey")];
+          map['Description'] = values[_columnNames.indexOf("LookupValue")];
+          localRepo.insert('UserStatus', map);
         });
 
         _completer.complete();

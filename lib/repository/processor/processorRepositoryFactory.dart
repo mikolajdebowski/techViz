@@ -45,6 +45,7 @@ class ProcessorRepositoryConfig {
     listTableTags.add(LiveTableType.TECHVIZ_MOBILE_ROLE);
     listTableTags.add(LiveTableType.TECHVIZ_MOBILE_USER_ROLE);
     listTableTags.add(LiveTableType.TECHVIZ_MOBILE_USER);
+    listTableTags.add(LiveTableType.TECHVIZ_MOBILE_USER_STATUS);
 
     for(Map<String,dynamic> liveTable in liveTableslist){
       String liveTableTag = liveTable['tags'];
@@ -186,7 +187,8 @@ enum LiveTableType{
   TECHVIZ_MOBILE_TASK_TYPE,
   TECHVIZ_MOBILE_ROLE,
   TECHVIZ_MOBILE_USER_ROLE,
-  TECHVIZ_MOBILE_USER
+  TECHVIZ_MOBILE_USER,
+  TECHVIZ_MOBILE_USER_STATUS
 }
 
 class LiveTable{

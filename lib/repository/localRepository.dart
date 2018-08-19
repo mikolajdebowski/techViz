@@ -87,6 +87,13 @@ class LocalRepository {
                 UserStatusID TEXT NOT NULL
                 )
             ''');
+
+          await db.execute('''
+            create table UserStatus ( 
+                UserStatusID TEXT NOT NULL,
+                Description TEXT NOT NULL
+                )
+            ''');
         });
   }
 

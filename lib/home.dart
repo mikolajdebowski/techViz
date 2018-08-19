@@ -8,6 +8,8 @@ import 'package:techviz/components/vizElevated.dart';
 import 'package:techviz/menu.dart';
 import 'package:techviz/common/slideRightRoute.dart';
 import 'package:techviz/attendant.home.dart';
+import 'package:techviz/model/userStatus.dart';
+import 'package:techviz/statusSelector.dart';
 
 class Home extends StatefulWidget {
   Home({Key key}) : super(key: key);
@@ -20,27 +22,18 @@ class _HomeState extends State<Home> {
   bool initialLoading = false;
 
   String currentZones = '-';
-  String currentStatus = 'Available';
+  UserStatus currentStatus;
   List<VizSelectorOption> availableZones = List<VizSelectorOption>();
-  List<VizSelectorOption> availableStatuses =  List<VizSelectorOption>();
+  List<VizSelectorOption> availableStatuses = List<VizSelectorOption>();
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
 
     mockZoneAndStatus(); //TODO: IMPLEMENT ZONE AND STATUS
   }
 
   void mockZoneAndStatus() {
-    availableStatuses.add(VizSelectorOption("1", "Available"));
-    availableStatuses.add(VizSelectorOption("2", "Off shift"));
-    availableStatuses.add(VizSelectorOption("2", "Off shift"));
-    availableStatuses.add(VizSelectorOption("2", "Off shift"));
-    availableStatuses.add(VizSelectorOption("2", "Off shift"));
-    availableStatuses.add(VizSelectorOption("2", "Off shift"));
-    availableStatuses.add(VizSelectorOption("2", "Off shift"));
-
-
     for (var i = 0; i < 1000; i++) {
       availableZones.add(VizSelectorOption(i.toString(), i.toString()));
     }
@@ -52,6 +45,7 @@ class _HomeState extends State<Home> {
       SlideRightRoute(widget: Menu()),
     );
   }
+
   void onZoneSelectorCallbackOK(List<VizSelectorOption> selected) {
     setState(() {
       currentZones = "";
@@ -67,18 +61,9 @@ class _HomeState extends State<Home> {
     });
   }
 
-  void onMyStatusSelectorCallbackOK(List<VizSelectorOption> selected) {
+  void onMyStatusSelectorCallbackOK(UserStatus userStatusSelected) {
     setState(() {
-      currentStatus = "";
-
-      if (selected.length > 4) {
-        currentStatus = "4+";
-      } else {
-        selected.forEach((element) {
-          currentStatus += element.description + " ";
-        });
-        currentStatus = currentStatus.trim();
-      }
+      currentStatus = userStatusSelected;
     });
   }
 
@@ -92,26 +77,22 @@ class _HomeState extends State<Home> {
   }
 
   void goToStatusSelector() {
-//    var selector =
-//        VizSelector('My Status', availableStatuses, onOKTapTapped: onMyStatusSelectorCallbackOK);
-//    Navigator.push<VizSelector>(
-//      context,
-//      MaterialPageRoute(builder: (context) => selector),
-//    );
+    var selector = StatusSelector(onTapOK: onMyStatusSelectorCallbackOK);
+    Navigator.push<VizSelector>(
+      context,
+      MaterialPageRoute(builder: (context) => selector),
+    );
   }
 
   void goToSearchSelector() {
     Navigator.push<VizSelector>(
       context,
-      MaterialPageRoute(
-          builder: (context) =>
-              VizSearch<MachineModel>(domain: 'Machine, Players, etc', searchAdapter: new MachineAdapter())),
+      MaterialPageRoute(builder: (context) => VizSearch<MachineModel>(domain: 'Machine, Players, etc', searchAdapter: new MachineAdapter())),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-
     var leadingMenuButton = VizButton('Menu', onTap: goToMenu);
 
     //ZONES AND STATUS
@@ -123,11 +104,11 @@ class _HomeState extends State<Home> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text('My Zones', style: TextStyle(color: Color(0xFF566474), fontSize: 13.0)),
-                Text(currentZones,
-                    style: TextStyle(color: Colors.black, fontSize: 18.0), overflow: TextOverflow.ellipsis)
+                Text(currentZones, style: TextStyle(color: Colors.black, fontSize: 18.0), overflow: TextOverflow.ellipsis)
               ],
             ),
             onTap: goToZonesSelector));
+
     var statusWidgetBtn = Expanded(
         flex: 3,
         child: VizElevated(
@@ -136,8 +117,7 @@ class _HomeState extends State<Home> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text('My Status', style: TextStyle(color: Color(0xFF566474), fontSize: 13.0)),
-                Text(currentStatus,
-                    style: TextStyle(color: Colors.black, fontSize: 18.0), overflow: TextOverflow.ellipsis)
+                Text(currentStatus == null ? "Off Shift": currentStatus.description, style: TextStyle(color: Colors.black, fontSize: 18.0), overflow: TextOverflow.ellipsis)
               ],
             ),
             onTap: goToStatusSelector));
@@ -160,20 +140,14 @@ class _HomeState extends State<Home> {
           ],
         )));
 
-    var searchIconWidget = Expanded(
-        flex: 2,
-        child: VizElevated(
-            customWidget: ImageIcon(AssetImage("assets/images/ic_search.png"), size: 30.0), onTap: goToSearchSelector));
+    var searchIconWidget = Expanded(flex: 2, child: VizElevated(customWidget: ImageIcon(AssetImage("assets/images/ic_search.png"), size: 30.0), onTap: goToSearchSelector));
 
     var actionBarCentralWidgets = <Widget>[statusWidgetBtn, zonesWidgetBtn, notificationWidgetBtn, searchIconWidget];
 
     return Scaffold(
-
       backgroundColor: Colors.black,
       appBar: ActionBar(title: 'TechViz', leadingWidget: leadingMenuButton, centralWidgets: actionBarCentralWidgets, isRoot: true),
       body: AttendantHome(), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
-
-
 }
