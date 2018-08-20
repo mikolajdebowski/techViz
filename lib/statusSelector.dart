@@ -26,10 +26,6 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
   void initState(){
     super.initState();
 
-    if(widget.preSelected!=null)
-      selectedStatusID = widget.preSelected;
-
-
     Session session = Session();
     roleListPresenter = StatusListPresenter(this);
     roleListPresenter.loadUserRoles(session.userID);
@@ -93,6 +89,11 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
   void onStatusListLoaded(List<UserStatus> result) {
     setState(() {
       statusList = result;
+      if(widget.preSelected==null){
+        selectedStatusID = statusList.where((UserStatus us) => us.id == '10').first;
+        //TODO: HARDCODED ID 10
+      }
+      else selectedStatusID = widget.preSelected;
     });
   }
 }
