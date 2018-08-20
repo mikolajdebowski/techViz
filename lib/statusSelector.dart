@@ -6,9 +6,12 @@ import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/statusListPresenter.dart';
 import 'package:techviz/repository/session.dart';
 
+typedef fncOnTapOK(UserStatus selected);
+
 class StatusSelector extends StatefulWidget {
-  StatusSelector({Key key, @required this.onTapOK }) : super(key: key);
-  final Function onTapOK;
+  StatusSelector({Key key, @required this.onTapOK, this.preSelected}) : super(key: key);
+  final fncOnTapOK onTapOK;
+  final UserStatus preSelected;
 
   @override
   State<StatefulWidget> createState() => StatusSelectorState();
@@ -17,12 +20,15 @@ class StatusSelector extends StatefulWidget {
 class StatusSelectorState extends State<StatusSelector> implements IStatusListPresenter<UserStatus> {
   List<UserStatus> statusList = List<UserStatus>();
   StatusListPresenter roleListPresenter;
-  String selectedStatusID;
-
+  UserStatus selectedStatusID;
 
   @override
   void initState(){
     super.initState();
+
+    if(widget.preSelected!=null)
+      selectedStatusID = widget.preSelected;
+
 
     Session session = Session();
     roleListPresenter = StatusListPresenter(this);
@@ -33,7 +39,9 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
     if(selectedStatusID == null)
       return;
 
-    widget.onTapOK();
+    widget.onTapOK(selectedStatusID);
+
+    Navigator.of(context).pop();
   }
 
   @override
@@ -50,7 +58,7 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
       addAutomaticKeepAlives: false,
       crossAxisCount: 3,
       children: statusList.map((UserStatus status) {
-        bool selected = selectedStatusID!= null && selectedStatusID ==  status.id;
+        bool selected = selectedStatusID!= null && selectedStatusID.id.toString() ==  status.id;
 
         return  VizOptionButton(
             status.description,
@@ -61,7 +69,7 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
 
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: ActionBar(title: 'My Role', titleColor: Colors.blue, isRoot: true, tailWidget:okBtn),
+      appBar: ActionBar(title: 'My Status', titleColor: Colors.blue, isRoot: true, tailWidget:okBtn),
       body: Container(
         decoration: defaultBgDeco,
         constraints: BoxConstraints.expand(),
@@ -70,9 +78,9 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
     );
   }
 
-  void onOptionSelected(String tag){
+  void onOptionSelected(Object tag){
     setState(() {
-      selectedStatusID = tag;
+      selectedStatusID = statusList.where((UserStatus s) => s.id == tag).first;
     });
   }
 

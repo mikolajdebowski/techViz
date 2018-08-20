@@ -77,7 +77,7 @@ class _HomeState extends State<Home> {
   }
 
   void goToStatusSelector() {
-    var selector = StatusSelector(onTapOK: onMyStatusSelectorCallbackOK);
+    var selector = StatusSelector(onTapOK: onMyStatusSelectorCallbackOK, preSelected: currentStatus);
     Navigator.push<VizSelector>(
       context,
       MaterialPageRoute(builder: (context) => selector),
@@ -95,20 +95,13 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     var leadingMenuButton = VizButton('Menu', onTap: goToMenu);
 
-    //ZONES AND STATUS
-    var zonesWidgetBtn = Expanded(
-        flex: 3,
-        child: VizElevated(
-            customWidget: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text('My Zones', style: TextStyle(color: Color(0xFF566474), fontSize: 13.0)),
-                Text(currentZones, style: TextStyle(color: Colors.black, fontSize: 18.0), overflow: TextOverflow.ellipsis)
-              ],
-            ),
-            onTap: goToZonesSelector));
+    var statusText = currentStatus == null ? "OFF SHIFT": currentStatus.description;
+    var statusTextColor = currentStatus == null || currentStatus.id == "10" ? Colors.red : Colors.black;
+    //TODO: RED COLOR FOR OFF-SHIFT IS BEING HARDCODED
 
+    var statusWidgetText = Text(statusText, style: TextStyle(color: statusTextColor, fontSize: 16.0), overflow: TextOverflow.ellipsis);
+
+    //ZONES AND STATUSES
     var statusWidgetBtn = Expanded(
         flex: 3,
         child: VizElevated(
@@ -117,10 +110,25 @@ class _HomeState extends State<Home> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text('My Status', style: TextStyle(color: Color(0xFF566474), fontSize: 13.0)),
-                Text(currentStatus == null ? "Off Shift": currentStatus.description, style: TextStyle(color: Colors.black, fontSize: 18.0), overflow: TextOverflow.ellipsis)
-              ],
+                statusWidgetText],
             ),
             onTap: goToStatusSelector));
+
+
+
+    var zonesWidgetBtn = Expanded(
+        flex: 3,
+        child: VizElevated(
+            customWidget: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text('My Zones', style: TextStyle(color: Color(0xFF566474), fontSize: 13.0)),
+                Text(currentZones, style: TextStyle(color: Colors.black, fontSize: 16.0), overflow: TextOverflow.ellipsis)
+              ],
+            ),
+            onTap: goToZonesSelector));
+
 
     var notificationWidgetBtn = Expanded(
         flex: 3,
