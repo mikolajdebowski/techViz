@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-typedef OptionCallback = void Function(String);
+typedef OptionCallback = void Function(Object tag);
 
 class VizOptionButton extends StatelessWidget {
   VizOptionButton(this.title, {
@@ -19,7 +19,7 @@ class VizOptionButton extends StatelessWidget {
   final String iconName;
   final int flex;
   final bool flexible;
-  final String tag;
+  final Object tag;
   final bool enabled;
 
   @override

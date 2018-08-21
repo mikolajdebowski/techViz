@@ -47,12 +47,11 @@ class LoginState extends State<Login> {
         usernameAddressController.text = prefs.getString(Login.USERNAME);
       }
 
-
-      if(Utils.isDebug){
+      //if(Utils.isDebug){
         if (prefs.getKeys().contains(Login.PASSWORD)) {
           passwordAddressController.text = prefs.getString(Login.PASSWORD);
         }
-      }
+      //}
     });
     super.initState();
   }
@@ -61,52 +60,16 @@ class LoginState extends State<Login> {
     Repository repo = Repository();
     await repo.configure(Flavor.PROCESSOR);
 
-    setState(() {
-      _loadingMessage = 'Cleaning up local database...';
-    });
 
-    LocalRepository localRepo = LocalRepository();
-    await localRepo.open();
-    await localRepo.dropDatabase();
+    void onMessage(String message){
+      setState(() {
+        _loadingMessage = message;
+      });
+    }
 
-    setState(() {
-      _loadingMessage = 'Fetching User Data...';
-    });
-    await repo.userRepository.fetch();
+    await repo.preFetch(onMessage);
+    await repo.fetch(onMessage);
 
-
-
-    setState(() {
-      _loadingMessage = 'Fetching Tasks...';
-    });
-
-    await repo.taskRepository.fetch();
-
-
-
-    setState(() {
-      _loadingMessage = 'Fetching Task Statuses...';
-    });
-    await repo.taskStatusRepository.fetch();
-
-
-
-    setState(() {
-      _loadingMessage = 'Fetching Task Types...';
-    });
-    await repo.taskTypeRepository.fetch();
-
-
-
-    setState(() {
-      _loadingMessage = 'Fetching Roles...';
-    });
-    await repo.rolesRepository.fetch();
-    await repo.userRolesRepository.fetch();
-
-    setState(() {
-      _loadingMessage = 'Done!';
-    });
   }
 
 

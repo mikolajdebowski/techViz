@@ -76,9 +76,9 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
     );
   }
 
-  void onOptionSelected(String tag){
+  void onOptionSelected(Object tag){
     setState(() {
-      selectedRoleID = tag;
+      selectedRoleID = tag.toString();
     });
   }
 

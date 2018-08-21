@@ -1,8 +1,10 @@
 import 'package:techviz/repository/common/IRepository.dart';
+import 'package:techviz/repository/localRepository.dart';
 import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
 import 'package:techviz/repository/processor/processorRoleRepository.dart';
 import 'package:techviz/repository/processor/processorUserRepository.dart';
 import 'package:techviz/repository/processor/processorUserRoleRepository.dart';
+import 'package:techviz/repository/processor/processorUserStatusRepository.dart';
 import 'package:techviz/repository/roleRepository.dart';
 import 'package:techviz/repository/taskRepository.dart';
 import 'package:techviz/repository/mock/mockTaskRepository.dart';
@@ -11,6 +13,7 @@ import 'package:techviz/repository/processor/processorTaskStatusRepository.dart'
 import 'package:techviz/repository/processor/processorTaskTypeRepository.dart';
 import 'package:techviz/repository/userRepository.dart';
 import 'package:techviz/repository/userRoleRepository.dart';
+import 'package:techviz/repository/userStatusRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 enum Flavor {
@@ -18,6 +21,8 @@ enum Flavor {
   PROCESSOR,
   IHUB
 }
+
+typedef fncOnMessage = void Function(String);
 
 class Repository{
   static Flavor _flavor;
@@ -37,6 +42,38 @@ class Repository{
       var config = ProcessorRepositoryConfig();
       await config.Setup(client);
     }
+  }
+
+  void preFetch(fncOnMessage onMessage) async{
+    onMessage('Cleaning up local database...');
+
+
+    LocalRepository localRepo = LocalRepository();
+    await localRepo.open();
+    await localRepo.dropDatabase();
+  }
+
+  void fetch(fncOnMessage onMessage) async{
+
+    onMessage('Fetching User Data...');
+    await userRepository.fetch();
+
+    onMessage('Fetching Roles...');
+    await rolesRepository.fetch();
+    await userRolesRepository.fetch();
+
+    onMessage('Fetching User Statuses...');
+    await userStatusRepository.fetch();
+
+    onMessage('Fetching Tasks...');
+    await taskRepository.fetch();
+
+    onMessage('Fetching Task Statuses...');
+    await taskStatusRepository.fetch();
+
+    onMessage('Fetching Task Types...');
+    await taskTypeRepository.fetch();
+
   }
 
   ITaskRepository get taskRepository {
@@ -73,6 +110,12 @@ class Repository{
   IUserRepository get userRepository {
     switch(_flavor) {
       default: return ProcessorUserRepository();
+    }
+  }
+
+  IUserStatusRepository get userStatusRepository {
+    switch(_flavor) {
+      default: return ProcessorUserStatusRepository();
     }
   }
 }
