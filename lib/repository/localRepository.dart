@@ -38,7 +38,8 @@ class LocalRepository {
                 PlayerID TEXT,
                 PlayerFirstName TEXT,
                 PlayerLastName TEXT,
-                PlayerTier TEXT)
+                PlayerTier TEXT,
+                PlayerTierColorHex TEXT)
             ''');
 
           await db.execute('''
