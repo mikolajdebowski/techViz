@@ -90,8 +90,7 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
     setState(() {
       statusList = result;
       if(widget.preSelected==null){
-        selectedStatusID = statusList.where((UserStatus us) => us.id == '10').first;
-        //TODO: HARDCODED ID 10
+        selectedStatusID = statusList.where((UserStatus us) => us.isOnline == false).first;
       }
       else selectedStatusID = widget.preSelected;
     });

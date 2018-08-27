@@ -19,25 +19,26 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+
+
+  GlobalKey<AttendantHomeState> keyAttendant;
   bool initialLoading = false;
 
   String currentZones = '-';
   UserStatus currentStatus;
   List<VizSelectorOption> availableZones = List<VizSelectorOption>();
-  List<VizSelectorOption> availableStatuses = List<VizSelectorOption>();
 
   @override
   void initState() {
     super.initState();
 
-    mockZoneAndStatus(); //TODO: IMPLEMENT ZONE AND STATUS
-  }
-
-  void mockZoneAndStatus() {
+    //TODO: IMPLEMENT ZONE
     for (var i = 0; i < 1000; i++) {
       availableZones.add(VizSelectorOption(i.toString(), i.toString()));
     }
+
   }
+
 
   void goToMenu() {
     Navigator.push<Menu>(
@@ -64,6 +65,7 @@ class _HomeState extends State<Home> {
   void onMyStatusSelectorCallbackOK(UserStatus userStatusSelected) {
     setState(() {
       currentStatus = userStatusSelected;
+      keyAttendant.currentState.onStatusChanged(currentStatus);
     });
   }
 
@@ -96,8 +98,7 @@ class _HomeState extends State<Home> {
     var leadingMenuButton = VizButton('Menu', onTap: goToMenu);
 
     var statusText = currentStatus == null ? "OFF SHIFT": currentStatus.description;
-    var statusTextColor = currentStatus == null || currentStatus.id == "10" ? Colors.red : Colors.black;
-    //TODO: RED COLOR FOR OFF-SHIFT IS BEING HARDCODED
+    var statusTextColor = currentStatus == null || currentStatus.isOnline == false ? Colors.red : Colors.black;
 
     var statusWidgetText = Text(statusText, style: TextStyle(color: statusTextColor, fontSize: 16.0), overflow: TextOverflow.ellipsis);
 
@@ -152,10 +153,21 @@ class _HomeState extends State<Home> {
 
     var actionBarCentralWidgets = <Widget>[statusWidgetBtn, zonesWidgetBtn, notificationWidgetBtn, searchIconWidget];
 
+    if(keyAttendant==null){
+      keyAttendant = GlobalKey<AttendantHomeState>();
+    }
+    var view = AttendantHome(keyAttendant);
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: ActionBar(title: 'TechViz', leadingWidget: leadingMenuButton, centralWidgets: actionBarCentralWidgets, isRoot: true),
-      body: AttendantHome(), // This trailing comma makes auto-formatting nicer for build methods.
+      body: view, // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
+}
+
+
+abstract class HomeEvents{
+  void onStatusChanged(UserStatus us);
+  void onZoneChanged(Object obj);
 }

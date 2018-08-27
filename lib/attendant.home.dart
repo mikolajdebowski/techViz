@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:techviz/components/vizTaskActionButton.dart';
 import 'package:techviz/components/vizTimer.dart';
+import 'package:techviz/home.dart';
 import 'package:techviz/model/task.dart';
 import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/model/taskType.dart';
+import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/taskListPresenter.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:techviz/repository/taskStatusRepository.dart';
@@ -11,11 +13,15 @@ import 'package:techviz/repository/taskTypeRepository.dart';
 import 'package:event_bus/event_bus.dart';
 
 class AttendantHome extends StatefulWidget {
+
+  AttendantHome(Key key): super(key:key);
+
+
   @override
   State<StatefulWidget> createState() => AttendantHomeState();
 }
 
-class AttendantHomeState extends State<AttendantHome> implements ITaskListPresenter<Task> {
+class AttendantHomeState extends State<AttendantHome> implements ITaskListPresenter<Task>, HomeEvents {
   TaskListPresenter _presenter;
   Task _selectedTask = null;
   List<Task> _taskList = [];
@@ -29,7 +35,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
     _taskList = [];
 
     _presenter = TaskListPresenter(this);
-    _presenter.loadTaskList();
+
 
     _taskListStatusIcon = "assets/images/ic_processing.png";
 
@@ -412,5 +418,21 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
         child: Row(
           children: <Widget>[leftPanel, centerPanel, rightPanel],
         ));
+  }
+
+  @override
+  void onStatusChanged(UserStatus us) {
+    if(us.isOnline){
+      _presenter.loadTaskList();
+    }
+    else{
+      _taskList = List<Task>();
+      _selectedTask = null;
+    }
+  }
+
+  @override
+  void onZoneChanged(Object obj) {
+    // TODO: implement onZoneChanged
   }
 }

@@ -92,7 +92,8 @@ class LocalRepository {
           await db.execute('''
             create table UserStatus ( 
                 UserStatusID TEXT NOT NULL,
-                Description TEXT NOT NULL
+                Description TEXT NOT NULL,
+                IsOnline INTEGER NOT NULL
                 )
             ''');
         });
