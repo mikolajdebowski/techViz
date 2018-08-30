@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
+import 'package:techviz/repository/session.dart';
 
 class Menu extends StatefulWidget {
   Menu({Key key}) : super(key: key);
@@ -11,6 +12,9 @@ class Menu extends StatefulWidget {
 
 class _MenuState extends State<Menu> {
   void logOut(Object tag){
+    Session session = Session();
+    session.disconnectAsyncData();
+
     Navigator.pushReplacementNamed(context, '/login');
   }
 

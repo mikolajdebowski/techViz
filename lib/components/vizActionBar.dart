@@ -42,7 +42,7 @@ class _ActionBarState extends State<ActionBar> {
 
     //the backbutton when the view can pop
     if (widget.isRoot == false) {
-      VizButton backBtn = VizButton('Back', onTap: goBack);
+      VizButton backBtn = VizButton(title: 'Back', onTap: goBack);
 
       leadingContainer = SizedBox(
           width: 100.0,

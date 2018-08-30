@@ -29,6 +29,18 @@ class VizTimerState extends State<VizTimer> {
 
         _peridic = Timer.periodic(Duration(seconds: 1), (Timer t) {
           var now = DateTime.now().toUtc();
+
+          if(widget == null || widget.timeStarted == null){
+            t.cancel();
+
+            setState(() {
+              _containsHours = false;
+              _timerStr = '00:00';
+            });
+
+            return;
+          }
+
           var _difference = now.difference(widget.timeStarted);
 
 

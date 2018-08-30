@@ -188,7 +188,7 @@ class LoginState extends State<Login> {
           style: textFieldStyle),
     );
 
-    var btnLogin = VizButton('Login', onTap: loginTap, highlighted: false);
+    var btnLogin = VizButton(title: 'Login', onTap: loginTap, highlighted: false);
 
     var btnBox = Padding(
         padding: defaultPadding,

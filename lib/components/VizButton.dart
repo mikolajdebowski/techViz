@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
 class VizButton extends StatelessWidget {
-  VizButton(this.title,
+  VizButton(
     {Key key,
+    this.title,
     this.onTap,
     this.flex = 1,
     this.iconName,
-    this.highlighted = false})
+    this.highlighted = false,
+    this.customWidget})
       : super(key: key);
 
   final VoidCallback onTap;
@@ -14,6 +16,7 @@ class VizButton extends StatelessWidget {
   final String iconName;
   final int flex;
   final bool highlighted;
+  final Widget customWidget;
 
 
   @override
@@ -21,18 +24,23 @@ class VizButton extends StatelessWidget {
     var txtDefaultColor = Color(0xFF636f7e);
     var txtHighlightColor = Colors.white;
 
-    Text innerText = Text(title, style: TextStyle(color: (highlighted?txtHighlightColor:txtDefaultColor), fontSize: 20.0, fontWeight: FontWeight.w500));
 
     Widget innerWidget = null;
-    if(iconName==null){
-      innerWidget = innerText;
+    if(customWidget != null){
+      innerWidget = customWidget;
     }
-    else{
-      Image icon = Image(image: AssetImage('assets/images/${iconName}'), height: 30.0,);
-      innerWidget = Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[icon,Padding(child: innerText, padding: EdgeInsets.only(left: 10.0))],
-      );
+    else {
+      Text innerText = Text(title, style: TextStyle(color: (highlighted?txtHighlightColor:txtDefaultColor), fontSize: 20.0, fontWeight: FontWeight.w500));
+      if(iconName==null){
+        innerWidget = innerText;
+      }
+      else{
+        Image icon = Image(image: AssetImage('assets/images/${iconName}'), height: 30.0,);
+        innerWidget = Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[icon,Padding(child: innerText, padding: EdgeInsets.only(left: 10.0))],
+        );
+      }
     }
 
     return Flexible(

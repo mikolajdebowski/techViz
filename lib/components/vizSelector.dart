@@ -51,8 +51,8 @@ class VizSelectorState extends State<VizSelector> {
 
     var actions = <Widget>[];
     if (widget.multiple) {
-      actions.add(VizButton('All', onTap: onSelectAllTapped));
-      actions.add(VizButton('None', onTap: onSelectNoneTapped));
+      actions.add(VizButton(title: 'All', onTap: onSelectAllTapped));
+      actions.add(VizButton(title: 'None', onTap: onSelectNoneTapped));
     }
 
     var body = GridView.count(
@@ -70,8 +70,8 @@ class VizSelectorState extends State<VizSelector> {
 
     bool canPop = Navigator.canPop(context);
 
-    var leading = canPop ? VizButton('Back', onTap: onBackTap, highlighted: false) : null;
-    var tailing = widget.onOKTapTapped!=null ? VizButton('OK', onTap: onOkTap, highlighted: true) : null;
+    var leading = canPop ? VizButton(title: 'Back', onTap: onBackTap, highlighted: false) : null;
+    var tailing = widget.onOKTapTapped!=null ? VizButton(title: 'OK', onTap: onOkTap, highlighted: true) : null;
 
     return Scaffold(
         backgroundColor: Colors.black,

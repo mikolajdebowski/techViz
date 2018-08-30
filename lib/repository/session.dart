@@ -1,55 +1,118 @@
 import 'package:dart_amqp/dart_amqp.dart';
 import 'package:event_bus/event_bus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:techviz/config.dart';
 import 'package:techviz/model/task.dart';
 
 class Session {
   String userID = "57b3a85dc4b-15f555106cc";
   EventBus eventBus;
   Client rabbitmqClient;
-  ConnectionSettings settings = ConnectionSettings(host: "fig.internal.bis2.net", authProvider: AmqPlainAuthenticator("admin", "admin123"));
+  Channel _channel;
+  Queue _taskQueue;
 
   static final Session _singleton = Session._internal();
 
   factory Session() {
-    print('Session started');
     return _singleton;
   }
 
   Session._internal() {
-    bindQueues();
+    print('Session instance');
   }
 
-  void bindQueues() {
+  void connectAsyncData() async {
+    print('Session -> connecting to the RabbitMQ');
     eventBus = EventBus();
 
-    rabbitmqClient = Client(settings: settings);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String host = prefs.getString(Config.SERVERURL);
+    Uri hostURI =  Uri.parse(host);
 
-    String taskNewQueue = "task.create.$userID";
-    print('Task Queue => ' + taskNewQueue);
+    ConnectionSettings settings = ConnectionSettings(host: hostURI.host, authProvider: AmqPlainAuthenticator("test", "test"));
+    rabbitmqClient = Client(settings: settings);
 
     rabbitmqClient
         .channel()
-        .then((Channel channel) => channel.queue(taskNewQueue, durable: true))
-        .then((Queue queue) => queue.consume())
-        .then((Consumer consumer) => consumer.listen((AmqpMessage message) {
+        .then((Channel channel) {
+          _channel = channel;
 
-              if(message.payload.length==0)
-                return;
+          listenTaskQueue();
+          changeUserStatusQueue();
+        });
+  }
 
-              print("[x] Received on queue ${taskNewQueue} >  ${message.payloadAsString}");
+  void listenTaskQueue(){
+    String taskNewQueue = "task.create.$userID";
+
+    _channel.queue(taskNewQueue, durable: true).then((Queue queue) {
+      _taskQueue = queue;
+
+      print('Session -> Task Queue created => ${queue.name}');
+
+      return _taskQueue.consume();
+    }).then((Consumer consumer) => consumer.listen((AmqpMessage message) {
+      if(message.payload.length==0)
+        return;
+
+      print("[x] Received on queue ${taskNewQueue} >  ${message.payloadAsString}");
+
+      Map<String, dynamic> payload = message.payloadAsJson;
+
+      Task task = Task(
+          id: payload['_ID'].toString(),
+          location: payload['Location'].toString(),
+          taskStatusID: payload['TaskStatusID'] as int,
+          taskTypeID: payload['TaskTypeID'] as int,
+          taskCreated: DateTime.parse(payload['TaskCreated'] as String)
+      );
+
+      eventBus.fire(task);
+    }));
+  }
+
+  void changeUserStatusQueue() async {
+//    String queueName = "user.update.$userID";
+//    int messageID = 123;//Message(UpdateUserStatus);
+//    Exchange exc = await _channel.exchange(name, type);
+//    MessageProperties props = MessageProperties.persistentMessage();
+//    props.messageId = messageID.toString();
+//
+//    exc.publish(newStatusID, routingKey, properties: props);
+//
+//    Consumer consumer = exc.bindPrivateQueueConsumer(routingKeys)
+//    consumer.listen((AmqpMessage message) {
+//
+//      int messageIDReplied = message.properties.replyTo;
+//
+//    });
+  }
 
 
-              Map<String, dynamic> payload = message.payloadAsJson;
+  void disconnectAsyncData() {
+    eventBus = null;
 
-              Task task = Task(
-                        id: payload['_ID'].toString(),
-                        location: payload['Location'].toString(),
-                        taskStatusID: payload['TaskStatusID'] as int,
-                        taskTypeID: payload['TaskTypeID'] as int,
-                        taskCreated: DateTime.parse(payload['TaskCreated'] as String)
-                        );
+    try{
+      if(_taskQueue!=null){
+        _taskQueue.delete();
+        print('Session -> Task Queue deleted ${_taskQueue.name}');
+        _taskQueue = null;
+      }
 
-              eventBus.fire(task);
-            }));
+      if(_channel!=null){
+        _channel.close();
+        _channel = null;
+      }
+
+      if(rabbitmqClient!=null){
+        rabbitmqClient.close();
+
+        print('Session -> RabbitMQ disconnected');
+      }
+    }
+    catch (err){
+      print(err);
+    }
+
   }
 }

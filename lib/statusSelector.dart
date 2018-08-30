@@ -45,7 +45,7 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
 
     var defaultBgDeco = BoxDecoration(gradient: LinearGradient(colors: [Color(0xFF636f7e), Color(0xFF9aa8b0)], begin: Alignment.topCenter, end: Alignment.bottomCenter));
 
-    var okBtn = VizButton('OK', highlighted: true, onTap: () => validate(context));
+    var okBtn = VizButton(title: 'OK', highlighted: true, onTap: () => validate(context));
 
     var body = GridView.count(
       shrinkWrap: true,

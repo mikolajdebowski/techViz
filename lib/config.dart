@@ -94,7 +94,7 @@ class ConfigState extends State<Config> {
                 contentPadding: textFieldContentPadding),
             style: textFieldStyle));
 
-    var btnNext = VizButton('Next', onTap: onNextTap, highlighted: true);
+    var btnNext = VizButton(title: 'Next', onTap: onNextTap, highlighted: true);
 
     var btnBox = Padding(
         padding: defaultPadding,

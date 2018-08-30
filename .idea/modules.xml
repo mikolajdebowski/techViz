@@ -3,8 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/techviz.iml" filepath="$PROJECT_DIR$/techviz.iml" />
-      <module fileurl="file://$PROJECT_DIR$/techviz_android.iml" filepath="$PROJECT_DIR$/techviz_android.iml" />
     </modules>
   </component>
 </project>
-

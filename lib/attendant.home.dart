@@ -33,10 +33,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
   @override
   initState() {
     _taskList = [];
-
     _presenter = TaskListPresenter(this);
-
-
     _taskListStatusIcon = "assets/images/ic_processing.png";
 
     loadLookups();
@@ -47,11 +44,9 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
   void loadLookups() async{
     _taskStatusList = await TaskStatusRepository().getAll();
     _taskTypeList = await TaskTypeRepository().getAll();
-
-    bindQueues();
   }
 
-  void bindQueues() {
+  void listenToQueues() {
     Session session = Session();
     session.eventBus.on<Task>().listen((Task event) {
       setState(() {
@@ -104,7 +99,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
                   height: 60.0,
                   decoration: BoxDecoration(
                       gradient: LinearGradient(
-                          colors: _selectedTask == task ? [Color(0xFF65b1d9), Color(0xFF0268a2)] : [Color(0xFF45505D), Color(0xFF282B34)],
+                          colors: _selectedTask!= null && _selectedTask.id == task.id ? [Color(0xFF65b1d9), Color(0xFF0268a2)] : [Color(0xFF45505D), Color(0xFF282B34)],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           tileMode: TileMode.repeated)),
@@ -129,6 +124,10 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
 
       listTasks.add(taskItem);
     }
+
+
+
+
 
     var taskTextStr = listTasks.length == 0 ? 'No tasks' : (listTasks.length == 1 ? '1 Task' : '${listTasks.length} Tasks');
     Widget listContainer = ImageIcon(AssetImage("assets/images/ic_processing.png"), size: 30.0);
@@ -227,7 +226,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
         border: Border.all(color: Color(0xFFFFFFFF)),
         gradient: LinearGradient(colors: [Color(0xFF81919D), Color(0xFFAAB7BD)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated));
 
-    Padding taskBody = null;
+    Widget taskBody;
 
     if (_selectedTask != null) {
       var requiredAction = Padding(
@@ -364,7 +363,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
                   ? taskBody
                   : Center(
                       child: Text(
-                      'Select a Task',
+                      _taskList.length==0? '': 'Select a Task',
                       style: TextStyle(color: Colors.white, fontStyle: FontStyle.italic),
                     )))
         ],
@@ -423,9 +422,12 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
   @override
   void onStatusChanged(UserStatus us) {
     if(us.isOnline){
+      Session().connectAsyncData();
+      listenToQueues();
       _presenter.loadTaskList();
     }
     else{
+      Session().disconnectAsyncData();
       _taskList = List<Task>();
       _selectedTask = null;
     }
