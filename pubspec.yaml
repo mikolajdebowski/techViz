@@ -10,12 +10,13 @@ dependencies:
   cupertino_icons: ^0.1.2
   http: ^0.11.3
   shared_preferences: ^0.4.2
-  validator: ^0.0.7
+  #validator: ^0.0.7 //validator is not being supported dy developers.
+  #angel_validate: ^1.0.4
 
-  enumeration: ^0.0.2
   sqflite: any
   event_bus: ^1.0.1
   intl: ^0.15.7
+
 
 #  vizexplorer_mobile_common:
 #    git: http://git.colo.bis2.net/Mobile/Plugins/common.git
@@ -23,8 +24,9 @@ dependencies:
   vizexplorer_mobile_common:
     git: http://git.colo.bis2.net/Mobile/Plugins/common.git
 
-  dart_amqp:
-    git: http://git.colo.bis2.net/Mobile/Plugins/dart_amqp.git
+#  dart_amqp:
+#    git: http://git.colo.bis2.net/Mobile/Plugins/dart_amqp.git
+  dart_amqp: ^0.1.0
 
 dev_dependencies:
   flutter_test:

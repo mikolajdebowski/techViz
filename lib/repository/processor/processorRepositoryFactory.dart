@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 import 'dart:convert';
 
@@ -13,7 +15,7 @@ class ProcessorRepositoryConfig {
   String DocumentID;
   List<LiveTable> LiveTables;
 
-  void Setup(SessionClient client) async{
+  Future<void> Setup(SessionClient client) async{
     String documentListStr = await client.post("visualDocIndex/advancedSearch.json", advancedSearchXML);
     List<dynamic> documentList = json.decode(documentListStr);
     Map<String,dynamic> documentMobile = null;

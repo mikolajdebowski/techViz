@@ -56,9 +56,9 @@ class LoginState extends State<Login> {
     super.initState();
   }
 
-  void loadInitialData() async{
+  Future<void> loadInitialData() async{
     Repository repo = Repository();
-    await repo.configure(Flavor.PROCESSOR);
+    repo.configure(Flavor.PROCESSOR);
 
 
     void onMessage(String message){

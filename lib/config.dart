@@ -4,7 +4,7 @@ import 'package:techviz/common/LowerCaseTextFormatter.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:flutter/services.dart';
 import 'package:techviz/components/vizRainbow.dart';
-import 'package:validator/validator.dart';
+//import 'package:validator/validator.dart';
 
 class Config extends StatefulWidget {
   static final String SERVERURL = 'SERVERURL';
@@ -79,11 +79,11 @@ class ConfigState extends State<Config> {
               print('saving url: $value');
             },
             autocorrect: false,
-            validator: (String value) {
-              if (!isURL(value, default_url_options)) {
-                return 'Please enter valid URL';
-              }
-            },
+//            validator: (String value) {
+//              if (!isURL(value, default_url_options)) {
+//                return 'Please enter valid URL';
+//              }
+//            },
             controller: serverAddressController,
             decoration: InputDecoration(
                 fillColor: Colors.black87,

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/localRepository.dart';
 import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
@@ -34,7 +36,7 @@ class Repository{
   Repository._internal();
 
 
-  void configure(Flavor flavor, {String configJSON}) async {
+  Future<void> configure(Flavor flavor, {String configJSON}) async {
     _flavor = flavor;
 
     if(_flavor == Flavor.PROCESSOR){
@@ -44,7 +46,7 @@ class Repository{
     }
   }
 
-  void preFetch(fncOnMessage onMessage) async{
+  Future<void> preFetch(fncOnMessage onMessage) async{
     onMessage('Cleaning up local database...');
 
 
@@ -53,7 +55,7 @@ class Repository{
     await localRepo.dropDatabase();
   }
 
-  void fetch(fncOnMessage onMessage) async{
+  Future<void> fetch(fncOnMessage onMessage) async{
 
     onMessage('Fetching User Data...');
     await userRepository.fetch();
