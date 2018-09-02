@@ -57,6 +57,7 @@ class Repository{
 
   Future<void> fetch(fncOnMessage onMessage) async{
 
+
     onMessage('Fetching User Data...');
     await userRepository.fetch();
 

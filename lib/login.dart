@@ -8,11 +8,9 @@ import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizLoadingIndicator.dart';
 import 'package:techviz/components/vizRainbow.dart';
 import 'package:techviz/config.dart';
-import 'package:techviz/repository/localRepository.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/roleSelector.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
-
 
 class Login extends StatefulWidget {
 
@@ -40,6 +38,7 @@ class LoginState extends State<Login> {
 
   @override
   void initState() {
+
     SharedPreferences.getInstance().then((onValue) {
       prefs = onValue;
 
@@ -57,8 +56,12 @@ class LoginState extends State<Login> {
   }
 
   Future<void> loadInitialData() async{
+
+    String deviceID = await Utils.deviceID;
+    print(deviceID);
+
     Repository repo = Repository();
-    repo.configure(Flavor.PROCESSOR);
+    await repo.configure(Flavor.PROCESSOR);
 
 
     void onMessage(String message){
@@ -69,7 +72,6 @@ class LoginState extends State<Login> {
 
     await repo.preFetch(onMessage);
     await repo.fetch(onMessage);
-
   }
 
 
@@ -96,7 +98,7 @@ class LoginState extends State<Login> {
 
         await loadInitialData();
 
-        Future.delayed( Duration(milliseconds:  500), () {
+        Future.delayed( Duration(milliseconds:  200), () {
           Navigator.pushReplacement(context, MaterialPageRoute<RoleSelector>(builder: (BuildContext context) => RoleSelector()));
         });
       }).catchError((Object error) {
