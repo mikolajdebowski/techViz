@@ -3,9 +3,11 @@ import 'package:event_bus/event_bus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techviz/config.dart';
 import 'package:techviz/model/task.dart';
+import 'package:techviz/model/user.dart';
 
 class Session {
-  String userID = "57b3a85dc4b-15f555106cc";
+  //String userID = "57b3a85dc4b-15f555106cc";
+  User user;
   EventBus eventBus;
   Client rabbitmqClient;
   Channel _channel;
@@ -19,6 +21,11 @@ class Session {
 
   Session._internal() {
     print('Session instance');
+  }
+
+  void clear(){
+    user = null;
+    disconnectAsyncData();
   }
 
   void connectAsyncData() async {
@@ -43,7 +50,7 @@ class Session {
   }
 
   void listenTaskQueue(){
-    String taskNewQueue = "task.create.$userID";
+    String taskNewQueue = "task.create.${user.UserID}";
 
     _channel.queue(taskNewQueue, durable: true).then((Queue queue) {
       _taskQueue = queue;
@@ -91,7 +98,6 @@ class Session {
 
   void disconnectAsyncData() {
     eventBus = null;
-
     try{
       if(_taskQueue!=null){
         _taskQueue.delete();

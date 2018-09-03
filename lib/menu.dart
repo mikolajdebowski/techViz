@@ -13,7 +13,7 @@ class Menu extends StatefulWidget {
 class _MenuState extends State<Menu> {
   void logOut(Object tag){
     Session session = Session();
-    session.disconnectAsyncData();
+    session.clear();
 
     Navigator.pushReplacementNamed(context, '/login');
   }

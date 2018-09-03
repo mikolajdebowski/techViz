@@ -9,6 +9,8 @@ import 'package:techviz/components/VizLoadingIndicator.dart';
 import 'package:techviz/components/vizRainbow.dart';
 import 'package:techviz/config.dart';
 import 'package:techviz/repository/repository.dart';
+import 'package:techviz/repository/session.dart';
+import 'package:techviz/repository/userRepository.dart';
 import 'package:techviz/roleSelector.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
@@ -55,14 +57,12 @@ class LoginState extends State<Login> {
     super.initState();
   }
 
+
+
+
   Future<void> loadInitialData() async{
-
-    String deviceID = await Utils.deviceID;
-    print(deviceID);
-
     Repository repo = Repository();
     await repo.configure(Flavor.PROCESSOR);
-
 
     void onMessage(String message){
       setState(() {
@@ -72,6 +72,18 @@ class LoginState extends State<Login> {
 
     await repo.preFetch(onMessage);
     await repo.fetch(onMessage);
+  }
+
+  Future<void> setupUser() async{
+
+    //CREATE SESSION
+    Session session = Session();
+    session.user = await UserRepository().getUser();
+
+    //
+    String deviceID = await Utils.deviceID;
+    print(deviceID);
+
   }
 
 
@@ -97,6 +109,7 @@ class LoginState extends State<Login> {
         await prefs.setString(Login.PASSWORD, passwordAddressController.text);
 
         await loadInitialData();
+        await setupUser();
 
         Future.delayed( Duration(milliseconds:  200), () {
           Navigator.pushReplacement(context, MaterialPageRoute<RoleSelector>(builder: (BuildContext context) => RoleSelector()));

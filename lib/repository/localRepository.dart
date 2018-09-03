@@ -82,6 +82,7 @@ class LocalRepository {
 
           await db.execute('''
             create table User ( 
+                ID TEXT NOT NULL,
                 UserID TEXT NOT NULL,
                 SectionList TEXT NOT NULL,
                 UserRoleID TEXT NOT NULL,

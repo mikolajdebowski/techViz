@@ -28,7 +28,7 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
 
     Session session = Session();
     roleListPresenter = StatusListPresenter(this);
-    roleListPresenter.loadUserRoles(session.userID);
+    roleListPresenter.loadUserRoles(session.user.UserID);
   }
 
   void validate(BuildContext context) {

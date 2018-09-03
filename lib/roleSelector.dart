@@ -25,7 +25,7 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
 
     Session session = Session();
     roleListPresenter = new RoleListPresenter(this);
-    roleListPresenter.loadUserRoles(session.userID);
+    roleListPresenter.loadUserRoles(session.user.UserID);
   }
 
   void validate(BuildContext context) {

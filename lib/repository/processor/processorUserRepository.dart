@@ -37,6 +37,7 @@ class ProcessorUserRepository extends UserRepository{
           dynamic values = d['Values'];
 
           Map<String, dynamic> map = Map<String, dynamic>();
+          map['ID'] = values[_columnNames.indexOf("_ID")];
           map['UserID'] = values[_columnNames.indexOf("LookupName")];
           map['SectionList'] = values[_columnNames.indexOf("SectionList")];
           map['UserRoleID'] = values[_columnNames.indexOf("UserRoleID")];
