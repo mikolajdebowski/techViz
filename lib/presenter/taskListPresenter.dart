@@ -10,20 +10,20 @@ abstract class ITaskListPresenter<Task> {
 class TaskListPresenter{
 
   ITaskListPresenter<Task> _view;
-  //ITaskRepository _repository;
+  TaskRepository _repository;
 
   TaskListPresenter(this._view){
-   // _repository = new Repository().taskRepository;
+   _repository = new Repository().taskRepository;
   }
 
   void loadTaskList(){
     assert(_view != null);
-//    _repository.getTaskList().then((List<Task> list) {
-//      _view.onTaskListLoaded(list);
-//
-//    }).catchError((Error onError) {
-//      print(onError);
-//      _view.onLoadError(onError);
-//    });
+    _repository.getTaskList().then((List<Task> list) {
+      _view.onTaskListLoaded(list);
+
+    }).catchError((Error onError) {
+      print(onError);
+      _view.onLoadError(onError);
+    });
   }
 }
