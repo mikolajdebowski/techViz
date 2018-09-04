@@ -51,14 +51,14 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
       children: roleList.map((UserRole role) {
         bool selected = selectedRoleID!= null && selectedRoleID ==  role.roleID.toString();
 
-        bool enabled = false;
-        var where = AvailableViews.values.where((e)=>e.toString() == "AvailableViews.${role.roleDescription}");
-        if(where!=null && where.length>0){
-          enabled = true;
-        }
+        bool enabled = true;
+//        var where = AvailableViews.values.where((e)=>e.toString() == "AvailableViews.${role.roleDescription}");
+//        if(where!=null && where.length>0){
+//          enabled = true;
+//        }
 
         return  VizOptionButton(
-            role.roleDescription,
+            role.roleID.toString(),
             onTap: onOptionSelected,
             tag: role.roleID.toString(),
             selected: selected,

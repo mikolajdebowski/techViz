@@ -1,9 +1,8 @@
 class User{
-  final String ID;
   final String UserID;
-  final String SectionList;
+  final String UserName;
   final String UserRoleID;
   final String UserStatusID;
 
-  const User({this.ID, this.UserID, this.SectionList, this.UserRoleID, this.UserStatusID});
+  const User({this.UserID, this.UserName, this.UserRoleID, this.UserStatusID});
 }

@@ -44,9 +44,6 @@ class LocalRepository {
 
           await db.execute('''
             create table TaskStatus ( 
-                _ID TEXT, 
-                LookupName TEXT NOT NULL,
-                DefaultValue INT NOT NULL,
                 TaskStatusID INT PRIMARY KEY,
                 TaskStatusDescription TEXT NOT NULL
                 )
@@ -54,9 +51,6 @@ class LocalRepository {
 
           await db.execute('''
             create table TaskType ( 
-                _ID TEXT, 
-                LookupName TEXT NOT NULL,
-                DefaultValue INT NOT NULL,
                 TaskTypeID INT PRIMARY KEY,
                 TaskTypeDescription TEXT NOT NULL,
                 RoleID NUMERIC
@@ -65,7 +59,6 @@ class LocalRepository {
 
           await db.execute('''
             create table Role ( 
-                _ID TEXT, 
                 UserRoleID INT NOT NULL,
                 UserRoleName TEXT NOT NULL
                 )
@@ -73,18 +66,15 @@ class LocalRepository {
 
           await db.execute('''
             create table UserRole ( 
-                _ID TEXT, 
                 UserID TEXT NOT NULL,
-                UserRoleID INT NOT NULL,
-                UserRoleName TEXT NOT NULL
+                UserRoleID INT NOT NULL
                 )
             ''');
 
           await db.execute('''
             create table User ( 
-                ID TEXT NOT NULL,
                 UserID TEXT NOT NULL,
-                SectionList TEXT NOT NULL,
+                UserName TEXT NOT NULL,
                 UserRoleID TEXT NOT NULL,
                 UserStatusID TEXT NOT NULL
                 )

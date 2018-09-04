@@ -36,11 +36,8 @@ class ProcessorTaskStatusRepository extends IRemoteRepository<TaskStatus>{
         dynamic values = d['Values'];
 
         Map<String, dynamic> map = Map<String, dynamic>();
-        map['_ID'] = values[_columnNames.indexOf("_ID")] as String;
-        map['DefaultValue'] = values[_columnNames.indexOf("DefaultValue")] as String;
-        map['LookupName'] = values[_columnNames.indexOf("LookupName")];
-        map['TaskStatusID'] = values[_columnNames.indexOf("LookupKey")];
-        map['TaskStatusDescription'] = values[_columnNames.indexOf("LookupValue")];
+        map['TaskStatusID'] = values[_columnNames.indexOf("TaskStatusID")];
+        map['TaskStatusDescription'] = values[_columnNames.indexOf("TaskStatusDescription")];
         localRepo.insert('TaskStatus', map);
       });
 

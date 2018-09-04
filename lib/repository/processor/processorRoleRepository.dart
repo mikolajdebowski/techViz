@@ -35,9 +35,8 @@ class ProcessorRoleRepository extends IRemoteRepository<Role>{
         dynamic values = d['Values'];
 
         Map<String, dynamic> map = Map<String, dynamic>();
-        map['_ID'] = values[_columnNames.indexOf("_ID")] as String;
-        map['UserRoleID'] = values[_columnNames.indexOf("LookupKey")];
-        map['UserRoleName'] = values[_columnNames.indexOf("LookupValue")];
+        map['UserRoleID'] = values[_columnNames.indexOf("UserRoleID")];
+        map['UserRoleName'] = values[_columnNames.indexOf("UserRoleName")];
         localRepo.insert('Role', map);
       });
 

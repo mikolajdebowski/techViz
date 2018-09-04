@@ -40,11 +40,12 @@ class ProcessorUserRepository extends IRemoteRepository<User>{
           dynamic values = d['Values'];
 
           Map<String, dynamic> map = Map<String, dynamic>();
-          map['ID'] = values[_columnNames.indexOf("_ID")];
-          map['UserID'] = values[_columnNames.indexOf("LookupName")];
-          map['SectionList'] = values[_columnNames.indexOf("SectionList")];
+          map['UserID'] = values[_columnNames.indexOf("UserID")];
+          //map['SectionList'] = values[_columnNames.indexOf("SectionList")];
           map['UserRoleID'] = values[_columnNames.indexOf("UserRoleID")];
+          map['UserName'] = values[_columnNames.indexOf("UserName")];
           map['UserStatusID'] = values[_columnNames.indexOf("UserStatusID")];
+
           localRepo.insert('User', map);
         });
 

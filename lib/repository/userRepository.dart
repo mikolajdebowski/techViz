@@ -14,14 +14,15 @@ class UserRepository implements IRepository<User>{
   Future<User> getUser() async {
     LocalRepository localRepo = LocalRepository();
 
-    String sql = "SELECT UserID, UserRoleID, UserRoleName FROM UserRole";
+    String sql = "SELECT UserID, UserRoleID, UserStatusID FROM User";
     List<Map<String, dynamic>> queryResult = await localRepo.rawQuery(sql);
 
     if(queryResult.length>0){
       Map<String, dynamic> userMap = queryResult.first;
       var u = User(
         UserID: userMap['UserID'] as String,
-        SectionList: userMap['UserID'] as String
+        UserRoleID: userMap['UserID'] as String,
+        UserStatusID: userMap['UserStatusID'] as String,
       );
       return u;
     }

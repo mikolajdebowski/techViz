@@ -37,8 +37,8 @@ class ProcessorUserStatusRepository extends IRemoteRepository<UserStatus>{
           dynamic values = d['Values'];
 
           Map<String, dynamic> map = Map<String, dynamic>();
-          map['UserStatusID'] = values[_columnNames.indexOf("LookupKey")];
-          map['Description'] = values[_columnNames.indexOf("LookupValue")];
+          map['UserStatusID'] = values[_columnNames.indexOf("UserStatusID")];
+          map['Description'] = values[_columnNames.indexOf("UserStatusName")];
           map['IsOnline'] = values[_columnNames.indexOf("IsOnline")];
           localRepo.insert('UserStatus', map);
         });

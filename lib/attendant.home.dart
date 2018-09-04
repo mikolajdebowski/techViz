@@ -425,7 +425,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
       _presenter.loadTaskList();
     }
     else{
-      Session().disconnectAsyncData();
+      //Session().disconnectAsyncData();
       _taskList = List<Task>();
       _selectedTask = null;
     }

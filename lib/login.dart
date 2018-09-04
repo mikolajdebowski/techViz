@@ -8,11 +8,13 @@ import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizLoadingIndicator.dart';
 import 'package:techviz/components/vizRainbow.dart';
 import 'package:techviz/config.dart';
+import 'package:techviz/repository/rabbitmq/channel/deviceChannel.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:techviz/repository/userRepository.dart';
 import 'package:techviz/roleSelector.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
+import 'dart:convert';
 
 class Login extends StatefulWidget {
 
@@ -80,12 +82,14 @@ class LoginState extends State<Login> {
     Session session = Session();
     session.user = await UserRepository().getUser();
 
-    //
     String deviceID = await Utils.deviceID;
-    print(deviceID);
+    String userID = session.user.UserID;
 
+    var toSend = {'deviceID': deviceID, 'userID': userID};
+
+    DeviceChannel deviceChannel = DeviceChannel();
+    await deviceChannel.submit(toSend);
   }
-
 
   void loginTap() async {
     if (_formKey.currentState.validate()) {

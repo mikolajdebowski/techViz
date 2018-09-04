@@ -11,7 +11,7 @@ class UserRoleRepository implements IRepository<UserRole>{
   Future<List<UserRole>> getUserRoles(String userID) async {
     LocalRepository localRepo = LocalRepository();
 
-    String sql = "SELECT UserID, UserRoleID, UserRoleName FROM UserRole";
+    String sql = "SELECT UserID, UserRoleID FROM UserRole";
     List<Map<String, dynamic>> queryResult = await localRepo.rawQuery(sql);
 
     List<UserRole> toReturn = List<UserRole>();
@@ -19,7 +19,6 @@ class UserRoleRepository implements IRepository<UserRole>{
       var t = UserRole(
         userID: role['UserID'] as String,
         roleID: role['UserRoleID'] as int,
-        roleDescription: role['UserRoleName'] as String,
       );
       toReturn.add(t);
     });
