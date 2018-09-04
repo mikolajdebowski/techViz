@@ -35,12 +35,12 @@ class UserRoleRepository implements IRepository<UserRole>{
 
   @override
   Future listen() {
-    // TODO: implement listen
+    throw UnimplementedError();
   }
 
   @override
   Future submit(UserRole object) {
-    // TODO: implement submit
+    throw UnimplementedError();
   }
 
 

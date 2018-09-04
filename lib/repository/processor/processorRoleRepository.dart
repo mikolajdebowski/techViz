@@ -31,8 +31,6 @@ class ProcessorRoleRepository extends IRemoteRepository<Role>{
       LocalRepository localRepo = LocalRepository();
       await localRepo.open();
 
-      print(rows.length);
-
       rows.forEach((dynamic d) {
         dynamic values = d['Values'];
 

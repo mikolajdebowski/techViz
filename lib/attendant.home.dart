@@ -8,8 +8,6 @@ import 'package:techviz/model/taskType.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/taskListPresenter.dart';
 import 'package:techviz/repository/session.dart';
-import 'package:techviz/repository/taskStatusRepository.dart';
-import 'package:techviz/repository/taskTypeRepository.dart';
 import 'package:event_bus/event_bus.dart';
 
 class AttendantHome extends StatefulWidget {

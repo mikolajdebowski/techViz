@@ -33,12 +33,12 @@ class TaskStatusRepository implements IRepository<TaskStatus>{
 
   @override
   Future listen() {
-    // TODO: implement listen
+    throw UnimplementedError();
   }
 
   @override
   Future submit(TaskStatus object) {
-    // TODO: implement submit
+    throw UnimplementedError();
   }
 
 

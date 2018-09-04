@@ -35,11 +35,11 @@ class UserStatusRepository implements IRepository<UserStatus>{
 
   @override
   Future listen() {
-    // TODO: implement listen
+    throw UnimplementedError();
   }
 
   @override
   Future submit(UserStatus object) {
-    // TODO: implement submit
+    throw UnimplementedError();
   }
 }
