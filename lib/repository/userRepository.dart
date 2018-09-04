@@ -2,17 +2,15 @@ import 'dart:async';
 import 'package:techviz/model/user.dart';
 import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/localRepository.dart';
+import 'package:techviz/repository/rabbitmq/channel/remoteChannel.dart';
+import 'package:techviz/repository/remoteRepository.dart';
 
-abstract class IUserRepository implements IRepository<dynamic>{
-  Future<User> getUser();
-}
+class UserRepository implements IRepository<User>{
 
-class UserRepository implements IUserRepository{
+  IRemoteRepository remoteRepository;
+  IRemoteChannel remoteChannel;
+  UserRepository({this.remoteRepository});
 
-  /**
-   * fetch local
-   */
-  @override
   Future<User> getUser() async {
     LocalRepository localRepo = LocalRepository();
 
@@ -24,7 +22,6 @@ class UserRepository implements IUserRepository{
       var u = User(
         UserID: userMap['UserID'] as String,
         SectionList: userMap['UserID'] as String
-
       );
       return u;
     }
@@ -32,15 +29,20 @@ class UserRepository implements IUserRepository{
     throw Exception('User was not found');
   }
 
-
-  /**
-   * fetch remote
-   */
   @override
   Future fetch() {
-    throw new UnimplementedError('Needs to be overwritten');
+    assert(this.remoteRepository!=null);
+    return this.remoteRepository.fetch();
   }
 
+  @override
+  Future listen(){
+    throw new UnimplementedError('Unimplemented method');
+  }
 
-
+  @override
+  Future submit(User object) {
+    assert(this.remoteChannel!=null);
+    return this.remoteChannel.submit(object);
+  }
 }

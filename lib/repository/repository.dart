@@ -6,16 +6,9 @@ import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
 import 'package:techviz/repository/processor/processorRoleRepository.dart';
 import 'package:techviz/repository/processor/processorUserRepository.dart';
 import 'package:techviz/repository/processor/processorUserRoleRepository.dart';
-import 'package:techviz/repository/processor/processorUserStatusRepository.dart';
 import 'package:techviz/repository/roleRepository.dart';
-import 'package:techviz/repository/taskRepository.dart';
-import 'package:techviz/repository/mock/mockTaskRepository.dart';
-import 'package:techviz/repository/processor/processorTaskRepository.dart';
-import 'package:techviz/repository/processor/processorTaskStatusRepository.dart';
-import 'package:techviz/repository/processor/processorTaskTypeRepository.dart';
 import 'package:techviz/repository/userRepository.dart';
 import 'package:techviz/repository/userRoleRepository.dart';
-import 'package:techviz/repository/userStatusRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 enum Flavor {
@@ -64,61 +57,77 @@ class Repository{
     onMessage('Fetching Roles...');
     await rolesRepository.fetch();
     await userRolesRepository.fetch();
-
-    onMessage('Fetching User Statuses...');
-    await userStatusRepository.fetch();
-
-    onMessage('Fetching Tasks...');
-    await taskRepository.fetch();
-
-    onMessage('Fetching Task Statuses...');
-    await taskStatusRepository.fetch();
-
-    onMessage('Fetching Task Types...');
-    await taskTypeRepository.fetch();
-
+//
+//    onMessage('Fetching User Statuses...');
+//    await userStatusRepository.fetch();
+//
+//    onMessage('Fetching Tasks...');
+//    await taskRepository.fetch();
+//
+//    onMessage('Fetching Task Statuses...');
+//    await taskStatusRepository.fetch();
+//
+//    onMessage('Fetching Task Types...');
+//    await taskTypeRepository.fetch();
+//
   }
 
-  ITaskRepository get taskRepository {
+
+
+  UserRepository get userRepository {
     switch(_flavor) {
-      case Flavor.PROCESSOR: return ProcessorTaskRepository();
-      default:return MockTaskRepository();
+      default: return UserRepository(remoteRepository: ProcessorUserRepository());
     }
   }
 
-  IRepository get taskStatusRepository {
+  RoleRepository get rolesRepository {
     switch(_flavor) {
-      default: return ProcessorTaskStatusRepository();
+      default: return RoleRepository(remoteRepository: ProcessorRoleRepository());
     }
   }
 
-  IRepository get taskTypeRepository {
+  UserRoleRepository get userRolesRepository {
     switch(_flavor) {
-      default: return ProcessorTaskTypeRepository();
+      default: return  UserRoleRepository(remoteRepository: ProcessorUserRoleRepository());
     }
   }
 
-  IRoleRepository get rolesRepository {
-    switch(_flavor) {
-      default: return ProcessorRoleRepository();
-    }
-  }
+//
+//
+//
+//  ITaskRepository get taskRepository {
+//    switch(_flavor) {
+////      case Flavor.PROCESSOR: return ProcessorTaskRepository();
+////      default:return MockTaskRepository();
+//      default:return ProcessorTaskRepository();
+//    }
+//  }
+//
+//  IRepository get taskStatusRepository {
+//    switch(_flavor) {
+//      default: return ProcessorTaskStatusRepository();
+//    }
+//  }
+//
+//  IRepository get taskTypeRepository {
+//    switch(_flavor) {
+//      default: return ProcessorTaskTypeRepository();
+//    }
+//  }
+//
+//  IRoleRepository get rolesRepository {
+//    switch(_flavor) {
+//      default: return ProcessorRoleRepository();
+//    }
+//  }
+//
 
-  IUserRoleRepository get userRolesRepository {
-    switch(_flavor) {
-      default: return ProcessorUserRoleRepository();
-    }
-  }
-
-  IUserRepository get userRepository {
-    switch(_flavor) {
-      default: return ProcessorUserRepository();
-    }
-  }
-
-  IUserStatusRepository get userStatusRepository {
-    switch(_flavor) {
-      default: return ProcessorUserStatusRepository();
-    }
-  }
+//
+//
+//
+//  IUserStatusRepository get userStatusRepository {
+//    switch(_flavor) {
+//      default: return ProcessorUserStatusRepository();
+//    }
+//  }
 }

@@ -9,19 +9,19 @@ abstract class IStatusListPresenter<UserStatus> {
 
 class StatusListPresenter{
   IStatusListPresenter<UserStatus> _view;
-  IUserStatusRepository _repository;
+  //IUserStatusRepository _repository;
 
   StatusListPresenter(this._view){
-    _repository = new Repository().userStatusRepository;
+    //_repository = new Repository().userStatusRepository;
   }
 
   void loadUserRoles(String userID){
     assert(_view != null);
-    _repository.getStatuses().then((List<UserStatus> list) {
-      _view.onStatusListLoaded(list);
-    }).catchError((Error onError) {
-      print(onError);
-      _view.onLoadError(onError);
-    });
+//    _repository.getStatuses().then((List<UserStatus> list) {
+//      _view.onStatusListLoaded(list);
+//    }).catchError((Error onError) {
+//      print(onError);
+//      _view.onLoadError(onError);
+//    });
   }
 }

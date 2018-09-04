@@ -2,17 +2,12 @@ import 'dart:async';
 import 'package:techviz/model/role.dart';
 import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/localRepository.dart';
+import 'package:techviz/repository/remoteRepository.dart';
 
-abstract class IRoleRepository implements IRepository<dynamic>{
-  Future<List<Role>> getAll();
-}
+class RoleRepository implements IRepository<Role>{
+  IRemoteRepository remoteRepository;
+  RoleRepository({this.remoteRepository});
 
-class RoleRepository implements IRoleRepository{
-
-  /**
-   * fetch local
-   */
-  @override
   Future<List<Role>> getAll() async {
     LocalRepository localRepo = LocalRepository();
 
@@ -30,11 +25,19 @@ class RoleRepository implements IRoleRepository{
     return toReturn;
   }
 
-  /**
-   * fetch remote
-   */
   @override
-  Future<List<dynamic>> fetch() {
-    throw new UnimplementedError('Needs to be overwritten');
+  Future listen() {
+    // TODO: implement listen
+  }
+
+  @override
+  Future submit(Role object) {
+    // TODO: implement submit
+  }
+
+  @override
+  Future fetch() {
+    assert(this.remoteRepository!=null);
+    return this.remoteRepository.fetch();
   }
 }

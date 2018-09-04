@@ -42,8 +42,8 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
   }
 
   void loadLookups() async{
-    _taskStatusList = await TaskStatusRepository().getAll();
-    _taskTypeList = await TaskTypeRepository().getAll();
+//    _taskStatusList = await TaskStatusRepository().getAll();
+//    _taskTypeList = await TaskTypeRepository().getAll();
   }
 
   void listenToQueues() {

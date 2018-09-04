@@ -1,4 +1,5 @@
 import 'package:techviz/model/userRole.dart';
+import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/userRoleRepository.dart';
 import 'package:techviz/repository/repository.dart';
 
@@ -10,10 +11,10 @@ abstract class IRoleListPresenter<UserRole> {
 class RoleListPresenter{
 
   IRoleListPresenter<UserRole> _view;
-  IUserRoleRepository _repository;
+  UserRoleRepository _repository;
 
   RoleListPresenter(this._view){
-    _repository = new Repository().userRolesRepository;
+    _repository = Repository().userRolesRepository;
   }
 
   void loadUserRoles(String userID){
