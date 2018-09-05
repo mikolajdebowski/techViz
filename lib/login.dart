@@ -82,10 +82,10 @@ class LoginState extends State<Login> {
     Session session = Session();
     session.user = await UserRepository().getUser();
 
-    String deviceID = await Utils.deviceID;
+    DeviceInfo deviceInfo = await Utils.deviceInfo;
     String userID = session.user.UserID;
 
-    var toSend = {'deviceID': deviceID, 'userID': userID};
+    var toSend = {'userID': userID, 'deviceID': deviceInfo.DeviceID, 'model': deviceInfo.Model, 'OSName': deviceInfo.OSName, 'OSVersion': deviceInfo.OSVersion };
 
     DeviceChannel deviceChannel = DeviceChannel();
     await deviceChannel.submit(toSend);
