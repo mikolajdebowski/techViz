@@ -6,6 +6,7 @@ import 'package:techviz/home.dart';
 import 'package:techviz/model/role.dart';
 import 'package:techviz/model/userRole.dart';
 import 'package:techviz/presenter/roleListPresenter.dart';
+import 'package:techviz/repository/rabbitmq/channel/userChannel.dart';
 import 'package:techviz/repository/session.dart';
 
 class RoleSelector extends StatefulWidget {
@@ -29,9 +30,15 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
     roleListPresenter.loadUserRoles(session.user.UserID);
   }
 
-  void validate(BuildContext context) {
+  void validate(BuildContext context) async {
     if(selectedRoleID == null)
       return;
+
+    Session session = Session();
+    var toSend = {'userRoleID': selectedRoleID, 'userID': session.user.UserID};
+
+    UserChannel userChannel = UserChannel();
+    await userChannel.submit(toSend);
 
     Navigator.pushReplacement(context, MaterialPageRoute<Home>(builder: (BuildContext context) => Home()));
   }

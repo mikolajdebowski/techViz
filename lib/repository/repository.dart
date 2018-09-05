@@ -65,10 +65,10 @@ class Repository{
     await rolesRepository.fetch();
     await userRolesRepository.fetch();
 
-    onMessage('Fetching User Statuses...');
+    onMessage('Fetching User Status...');
     await userStatusRepository.fetch();
 
-    onMessage('Fetching Task Statuses...');
+    onMessage('Fetching Task Status...');
     await taskStatusRepository.fetch();
 
     onMessage('Fetching Task Types...');
