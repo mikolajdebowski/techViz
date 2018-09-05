@@ -8,16 +8,21 @@ class RoleRepository implements IRepository<Role>{
   IRemoteRepository remoteRepository;
   RoleRepository({this.remoteRepository});
 
-  Future<List<Role>> getAll() async {
+  Future<List<Role>> getAll({List<String> ids}) async {
     LocalRepository localRepo = LocalRepository();
 
-    List<Map<String, dynamic>> queryResult = await localRepo.rawQuery("SELECT UserRoleID, UserRoleName FROM Role");
+    String sqlQuery = "SELECT UserRoleID, UserRoleName FROM Role";
+    if(ids!=null || ids.length>0){
+      sqlQuery += " WHERE UserRoleID IN (${ids.join(',')})";
+    }
+
+    List<Map<String, dynamic>> queryResult = await localRepo.rawQuery(sqlQuery);
 
     List<Role> toReturn = List<Role>();
     queryResult.forEach((Map<String, dynamic> role) {
       var t = Role(
         id: role['UserRoleID'] as int,
-        description: role['UserRoleID'] as String,
+        description: role['UserRoleName'] as String,
       );
       toReturn.add(t);
     });

@@ -3,6 +3,7 @@ import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/home.dart';
+import 'package:techviz/model/role.dart';
 import 'package:techviz/model/userRole.dart';
 import 'package:techviz/presenter/roleListPresenter.dart';
 import 'package:techviz/repository/session.dart';
@@ -14,8 +15,8 @@ class RoleSelector extends StatefulWidget {
   State<StatefulWidget> createState() => RoleSelectorState();
 }
 
-class RoleSelectorState extends State<RoleSelector> implements IRoleListPresenter<UserRole> {
-  List<UserRole> roleList = List<UserRole>();
+class RoleSelectorState extends State<RoleSelector> implements IRoleListPresenter<Role> {
+  List<Role> roleList = List<Role>();
   RoleListPresenter roleListPresenter;
   String selectedRoleID;
 
@@ -48,8 +49,8 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
       childAspectRatio: 2.0,
       addAutomaticKeepAlives: false,
       crossAxisCount: 3,
-      children: roleList.map((UserRole role) {
-        bool selected = selectedRoleID!= null && selectedRoleID ==  role.roleID.toString();
+      children: roleList.map((Role role) {
+        bool selected = selectedRoleID!= null && selectedRoleID ==  role.id.toString();
 
         bool enabled = true;
 //        var where = AvailableViews.values.where((e)=>e.toString() == "AvailableViews.${role.roleDescription}");
@@ -58,9 +59,9 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
 //        }
 
         return  VizOptionButton(
-            role.roleID.toString(),
+            role.description,
             onTap: onOptionSelected,
-            tag: role.roleID.toString(),
+            tag: role.id,
             selected: selected,
         enabled: enabled);
      }).toList());
@@ -88,7 +89,7 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
   }
 
   @override
-  void onRoleListLoaded(List<UserRole> result) {
+  void onRoleListLoaded(List<Role> result) {
     if(result.length==1){
       Navigator.pushReplacement(context, MaterialPageRoute<Home>(builder: (BuildContext context) => Home()));
       return;

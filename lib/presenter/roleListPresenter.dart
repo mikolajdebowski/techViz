@@ -1,29 +1,37 @@
+import 'package:techviz/model/role.dart';
 import 'package:techviz/model/userRole.dart';
+import 'package:techviz/repository/roleRepository.dart';
 import 'package:techviz/repository/userRoleRepository.dart';
 import 'package:techviz/repository/repository.dart';
 
-abstract class IRoleListPresenter<UserRole> {
-  void onRoleListLoaded(List<UserRole> result);
+abstract class IRoleListPresenter<Role> {
+  void onRoleListLoaded(List<Role> result);
   void onLoadError(Error error);
 }
 
 class RoleListPresenter{
 
-  IRoleListPresenter<UserRole> _view;
-  UserRoleRepository _repository;
+  IRoleListPresenter<Role> _view;
+  UserRoleRepository _userRoleRepository;
+  RoleRepository _roleRepository;
 
   RoleListPresenter(this._view){
-    _repository = Repository().userRolesRepository;
+    _userRoleRepository = Repository().userRolesRepository;
+    _roleRepository = Repository().rolesRepository;
   }
 
-  void loadUserRoles(String userID){
+  void loadUserRoles(String userID) async{
     assert(_view != null);
-    _repository.getUserRoles(userID).then((List<UserRole> list) {
-      _view.onRoleListLoaded(list);
 
-    }).catchError((Error onError) {
-      print(onError);
-      _view.onLoadError(onError);
-    });
+    List<UserRole> userRoleList = await _userRoleRepository.getUserRoles(userID);
+    List<String> ids = userRoleList.map<String>((UserRole u) => u.roleID.toString()).toList();
+    List<Role> roleList = await _roleRepository.getAll(ids: ids);
+
+    _view.onRoleListLoaded(roleList);
   }
+}
+
+
+class RoleModelPresenter{
+
 }
