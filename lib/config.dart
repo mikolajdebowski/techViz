@@ -4,7 +4,7 @@ import 'package:techviz/common/LowerCaseTextFormatter.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:flutter/services.dart';
 import 'package:techviz/components/vizRainbow.dart';
-//import 'package:validator/validator.dart';
+import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 class Config extends StatefulWidget {
   static final String SERVERURL = 'SERVERURL';
@@ -50,7 +50,6 @@ class ConfigState extends State<Config> {
 
   @override
   Widget build(BuildContext context) {
-
     SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
 
     var textFieldStyle = TextStyle(
@@ -61,7 +60,7 @@ class ConfigState extends State<Config> {
         fontFamily: "Roboto");
 
     var textFieldBorder = OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(4.0)));
-    var defaultPadding = EdgeInsets.all(7.0);
+    var defaultPadding = EdgeInsets.all(6.0);
     var textFieldContentPadding = new EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0);
 
     var backgroundDecoration = BoxDecoration(
@@ -79,11 +78,11 @@ class ConfigState extends State<Config> {
               print('saving url: $value');
             },
             autocorrect: false,
-//            validator: (String value) {
-//              if (!isURL(value, default_url_options)) {
-//                return 'Please enter valid URL';
-//              }
-//            },
+            validator: (String value) {
+              if (!Validator.isUrl(value, default_url_options)) {
+                return 'Please enter valid URL';
+              }
+            },
             controller: serverAddressController,
             decoration: InputDecoration(
                 fillColor: Colors.black87,
@@ -140,7 +139,7 @@ class ConfigState extends State<Config> {
                 Align(
                     alignment: Alignment.center,
                     child: Container(
-                      height: 100.0,
+                      height: 110.0,
                       child: row,
                     )),
                 Align(alignment: Alignment.bottomCenter, child: VizRainbow()),

@@ -143,7 +143,7 @@ class LoginState extends State<Login> {
         fontFamily: "Roboto");
 
     var textFieldBorder = OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(4.0)));
-    var defaultPadding = EdgeInsets.all(7.0);
+    var defaultPadding = EdgeInsets.all(6.0);
     var textFieldContentPadding = new EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0);
 
     var backgroundDecoration = BoxDecoration(
