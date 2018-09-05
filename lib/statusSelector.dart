@@ -4,6 +4,7 @@ import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/statusListPresenter.dart';
+import 'package:techviz/repository/rabbitmq/channel/userChannel.dart';
 import 'package:techviz/repository/session.dart';
 
 typedef fncOnTapOK(UserStatus selected);
@@ -20,7 +21,7 @@ class StatusSelector extends StatefulWidget {
 class StatusSelectorState extends State<StatusSelector> implements IStatusListPresenter<UserStatus> {
   List<UserStatus> statusList = List<UserStatus>();
   StatusListPresenter roleListPresenter;
-  UserStatus selectedStatusID;
+  UserStatus selectedStatus;
 
   @override
   void initState(){
@@ -31,11 +32,17 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
     roleListPresenter.loadUserRoles(session.user.UserID);
   }
 
-  void validate(BuildContext context) {
-    if(selectedStatusID == null)
+  void validate(BuildContext context) async {
+    if(selectedStatus == null)
       return;
 
-    widget.onTapOK(selectedStatusID);
+    Session session = Session();
+    var toSend = {'userStatusID': selectedStatus.id, 'userID': session.user.UserID};
+
+    UserChannel userChannel = UserChannel();
+    await userChannel.submit(toSend);
+
+    widget.onTapOK(selectedStatus);
 
     Navigator.of(context).pop();
   }
@@ -54,7 +61,7 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
       addAutomaticKeepAlives: false,
       crossAxisCount: 3,
       children: statusList.map((UserStatus status) {
-        bool selected = selectedStatusID!= null && selectedStatusID.id.toString() ==  status.id;
+        bool selected = selectedStatus!= null && selectedStatus.id.toString() ==  status.id;
 
         return  VizOptionButton(
             status.description,
@@ -76,7 +83,7 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
 
   void onOptionSelected(Object tag){
     setState(() {
-      selectedStatusID = statusList.where((UserStatus s) => s.id == tag).first;
+      selectedStatus = statusList.where((UserStatus s) => s.id == tag).first;
     });
   }
 
@@ -90,9 +97,9 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
     setState(() {
       statusList = result;
       if(widget.preSelected==null){
-        selectedStatusID = statusList.where((UserStatus us) => us.isOnline == false).first;
+        selectedStatus = statusList.where((UserStatus us) => us.isOnline == false).first;
       }
-      else selectedStatusID = widget.preSelected;
+      else selectedStatus = widget.preSelected;
     });
   }
 }

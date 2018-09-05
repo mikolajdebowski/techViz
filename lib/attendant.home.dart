@@ -46,11 +46,11 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
 
   void listenToQueues() {
     Session session = Session();
-    session.eventBus.on<Task>().listen((Task event) {
-      setState(() {
-        _taskList.add(event);
-      });
-    });
+//    session.eventBus.on<Task>().listen((Task event) {
+//      setState(() {
+//        _taskList.add(event);
+//      });
+//    });
   }
 
   @override

@@ -5,6 +5,7 @@ import 'package:event_bus/event_bus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techviz/config.dart';
 import 'package:techviz/model/user.dart';
+import 'package:techviz/repository/rabbitmq/channel/userChannel.dart';
 
 class Session {
   User user;
@@ -37,7 +38,15 @@ class Session {
 
 
 
-  void clear(){
+  void clear() async{
+
+    Session session = Session();
+    var toSend = {'userStatusID': 10, 'userID': session.user.UserID};
+    //todo: hardcoded off-shift id
+
+    UserChannel userChannel = UserChannel();
+    await userChannel.submit(toSend);
+
     user = null;
     //disconnectAsyncData();
   }
