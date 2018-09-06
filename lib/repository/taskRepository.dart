@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:techviz/model/task.dart';
+import 'package:techviz/model/taskStatus.dart';
+import 'package:techviz/model/taskType.dart';
 import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/localRepository.dart';
 import 'package:techviz/repository/remoteRepository.dart';
@@ -12,7 +14,24 @@ class TaskRepository implements IRepository<Task>{
   Future<List<Task>> getTaskList() async {
     LocalRepository localRepo = LocalRepository();
 
-    List<Map<String, dynamic>> queryResult = await localRepo.rawQuery('SELECT * FROM Task');
+    String sql = 'SELECT '
+        't.Amount, '
+        't._ID, '
+        't.Location, '
+        't.EventDesc, '
+        't.TaskCreated, '
+        't.PlayerID, '
+        't.PlayerFirstName, '
+        't.PlayerLastName, '
+        't.PlayerTier, '
+        't.PlayerTierColorHex, '
+        'ts.TaskStatusID, '
+        'ts.TaskStatusDescription, '
+        'tt.TaskTypeID, '
+        'tt.TaskTypeDescription '
+        'FROM Task t INNER JOIN TaskStatus ts on t.TaskStatusID == ts.TaskStatusID INNER JOIN TaskType tt on t.TaskTypeID == tt.TaskTypeID;';
+
+    List<Map<String, dynamic>> queryResult = await localRepo.rawQuery(sql);
 
     List<Task> list = List<Task>();
     queryResult.forEach((Map<String, dynamic> task) {
@@ -21,8 +40,8 @@ class TaskRepository implements IRepository<Task>{
       var t = Task(
         id: task['_ID'] as String,
         location: task['Location'] as String,
-        taskTypeID: task['TaskTypeID'] as int,
-        taskStatusID: task['TaskStatusID'] as int,
+        taskType: TaskType(id: task['TaskTypeID'] as int, description: task['TaskTypeDescription'] as String),
+        taskStatus: TaskStatus(id: task['TaskStatusID'] as int, description: task['TaskStatusDescription'] as String),
         amount: amount,
         eventDesc: task['EventDesc'] as String,
         taskCreated: DateTime.parse(task['TaskCreated'] as String),

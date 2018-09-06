@@ -14,7 +14,6 @@ import 'package:techviz/repository/session.dart';
 import 'package:techviz/repository/userRepository.dart';
 import 'package:techviz/roleSelector.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
-import 'dart:convert';
 
 class Login extends StatefulWidget {
 

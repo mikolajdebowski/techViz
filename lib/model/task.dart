@@ -1,9 +1,15 @@
+import 'package:techviz/model/taskStatus.dart';
+import 'package:techviz/model/taskType.dart';
+
 class Task {
   final String id;
   final String location;
   final String machineId;
-  final int taskTypeID;
-  final int taskStatusID;
+//  final int taskTypeID;
+//  final int taskStatusID;
+
+  final TaskType taskType;
+  final TaskStatus taskStatus;
   final DateTime taskCreated;
   final DateTime taskAssigned;
   final double amount;
@@ -15,7 +21,7 @@ class Task {
   final String playerTier;
   final String playerTierColorHEX;
 
-  const Task({this.id, this.location, this.taskTypeID, this.taskStatusID, this.machineId, this.taskCreated, this.taskAssigned, this.amount, this.eventDesc, this.playerID,
+  const Task({this.id, this.location, this.taskType, this.taskStatus, this.machineId, this.taskCreated, this.taskAssigned, this.amount, this.eventDesc, this.playerID,
   this.playerFirstName, this.playerLastName, this.playerTier, this.playerTierColorHEX});
 
 }
