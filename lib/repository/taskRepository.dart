@@ -3,18 +3,12 @@ import 'dart:async';
 import 'package:techviz/model/task.dart';
 import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/localRepository.dart';
+import 'package:techviz/repository/remoteRepository.dart';
 
-abstract class ITaskRepository implements IRepository<dynamic>{
-  Future<List<Task>> getTaskList();
-}
+class TaskRepository implements IRepository<Task>{
+  IRemoteRepository remoteRepository;
+  TaskRepository({this.remoteRepository});
 
-class TaskRepository implements ITaskRepository{
-
-  /**
-   * fetch local task list
-   */
-
-  @override
   Future<List<Task>> getTaskList() async {
     LocalRepository localRepo = LocalRepository();
 
@@ -45,9 +39,18 @@ class TaskRepository implements ITaskRepository{
   }
 
   @override
-  Future<List<dynamic>> fetch() {
-    throw new UnimplementedError('Needs to be overwritten');
+  Future fetch() {
+    assert(this.remoteRepository!=null);
+    return this.remoteRepository.fetch();
   }
 
+  @override
+  Future listen() {
+    throw UnimplementedError();
+  }
 
+  @override
+  Future submit(Task object) {
+    throw UnimplementedError();
+  }
 }

@@ -3,8 +3,10 @@ import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/home.dart';
+import 'package:techviz/model/role.dart';
 import 'package:techviz/model/userRole.dart';
 import 'package:techviz/presenter/roleListPresenter.dart';
+import 'package:techviz/repository/rabbitmq/channel/userChannel.dart';
 import 'package:techviz/repository/session.dart';
 
 class RoleSelector extends StatefulWidget {
@@ -14,10 +16,12 @@ class RoleSelector extends StatefulWidget {
   State<StatefulWidget> createState() => RoleSelectorState();
 }
 
-class RoleSelectorState extends State<RoleSelector> implements IRoleListPresenter<UserRole> {
-  List<UserRole> roleList = List<UserRole>();
+class RoleSelectorState extends State<RoleSelector> implements IRoleListPresenter<Role> {
+  List<Role> roleList = List<Role>();
   RoleListPresenter roleListPresenter;
   String selectedRoleID;
+
+  List<int> avaiableViews = [10];
 
   @override
   void initState(){
@@ -28,9 +32,15 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
     roleListPresenter.loadUserRoles(session.user.UserID);
   }
 
-  void validate(BuildContext context) {
+  void validate(BuildContext context) async {
     if(selectedRoleID == null)
       return;
+
+    Session session = Session();
+    var toSend = {'userRoleID': selectedRoleID, 'userID': session.user.UserID};
+
+    UserChannel userChannel = UserChannel();
+    await userChannel.submit(toSend);
 
     Navigator.pushReplacement(context, MaterialPageRoute<Home>(builder: (BuildContext context) => Home()));
   }
@@ -48,19 +58,19 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
       childAspectRatio: 2.0,
       addAutomaticKeepAlives: false,
       crossAxisCount: 3,
-      children: roleList.map((UserRole role) {
-        bool selected = selectedRoleID!= null && selectedRoleID ==  role.roleID.toString();
+      children: roleList.map((Role role) {
+        bool selected = selectedRoleID!= null && selectedRoleID ==  role.id.toString();
 
         bool enabled = false;
-        var where = AvailableViews.values.where((e)=>e.toString() == "AvailableViews.${role.roleDescription}");
-        if(where!=null && where.length>0){
+        var contains = avaiableViews.contains(role.id);
+        if(contains!=null && contains == true){
           enabled = true;
         }
 
         return  VizOptionButton(
-            role.roleDescription,
+            role.description,
             onTap: onOptionSelected,
-            tag: role.roleID.toString(),
+            tag: role.id,
             selected: selected,
         enabled: enabled);
      }).toList());
@@ -88,7 +98,7 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
   }
 
   @override
-  void onRoleListLoaded(List<UserRole> result) {
+  void onRoleListLoaded(List<Role> result) {
     if(result.length==1){
       Navigator.pushReplacement(context, MaterialPageRoute<Home>(builder: (BuildContext context) => Home()));
       return;
@@ -98,9 +108,4 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
       roleList = result;
     });
   }
-}
-
-
-enum AvailableViews{
-  Attendant,
 }

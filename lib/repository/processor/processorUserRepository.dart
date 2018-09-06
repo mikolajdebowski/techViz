@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:techviz/model/user.dart';
 import 'package:techviz/repository/localRepository.dart';
 import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
-import 'package:techviz/repository/userRepository.dart';
+import 'package:techviz/repository/remoteRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
-class ProcessorUserRepository extends UserRepository{
+class ProcessorUserRepository extends IRemoteRepository<User>{
 
   @override
   Future fetch() {
@@ -33,15 +34,18 @@ class ProcessorUserRepository extends UserRepository{
         LocalRepository localRepo = LocalRepository();
         await localRepo.open();
 
+        print(rows.length);
+
         rows.forEach((dynamic d) {
           dynamic values = d['Values'];
 
           Map<String, dynamic> map = Map<String, dynamic>();
-          map['ID'] = values[_columnNames.indexOf("_ID")];
-          map['UserID'] = values[_columnNames.indexOf("LookupName")];
-          map['SectionList'] = values[_columnNames.indexOf("SectionList")];
+          map['UserID'] = values[_columnNames.indexOf("UserID")];
+          //map['SectionList'] = values[_columnNames.indexOf("SectionList")];
           map['UserRoleID'] = values[_columnNames.indexOf("UserRoleID")];
+          map['UserName'] = values[_columnNames.indexOf("UserName")];
           map['UserStatusID'] = values[_columnNames.indexOf("UserStatusID")];
+
           localRepo.insert('User', map);
         });
 
@@ -56,6 +60,4 @@ class ProcessorUserRepository extends UserRepository{
 
     return _completer.future;
   }
-
-
 }

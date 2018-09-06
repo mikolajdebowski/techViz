@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/repository/localRepository.dart';
 import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
-import 'package:techviz/repository/userStatusRepository.dart';
+import 'package:techviz/repository/remoteRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
-class ProcessorUserStatusRepository extends UserStatusRepository{
+class ProcessorUserStatusRepository extends IRemoteRepository<UserStatus>{
 
   @override
   Future fetch() {
@@ -36,8 +37,8 @@ class ProcessorUserStatusRepository extends UserStatusRepository{
           dynamic values = d['Values'];
 
           Map<String, dynamic> map = Map<String, dynamic>();
-          map['UserStatusID'] = values[_columnNames.indexOf("LookupKey")];
-          map['Description'] = values[_columnNames.indexOf("LookupValue")];
+          map['UserStatusID'] = values[_columnNames.indexOf("UserStatusID")];
+          map['Description'] = values[_columnNames.indexOf("UserStatusName")];
           map['IsOnline'] = values[_columnNames.indexOf("IsOnline")];
           localRepo.insert('UserStatus', map);
         });
@@ -52,6 +53,4 @@ class ProcessorUserStatusRepository extends UserStatusRepository{
 
     return _completer.future;
   }
-
-
 }

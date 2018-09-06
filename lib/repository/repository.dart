@@ -1,18 +1,18 @@
 import 'dart:async';
 
-import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/localRepository.dart';
 import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
 import 'package:techviz/repository/processor/processorRoleRepository.dart';
+import 'package:techviz/repository/processor/processorTaskRepository.dart';
+import 'package:techviz/repository/processor/processorTaskStatusRepository.dart';
+import 'package:techviz/repository/processor/processorTaskTypeRepository.dart';
 import 'package:techviz/repository/processor/processorUserRepository.dart';
 import 'package:techviz/repository/processor/processorUserRoleRepository.dart';
 import 'package:techviz/repository/processor/processorUserStatusRepository.dart';
 import 'package:techviz/repository/roleRepository.dart';
 import 'package:techviz/repository/taskRepository.dart';
-import 'package:techviz/repository/mock/mockTaskRepository.dart';
-import 'package:techviz/repository/processor/processorTaskRepository.dart';
-import 'package:techviz/repository/processor/processorTaskStatusRepository.dart';
-import 'package:techviz/repository/processor/processorTaskTypeRepository.dart';
+import 'package:techviz/repository/taskStatusRepository.dart';
+import 'package:techviz/repository/taskTypeRepository.dart';
 import 'package:techviz/repository/userRepository.dart';
 import 'package:techviz/repository/userRoleRepository.dart';
 import 'package:techviz/repository/userStatusRepository.dart';
@@ -65,60 +65,64 @@ class Repository{
     await rolesRepository.fetch();
     await userRolesRepository.fetch();
 
-    onMessage('Fetching User Statuses...');
+    onMessage('Fetching User Status...');
     await userStatusRepository.fetch();
 
-    onMessage('Fetching Tasks...');
-    await taskRepository.fetch();
-
-    onMessage('Fetching Task Statuses...');
+    onMessage('Fetching Task Status...');
     await taskStatusRepository.fetch();
 
     onMessage('Fetching Task Types...');
     await taskTypeRepository.fetch();
 
+    onMessage('Fetching Tasks...');
+    await taskRepository.fetch();
   }
 
-  ITaskRepository get taskRepository {
+
+
+  UserRepository get userRepository {
     switch(_flavor) {
-      case Flavor.PROCESSOR: return ProcessorTaskRepository();
-      default:return MockTaskRepository();
+      default: return UserRepository(remoteRepository: ProcessorUserRepository());
     }
   }
 
-  IRepository get taskStatusRepository {
+  RoleRepository get rolesRepository {
     switch(_flavor) {
-      default: return ProcessorTaskStatusRepository();
+      default: return RoleRepository(remoteRepository: ProcessorRoleRepository());
     }
   }
 
-  IRepository get taskTypeRepository {
+  UserRoleRepository get userRolesRepository {
     switch(_flavor) {
-      default: return ProcessorTaskTypeRepository();
+      default: return UserRoleRepository(remoteRepository: ProcessorUserRoleRepository());
     }
   }
 
-  IRoleRepository get rolesRepository {
+  UserStatusRepository get userStatusRepository {
     switch(_flavor) {
-      default: return ProcessorRoleRepository();
+      default: return UserStatusRepository(remoteRepository: ProcessorUserStatusRepository());
     }
   }
 
-  IUserRoleRepository get userRolesRepository {
+  TaskTypeRepository get taskTypeRepository {
     switch(_flavor) {
-      default: return ProcessorUserRoleRepository();
+      default: return TaskTypeRepository(remoteRepository: ProcessorTaskTypeRepository());
     }
   }
 
-  IUserRepository get userRepository {
+  TaskStatusRepository get taskStatusRepository {
     switch(_flavor) {
-      default: return ProcessorUserRepository();
+      default: return TaskStatusRepository(remoteRepository: ProcessorTaskStatusRepository());
     }
   }
 
-  IUserStatusRepository get userStatusRepository {
+  TaskRepository get taskRepository {
     switch(_flavor) {
-      default: return ProcessorUserStatusRepository();
+//      case Flavor.PROCESSOR: return ProcessorTaskRepository();
+//      default:return MockTaskRepository();
+      default:return TaskRepository(remoteRepository: ProcessorTaskRepository());
     }
   }
+
+
 }

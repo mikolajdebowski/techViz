@@ -9,7 +9,7 @@ abstract class IStatusListPresenter<UserStatus> {
 
 class StatusListPresenter{
   IStatusListPresenter<UserStatus> _view;
-  IUserStatusRepository _repository;
+  UserStatusRepository _repository;
 
   StatusListPresenter(this._view){
     _repository = new Repository().userStatusRepository;

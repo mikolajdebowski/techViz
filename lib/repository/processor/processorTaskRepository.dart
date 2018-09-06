@@ -1,27 +1,29 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:techviz/model/task.dart';
 import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
-import 'package:techviz/repository/taskRepository.dart';
+import 'package:techviz/repository/remoteRepository.dart';
 import 'package:techviz/repository/localRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
-class ProcessorTaskRepository extends TaskRepository  {
+class ProcessorTaskRepository extends IRemoteRepository<Task>{
 
   /**
    * fetch data from rest VizProcessor endpoint and store locally
    */
   @override
-  Future<List<dynamic>> fetch()  {
+  Future fetch()  {
+    Completer _completer = Completer<void>();
     SessionClient client = SessionClient.getInstance();
 
     var config = ProcessorRepositoryConfig();
     String liveTableID = config.GetLiveTable(LiveTableType.TECHVIZ_MOBILE_TASK.toString()).ID;
     String url = 'live/${config.DocumentID}/${liveTableID}/select.json';
 
-    return client.get(url).then((String rawResult) async{
-
-      List<dynamic> _toReturn = List<dynamic>();
-
+    client.get(url).catchError((Error onError){
+      print(onError.toString());
+      _completer.completeError(onError);
+    }).then((String rawResult) async{
       Map<String,dynamic> decoded = json.decode(rawResult);
       List<dynamic> rows = decoded['Rows'];
 
@@ -44,29 +46,23 @@ class ProcessorTaskRepository extends TaskRepository  {
         map['TaskCreated'] = values[_columnNames.indexOf("TaskCreated")];
         map['TaskAssigned'] = values[_columnNames.indexOf("TaskAssigned")];
         map['PlayerID'] = values[_columnNames.indexOf("PlayerID")];
-        map['TaskNote'] = values[_columnNames.indexOf("TaskNote")];
+        //map['TaskNote'] = values[_columnNames.indexOf("TaskNote")];
         map['Amount'] = values[_columnNames.indexOf("Amount")];
         map['EventDesc'] = values[_columnNames.indexOf("EventDesc")];
         map['PlayerID'] = values[_columnNames.indexOf("PlayerID")];
         map['PlayerFirstName'] = values[_columnNames.indexOf("FirstName")];
         map['PlayerLastName'] = values[_columnNames.indexOf("LastName")];
         map['PlayerTier'] = values[_columnNames.indexOf("Tier")];
-        map['PlayerTierColorHex'] = values[_columnNames.indexOf("TierColorHex")];
+        //map['PlayerTierColorHex'] = values[_columnNames.indexOf("TierColorHex")];
         localRepo.insert('Task', map);
       });
-
-      return Future.value(_toReturn);
+      _completer.complete();
 
     }).catchError((Error onError){
       print(onError.toString());
+      _completer.completeError(onError);
     });
+
+    return _completer.future;
   }
-
-
-
-
-
-
-
-
 }

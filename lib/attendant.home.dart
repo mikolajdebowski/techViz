@@ -8,8 +8,6 @@ import 'package:techviz/model/taskType.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/taskListPresenter.dart';
 import 'package:techviz/repository/session.dart';
-import 'package:techviz/repository/taskStatusRepository.dart';
-import 'package:techviz/repository/taskTypeRepository.dart';
 import 'package:event_bus/event_bus.dart';
 
 class AttendantHome extends StatefulWidget {
@@ -42,17 +40,17 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
   }
 
   void loadLookups() async{
-    _taskStatusList = await TaskStatusRepository().getAll();
-    _taskTypeList = await TaskTypeRepository().getAll();
+//    _taskStatusList = await TaskStatusRepository().getAll();
+//    _taskTypeList = await TaskTypeRepository().getAll();
   }
 
   void listenToQueues() {
     Session session = Session();
-    session.eventBus.on<Task>().listen((Task event) {
-      setState(() {
-        _taskList.add(event);
-      });
-    });
+//    session.eventBus.on<Task>().listen((Task event) {
+//      setState(() {
+//        _taskList.add(event);
+//      });
+//    });
   }
 
   @override
@@ -427,7 +425,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
       _presenter.loadTaskList();
     }
     else{
-      Session().disconnectAsyncData();
+      //Session().disconnectAsyncData();
       _taskList = List<Task>();
       _selectedTask = null;
     }

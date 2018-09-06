@@ -22,7 +22,7 @@ class ProcessorRepositoryConfig {
 
     for(Map<String,dynamic> doc  in documentList){
       String tag = doc['Tag'];
-      if(tag.contains('TechViz2')){
+      if(tag.contains('TechVizMobile')){
         documentMobile = doc;
         break;
       }

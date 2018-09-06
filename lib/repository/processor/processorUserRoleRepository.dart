@@ -4,10 +4,10 @@ import 'dart:convert';
 import 'package:techviz/model/userRole.dart';
 import 'package:techviz/repository/localRepository.dart';
 import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
-import 'package:techviz/repository/userRoleRepository.dart';
+import 'package:techviz/repository/remoteRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
-class ProcessorUserRoleRepository extends UserRoleRepository{
+class ProcessorUserRoleRepository extends IRemoteRepository<UserRole>{
 
   @override
   Future fetch() {
@@ -32,13 +32,14 @@ class ProcessorUserRoleRepository extends UserRoleRepository{
         LocalRepository localRepo = LocalRepository();
         await localRepo.open();
 
+        print(rows.length);
+
         rows.forEach((dynamic d) {
           dynamic values = d['Values'];
 
           Map<String, dynamic> map = Map<String, dynamic>();
           map['UserID'] = values[_columnNames.indexOf("UserID")];
           map['UserRoleID'] = values[_columnNames.indexOf("UserRoleID")];
-          map['UserRoleName'] = values[_columnNames.indexOf("UserRoleName")];
           localRepo.insert('UserRole', map);
         });
 

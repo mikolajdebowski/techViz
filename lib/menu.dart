@@ -11,9 +11,9 @@ class Menu extends StatefulWidget {
 }
 
 class _MenuState extends State<Menu> {
-  void logOut(Object tag){
+  void logOut(Object tag) async{
     Session session = Session();
-    session.clear();
+    await session.clear();
 
     Navigator.pushReplacementNamed(context, '/login');
   }

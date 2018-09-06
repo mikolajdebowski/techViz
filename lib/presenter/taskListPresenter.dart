@@ -10,10 +10,10 @@ abstract class ITaskListPresenter<Task> {
 class TaskListPresenter{
 
   ITaskListPresenter<Task> _view;
-  ITaskRepository _repository;
+  TaskRepository _repository;
 
   TaskListPresenter(this._view){
-    _repository = new Repository().taskRepository;
+   _repository = new Repository().taskRepository;
   }
 
   void loadTaskList(){
