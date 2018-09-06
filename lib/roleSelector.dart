@@ -21,6 +21,8 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
   RoleListPresenter roleListPresenter;
   String selectedRoleID;
 
+  List<int> avaiableViews = [10];
+
   @override
   void initState(){
     super.initState();
@@ -59,11 +61,11 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
       children: roleList.map((Role role) {
         bool selected = selectedRoleID!= null && selectedRoleID ==  role.id.toString();
 
-        bool enabled = true;
-//        var where = AvailableViews.values.where((e)=>e.toString() == "AvailableViews.${role.roleDescription}");
-//        if(where!=null && where.length>0){
-//          enabled = true;
-//        }
+        bool enabled = false;
+        var contains = avaiableViews.contains(role.id);
+        if(contains!=null && contains == true){
+          enabled = true;
+        }
 
         return  VizOptionButton(
             role.description,
@@ -106,9 +108,4 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
       roleList = result;
     });
   }
-}
-
-
-enum AvailableViews{
-  Attendant,
 }
