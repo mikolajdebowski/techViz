@@ -19,7 +19,7 @@ class _MenuState extends State<Menu> {
   }
 
   void goToMyProfile(){
-    //Navigator.pushReplacementNamed(context, '/profile');
+    Navigator.pushReplacementNamed(context, '/profile');
   }
 
   void goToSettings(){
