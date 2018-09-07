@@ -89,15 +89,15 @@ class TaskRepository implements IRepository<Task>{
     throw UnimplementedError();
   }
 
-  Future update(String taskID, {String taskStatusID, TaskUpdateCallBack callBack} ) async {
-
-
+  Future update(String taskID, {String taskStatusID, TaskUpdateCallBack callBack, bool markAsDirty = true} ) async {
     print('updating local...');
     LocalRepository localRepo = LocalRepository();
     await localRepo.open();
 
+    int dirty = markAsDirty?1:0;
+
     if(taskStatusID!=null){
-      await localRepo.db.rawUpdate('UPDATE Task SET _Dirty = 1, TaskStatusID = ? WHERE _ID = ?', [taskStatusID, taskID].toList());
+      await localRepo.db.rawUpdate('UPDATE Task SET _Dirty = ?, TaskStatusID = ? WHERE _ID = ?', [dirty, taskStatusID, taskID].toList());
     }
     await localRepo.db.close();
 

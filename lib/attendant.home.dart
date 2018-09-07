@@ -3,17 +3,16 @@ import 'package:techviz/components/vizTaskActionButton.dart';
 import 'package:techviz/components/vizTimer.dart';
 import 'package:techviz/home.dart';
 import 'package:techviz/model/task.dart';
-import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/taskListPresenter.dart';
-import 'package:techviz/repository/session.dart';
 import 'package:event_bus/event_bus.dart';
+import 'package:techviz/repository/rabbitmq/queue/remoteQueue.dart';
+import 'package:techviz/repository/rabbitmq/queue/taskQueue.dart';
 import 'package:techviz/repository/taskRepository.dart';
 
 class AttendantHome extends StatefulWidget {
 
   AttendantHome(Key key): super(key:key);
-
 
   @override
   State<StatefulWidget> createState() => AttendantHomeState();
@@ -36,16 +35,6 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
   }
 
 
-
-  void listenToQueues() {
-//    Session session = Session();
-//    session.eventBus.on<Task>().listen((Task event) {
-//      setState(() {
-//        _taskList.add(event);
-//      });
-//    });
-  }
-
   @override
   void onTaskListLoaded(List<Task> result) {
     setState(() {
@@ -59,11 +48,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
     // TODO: implement onLoadError
   }
 
-  void _onTaskItemTapped(Task task) {
-    setState(() {
-      _selectedTask = task;
-    });
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -73,6 +58,12 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
 
     //LEFT PANEL WIDGETS
     //task list header and task list
+
+    void _onTaskItemTapped(Task task) {
+      setState(() {
+        _selectedTask = task;
+      });
+    }
 
     var listTasks = <Widget>[];
 
@@ -412,7 +403,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
       padding: EdgeInsets.only(top: 7.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[Text('Time Taken', style: TextStyle(color: Colors.grey, fontSize: 12.0)), VizTimer(timeStarted: _selectedTask != null ? _selectedTask.taskCreated : null)],
+        //children: <Widget>[Text('Time Taken', style: TextStyle(color: Colors.grey, fontSize: 12.0)), VizTimer(timeStarted: _selectedTask != null ? _selectedTask.taskCreated : null)],
       ),
     );
 
@@ -456,15 +447,17 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
   @override
   void onStatusChanged(UserStatus us) {
     if(us.isOnline){
-      Session().connectAsyncData();
-      listenToQueues();
       _taskPresenter.loadTaskList();
+      TaskQueue().listen(taskInfoQueueCallback);
     }
     else{
-      //Session().disconnectAsyncData();
       _taskList = List<Task>();
       _selectedTask = null;
     }
+  }
+
+  void taskInfoQueueCallback(Task task) {
+    print(task.id);
   }
 
   @override
