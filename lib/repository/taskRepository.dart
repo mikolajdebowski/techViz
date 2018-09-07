@@ -1,11 +1,14 @@
 import 'dart:async';
-
+import 'dart:ui';
 import 'package:techviz/model/task.dart';
 import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/model/taskType.dart';
 import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/localRepository.dart';
+import 'package:techviz/repository/rabbitmq/channel/taskChannel.dart';
 import 'package:techviz/repository/remoteRepository.dart';
+
+typedef TaskUpdateCallBack = void Function(String taskID);
 
 class TaskRepository implements IRepository<Task>{
   IRemoteRepository remoteRepository;
@@ -13,21 +16,11 @@ class TaskRepository implements IRepository<Task>{
 
   Future<List<Task>> getTaskList() async {
     LocalRepository localRepo = LocalRepository();
+    await localRepo.open();
 
     String sql = 'SELECT '
-        't.Amount, '
-        't._ID, '
-        't.Location, '
-        't.EventDesc, '
-        't.TaskCreated, '
-        't.PlayerID, '
-        't.PlayerFirstName, '
-        't.PlayerLastName, '
-        't.PlayerTier, '
-        't.PlayerTierColorHex, '
-        'ts.TaskStatusID, '
+        't.*, '
         'ts.TaskStatusDescription, '
-        'tt.TaskTypeID, '
         'tt.TaskTypeDescription '
         'FROM Task t INNER JOIN TaskStatus ts on t.TaskStatusID == ts.TaskStatusID INNER JOIN TaskType tt on t.TaskTypeID == tt.TaskTypeID;';
 
@@ -35,9 +28,34 @@ class TaskRepository implements IRepository<Task>{
 
     List<Task> list = List<Task>();
     queryResult.forEach((Map<String, dynamic> task) {
-      double amount = task['Amount'] == '' ? 0.0: (task['Amount'] as double);
+      list.add(_parse(task));
+    });
 
-      var t = Task(
+    return list;
+  }
+
+  Future<Task> getTask(String taskID) async {
+    LocalRepository localRepo = LocalRepository();
+    await localRepo.open();
+
+    String sql = "SELECT "
+        "t.*, "
+        "ts.TaskStatusDescription, "
+        "tt.TaskTypeDescription "
+        "FROM Task t INNER JOIN TaskStatus ts on t.TaskStatusID == ts.TaskStatusID INNER JOIN TaskType tt on t.TaskTypeID == tt.TaskTypeID AND t._ID == '${taskID}';";
+
+    List<Map<String, dynamic>> queryResult = await localRepo.rawQuery(sql);
+
+    return _parse(queryResult.first);
+  }
+
+
+  Task _parse(Map<String, dynamic> task){
+    double amount = task['Amount'] == '' ? 0.0: (task['Amount'] as double);
+
+    var t = Task(
+        dirty: task['_Dirty'] == 1,
+        version: task['_Version'] as int,
         id: task['_ID'] as String,
         location: task['Location'] as String,
         taskType: TaskType(id: task['TaskTypeID'] as int, description: task['TaskTypeDescription'] as String),
@@ -50,11 +68,9 @@ class TaskRepository implements IRepository<Task>{
         playerLastName: task['PlayerLastName']!=null ? task['PlayerLastName'] as String : '',
         playerTier: task['PlayerTier']!=null ? task['PlayerTier'] as String : null,
         playerTierColorHEX: task['PlayerTierColorHex']!=null ? task['PlayerTierColorHex'] as String : null
-      );
-      list.add(t);
-    });
+    );
 
-    return list;
+    return t;
   }
 
   @override
@@ -71,5 +87,30 @@ class TaskRepository implements IRepository<Task>{
   @override
   Future submit(Task object) {
     throw UnimplementedError();
+  }
+
+  Future update(String taskID, {String taskStatusID, TaskUpdateCallBack callBack} ) async {
+
+
+    print('updating local...');
+    LocalRepository localRepo = LocalRepository();
+    await localRepo.open();
+
+    if(taskStatusID!=null){
+      await localRepo.db.rawUpdate('UPDATE Task SET _Dirty = 1, TaskStatusID = ? WHERE _ID = ?', [taskStatusID, taskID].toList());
+    }
+    await localRepo.db.close();
+
+    print('updating remote...');
+
+    //update to rabbitmq
+    var toSend = {'taskID': taskID, 'taskStatusID': taskStatusID};
+    TaskChannel taskChannel = TaskChannel();
+    taskChannel.submit(toSend);
+
+    if(callBack!=null){
+      callBack(taskID);
+    }
+
   }
 }

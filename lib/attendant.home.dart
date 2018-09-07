@@ -3,10 +3,12 @@ import 'package:techviz/components/vizTaskActionButton.dart';
 import 'package:techviz/components/vizTimer.dart';
 import 'package:techviz/home.dart';
 import 'package:techviz/model/task.dart';
+import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/taskListPresenter.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:event_bus/event_bus.dart';
+import 'package:techviz/repository/taskRepository.dart';
 
 class AttendantHome extends StatefulWidget {
 
@@ -18,7 +20,7 @@ class AttendantHome extends StatefulWidget {
 }
 
 class AttendantHomeState extends State<AttendantHome> implements ITaskListPresenter<Task>, HomeEvents {
-  TaskListPresenter _presenter;
+  TaskListPresenter _taskPresenter;
   Task _selectedTask = null;
   List<Task> _taskList = [];
   EventBus eventBus;
@@ -27,7 +29,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
   @override
   initState() {
     _taskList = [];
-    _presenter = TaskListPresenter(this);
+    _taskPresenter = TaskListPresenter(this);
     _taskListStatusIcon = "assets/images/ic_processing.png";
 
     super.initState();
@@ -104,7 +106,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
                   child: Center(
                       child: Text(
                     task.location,
-                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16.0),
+                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15.0),
                   )),
                 ),
               ),
@@ -217,19 +219,65 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
 
     Widget taskBody;
 
+
+    void taskUpdateCallback(String taskID) {
+
+        TaskRepository().getTask(taskID).then((Task task){
+          setState(()  {
+            _selectedTask = task;
+          });
+          _taskPresenter.loadTaskList();
+        });
+    }
+
     if (_selectedTask != null) {
-      var requiredAction = Padding(
+
+        String mainActionImageSource;
+        String mainActionTextSource;
+        VoidCallback actionCallBack;
+
+        bool enabled = _selectedTask.dirty == false;
+
+        if (_selectedTask.taskStatus.id == 1) {
+          mainActionImageSource = "assets/images/ic_barcode.png";
+          mainActionTextSource = 'Acknowledge';
+          actionCallBack = (){
+            if(enabled)
+              TaskRepository().update(_selectedTask.id, taskStatusID: "2", callBack: taskUpdateCallback);
+          };
+        } else if (_selectedTask.taskStatus.id == 2) {
+          mainActionImageSource = "assets/images/ic_barcode.png";
+          mainActionTextSource = 'Card in/Scan';
+          actionCallBack = (){
+            if(enabled)
+              TaskRepository().update(_selectedTask.id, taskStatusID: "3", callBack: taskUpdateCallback);
+          };
+        } else if (_selectedTask.taskStatus.id == 3) {
+          mainActionImageSource = "assets/images/ic_barcode.png";
+          mainActionTextSource = 'Complete';
+          actionCallBack = (){
+            if(enabled)
+              TaskRepository().update(_selectedTask.id, taskStatusID: "13", callBack: taskUpdateCallback);
+          };
+        }
+
+        ImageIcon mainActionIcon = ImageIcon(AssetImage(mainActionImageSource), size: 60.0, color: enabled? Colors.white: Colors.grey);
+        Center mainActionText = Center(child: Text(mainActionTextSource, style: TextStyle(color: enabled? Colors.white: Colors.grey, fontStyle: FontStyle.italic, fontSize: 20.0, fontWeight: FontWeight.bold)));
+
+        var requiredAction = Padding(
           padding: EdgeInsets.all(5.0),
-//          child: Container(
-//              decoration: actionBoxDecoration,
-//              child: Column(
-//                crossAxisAlignment: CrossAxisAlignment.center,
-//                mainAxisAlignment: MainAxisAlignment.center,
-//                children: <Widget>[
-//                  ImageIcon(AssetImage("assets/images/ic_barcode.png"), size: 60.0, color: Colors.white),
-//                  Center(child: Text('Scan Machine', style: TextStyle(color: Color(0xFFFFFFFF), fontStyle: FontStyle.italic, fontSize: 20.0, fontWeight: FontWeight.bold)))
-//                ],
-//              ))
+          child: GestureDetector(
+            onTap: actionCallBack,
+            child: Container(
+                decoration: actionBoxDecoration,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    mainActionIcon,mainActionText
+                  ],
+                )),
+          )
       );
 
       String taskInfoDescription = '';
@@ -368,18 +416,15 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
       ),
     );
 
-    List<VizTaskActionButton> rightActionWidgets = List<VizTaskActionButton>();
 
+
+    List<VizTaskActionButton> rightActionWidgets = List<VizTaskActionButton>();
     if (_selectedTask != null) {
-      if (_selectedTask.taskStatus.id == 1) {
-        rightActionWidgets.add(VizTaskActionButton('Acknowledge', [Color(0xFF6EBD24), Color(0xFF6EBD24)], onTapCallback: () => print('go to Acknowledged status')));
-      } else if (_selectedTask.taskStatus.id == 2) {
-        rightActionWidgets.add(VizTaskActionButton('Card in/Scan', [Color(0xFFFF6600), Color(0xFFFFE100)], onTapCallback: () => print('go to Carded status')));
+      if (_selectedTask.taskStatus.id == 2) {
         rightActionWidgets.add(VizTaskActionButton('Cancel', [Color(0xFF433177), Color(0xFFF2003C)], onTapCallback: () => print('go to Cancelled status')));
       } else if (_selectedTask.taskStatus.id == 3) {
-        rightActionWidgets.add(VizTaskActionButton('Complete', [Color(0xFFFF6600), Color(0xFFFFE100)], onTapCallback: () => print('go to Completed status')));
         rightActionWidgets.add(VizTaskActionButton('Cancel', [Color(0xFF433177), Color(0xFFF2003C)], onTapCallback: () => print('go to Cancelled status')));
-        rightActionWidgets.add(VizTaskActionButton('Escalate', [Color(0xFF433177), Color(0xFFF2003C)], onTapCallback: () => print('go to Esc status')));
+        rightActionWidgets.add(VizTaskActionButton('Escalate', [Color(0xFFAAAAAA), Color(0xFFAAAAAA)], onTapCallback: () => print('go to Esc status')));
       }
     }
 
@@ -413,7 +458,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
     if(us.isOnline){
       Session().connectAsyncData();
       listenToQueues();
-      _presenter.loadTaskList();
+      _taskPresenter.loadTaskList();
     }
     else{
       //Session().disconnectAsyncData();

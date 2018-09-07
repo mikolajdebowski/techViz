@@ -39,6 +39,8 @@ class ProcessorTaskRepository extends IRemoteRepository<Task>{
 
         Map<String, dynamic> map = Map<String, dynamic>();
         map['_ID'] = values[_columnNames.indexOf("_ID")] as String;
+        map['_Version'] = values[_columnNames.indexOf("_Version")] as String;
+        map['_Dirty'] = false;
         map['MachineID'] = values[_columnNames.indexOf("MachineID")];
         map['Location'] = values[_columnNames.indexOf("Location")];
         map['TaskStatusID'] = values[_columnNames.indexOf("TaskStatusID")];

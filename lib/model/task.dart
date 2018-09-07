@@ -3,10 +3,10 @@ import 'package:techviz/model/taskType.dart';
 
 class Task {
   final String id;
+  final int version;
+  final bool dirty;
   final String location;
   final String machineId;
-//  final int taskTypeID;
-//  final int taskStatusID;
 
   final TaskType taskType;
   final TaskStatus taskStatus;
@@ -21,7 +21,7 @@ class Task {
   final String playerTier;
   final String playerTierColorHEX;
 
-  const Task({this.id, this.location, this.taskType, this.taskStatus, this.machineId, this.taskCreated, this.taskAssigned, this.amount, this.eventDesc, this.playerID,
+  const Task({this.id, this.version, this.dirty, this.location, this.taskType, this.taskStatus, this.machineId, this.taskCreated, this.taskAssigned, this.amount, this.eventDesc, this.playerID,
   this.playerFirstName, this.playerLastName, this.playerTier, this.playerTierColorHEX});
 
 }
