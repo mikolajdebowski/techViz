@@ -23,6 +23,8 @@ class LocalRepository {
         onCreate: (Database db, int version) async {
           await db.execute('''
             create table Task ( 
+                _Dirty INT NOT NULL,
+                _Version INT NOT NULL,
                 _ID TEXT, 
                 EventID INT,
                 MachineID TEXT,

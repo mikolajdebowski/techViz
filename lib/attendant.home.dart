@@ -3,55 +3,37 @@ import 'package:techviz/components/vizTaskActionButton.dart';
 import 'package:techviz/components/vizTimer.dart';
 import 'package:techviz/home.dart';
 import 'package:techviz/model/task.dart';
-import 'package:techviz/model/taskStatus.dart';
-import 'package:techviz/model/taskType.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/taskListPresenter.dart';
-import 'package:techviz/repository/session.dart';
 import 'package:event_bus/event_bus.dart';
+import 'package:techviz/repository/rabbitmq/queue/remoteQueue.dart';
+import 'package:techviz/repository/rabbitmq/queue/taskQueue.dart';
+import 'package:techviz/repository/taskRepository.dart';
 
 class AttendantHome extends StatefulWidget {
 
   AttendantHome(Key key): super(key:key);
-
 
   @override
   State<StatefulWidget> createState() => AttendantHomeState();
 }
 
 class AttendantHomeState extends State<AttendantHome> implements ITaskListPresenter<Task>, HomeEvents {
-  TaskListPresenter _presenter;
+  TaskListPresenter _taskPresenter;
   Task _selectedTask = null;
   List<Task> _taskList = [];
-  List<TaskStatus> _taskStatusList = [];
-  List<TaskType> _taskTypeList = [];
   EventBus eventBus;
   var _taskListStatusIcon = "assets/images/ic_processing.png";
 
   @override
   initState() {
     _taskList = [];
-    _presenter = TaskListPresenter(this);
+    _taskPresenter = TaskListPresenter(this);
     _taskListStatusIcon = "assets/images/ic_processing.png";
-
-    loadLookups();
 
     super.initState();
   }
 
-  void loadLookups() async{
-//    _taskStatusList = await TaskStatusRepository().getAll();
-//    _taskTypeList = await TaskTypeRepository().getAll();
-  }
-
-  void listenToQueues() {
-    Session session = Session();
-//    session.eventBus.on<Task>().listen((Task event) {
-//      setState(() {
-//        _taskList.add(event);
-//      });
-//    });
-  }
 
   @override
   void onTaskListLoaded(List<Task> result) {
@@ -66,11 +48,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
     // TODO: implement onLoadError
   }
 
-  void _onTaskItemTapped(Task task) {
-    setState(() {
-      _selectedTask = task;
-    });
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -80,6 +58,12 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
 
     //LEFT PANEL WIDGETS
     //task list header and task list
+
+    void _onTaskItemTapped(Task task) {
+      setState(() {
+        _selectedTask = task;
+      });
+    }
 
     var listTasks = <Widget>[];
 
@@ -113,7 +97,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
                   child: Center(
                       child: Text(
                     task.location,
-                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16.0),
+                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15.0),
                   )),
                 ),
               ),
@@ -169,8 +153,8 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
       ),
     );
 
-    TaskType taskType = _selectedTask != null && _taskTypeList!=null && _taskTypeList.length> 0 ? _taskTypeList.where((t) => t.id == _selectedTask.taskTypeID).first : null;
-    TaskStatus taskStatus = _selectedTask != null && _taskStatusList!=null &&  _taskStatusList.length> 0? _taskStatusList.where((t) => t.id == _selectedTask.taskStatusID).first : null;
+//    TaskType taskType = _selectedTask != null && _taskTypeList!=null && _taskTypeList.length> 0 ? _taskTypeList.where((t) => t.id == _selectedTask.taskType.id).first : null;
+//    TaskStatus taskStatus = _selectedTask != null && _taskStatusList!=null &&  _taskStatusList.length> 0? _taskStatusList.where((t) => t.id == _selectedTask).first : null;
 
     //CENTER PANEL WIDGETS
     var rowCenterHeader = Padding(
@@ -200,7 +184,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Text('Task Type', style: TextStyle(color: Color(0xFF9aa8b0), fontSize: 12.0)),
-                  Padding(padding: EdgeInsets.only(top: 5.0), child: Text(taskType != null ? taskType.description : '', style: TextStyle(color: Colors.white, fontSize: 16.0), softWrap: false))
+                  Padding(padding: EdgeInsets.only(top: 5.0), child: Text(_selectedTask!= null ? _selectedTask.taskType.description : '', style: TextStyle(color: Colors.white, fontSize: 16.0), softWrap: false))
                 ],
               ),
             ),
@@ -212,7 +196,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
                   Text('Task Status', style: TextStyle(color: Color(0xFF9aa8b0), fontSize: 12.0)),
                   Padding(
                       padding: EdgeInsets.only(top: 5.0),
-                      child: Text(taskStatus != null ? taskStatus.description : '', style: TextStyle(color: Colors.white, fontSize: 16.0, fontWeight: FontWeight.bold)))
+                      child: Text(_selectedTask!=null ? _selectedTask.taskStatus.description : '', style: TextStyle(color: Colors.white, fontSize: 16.0, fontWeight: FontWeight.bold)))
                 ],
               ),
             ),
@@ -226,19 +210,65 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
 
     Widget taskBody;
 
+
+    void taskUpdateCallback(String taskID) {
+
+        TaskRepository().getTask(taskID).then((Task task){
+          setState(()  {
+            _selectedTask = task;
+          });
+          _taskPresenter.loadTaskList();
+        });
+    }
+
     if (_selectedTask != null) {
-      var requiredAction = Padding(
+
+        String mainActionImageSource;
+        String mainActionTextSource;
+        VoidCallback actionCallBack;
+
+        bool enabled = _selectedTask.dirty == false;
+
+        if (_selectedTask.taskStatus.id == 1) {
+          mainActionImageSource = "assets/images/ic_barcode.png";
+          mainActionTextSource = 'Acknowledge';
+          actionCallBack = (){
+            if(enabled)
+              TaskRepository().update(_selectedTask.id, taskStatusID: "2", callBack: taskUpdateCallback);
+          };
+        } else if (_selectedTask.taskStatus.id == 2) {
+          mainActionImageSource = "assets/images/ic_barcode.png";
+          mainActionTextSource = 'Card in/Scan';
+          actionCallBack = (){
+            if(enabled)
+              TaskRepository().update(_selectedTask.id, taskStatusID: "3", callBack: taskUpdateCallback);
+          };
+        } else if (_selectedTask.taskStatus.id == 3) {
+          mainActionImageSource = "assets/images/ic_barcode.png";
+          mainActionTextSource = 'Complete';
+          actionCallBack = (){
+            if(enabled)
+              TaskRepository().update(_selectedTask.id, taskStatusID: "13", callBack: taskUpdateCallback);
+          };
+        }
+
+        ImageIcon mainActionIcon = ImageIcon(AssetImage(mainActionImageSource), size: 60.0, color: enabled? Colors.white: Colors.grey);
+        Center mainActionText = Center(child: Text(mainActionTextSource, style: TextStyle(color: enabled? Colors.white: Colors.grey, fontStyle: FontStyle.italic, fontSize: 20.0, fontWeight: FontWeight.bold)));
+
+        var requiredAction = Padding(
           padding: EdgeInsets.all(5.0),
-//          child: Container(
-//              decoration: actionBoxDecoration,
-//              child: Column(
-//                crossAxisAlignment: CrossAxisAlignment.center,
-//                mainAxisAlignment: MainAxisAlignment.center,
-//                children: <Widget>[
-//                  ImageIcon(AssetImage("assets/images/ic_barcode.png"), size: 60.0, color: Colors.white),
-//                  Center(child: Text('Scan Machine', style: TextStyle(color: Color(0xFFFFFFFF), fontStyle: FontStyle.italic, fontSize: 20.0, fontWeight: FontWeight.bold)))
-//                ],
-//              ))
+          child: GestureDetector(
+            onTap: actionCallBack,
+            child: Container(
+                decoration: actionBoxDecoration,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    mainActionIcon,mainActionText
+                  ],
+                )),
+          )
       );
 
       String taskInfoDescription = '';
@@ -373,22 +403,19 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
       padding: EdgeInsets.only(top: 7.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[Text('Time Taken', style: TextStyle(color: Colors.grey, fontSize: 12.0)), VizTimer(timeStarted: _selectedTask != null ? _selectedTask.taskCreated : null)],
+        //children: <Widget>[Text('Time Taken', style: TextStyle(color: Colors.grey, fontSize: 12.0)), VizTimer(timeStarted: _selectedTask != null ? _selectedTask.taskCreated : null)],
       ),
     );
 
-    List<VizTaskActionButton> rightActionWidgets = List<VizTaskActionButton>();
 
+
+    List<VizTaskActionButton> rightActionWidgets = List<VizTaskActionButton>();
     if (_selectedTask != null) {
-      if (_selectedTask.taskStatusID == 1) {
-        rightActionWidgets.add(VizTaskActionButton('Acknowledge', [Color(0xFF6EBD24), Color(0xFF6EBD24)], onTapCallback: () => print('go to Acknowledged status')));
-      } else if (_selectedTask.taskStatusID == 2) {
-        rightActionWidgets.add(VizTaskActionButton('Card in/Scan', [Color(0xFFFF6600), Color(0xFFFFE100)], onTapCallback: () => print('go to Carded status')));
+      if (_selectedTask.taskStatus.id == 2) {
         rightActionWidgets.add(VizTaskActionButton('Cancel', [Color(0xFF433177), Color(0xFFF2003C)], onTapCallback: () => print('go to Cancelled status')));
-      } else if (_selectedTask.taskStatusID == 3) {
-        rightActionWidgets.add(VizTaskActionButton('Complete', [Color(0xFFFF6600), Color(0xFFFFE100)], onTapCallback: () => print('go to Completed status')));
+      } else if (_selectedTask.taskStatus.id == 3) {
         rightActionWidgets.add(VizTaskActionButton('Cancel', [Color(0xFF433177), Color(0xFFF2003C)], onTapCallback: () => print('go to Cancelled status')));
-        rightActionWidgets.add(VizTaskActionButton('Escalate', [Color(0xFF433177), Color(0xFFF2003C)], onTapCallback: () => print('go to Esc status')));
+        rightActionWidgets.add(VizTaskActionButton('Escalate', [Color(0xFFAAAAAA), Color(0xFFAAAAAA)], onTapCallback: () => print('go to Esc status')));
       }
     }
 
@@ -420,15 +447,17 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
   @override
   void onStatusChanged(UserStatus us) {
     if(us.isOnline){
-      Session().connectAsyncData();
-      listenToQueues();
-      _presenter.loadTaskList();
+      _taskPresenter.loadTaskList();
+      TaskQueue().listen(taskInfoQueueCallback);
     }
     else{
-      //Session().disconnectAsyncData();
       _taskList = List<Task>();
       _selectedTask = null;
     }
+  }
+
+  void taskInfoQueueCallback(Task task) {
+    print(task.id);
   }
 
   @override
