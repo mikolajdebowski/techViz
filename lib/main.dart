@@ -4,6 +4,7 @@ import 'package:techviz/config.dart';
 import 'package:techviz/home.dart';
 import 'package:techviz/login.dart';
 import 'package:techviz/menu.dart';
+import 'package:techviz/profile.dart';
 import 'package:techviz/splash.dart';
 
 
@@ -18,7 +19,6 @@ class TechVizApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setEnabledSystemUIOverlays([]);
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'TechViz',
@@ -27,7 +27,8 @@ class TechVizApp extends StatelessWidget {
         '/home': (BuildContext context) => Home(),
         '/menu': (BuildContext context) => Menu(),
         '/login': (BuildContext context) => Login(),
-        '/config': (BuildContext context) => Config()
+        '/config': (BuildContext context) => Config(),
+        '/profile': (BuildContext context) => Profile()
       },
     );
   }

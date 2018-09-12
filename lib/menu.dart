@@ -18,7 +18,7 @@ class _MenuState extends State<Menu> {
     Navigator.pushReplacementNamed(context, '/login');
   }
 
-  void goToMyProfile(){
+  void goToMyProfile(Object tag){
     Navigator.pushReplacementNamed(context, '/profile');
   }
 
@@ -38,7 +38,7 @@ class _MenuState extends State<Menu> {
   @override
   Widget build(BuildContext context) {
     Row rowProfileSettings = Row(
-      children: <Widget>[VizOptionButton('My Profile', iconName: 'ic_my_profile.png', flexible: true), VizOptionButton('Settings', iconName: 'ic_settings.png',flexible: true)],
+      children: <Widget>[VizOptionButton('My Profile', iconName: 'ic_my_profile.png', flexible: true, onTap: goToMyProfile), VizOptionButton('Settings', iconName: 'ic_settings.png',flexible: true)],
     );
 
     Row rowHelpAbout = Row(
