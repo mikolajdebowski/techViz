@@ -40,10 +40,4 @@ class UserRepository implements IRepository<User>{
   Future listen(){
     throw new UnimplementedError('Unimplemented method');
   }
-
-  @override
-  Future submit(User object) {
-    assert(this.remoteChannel!=null);
-    return this.remoteChannel.submit(object);
-  }
 }

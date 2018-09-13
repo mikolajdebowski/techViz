@@ -37,10 +37,4 @@ class UserRoleRepository implements IRepository<UserRole>{
     throw UnimplementedError();
   }
 
-  @override
-  Future submit(UserRole object) {
-    throw UnimplementedError();
-  }
-
-
 }

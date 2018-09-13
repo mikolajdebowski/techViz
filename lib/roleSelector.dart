@@ -17,6 +17,7 @@ class RoleSelector extends StatefulWidget {
 
 class RoleSelectorState extends State<RoleSelector> implements IRoleListPresenter<Role> {
   List<Role> roleList = List<Role>();
+
   RoleListPresenter roleListPresenter;
   String selectedRoleID;
 

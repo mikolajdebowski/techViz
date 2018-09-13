@@ -36,9 +36,4 @@ class TaskTypeRepository implements IRepository<TaskType>{
   Future listen() {
     throw UnimplementedError();
   }
-
-  @override
-  Future submit(TaskType object) {
-    throw UnimplementedError();
-  }
 }

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 import 'package:techviz/model/task.dart';
 import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/model/taskType.dart';
@@ -9,6 +8,7 @@ import 'package:techviz/repository/rabbitmq/channel/taskChannel.dart';
 import 'package:techviz/repository/remoteRepository.dart';
 
 typedef TaskUpdateCallBack = void Function(String taskID);
+typedef TaskSubmitallBack = void Function(String taskID);
 
 class TaskRepository implements IRepository<Task>{
   IRemoteRepository remoteRepository;
@@ -22,7 +22,7 @@ class TaskRepository implements IRepository<Task>{
         't.*, '
         'ts.TaskStatusDescription, '
         'tt.TaskTypeDescription '
-        'FROM Task t INNER JOIN TaskStatus ts on t.TaskStatusID == ts.TaskStatusID INNER JOIN TaskType tt on t.TaskTypeID == tt.TaskTypeID;';
+        'FROM Task t INNER JOIN TaskStatus ts on t.TaskStatusID == ts.TaskStatusID INNER JOIN TaskType tt on t.TaskTypeID == tt.TaskTypeID and t.TaskStatusID in (1,2,3);';
 
     List<Map<String, dynamic>> queryResult = await localRepo.rawQuery(sql);
 
@@ -84,12 +84,7 @@ class TaskRepository implements IRepository<Task>{
     throw UnimplementedError();
   }
 
-  @override
-  Future submit(Task object) {
-    throw UnimplementedError();
-  }
-
-  Future update(String taskID, {String taskStatusID, TaskUpdateCallBack callBack, bool markAsDirty = true} ) async {
+  Future update(String taskID, {String taskStatusID, TaskUpdateCallBack callBack, bool markAsDirty = true, bool updateRemote = false} ) async {
     print('updating local...');
     LocalRepository localRepo = LocalRepository();
     await localRepo.open();
@@ -101,16 +96,16 @@ class TaskRepository implements IRepository<Task>{
     }
     await localRepo.db.close();
 
-    print('updating remote...');
+    if(updateRemote){
+      var toSend = {'taskID': taskID, 'taskStatusID': taskStatusID};
+      TaskChannel taskChannel = TaskChannel();
+      await taskChannel.submit(toSend);
 
-    //update to rabbitmq
-    var toSend = {'taskID': taskID, 'taskStatusID': taskStatusID};
-    TaskChannel taskChannel = TaskChannel();
-    taskChannel.submit(toSend);
+      print('rabbitmq update sent');
+    }
 
     if(callBack!=null){
       callBack(taskID);
     }
-
   }
 }

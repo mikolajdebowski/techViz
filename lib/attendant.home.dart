@@ -6,7 +6,6 @@ import 'package:techviz/model/task.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/taskListPresenter.dart';
 import 'package:event_bus/event_bus.dart';
-import 'package:techviz/repository/rabbitmq/queue/remoteQueue.dart';
 import 'package:techviz/repository/rabbitmq/queue/taskQueue.dart';
 import 'package:techviz/repository/taskRepository.dart';
 
@@ -215,7 +214,10 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
 
         TaskRepository().getTask(taskID).then((Task task){
           setState(()  {
+            if([1,2,3].toList().contains(task.taskStatus.id)){
             _selectedTask = task;
+            }
+            else _selectedTask = null;
           });
           _taskPresenter.loadTaskList();
         });
@@ -234,21 +236,21 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
           mainActionTextSource = 'Acknowledge';
           actionCallBack = (){
             if(enabled)
-              TaskRepository().update(_selectedTask.id, taskStatusID: "2", callBack: taskUpdateCallback);
+              TaskRepository().update(_selectedTask.id, taskStatusID: "2", callBack: taskUpdateCallback, updateRemote: true);
           };
         } else if (_selectedTask.taskStatus.id == 2) {
           mainActionImageSource = "assets/images/ic_barcode.png";
           mainActionTextSource = 'Card in/Scan';
           actionCallBack = (){
             if(enabled)
-              TaskRepository().update(_selectedTask.id, taskStatusID: "3", callBack: taskUpdateCallback);
+              TaskRepository().update(_selectedTask.id, taskStatusID: "3", callBack: taskUpdateCallback, updateRemote: true);
           };
         } else if (_selectedTask.taskStatus.id == 3) {
           mainActionImageSource = "assets/images/ic_barcode.png";
           mainActionTextSource = 'Complete';
           actionCallBack = (){
             if(enabled)
-              TaskRepository().update(_selectedTask.id, taskStatusID: "13", callBack: taskUpdateCallback);
+              TaskRepository().update(_selectedTask.id, taskStatusID: "13", callBack: taskUpdateCallback, updateRemote: true);
           };
         }
 
@@ -407,15 +409,46 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
       ),
     );
 
-
+    void _showConfirmationDialogWithOptions(String title, VoidCallback callback){
+      showDialog<bool>(context: context, builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: Text(title),
+          content: Text("Are you sure?"),
+          actions: <Widget>[
+            FlatButton(
+              child: Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            FlatButton(
+              child: Text("Yes"),
+              onPressed: () {
+                callback();
+                Navigator.of(context).pop();
+              },
+            )
+          ],
+        );
+      });
+    }
 
     List<VizTaskActionButton> rightActionWidgets = List<VizTaskActionButton>();
     if (_selectedTask != null) {
-      if (_selectedTask.taskStatus.id == 2) {
-        rightActionWidgets.add(VizTaskActionButton('Cancel', [Color(0xFF433177), Color(0xFFF2003C)], onTapCallback: () => print('go to Cancelled status')));
-      } else if (_selectedTask.taskStatus.id == 3) {
-        rightActionWidgets.add(VizTaskActionButton('Cancel', [Color(0xFF433177), Color(0xFFF2003C)], onTapCallback: () => print('go to Cancelled status')));
-        rightActionWidgets.add(VizTaskActionButton('Escalate', [Color(0xFFAAAAAA), Color(0xFFAAAAAA)], onTapCallback: () => print('go to Esc status')));
+      if (_selectedTask.taskStatus.id == 2 || _selectedTask.taskStatus.id == 3) {
+        rightActionWidgets.add(VizTaskActionButton('Cancel', [Color(0xFF433177), Color(0xFFF2003C)], onTapCallback: () {
+          _showConfirmationDialogWithOptions('Cancel a task', () {
+            TaskRepository().update(_selectedTask.id, taskStatusID: "12", callBack: taskUpdateCallback, updateRemote: true);
+          });
+        }));
+      }
+      else if (_selectedTask.taskStatus.id == 3) {
+        rightActionWidgets.add(VizTaskActionButton('Escalate', [Color(0xFFAAAAAA), Color(0xFFAAAAAA)], onTapCallback: () {
+          _showConfirmationDialogWithOptions('Escalate a task', () {
+            TaskRepository().update(_selectedTask.id, taskStatusID: "5", callBack: taskUpdateCallback, updateRemote: true);
+          });
+        }));
       }
     }
 
@@ -457,7 +490,19 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
   }
 
   void taskInfoQueueCallback(Task task) {
-    print(task.id);
+    setState(() {
+      if(_selectedTask!=null && _selectedTask.id == task.id){
+        _selectedTask = task;
+      }
+      for(int i=0; i< _taskList.length; i++){
+        if(_taskList[i].id == task.id){
+          _taskList[i] = task;
+        }
+      }
+
+    });
+
+
   }
 
   @override
