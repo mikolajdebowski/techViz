@@ -36,10 +36,4 @@ class TaskStatusRepository implements IRepository<TaskStatus>{
     throw UnimplementedError();
   }
 
-  @override
-  Future submit(TaskStatus object) {
-    throw UnimplementedError();
-  }
-
-
 }

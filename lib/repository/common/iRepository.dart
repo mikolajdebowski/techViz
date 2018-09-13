@@ -4,5 +4,5 @@ import 'dart:async';
 abstract class IRepository<T> {
   Future fetch();
   Future listen();
-  Future submit(T object);
+  //Future submit(T object);
 }

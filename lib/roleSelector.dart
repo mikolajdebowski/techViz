@@ -4,7 +4,6 @@ import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/home.dart';
 import 'package:techviz/model/role.dart';
-import 'package:techviz/model/userRole.dart';
 import 'package:techviz/presenter/roleListPresenter.dart';
 import 'package:techviz/repository/rabbitmq/channel/userChannel.dart';
 import 'package:techviz/repository/session.dart';
@@ -18,6 +17,7 @@ class RoleSelector extends StatefulWidget {
 
 class RoleSelectorState extends State<RoleSelector> implements IRoleListPresenter<Role> {
   List<Role> roleList = List<Role>();
+
   RoleListPresenter roleListPresenter;
   String selectedRoleID;
 
