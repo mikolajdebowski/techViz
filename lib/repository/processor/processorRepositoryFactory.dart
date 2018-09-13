@@ -48,6 +48,7 @@ class ProcessorRepositoryConfig {
     listTableTags.add(LiveTableType.TECHVIZ_MOBILE_USER_ROLE);
     listTableTags.add(LiveTableType.TECHVIZ_MOBILE_USER);
     listTableTags.add(LiveTableType.TECHVIZ_MOBILE_USER_STATUS);
+    listTableTags.add(LiveTableType.TECHVIZ_MOBILE_SECTION);
 
     for(Map<String,dynamic> liveTable in liveTableslist){
       String liveTableTag = liveTable['tags'];
@@ -56,11 +57,13 @@ class ProcessorRepositoryConfig {
 
       liveTableTag = 'LiveTableType.$liveTableTag';
 
-      LiveTableType liveTableTagTyped = LiveTableType.values.firstWhere((e)=> e.toString() == liveTableTag);
+      LiveTableType liveTableTagTyped = LiveTableType.values.firstWhere((e)=> e.toString() == liveTableTag, orElse: () => null);
 
-      if(listTableTags.contains(liveTableTagTyped)){
+      if(liveTableTagTyped!= null && listTableTags.contains(liveTableTagTyped)){
         LiveTables.add(LiveTable(liveTable['ID'].toString(), liveTableTag, []));
       };
+
+
     }
 
     print('done setup');
@@ -71,11 +74,11 @@ class ProcessorRepositoryConfig {
     assert(DocumentID!=null);
     assert(LiveTables!=null);
 
-    var lt = LiveTables.where((LiveTable lt) => lt.Tags == Tag);
-    if(lt==null || lt.length==0){
+    LiveTable lt = LiveTables.firstWhere((LiveTable lt) => lt.Tags == Tag, orElse: () => null);
+    if(lt==null){
       throw Exception('No livetable for ${Tag}');
     }
-    return lt.first;
+    return lt;
   }
 
 
@@ -190,7 +193,8 @@ enum LiveTableType{
   TECHVIZ_MOBILE_ROLE,
   TECHVIZ_MOBILE_USER_ROLE,
   TECHVIZ_MOBILE_USER,
-  TECHVIZ_MOBILE_USER_STATUS
+  TECHVIZ_MOBILE_USER_STATUS,
+  TECHVIZ_MOBILE_SECTION
 }
 
 class LiveTable{
