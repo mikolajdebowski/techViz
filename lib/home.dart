@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:techviz/adapters/machineAdapter.dart';
+import 'package:techviz/attendant.home.dart';
+import 'package:techviz/common/slideRightRoute.dart';
 import 'package:techviz/components/VizButton.dart';
-import 'package:techviz/components/vizSearch.dart';
 import 'package:techviz/components/vizActionBar.dart';
+import 'package:techviz/components/vizSearch.dart';
 import 'package:techviz/components/vizSelector.dart';
 import 'package:techviz/menu.dart';
-import 'package:techviz/common/slideRightRoute.dart';
-import 'package:techviz/attendant.home.dart';
 import 'package:techviz/model/userStatus.dart';
+import 'package:techviz/sectionSelector.dart';
 import 'package:techviz/statusSelector.dart';
 
 class Home extends StatefulWidget {
@@ -18,26 +19,16 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-
-
   GlobalKey<AttendantHomeState> keyAttendant;
   bool initialLoading = false;
 
   String currentZones = '-';
   UserStatus currentStatus;
-  List<VizSelectorOption> availableZones = List<VizSelectorOption>();
 
   @override
   void initState() {
     super.initState();
-
-    //TODO: IMPLEMENT ZONE
-    for (var i = 0; i < 1000; i++) {
-      availableZones.add(VizSelectorOption(i.toString(), i.toString()));
-    }
-
   }
-
 
   void goToMenu() {
     Navigator.push<Menu>(
@@ -46,19 +37,23 @@ class _HomeState extends State<Home> {
     );
   }
 
-  void onZoneSelectorCallbackOK(List<VizSelectorOption> selected) {
-    setState(() {
-      currentZones = "";
+//  void onZoneSelectorCallbackOK(List<VizSelectorOption> selected) {
+//    setState(() {
+//      currentZones = "";
+//
+//      if (selected.length > 4) {
+//        currentZones = "4+";
+//      } else {
+//        selected.forEach((element) {
+//          currentZones += element.description + " ";
+//        });
+//        currentZones = currentZones.trim();
+//      }
+//    });
+//  }
 
-      if (selected.length > 4) {
-        currentZones = "4+";
-      } else {
-        selected.forEach((element) {
-          currentZones += element.description + " ";
-        });
-        currentZones = currentZones.trim();
-      }
-    });
+  void onSectionSelectorCallbackOK() {
+    print('section selected callback');
   }
 
   void onMyStatusSelectorCallbackOK(UserStatus userStatusSelected) {
@@ -68,13 +63,15 @@ class _HomeState extends State<Home> {
     });
   }
 
-  void goToZonesSelector() {
-//    var selector = VizSelector(
-//        'My Zones', availableZones, multiple: true, onOKTapTapped: onZoneSelectorCallbackOK);
-//    Navigator.push<VizSelector>(
-//      context,
-//      MaterialPageRoute(builder: (context) => selector),
-//    );
+  void goToSectionSelector() {
+    var selector = SectionSelector(
+      onTapOK: onSectionSelectorCallbackOK,
+    );
+
+    Navigator.push<VizSelector>(
+      context,
+      MaterialPageRoute(builder: (context) => selector),
+    );
   }
 
   void goToStatusSelector() {
@@ -88,7 +85,9 @@ class _HomeState extends State<Home> {
   void goToSearchSelector() {
     Navigator.push<VizSelector>(
       context,
-      MaterialPageRoute(builder: (context) => VizSearch<MachineModel>(domain: 'Machine, Players, etc', searchAdapter: new MachineAdapter())),
+      MaterialPageRoute(
+          builder: (context) =>
+              VizSearch<MachineModel>(domain: 'Machine, Players, etc', searchAdapter: new MachineAdapter())),
     );
   }
 
@@ -96,36 +95,35 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     var leadingMenuButton = VizButton(title: 'Menu', onTap: goToMenu);
 
-
     //STATUS
-    var statusText = currentStatus == null ? "OFF SHIFT": currentStatus.description;
-    var statusTextColor = currentStatus == null || currentStatus.isOnline == false ? Colors.red : Colors.black;
+    var statusText = currentStatus == null ? "OFF SHIFT" : currentStatus.description;
+    var statusTextColor =
+        currentStatus == null || currentStatus.isOnline == false ? Colors.red : Colors.black;
 
     var statusInnerWidget = Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Text('My Status', style: TextStyle(color: Color(0xFF566474), fontSize: 13.0)),
-        Text(statusText, style: TextStyle(color: statusTextColor, fontSize: 16.0), overflow: TextOverflow.ellipsis)],
+        Text(statusText,
+            style: TextStyle(color: statusTextColor, fontSize: 16.0), overflow: TextOverflow.ellipsis)
+      ],
     );
 
     var statusWidgetBtn = VizButton(customWidget: statusInnerWidget, flex: 3, onTap: goToStatusSelector);
-
 
     //ZONES
     var zonesInnerWidget = Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Text('My Zones', style: TextStyle(color: Color(0xFF566474), fontSize: 13.0)),
-        Text(currentZones, style: TextStyle(color: Colors.black, fontSize: 16.0), overflow: TextOverflow.ellipsis)
+        Text('My Sections', style: TextStyle(color: Color(0xFF566474), fontSize: 13.0)),
+        Text(currentZones,
+            style: TextStyle(color: Colors.black, fontSize: 16.0), overflow: TextOverflow.ellipsis)
       ],
     );
 
-    var zonesWidgetBtn =  VizButton(customWidget: zonesInnerWidget, flex: 3, onTap: goToZonesSelector);
-
-
-
+    var zonesWidgetBtn = VizButton(customWidget: zonesInnerWidget, flex: 3, onTap: goToSectionSelector);
 
     //NOTIFICATIONS
     var notificationInnerWidget = Column(
@@ -143,36 +141,41 @@ class _HomeState extends State<Home> {
       ],
     );
 
-    var notificationWidgetBtn = VizButton(customWidget: notificationInnerWidget, flex: 3, onTap: goToZonesSelector);
-
-
-
+    var notificationWidgetBtn = VizButton(customWidget: notificationInnerWidget, flex: 3);
 
     //SEARCH
-    var searchIconWidget = VizButton(customWidget: ImageIcon(AssetImage("assets/images/ic_search.png"), size: 30.0), onTap: goToSearchSelector, flex: 1);
-
-
-
-
+    var searchIconWidget = VizButton(
+        customWidget: ImageIcon(AssetImage("assets/images/ic_search.png"), size: 30.0),
+        onTap: goToSearchSelector,
+        flex: 1);
 
     //
-    var actionBarCentralWidgets = <Widget>[statusWidgetBtn, zonesWidgetBtn, notificationWidgetBtn, searchIconWidget];
+    var actionBarCentralWidgets = <Widget>[
+      statusWidgetBtn,
+      zonesWidgetBtn,
+      notificationWidgetBtn,
+      searchIconWidget
+    ];
 
-    if(keyAttendant==null){
+    if (keyAttendant == null) {
       keyAttendant = GlobalKey<AttendantHomeState>();
     }
     var view = AttendantHome(keyAttendant);
 
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: ActionBar(title: 'TechViz', leadingWidget: leadingMenuButton, centralWidgets: actionBarCentralWidgets, isRoot: true),
+      appBar: ActionBar(
+          title: 'TechViz',
+          leadingWidget: leadingMenuButton,
+          centralWidgets: actionBarCentralWidgets,
+          isRoot: true),
       body: view, // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
 
-
-abstract class HomeEvents{
+abstract class HomeEvents {
   void onStatusChanged(UserStatus us);
+
   void onZoneChanged(Object obj);
 }

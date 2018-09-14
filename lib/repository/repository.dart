@@ -3,18 +3,22 @@ import 'dart:async';
 import 'package:techviz/repository/localRepository.dart';
 import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
 import 'package:techviz/repository/processor/processorRoleRepository.dart';
+import 'package:techviz/repository/processor/processorSectionRepository.dart';
 import 'package:techviz/repository/processor/processorTaskRepository.dart';
 import 'package:techviz/repository/processor/processorTaskStatusRepository.dart';
 import 'package:techviz/repository/processor/processorTaskTypeRepository.dart';
 import 'package:techviz/repository/processor/processorUserRepository.dart';
 import 'package:techviz/repository/processor/processorUserRoleRepository.dart';
+import 'package:techviz/repository/processor/processorUserSectionRepository.dart';
 import 'package:techviz/repository/processor/processorUserStatusRepository.dart';
 import 'package:techviz/repository/roleRepository.dart';
+import 'package:techviz/repository/sectionRepository.dart';
 import 'package:techviz/repository/taskRepository.dart';
 import 'package:techviz/repository/taskStatusRepository.dart';
 import 'package:techviz/repository/taskTypeRepository.dart';
 import 'package:techviz/repository/userRepository.dart';
 import 'package:techviz/repository/userRoleRepository.dart';
+import 'package:techviz/repository/userSectionRepository.dart';
 import 'package:techviz/repository/userStatusRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
@@ -76,9 +80,23 @@ class Repository{
 
     onMessage('Fetching Tasks...');
     await taskRepository.fetch();
+
+    onMessage('Fetching Sections...');
+    await sectionRepository.fetch();
+    await userSectionRepository.fetch();
   }
 
+  UserSectionRepository get userSectionRepository {
+    switch(_flavor) {
+      default: return UserSectionRepository(remoteRepository: ProcessorUserSectionRepository());
+    }
+  }
 
+  SectionRepository get sectionRepository {
+    switch(_flavor) {
+      default: return SectionRepository(remoteRepository: ProcessorSectionRepository());
+    }
+  }
 
   UserRepository get userRepository {
     switch(_flavor) {

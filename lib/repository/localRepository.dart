@@ -89,6 +89,20 @@ class LocalRepository {
                 IsOnline INTEGER NOT NULL
                 )
             ''');
+
+          await db.execute('''
+            create table Section ( 
+                SectionID TEXT NOT NULL
+                )
+            ''');
+
+          await db.execute('''
+            create table UserSection ( 
+                SectionID TEXT NOT NULL,
+                UserID TEXT NOT NULL
+                )
+            ''');
+
         });
   }
 
