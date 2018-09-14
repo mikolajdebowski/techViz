@@ -1,22 +1,11 @@
 import 'dart:async';
 
-import 'package:dart_amqp/dart_amqp.dart';
-import 'package:techviz/repository/rabbitmq/channel/remoteChannel.dart';
-import 'package:techviz/repository/session.dart';
-import 'dart:convert';
+import 'package:techviz/repository/rabbitmq/channel/basicRemoteChannel.dart';
+import 'package:techviz/repository/rabbitmq/channel/iRemoteChannel.dart';
 
-class UserChannel implements IRemoteChannel<dynamic> {
+class UserChannel extends BasicRemoteChannel implements IRemoteChannel<dynamic> {
   @override
   Future submit(dynamic object) async {
-    Session session = Session();
-    Client rabbitmqClient = await session.rabbitmqClient;
-    Channel channel = await rabbitmqClient.channel();
-    Exchange exchange = await channel.exchange("techViz", ExchangeType.TOPIC, durable: true );
-
-    MessageProperties props = MessageProperties();
-    props.persistent = true;
-
-    await exchange.publish(JsonEncoder().convert(object), "mobile.user.update", properties: props);
-    channel.close();
+    return super.remoteSubmit(object, "mobile.user.update", "techViz");
   }
 }
