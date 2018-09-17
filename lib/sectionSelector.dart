@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
+import 'package:techviz/model/userSection.dart';
 import 'package:techviz/presenter/sectionListPresenter.dart';
 import 'package:techviz/repository/session.dart';
 
@@ -25,6 +26,7 @@ class SectionSelectorState extends State<SectionSelector>
     super.initState();
 
     sectionPresenter = SectionListPresenter(this);
+    sectionPresenter.loadSections();
   }
 
   void validate(BuildContext context) async {
@@ -51,12 +53,16 @@ class SectionSelectorState extends State<SectionSelector>
 
     var okBtn = VizButton(title: 'OK', highlighted: true, onTap: () => validate(context));
 
+    var actions = <Widget>[];
+    actions.add(VizButton(title: 'All', onTap: onSelectAllTapped));
+    actions.add(VizButton(title: 'None', onTap: onSelectNoneTapped));
+
     var body = GridView.count(
         shrinkWrap: true,
         padding: EdgeInsets.all(4.0),
-        childAspectRatio: 2.0,
+        childAspectRatio: 1.0,
         addAutomaticKeepAlives: false,
-        crossAxisCount: 3,
+        crossAxisCount: 8,
         children: sectionList.map((SectionModelPresenter section) {
 //        bool selected = selectedStatus!= null && selectedStatus.id.toString() ==  status.id;
 
@@ -67,19 +73,74 @@ class SectionSelectorState extends State<SectionSelector>
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: ActionBar(title: 'My Sections', titleColor: Colors.blue, isRoot: true, tailWidget: okBtn),
-      body: Container(
+      body:
+
+      Container(
         decoration: defaultBgDeco,
         constraints: BoxConstraints.expand(),
-        child: body,
-      ),
+        child: Stack(
+          fit: StackFit.expand,
+          children: <Widget>[
+            Padding(
+                padding: const EdgeInsets.only(top: 60.0),
+                  child: body,
+            ),
+            Positioned(
+                height: 60.0,
+                width: MediaQuery.of(context).size.width,
+                top: 0.0,
+                child: Row(
+                    children: actions)
+            )
+          ],
+        ),
+      )
     );
   }
 
   void onOptionSelected(Object tag) {
     setState(() {
-//      selectedStatus = statusList.where((UserStatus s) => s.id == tag).first;
+      sectionList.forEach((SectionModelPresenter s) {
+          if(s.sectionID == tag){
+            if(s.selected){
+              s.selected = false;
+            }else {
+              s.selected = true;
+            }
+          }
+      });
     });
   }
+
+  void onSelectAllTapped() {
+    setState(() {
+      sectionList.forEach((SectionModelPresenter s) {
+        s.selected = true;
+      });
+    });
+  }
+
+  void onSelectNoneTapped() {
+    setState(() {
+      sectionList.forEach((SectionModelPresenter s) {
+        s.selected = false;
+      });
+    });
+  }
+
+  void onUserSectionListLoaded(List<UserSection> userList) {
+    setState(() {
+      sectionList.forEach((SectionModelPresenter s) {
+        userList.forEach((UserSection u){
+          if(s.sectionID == u.SectionID){
+            s.selected = true;
+          }
+        });
+      });
+    });
+  }
+
+
 
   @override
   void onLoadError(Error error) {
@@ -88,12 +149,12 @@ class SectionSelectorState extends State<SectionSelector>
 
   @override
   void onSectionListLoaded(List<SectionModelPresenter> result) {
-    // TODO: implement onSectionListLoaded
     setState(() {
       sectionList = result;
     });
 
     Session session = Session();
     sectionPresenter.loadUserSections(session.user.UserID);
+
   }
 }

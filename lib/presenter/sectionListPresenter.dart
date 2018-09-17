@@ -6,6 +6,7 @@ import 'package:techviz/repository/userSectionRepository.dart';
 
 abstract class ISectionListPresenter<SectionModelPresenter> {
   void onSectionListLoaded(List<SectionModelPresenter> result);
+  void onUserSectionListLoaded(List<UserSection> result);
 
   void onLoadError(Error error);
 }
@@ -25,7 +26,6 @@ class SectionListPresenter {
     assert(_view != null);
 
     List<Section> sectionList = await _sectionRepository.getAll();
-
     List<SectionModelPresenter> list = List<SectionModelPresenter>();
     sectionList.forEach((Section section) {
       list.add(SectionModelPresenter(section.SectionID));
@@ -38,10 +38,7 @@ class SectionListPresenter {
     assert(_view != null);
 
     List<UserSection> userSectionList = await _userSectionRepository.getUserSection(userID);
-//    List<String> ids = userSectionList.map<String>((UserSection u) => u.roleID.toString()).toList();
-//
-//
-//    _view.onRoleListLoaded(roleList);
+    _view.onUserSectionListLoaded(userSectionList);
   }
 }
 
@@ -49,7 +46,7 @@ class SectionListPresenter {
 
 class SectionModelPresenter {
   final String sectionID;
-  final bool selected;
+  bool selected;
 
   SectionModelPresenter(this.sectionID, {this.selected = false});
 }
