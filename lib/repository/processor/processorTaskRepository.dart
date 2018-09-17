@@ -55,7 +55,7 @@ class ProcessorTaskRepository extends IRemoteRepository<Task>{
         map['PlayerFirstName'] = values[_columnNames.indexOf("FirstName")];
         map['PlayerLastName'] = values[_columnNames.indexOf("LastName")];
         map['PlayerTier'] = values[_columnNames.indexOf("Tier")];
-        //map['PlayerTierColorHex'] = values[_columnNames.indexOf("TierColorHex")];
+        map['PlayerTierColorHex'] = values[_columnNames.indexOf("TierColorHex")];
         localRepo.insert('Task', map);
       });
       _completer.complete();
