@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:dart_amqp/dart_amqp.dart';
 import 'package:techviz/model/task.dart';
+import 'package:techviz/repository/local/localRepository.dart';
+import 'package:techviz/repository/local/taskTable.dart';
 import 'package:techviz/repository/rabbitmq/queue/remoteQueue.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:techviz/repository/taskRepository.dart';
@@ -31,13 +33,34 @@ class TaskQueue implements IRemoteQueue<dynamic>{
 
       String deviceID = jsonResult['deviceID'];
       if(deviceID == deviceID){
-        String taskID = jsonResult['_ID'];
-        int taskStatusID = jsonResult['taskStatusID'];
-        await TaskRepository().update(taskID, taskStatusID: taskStatusID.toString(), markAsDirty: false);
 
-        TaskRepository().getTask(taskID).then((Task task){
-          callback(task);
-        });
+        LocalRepository localRepo = LocalRepository();
+        await localRepo.open();
+        
+        Map<String, dynamic> map = Map<String, dynamic>();
+        map['_ID'] = jsonResult['_ID'] as String;
+        map['_Version'] = jsonResult['_version'];
+        map['_Dirty'] = false;
+        map['UserID'] = jsonResult['userID'];
+        map['MachineID'] = jsonResult['machineID'];
+        map['Location'] = jsonResult['location'];
+        map['TaskStatusID'] = jsonResult['taskStatusID'];
+        map['TaskTypeID'] = jsonResult['taskTypeID'];
+        map['TaskCreated'] = jsonResult['taskCreated'];
+        map['TaskAssigned'] = jsonResult['taskAssigned'];
+        map['PlayerID'] = jsonResult['playerID'];
+        map['Amount'] = jsonResult['amount'] == null ? 0 : jsonResult['amount'];
+        map['EventDesc'] = jsonResult['eventDesc'];
+        map['PlayerID'] = jsonResult['playerID'];
+        map['PlayerFirstName'] = jsonResult['firstName'];
+        map['PlayerLastName'] = jsonResult['lastName'];
+        map['PlayerTier'] = jsonResult['tier'];
+        map['PlayerTierColorHex'] = jsonResult['tierColorHex'];
+
+        await TaskTable.insertOrUpdate(localRepo.db, [map]);
+
+        Task taskUpdated = await TaskRepository().getTask(jsonResult['_ID'] as String, session.user.UserID);
+        callback(taskUpdated);
       }
 
     });

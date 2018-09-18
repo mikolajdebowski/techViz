@@ -21,7 +21,7 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
   RoleListPresenter roleListPresenter;
   String selectedRoleID;
 
-  List<int> avaiableViews = [10];
+  List<int> availableViews = [10];
 
   @override
   void initState(){
@@ -62,7 +62,7 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
         bool selected = selectedRoleID!= null && selectedRoleID ==  role.id.toString();
 
         bool enabled = false;
-        var contains = avaiableViews.contains(role.id);
+        var contains = availableViews.contains(role.id);
         if(contains!=null && contains == true){
           enabled = true;
         }

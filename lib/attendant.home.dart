@@ -7,6 +7,7 @@ import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/taskListPresenter.dart';
 import 'package:event_bus/event_bus.dart';
 import 'package:techviz/repository/rabbitmq/queue/taskQueue.dart';
+import 'package:techviz/repository/session.dart';
 import 'package:techviz/repository/taskRepository.dart';
 
 class AttendantHome extends StatefulWidget {
@@ -212,7 +213,8 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
 
     void taskUpdateCallback(String taskID) {
 
-        TaskRepository().getTask(taskID).then((Task task){
+        Session session = Session();
+        TaskRepository().getTask(taskID, session.user.UserID).then((Task task){
           setState(()  {
             if([1,2,3].toList().contains(task.taskStatus.id)){
             _selectedTask = task;
@@ -276,7 +278,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
       String taskInfoDescription = '';
       if (_selectedTask != null) {
         if (_selectedTask.amount > 0) {
-          taskInfoDescription = '\$${_selectedTask.amount.toStringAsFixed(2)}';
+          taskInfoDescription = '\${_selectedTask.amount.toStringAsFixed(2)}';
         } else {
           taskInfoDescription = _selectedTask.eventDesc;
         }
@@ -405,7 +407,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
       padding: EdgeInsets.only(top: 7.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
-        //children: <Widget>[Text('Time Taken', style: TextStyle(color: Colors.grey, fontSize: 12.0)), VizTimer(timeStarted: _selectedTask != null ? _selectedTask.taskCreated : null)],
+        children: <Widget>[Text('Time Taken', style: TextStyle(color: Colors.grey, fontSize: 12.0)), VizTimer(timeStarted: _selectedTask != null ? _selectedTask.taskCreated : null)],
       ),
     );
 
@@ -491,18 +493,31 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
 
   void taskInfoQueueCallback(Task task) {
     setState(() {
-      if(_selectedTask!=null && _selectedTask.id == task.id){
-        _selectedTask = task;
-      }
-      for(int i=0; i< _taskList.length; i++){
-        if(_taskList[i].id == task.id){
-          _taskList[i] = task;
+      if([1,2,3].toList().contains(task.taskStatus.id)){
+        if(_selectedTask!=null && _selectedTask.id == task.id){
+          _selectedTask = task;
+        }
+
+        for(int i=0; i< _taskList.length; i++){
+          if(_taskList[i].id == task.id){
+            _taskList[i] = task;
+          }
+        }
+
+        if(_taskList.where((Task thisTask) => task.id == thisTask.id).length==0){
+          _taskList.add(task);
         }
       }
+      else{
+        if(_selectedTask!=null && _selectedTask.id == task.id){
+          _selectedTask = null;
+        }
 
+        if(_taskList!=null && _taskList.length>0){
+          _taskList = _taskList.where((Task thisTask) => thisTask.id != task.id).toList();
+        }
+      }
     });
-
-
   }
 
   @override
