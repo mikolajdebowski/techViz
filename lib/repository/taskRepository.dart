@@ -3,7 +3,7 @@ import 'package:techviz/model/task.dart';
 import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/model/taskType.dart';
 import 'package:techviz/repository/common/IRepository.dart';
-import 'package:techviz/repository/localRepository.dart';
+import 'package:techviz/repository/local/localRepository.dart';
 import 'package:techviz/repository/rabbitmq/channel/taskChannel.dart';
 import 'package:techviz/repository/remoteRepository.dart';
 
@@ -34,7 +34,7 @@ class TaskRepository implements IRepository<Task>{
     return list;
   }
 
-  Future<Task> getTask(String taskID) async {
+  Future<Task> getTask(String taskID, String userID) async {
     LocalRepository localRepo = LocalRepository();
     await localRepo.open();
 
@@ -42,7 +42,7 @@ class TaskRepository implements IRepository<Task>{
         "t.*, "
         "ts.TaskStatusDescription, "
         "tt.TaskTypeDescription "
-        "FROM Task t INNER JOIN TaskStatus ts on t.TaskStatusID == ts.TaskStatusID INNER JOIN TaskType tt on t.TaskTypeID == tt.TaskTypeID AND t._ID == '${taskID}';";
+        "FROM Task t INNER JOIN TaskStatus ts on t.TaskStatusID == ts.TaskStatusID INNER JOIN TaskType tt on t.TaskTypeID == tt.TaskTypeID AND t._ID == '${taskID}' AND t.UserID = '${userID}';";
 
     List<Map<String, dynamic>> queryResult = await localRepo.rawQuery(sql);
 
@@ -51,8 +51,6 @@ class TaskRepository implements IRepository<Task>{
 
 
   Task _parse(Map<String, dynamic> task){
-    double amount = task['Amount'] == '' ? 0.0: (task['Amount'] as double);
-
     var t = Task(
         dirty: task['_Dirty'] == 1,
         version: task['_Version'] as int,
@@ -60,14 +58,14 @@ class TaskRepository implements IRepository<Task>{
         location: task['Location'] as String,
         taskType: TaskType(id: task['TaskTypeID'] as int, description: task['TaskTypeDescription'] as String),
         taskStatus: TaskStatus(id: task['TaskStatusID'] as int, description: task['TaskStatusDescription'] as String),
-        amount: amount,
+        amount: task['Amount'] as double,
         eventDesc: task['EventDesc'] as String,
         taskCreated: DateTime.parse(task['TaskCreated'] as String),
         playerID: task['PlayerID']!=null ? task['PlayerID'] as String : '',
         playerFirstName: task['PlayerFirstName']!=null ? task['PlayerFirstName'] as String : '',
         playerLastName: task['PlayerLastName']!=null ? task['PlayerLastName'] as String : '',
         playerTier: task['PlayerTier']!=null ? task['PlayerTier'] as String : null,
-        playerTierColorHEX: task['PlayerTierColorHex']!=null ? task['PlayerTierColorHex'] as String : null
+        playerTierColorHEX: task['PlayerTierColorHex']!=null ? task['PlayerTierColorHex'] as String : null,
     );
 
     return t;

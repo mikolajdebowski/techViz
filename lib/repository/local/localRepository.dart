@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:techviz/repository/local/taskTable.dart';
 
 class LocalRepository {
 
@@ -21,28 +22,8 @@ class LocalRepository {
 
     db = await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
-          await db.execute('''
-            create table Task ( 
-                _Dirty INT NOT NULL,
-                _Version INT NOT NULL,
-                _ID TEXT, 
-                EventID INT,
-                MachineID TEXT,
-                TaskStatusID INT NOT NULL,
-                TaskTypeID INT,
-                TaskCreated DATETIME,
-                TaskAssigned DATETIME,
-                TaskNote TEXT,
-                TaskResponded DATETIME,
-                Amount NUMERIC,
-                Location TEXT,
-                EventDesc TEXT,
-                PlayerID TEXT,
-                PlayerFirstName TEXT,
-                PlayerLastName TEXT,
-                PlayerTier TEXT,
-                PlayerTierColorHex TEXT)
-            ''');
+
+          TaskTable.create(db);
 
           await db.execute('''
             create table TaskStatus ( 

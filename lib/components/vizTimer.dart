@@ -27,7 +27,7 @@ class VizTimerState extends State<VizTimer> {
           _peridic.cancel();
         }
 
-        _peridic = Timer.periodic(Duration(seconds: 1), (Timer t) {
+        _peridic = Timer.periodic(Duration(milliseconds: 500), (Timer t) {
           var now = DateTime.now().toUtc();
 
           if(widget == null || widget.timeStarted == null){

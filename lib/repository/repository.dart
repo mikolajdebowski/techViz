@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'package:techviz/repository/localRepository.dart';
+import 'package:techviz/repository/local/localRepository.dart';
+import 'package:techviz/repository/local/taskTable.dart';
 import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
 import 'package:techviz/repository/processor/processorRoleRepository.dart';
 import 'package:techviz/repository/processor/processorTaskRepository.dart';
@@ -58,6 +59,9 @@ class Repository{
   Future<void> fetch(fncOnMessage onMessage) async{
 
 
+    LocalRepository localRepo = LocalRepository();
+    await localRepo.open();
+
     onMessage('Fetching User Data...');
     await userRepository.fetch();
 
@@ -75,7 +79,9 @@ class Repository{
     await taskTypeRepository.fetch();
 
     onMessage('Fetching Tasks...');
-    await taskRepository.fetch();
+    await taskRepository.fetch().then((dynamic result) async{
+      await TaskTable.insertOrUpdate(localRepo.db, result);
+    });
   }
 
 
