@@ -3,7 +3,10 @@ import 'package:techviz/model/userRole.dart';
 import 'package:techviz/model/userSection.dart';
 import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/localRepository.dart';
+import 'package:techviz/repository/rabbitmq/channel/userSectionChannel.dart';
 import 'package:techviz/repository/remoteRepository.dart';
+
+typedef UserSectionUpdateCallBack = void Function(String userID);
 
 class UserSectionRepository implements IRepository<UserSection>{
   IRemoteRepository remoteRepository;
@@ -25,6 +28,39 @@ class UserSectionRepository implements IRepository<UserSection>{
     });
 
     return toReturn;
+  }
+
+  Future update(String userID, List<String> sections, {UserSectionUpdateCallBack callBack, bool markAsDirty = true, bool updateRemote = true} ) async {
+    print('updating local...');
+    LocalRepository localRepo = LocalRepository();
+    await localRepo.open();
+
+    int dirty = markAsDirty?1:0;
+
+
+
+    if(sections!=null){
+
+      sections.forEach((String s) {
+        print('fghfgh');
+        localRepo.db.rawUpdate('UPDATE UserSection SET _Dirty = ?, SectionID = ? WHERE _ID = ?', [dirty, s, userID].toList());
+      });
+
+//      await localRepo.db.rawUpdate('UPDATE UserSection SET _Dirty = ?, SectionID = ? WHERE _ID = ?', [dirty, sections, userID].toList());
+    }
+    await localRepo.db.close();
+
+    if(updateRemote){
+      var toSend = {'userID': userID, 'sections': sections};
+      UserSectionChannel userSectionChannel = UserSectionChannel();
+      await userSectionChannel.submit(toSend);
+
+      print('rabbitmq update sent');
+    }
+
+    if(callBack!=null){
+      callBack(userID);
+    }
   }
 
   @override

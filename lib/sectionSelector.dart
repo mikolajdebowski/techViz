@@ -4,7 +4,9 @@ import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/model/userSection.dart';
 import 'package:techviz/presenter/sectionListPresenter.dart';
+import 'package:techviz/repository/rabbitmq/channel/userSectionChannel.dart';
 import 'package:techviz/repository/session.dart';
+import 'package:techviz/repository/userSectionRepository.dart';
 
 typedef fncOnTapOK();
 
@@ -30,15 +32,22 @@ class SectionSelectorState extends State<SectionSelector>
   }
 
   void validate(BuildContext context) async {
-//    if(selectedStatus == null)
-//      return;
-//
-//    Session session = Session();
-//    var toSend = {'userStatusID': selectedStatus.id, 'userID': session.user.UserID};
-//
-//    UserChannel userChannel = UserChannel();
-//    await userChannel.submit(toSend);
-//
+    Session session = Session();
+    List<String> sections = List<String>();
+    sectionList.forEach((SectionModelPresenter s) {
+      if(s.selected){
+        sections.add(s.sectionID);
+      }
+    });
+
+
+//    UserSectionRepository().update(session.user.UserID, sections);
+
+
+    var toSend = {'userID': session.user.UserID, 'sections': sections};
+    UserSectionChannel userSectionChannel = UserSectionChannel();
+    await userSectionChannel.submit(toSend);
+
     widget.onTapOK();
     Navigator.of(context).pop();
   }
@@ -72,7 +81,7 @@ class SectionSelectorState extends State<SectionSelector>
 
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: ActionBar(title: 'My Sections', titleColor: Colors.blue, isRoot: true, tailWidget: okBtn),
+      appBar: ActionBar(title: 'My Sections', titleColor: Colors.blue, isRoot: false, tailWidget: okBtn),
       body:
 
       Container(

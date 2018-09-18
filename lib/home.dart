@@ -54,6 +54,7 @@ class _HomeState extends State<Home> {
 
   void onSectionSelectorCallbackOK() {
     print('section selected callback');
+
   }
 
   void onMyStatusSelectorCallbackOK(UserStatus userStatusSelected) {
