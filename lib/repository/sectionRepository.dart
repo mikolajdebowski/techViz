@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:techviz/model/section.dart';
 import 'package:techviz/repository/common/IRepository.dart';
-import 'package:techviz/repository/localRepository.dart';
+import 'package:techviz/repository/local/localRepository.dart';
 import 'package:techviz/repository/remoteRepository.dart';
 
 class SectionRepository implements IRepository<Section> {
