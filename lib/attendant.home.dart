@@ -480,7 +480,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
   }
 
   @override
-  void onStatusChanged(UserStatus us) {
+  void onUserStatusChanged(UserStatus us) {
     if(us.isOnline){
       Session session = Session();
       _taskPresenter.loadTaskList(session.user.UserID);
@@ -522,7 +522,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
   }
 
   @override
-  void onZoneChanged(Object obj) {
+  void onUserSectionsChanged(Object obj) {
     // TODO: implement onZoneChanged
   }
 }

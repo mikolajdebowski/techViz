@@ -60,7 +60,7 @@ class _HomeState extends State<Home> {
   void onMyStatusSelectorCallbackOK(UserStatus userStatusSelected) {
     setState(() {
       currentStatus = userStatusSelected;
-      keyAttendant.currentState.onStatusChanged(currentStatus);
+      keyAttendant.currentState.onUserStatusChanged(currentStatus);
     });
   }
 
@@ -176,7 +176,6 @@ class _HomeState extends State<Home> {
 }
 
 abstract class HomeEvents {
-  void onStatusChanged(UserStatus us);
-
-  void onZoneChanged(Object obj);
+  void onUserStatusChanged(UserStatus us);
+  void onUserSectionsChanged(Object obj);
 }

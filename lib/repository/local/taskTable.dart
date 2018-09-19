@@ -29,16 +29,12 @@ class TaskTable{
               ''');
     }
 
-
-
   static Future<dynamic> insertOrUpdate(Database db, dynamic values) {
     int totalRows = 0;
 
     values.forEach((Map<String,dynamic> each) async{
       totalRows += await db.insert('Task', each, conflictAlgorithm: ConflictAlgorithm.replace);
     });
-
-    print(totalRows);
 
     return Future<int>.value(totalRows);
   }
