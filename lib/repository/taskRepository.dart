@@ -14,15 +14,15 @@ class TaskRepository implements IRepository<Task>{
   IRemoteRepository remoteRepository;
   TaskRepository({this.remoteRepository});
 
-  Future<List<Task>> getTaskList() async {
+  Future<List<Task>> getTaskList(String userID) async {
     LocalRepository localRepo = LocalRepository();
     await localRepo.open();
 
-    String sql = 'SELECT '
-        't.*, '
-        'ts.TaskStatusDescription, '
-        'tt.TaskTypeDescription '
-        'FROM Task t INNER JOIN TaskStatus ts on t.TaskStatusID == ts.TaskStatusID INNER JOIN TaskType tt on t.TaskTypeID == tt.TaskTypeID and t.TaskStatusID in (1,2,3);';
+    String sql = "SELECT "
+        "t.*, "
+        "ts.TaskStatusDescription, "
+        "tt.TaskTypeDescription "
+        "FROM Task t INNER JOIN TaskStatus ts on t.TaskStatusID == ts.TaskStatusID INNER JOIN TaskType tt on t.TaskTypeID == tt.TaskTypeID and t.TaskStatusID in (1,2,3) AND t.UserID = '${userID}';";
 
     List<Map<String, dynamic>> queryResult = await localRepo.rawQuery(sql);
 

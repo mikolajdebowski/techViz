@@ -16,9 +16,9 @@ class TaskListPresenter{
    _repository = new Repository().taskRepository;
   }
 
-  void loadTaskList(){
+  void loadTaskList(String userID){
     assert(_view != null);
-    _repository.getTaskList().then((List<Task> list) {
+    _repository.getTaskList(userID).then((List<Task> list) {
       _view.onTaskListLoaded(list);
 
     }).catchError((Error onError) {

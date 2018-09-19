@@ -221,7 +221,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
             }
             else _selectedTask = null;
           });
-          _taskPresenter.loadTaskList();
+          _taskPresenter.loadTaskList(session.user.UserID);
         });
     }
 
@@ -278,7 +278,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
       String taskInfoDescription = '';
       if (_selectedTask != null) {
         if (_selectedTask.amount > 0) {
-          taskInfoDescription = '\${_selectedTask.amount.toStringAsFixed(2)}';
+          taskInfoDescription = '${_selectedTask.amount.toStringAsFixed(2)}';
         } else {
           taskInfoDescription = _selectedTask.eventDesc;
         }
@@ -482,7 +482,8 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
   @override
   void onStatusChanged(UserStatus us) {
     if(us.isOnline){
-      _taskPresenter.loadTaskList();
+      Session session = Session();
+      _taskPresenter.loadTaskList(session.user.UserID);
       TaskQueue().listen(taskInfoQueueCallback);
     }
     else{
