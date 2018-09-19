@@ -41,12 +41,12 @@ class SectionSelectorState extends State<SectionSelector>
     });
 
 
-//    UserSectionRepository().update(session.user.UserID, sections);
+    UserSectionRepository().update(session.user.UserID, sections);
 
 
-    var toSend = {'userID': session.user.UserID, 'sections': sections};
-    UserSectionChannel userSectionChannel = UserSectionChannel();
-    await userSectionChannel.submit(toSend);
+//    var toSend = {'userID': session.user.UserID, 'sections': sections};
+//    UserSectionChannel userSectionChannel = UserSectionChannel();
+//    await userSectionChannel.submit(toSend);
 
     widget.onTapOK();
     Navigator.of(context).pop();
