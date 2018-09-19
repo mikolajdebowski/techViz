@@ -34,7 +34,7 @@ class TaskRepository implements IRepository<Task>{
     return list;
   }
 
-  Future<Task> getTask(String taskID, String userID) async {
+  Future<Task> getTask(String taskID) async {
     LocalRepository localRepo = LocalRepository();
     await localRepo.open();
 
@@ -42,7 +42,7 @@ class TaskRepository implements IRepository<Task>{
         "t.*, "
         "ts.TaskStatusDescription, "
         "tt.TaskTypeDescription "
-        "FROM Task t INNER JOIN TaskStatus ts on t.TaskStatusID == ts.TaskStatusID INNER JOIN TaskType tt on t.TaskTypeID == tt.TaskTypeID AND t._ID == '${taskID}' AND t.UserID = '${userID}';";
+        "FROM Task t INNER JOIN TaskStatus ts on t.TaskStatusID == ts.TaskStatusID INNER JOIN TaskType tt on t.TaskTypeID == tt.TaskTypeID AND t._ID == '${taskID}';";
 
     List<Map<String, dynamic>> queryResult = await localRepo.rawQuery(sql);
 
@@ -54,6 +54,7 @@ class TaskRepository implements IRepository<Task>{
     var t = Task(
         dirty: task['_Dirty'] == 1,
         version: task['_Version'] as int,
+        userID: task['UserID'] as String,
         id: task['_ID'] as String,
         location: task['Location'] as String,
         taskType: TaskType(id: task['TaskTypeID'] as int, description: task['TaskTypeDescription'] as String),

@@ -59,7 +59,7 @@ class TaskQueue implements IRemoteQueue<dynamic>{
 
         await TaskTable.insertOrUpdate(localRepo.db, [map]);
 
-        Task taskUpdated = await TaskRepository().getTask(jsonResult['_ID'] as String, session.user.UserID);
+        Task taskUpdated = await TaskRepository().getTask(jsonResult['_ID'] as String);
         callback(taskUpdated);
       }
 

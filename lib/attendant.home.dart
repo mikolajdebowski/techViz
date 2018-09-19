@@ -214,7 +214,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
     void taskUpdateCallback(String taskID) {
 
         Session session = Session();
-        TaskRepository().getTask(taskID, session.user.UserID).then((Task task){
+        TaskRepository().getTask(taskID).then((Task task){
           setState(()  {
             if([1,2,3].toList().contains(task.taskStatus.id)){
             _selectedTask = task;
@@ -493,8 +493,10 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
   }
 
   void taskInfoQueueCallback(Task task) {
+    Session session = Session();
     setState(() {
-      if([1,2,3].toList().contains(task.taskStatus.id)){
+
+      if([1,2,3].toList().contains(task.taskStatus.id) && task.userID ==  session.user.UserID){ //update the view
         if(_selectedTask!=null && _selectedTask.id == task.id){
           _selectedTask = task;
         }
@@ -509,7 +511,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
           _taskList.add(task);
         }
       }
-      else{
+      else{ //remove from the view
         if(_selectedTask!=null && _selectedTask.id == task.id){
           _selectedTask = null;
         }
