@@ -30,23 +30,17 @@ class UserSectionRepository implements IRepository<UserSection>{
     return toReturn;
   }
 
-  Future update(String userID, List<String> sections, {UserSectionUpdateCallBack callBack, bool markAsDirty = true, bool updateRemote = true} ) async {
+  Future update(String userID, List<String> sections, {UserSectionUpdateCallBack callBack, bool updateRemote = true} ) async {
     print('updating local...');
     LocalRepository localRepo = LocalRepository();
     await localRepo.open();
 
-    int dirty = markAsDirty?1:0;
-
-
-
     if(sections!=null){
+//      sections.forEach((String s) {
+//        localRepo.db.rawUpdate('UPDATE UserSection SET SectionID = ? WHERE UserID = ?', [s, userID].toList());
+//      });tv
 
-      sections.forEach((String s) {
-        print('fghfgh');
-        localRepo.db.rawUpdate('UPDATE UserSection SET _Dirty = ?, SectionID = ? WHERE _ID = ?', [dirty, s, userID].toList());
-      });
-
-//      await localRepo.db.rawUpdate('UPDATE UserSection SET _Dirty = ?, SectionID = ? WHERE _ID = ?', [dirty, sections, userID].toList());
+      await localRepo.db.rawUpdate('UPDATE UserSection SET SectionID = ? WHERE UserID = ?', [sections, userID].toList());
     }
     await localRepo.db.close();
 
@@ -57,10 +51,10 @@ class UserSectionRepository implements IRepository<UserSection>{
 
       print('rabbitmq update sent');
     }
-
-    if(callBack!=null){
-      callBack(userID);
-    }
+//
+//    if(callBack!=null){
+//      callBack(userID);
+//    }
   }
 
   @override
