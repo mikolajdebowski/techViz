@@ -9,10 +9,12 @@ import 'package:techviz/repository/session.dart';
 import 'package:techviz/repository/userSectionRepository.dart';
 
 typedef fncOnTapOK();
+typedef fncOnUserSectionsChanged(List<String> sections);
 
 class SectionSelector extends StatefulWidget {
-  SectionSelector({Key key, @required this.onTapOK}) : super(key: key);
+  SectionSelector({Key key, @required this.onTapOK, @required this.onUserSectionsChanged}) : super(key: key);
   final fncOnTapOK onTapOK;
+  final fncOnUserSectionsChanged onUserSectionsChanged;
 
   @override
   State<StatefulWidget> createState() => SectionSelectorState();
@@ -40,16 +42,13 @@ class SectionSelectorState extends State<SectionSelector>
       }
     });
 
-
-    UserSectionRepository().update(session.user.UserID, sections);
-
-
-//    var toSend = {'userID': session.user.UserID, 'sections': sections};
-//    UserSectionChannel userSectionChannel = UserSectionChannel();
-//    await userSectionChannel.submit(toSend);
-
+    UserSectionRepository().update(session.user.UserID, sections, callBack:updateCallback, updateRemote:true);
     widget.onTapOK();
     Navigator.of(context).pop();
+  }
+
+  void updateCallback(List<String> sections) {
+    widget.onUserSectionsChanged(sections);
   }
 
   @override

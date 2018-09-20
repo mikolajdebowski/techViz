@@ -1,15 +1,15 @@
 import 'dart:async';
-import 'package:techviz/model/userRole.dart';
 import 'package:techviz/model/userSection.dart';
 import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/local/localRepository.dart';
 import 'package:techviz/repository/rabbitmq/channel/userSectionChannel.dart';
 import 'package:techviz/repository/remoteRepository.dart';
 
-typedef UserSectionUpdateCallBack = void Function(String userID);
+typedef UserSectionUpdateCallBack = void Function(List<String> sections);
 
-class UserSectionRepository implements IRepository<UserSection>{
+class UserSectionRepository implements IRepository<UserSection> {
   IRemoteRepository remoteRepository;
+
   UserSectionRepository({this.remoteRepository});
 
   Future<List<UserSection>> getUserSection(String userID) async {
@@ -30,36 +30,40 @@ class UserSectionRepository implements IRepository<UserSection>{
     return toReturn;
   }
 
-  Future update(String userID, List<String> sections, {UserSectionUpdateCallBack callBack, bool updateRemote = true} ) async {
+  Future update(String userID, List<String> sections,
+      {UserSectionUpdateCallBack callBack, bool updateRemote = true}) async {
     print('updating local...');
     LocalRepository localRepo = LocalRepository();
     await localRepo.open();
 
-    if(sections!=null){
-//      sections.forEach((String s) {
-//        localRepo.db.rawUpdate('UPDATE UserSection SET SectionID = ? WHERE UserID = ?', [s, userID].toList());
-//      });tv
+    await localRepo.db.delete('UserSection');
 
-      await localRepo.db.rawUpdate('UPDATE UserSection SET SectionID = ? WHERE UserID = ?', [sections, userID].toList());
+    if (sections != null) {
+      await sections.forEach((dynamic section) {
+        Map<String, dynamic> map = Map<String, dynamic>();
+        map['SectionID'] = section;
+        map['UserID'] = userID;
+        localRepo.insert('UserSection', map);
+      });
     }
-    await localRepo.db.close();
 
-    if(updateRemote){
+    if (updateRemote) {
+
       var toSend = {'userID': userID, 'sections': sections};
       UserSectionChannel userSectionChannel = UserSectionChannel();
       await userSectionChannel.submit(toSend);
 
       print('rabbitmq update sent');
     }
-//
-//    if(callBack!=null){
-//      callBack(userID);
-//    }
+
+    if (callBack != null) {
+      callBack(sections);
+    }
   }
 
   @override
   Future fetch() {
-    assert(this.remoteRepository!=null);
+    assert(this.remoteRepository != null);
     return this.remoteRepository.fetch();
   }
 
@@ -67,5 +71,4 @@ class UserSectionRepository implements IRepository<UserSection>{
   Future listen() {
     throw UnimplementedError();
   }
-
 }

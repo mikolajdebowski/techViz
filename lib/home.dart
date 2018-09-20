@@ -37,24 +37,27 @@ class _HomeState extends State<Home> {
     );
   }
 
-//  void onZoneSelectorCallbackOK(List<VizSelectorOption> selected) {
-//    setState(() {
-//      currentZones = "";
-//
-//      if (selected.length > 4) {
-//        currentZones = "4+";
-//      } else {
-//        selected.forEach((element) {
-//          currentZones += element.description + " ";
-//        });
-//        currentZones = currentZones.trim();
-//      }
-//    });
-//  }
-
   void onSectionSelectorCallbackOK() {
     print('section selected callback');
+  }
 
+  void onUserSectionsChangedCallback(List<String> sections) {
+    print("onUserSectionsChangedCallback: ${sections.length.toString()}");
+    setState(() {
+      currentZones = "";
+      if (sections.length == 0) {
+        currentZones = "-";
+      }
+
+      if (sections.length > 4) {
+        currentZones = "4+";
+      } else {
+        sections.forEach((section) {
+          currentZones += section + " ";
+        });
+        currentZones = currentZones.trim();
+      }
+    });
   }
 
   void onMyStatusSelectorCallbackOK(UserStatus userStatusSelected) {
@@ -67,6 +70,7 @@ class _HomeState extends State<Home> {
   void goToSectionSelector() {
     var selector = SectionSelector(
       onTapOK: onSectionSelectorCallbackOK,
+      onUserSectionsChanged: onUserSectionsChangedCallback
     );
 
     Navigator.push<VizSelector>(
