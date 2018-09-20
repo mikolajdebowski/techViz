@@ -8,12 +8,10 @@ import 'package:techviz/repository/rabbitmq/channel/userSectionChannel.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:techviz/repository/userSectionRepository.dart';
 
-typedef fncOnTapOK();
 typedef fncOnUserSectionsChanged(List<String> sections);
 
 class SectionSelector extends StatefulWidget {
-  SectionSelector({Key key, @required this.onTapOK, @required this.onUserSectionsChanged}) : super(key: key);
-  final fncOnTapOK onTapOK;
+  SectionSelector({Key key, @required this.onUserSectionsChanged}) : super(key: key);
   final fncOnUserSectionsChanged onUserSectionsChanged;
 
   @override
@@ -43,7 +41,6 @@ class SectionSelectorState extends State<SectionSelector>
     });
 
     UserSectionRepository().update(session.user.UserID, sections, callBack:updateCallback, updateRemote:true);
-    widget.onTapOK();
     Navigator.of(context).pop();
   }
 

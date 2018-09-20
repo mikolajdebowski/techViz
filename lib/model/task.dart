@@ -7,6 +7,7 @@ class Task {
   final bool dirty;
   final String location;
   final String machineId;
+  final String userID;
 
   final TaskType taskType;
   final TaskStatus taskStatus;
@@ -21,7 +22,7 @@ class Task {
   final String playerTier;
   final String playerTierColorHEX;
 
-  const Task({this.id, this.version, this.dirty, this.location, this.taskType, this.taskStatus, this.machineId, this.taskCreated, this.taskAssigned, this.amount, this.eventDesc, this.playerID,
+  const Task({this.id, this.version, this.userID, this.dirty, this.location, this.taskType, this.taskStatus, this.machineId, this.taskCreated, this.taskAssigned, this.amount, this.eventDesc, this.playerID,
   this.playerFirstName, this.playerLastName, this.playerTier, this.playerTierColorHEX});
 
 }
