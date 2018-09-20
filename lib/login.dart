@@ -27,6 +27,8 @@ class Login extends StatefulWidget {
 class LoginState extends State<Login> {
   bool _isLoading = false;
   String _loadingMessage = '...';
+  AppInfo appInfo;
+
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final Map<String, String> _formData = {
@@ -55,10 +57,21 @@ class LoginState extends State<Login> {
         }
       //}
     });
+
+    getAppInfo();
+
     super.initState();
   }
 
 
+  void getAppInfo() {
+    Utils.packageInfo.then((AppInfo info){
+      setState(() {
+        appInfo = info;
+      });
+    });
+
+  }
 
 
   Future<void> loadInitialData() async{
@@ -215,23 +228,34 @@ class LoginState extends State<Login> {
             width: 100.0,
             child: Flex(direction: Axis.horizontal, children: <Widget>[btnLogin])));
 
-    var row = Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
+    var loginForm = Column(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Expanded(
-            flex: 4,
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[txtFieldUser, txtPassword],
-              ),
-            )),
-        Expanded(
-          child: Container(height: 120.0, child: btnBox),
-        ),
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Expanded(
+              flex: 4,
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[txtFieldUser, txtPassword],
+                ),
+              )),
+          Expanded(
+            child: Container(height: 120.0, child: btnBox),
+          ),
+        ],
+      ),
+      Text(
+        appInfo!=null? 'Version ${appInfo.version} (Build ${appInfo.buildNumber})': '',
+        style: TextStyle(color: Color(0xff474f5b)),
+        textAlign: TextAlign.center,
+      )
       ],
+
     );
 
     return Scaffold(
@@ -250,7 +274,7 @@ class LoginState extends State<Login> {
                         },
                       ),
                     )),
-                Align(alignment: Alignment.center, child: row),
+                Align(alignment: Alignment.center, child: loginForm),
                 Align(alignment: Alignment.bottomCenter, child: VizRainbow()),
                 VizLoadingIndicator(message: _loadingMessage, isLoading: _isLoading)
               ],

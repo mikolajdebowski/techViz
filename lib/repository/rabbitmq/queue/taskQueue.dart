@@ -29,7 +29,7 @@ class TaskQueue implements IRemoteQueue<dynamic>{
     Consumer consumer = await queue.consume();
     consumer.listen((AmqpMessage message) async {
       Map<String, dynamic> jsonResult = message.payloadAsJson;
-      print('Task received =======> ${jsonResult}');
+      print('Task received ====> ID: ${jsonResult['_ID']}         Location: ${jsonResult['location']}         StatusID: ${jsonResult['taskStatusID']}         UserID: ${jsonResult['userID']}');
 
       String deviceID = jsonResult['deviceID'];
       if(deviceID == deviceID){

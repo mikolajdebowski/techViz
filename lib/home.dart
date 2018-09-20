@@ -18,7 +18,9 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<Home> with WidgetsBindingObserver{
+  AppLifecycleState _notification;
+
   GlobalKey<AttendantHomeState> keyAttendant;
   bool initialLoading = false;
 
@@ -28,6 +30,13 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   void goToMenu() {
@@ -36,6 +45,15 @@ class _HomeState extends State<Home> {
       SlideRightRoute(widget: Menu()),
     );
   }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    setState(() {
+      _notification = state;
+      print(_notification);
+    });
+  }
+
 
 //  void onZoneSelectorCallbackOK(List<VizSelectorOption> selected) {
 //    setState(() {

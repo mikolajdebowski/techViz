@@ -494,30 +494,44 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
 
   void taskInfoQueueCallback(Task task) {
     Session session = Session();
+
+    if(session.user==null)
+      return;
+
     setState(() {
 
       if([1,2,3].toList().contains(task.taskStatus.id) && task.userID ==  session.user.UserID){ //update the view
+
+        print(task.id + ' received with StatusID ' +task.taskStatus.id.toString());
+
+
         if(_selectedTask!=null && _selectedTask.id == task.id){
           _selectedTask = task;
+          print(task.id + ' updated selected with StatusID ' +task.taskStatus.id.toString());
         }
 
         for(int i=0; i< _taskList.length; i++){
           if(_taskList[i].id == task.id){
             _taskList[i] = task;
+            print(task.id + ' updated in the local list because StatusID is ' +task.taskStatus.id.toString());
           }
         }
 
         if(_taskList.where((Task thisTask) => task.id == thisTask.id).length==0){
-          _taskList.add(task);
+          _taskList.add(task); //seems ok
+          print(task.id + ' added to the list with StatusID ' +task.taskStatus.id.toString());
+
         }
       }
       else{ //remove from the view
         if(_selectedTask!=null && _selectedTask.id == task.id){
           _selectedTask = null;
+          print(task.id + ' removed from selected because StatusID is ' +task.taskStatus.id.toString());
         }
 
         if(_taskList!=null && _taskList.length>0){
           _taskList = _taskList.where((Task thisTask) => thisTask.id != task.id).toList();
+          print(task.id + ' removed from the list because StatusID is ' +task.taskStatus.id.toString());
         }
       }
     });
