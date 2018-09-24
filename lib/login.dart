@@ -85,7 +85,7 @@ class LoginState extends State<Login> {
     }
 
     await repo.preFetch(onMessage);
-    await repo.fetch(onMessage);
+    await repo.initialFetch(onMessage);
   }
 
   Future<void> setupUser() async{

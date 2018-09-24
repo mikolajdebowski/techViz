@@ -4,6 +4,7 @@ import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/model/taskType.dart';
 import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/local/localRepository.dart';
+import 'package:techviz/repository/local/taskTable.dart';
 import 'package:techviz/repository/rabbitmq/channel/taskChannel.dart';
 import 'package:techviz/repository/remoteRepository.dart';
 
@@ -73,9 +74,20 @@ class TaskRepository implements IRepository<Task>{
   }
 
   @override
-  Future fetch() {
+  Future<dynamic> fetch() {
     assert(this.remoteRepository!=null);
-    return this.remoteRepository.fetch();
+
+    Completer _completer = Completer<bool>();
+    this.remoteRepository.fetch().then((Object result) async{
+      LocalRepository localRepo = LocalRepository();
+      localRepo.open();
+
+      TaskTable.insertOrUpdate(localRepo.db, result);
+
+      _completer.complete(true);
+    });
+
+    return _completer.future;
   }
 
   @override

@@ -60,7 +60,7 @@ class Repository{
     await localRepo.dropDatabase();
   }
 
-  Future<void> fetch(fncOnMessage onMessage) async{
+  Future<void> initialFetch(fncOnMessage onMessage) async{
 
 
     LocalRepository localRepo = LocalRepository();
@@ -86,10 +86,7 @@ class Repository{
     await sectionRepository.fetch();
     await userSectionRepository.fetch();
 
-    onMessage('Fetching Tasks...');
-    await taskRepository.fetch().then((dynamic result) async{
-      await TaskTable.insertOrUpdate(localRepo.db, result);
-    });
+
   }
 
   UserSectionRepository get userSectionRepository {

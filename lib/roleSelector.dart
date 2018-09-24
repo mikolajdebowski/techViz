@@ -40,7 +40,7 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
     var toSend = {'userRoleID': selectedRoleID, 'userID': session.user.UserID};
 
     UserChannel userChannel = UserChannel();
-    await userChannel.submit(toSend);
+    userChannel.submit(toSend);
 
     Navigator.pushReplacement(context, MaterialPageRoute<Home>(builder: (BuildContext context) => Home()));
   }

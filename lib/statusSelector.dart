@@ -40,7 +40,7 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
     var toSend = {'userStatusID': selectedStatus.id, 'userID': session.user.UserID};
 
     UserChannel userChannel = UserChannel();
-    await userChannel.submit(toSend);
+    userChannel.submit(toSend);
 
     widget.onTapOK(selectedStatus);
 

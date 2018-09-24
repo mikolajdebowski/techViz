@@ -5,8 +5,8 @@ import 'package:techviz/home.dart';
 import 'package:techviz/model/task.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/taskListPresenter.dart';
-import 'package:event_bus/event_bus.dart';
 import 'package:techviz/repository/rabbitmq/queue/taskQueue.dart';
+import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:techviz/repository/taskRepository.dart';
 
@@ -19,10 +19,10 @@ class AttendantHome extends StatefulWidget {
 }
 
 class AttendantHomeState extends State<AttendantHome> implements ITaskListPresenter<Task>, HomeEvents {
+  bool _isLoadingTasks = false;
   TaskListPresenter _taskPresenter;
   Task _selectedTask = null;
   List<Task> _taskList = [];
-  EventBus eventBus;
   var _taskListStatusIcon = "assets/images/ic_processing.png";
 
   @override
@@ -40,6 +40,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
     setState(() {
       _taskList = result;
       _taskListStatusIcon = null;
+      _isLoadingTasks = false;
     });
   }
 
@@ -108,53 +109,54 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
     }
 
 
-
-
-
     var taskTextStr = listTasks.length == 0 ? 'No tasks' : (listTasks.length == 1 ? '1 Task' : '${listTasks.length} Tasks');
-    Widget listContainer = ImageIcon(AssetImage("assets/images/ic_processing.png"), size: 30.0);
 
-    if (listTasks.length > 0)
+    Widget listContainer = Center(child: null);
+
+    if(_isLoadingTasks){
+      listContainer = Center(child: CircularProgressIndicator());
+    }
+    else if (listTasks != null && listTasks.length > 0) {
+      //list container
       listContainer = ListView(
         children: listTasks,
       );
+    }
 
     var leftPanel = Flexible(
-      flex: 1,
-      child: Column(
-        children: <Widget>[
-          Container(
-            constraints: BoxConstraints.expand(height: 70.0),
-            decoration: defaultHeaderDecoration,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                Flexible(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(taskTextStr, style: TextStyle(color: Colors.white)),
-                      Padding(
-                        padding: EdgeInsets.only(left: 10.0),
-                        child: _taskListStatusIcon != null ? ImageIcon(AssetImage(_taskListStatusIcon), size: 15.0, color: Colors.blueGrey) : null,
-                      )
-                    ],
+        flex: 1,
+        child: Column(
+          children: <Widget>[
+            Container(
+              constraints: BoxConstraints.expand(height: 70.0),
+              decoration: defaultHeaderDecoration,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Flexible(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(taskTextStr, style: TextStyle(color: Colors.white)),
+                        Padding(
+                          padding: EdgeInsets.only(left: 10.0),
+                          child: _taskListStatusIcon != null ? ImageIcon(AssetImage(_taskListStatusIcon), size: 15.0, color: Colors.blueGrey) : null,
+                        )
+                      ],
+                    ),
                   ),
-                ),
-                Text('0 Pending', style: TextStyle(color: Colors.orange)),
-                Text('Priority', style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic)),
-              ],
+                  Text('0 Pending', style: TextStyle(color: Colors.orange)),
+                  Text('Priority', style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic)),
+                ],
+              ),
             ),
-          ),
-          Expanded(
-            child: listContainer,
-          )
-        ],
-      ),
-    );
+            Expanded(
+              child: listContainer,
+            )
+          ],
+        ),
+      );
 
-//    TaskType taskType = _selectedTask != null && _taskTypeList!=null && _taskTypeList.length> 0 ? _taskTypeList.where((t) => t.id == _selectedTask.taskType.id).first : null;
-//    TaskStatus taskStatus = _selectedTask != null && _taskStatusList!=null &&  _taskStatusList.length> 0? _taskStatusList.where((t) => t.id == _selectedTask).first : null;
 
     //CENTER PANEL WIDGETS
     var rowCenterHeader = Padding(
@@ -482,13 +484,20 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
   @override
   void onUserStatusChanged(UserStatus us) {
     if(us.isOnline){
+      setState(() {
+        _isLoadingTasks = true;
+      });
       Session session = Session();
-      _taskPresenter.loadTaskList(session.user.UserID);
-      TaskQueue().listen(taskInfoQueueCallback);
+
+      Repository().taskRepository.fetch().then((dynamic b){
+        _taskPresenter.loadTaskList(session.user.UserID);
+        TaskQueue().listen(taskInfoQueueCallback);
+      });
     }
     else{
       _taskList = List<Task>();
       _selectedTask = null;
+      TaskQueue().StopListening();
     }
   }
 
@@ -499,11 +508,8 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
       return;
 
     setState(() {
-
       if([1,2,3].toList().contains(task.taskStatus.id) && task.userID ==  session.user.UserID){ //update the view
-
         print(task.id + ' received with StatusID ' +task.taskStatus.id.toString());
-
 
         if(_selectedTask!=null && _selectedTask.id == task.id){
           _selectedTask = task;

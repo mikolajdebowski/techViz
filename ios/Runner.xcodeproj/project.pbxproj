@@ -257,7 +257,7 @@
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-Runner/Pods-Runner-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/FMDB/FMDB.framework",
-				"${PODS_ROOT}/../.symlinks/flutter/ios-release/Flutter.framework",
+				"${PODS_ROOT}/../.symlinks/flutter/ios/Flutter.framework",
 				"${BUILT_PRODUCTS_DIR}/device_info/device_info.framework",
 				"${BUILT_PRODUCTS_DIR}/package_info/package_info.framework",
 				"${BUILT_PRODUCTS_DIR}/shared_preferences/shared_preferences.framework",
@@ -454,7 +454,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.vizexplorer.techviz;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "8a037921-99e1-440a-88e5-118c8af728e2";
+				PROVISIONING_PROFILE = "45cb099e-ef7a-4f9c-9094-42318ee13ed0";
 				PROVISIONING_PROFILE_SPECIFIER = "TechViz Development PP";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -471,6 +471,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 6AR893CN84;
@@ -487,8 +488,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.vizexplorer.techviz;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "4c37c473-b6a3-46f9-937c-2f558b7fdf11";
-				PROVISIONING_PROFILE_SPECIFIER = "TechViz Ad-hoc Distribution PP";
+				PROVISIONING_PROFILE = "a364f9d6-1746-4ee0-9b6c-0de04fc8f56e";
+				PROVISIONING_PROFILE_SPECIFIER = "TechViz Development PP";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_SWIFT3_OBJC_INFERENCE = On;
 				SWIFT_VERSION = 4.0;

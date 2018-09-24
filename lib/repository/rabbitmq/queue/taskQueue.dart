@@ -10,6 +10,23 @@ import 'package:techviz/repository/taskRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 class TaskQueue implements IRemoteQueue<dynamic>{
+  Consumer consumer;
+  static final TaskQueue _singleton = TaskQueue._internal();
+  factory TaskQueue() {
+    return _singleton;
+  }
+
+  TaskQueue._internal() {
+    print('TaskQueue instance');
+  }
+
+  void StopListening(){
+    print('StopListening');
+    if(consumer!=null){
+      consumer.cancel();
+    }
+  }
+
   @override
   Future listen(RemoteQueueCallback<Task> callback) async {
     Session session = Session();
@@ -26,7 +43,7 @@ class TaskQueue implements IRemoteQueue<dynamic>{
       return queue.bind(exchange, routingKey);
     });
 
-    Consumer consumer = await queue.consume();
+    consumer = await queue.consume();
     consumer.listen((AmqpMessage message) async {
       Map<String, dynamic> jsonResult = message.payloadAsJson;
       print('Task received ====> ID: ${jsonResult['_ID']}         Location: ${jsonResult['location']}         StatusID: ${jsonResult['taskStatusID']}         UserID: ${jsonResult['userID']}');
