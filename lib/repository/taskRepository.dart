@@ -22,7 +22,7 @@ class TaskRepository implements IRepository<Task>{
         "t.*, "
         "ts.TaskStatusDescription, "
         "tt.TaskTypeDescription "
-        "FROM Task t INNER JOIN TaskStatus ts on t.TaskStatusID == ts.TaskStatusID INNER JOIN TaskType tt on t.TaskTypeID == tt.TaskTypeID and t.TaskStatusID in (1,2,3) AND t.UserID = '${userID}';";
+        "FROM Task t INNER JOIN TaskStatus ts on t.TaskStatusID == ts.TaskStatusID INNER JOIN TaskType tt on t.TaskTypeID == tt.TaskTypeID and t.TaskStatusID in (1,2,3) AND t.UserID = '${userID}' ORDER BY t.TaskCreated ASC;";
 
     List<Map<String, dynamic>> queryResult = await localRepo.rawQuery(sql);
 
