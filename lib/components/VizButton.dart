@@ -8,6 +8,7 @@ class VizButton extends StatelessWidget {
     this.flex = 1,
     this.iconName,
     this.highlighted = false,
+    this.enabled = true,
     this.customWidget})
       : super(key: key);
 
@@ -17,6 +18,7 @@ class VizButton extends StatelessWidget {
   final int flex;
   final bool highlighted;
   final Widget customWidget;
+  final bool enabled;
 
 
   @override
@@ -62,12 +64,13 @@ class VizButton extends StatelessWidget {
   BoxDecoration get DefaultBoxDecoration{
     var defaultBg = [Color(0xFFebf0f2), Color(0xFFbdccd4)];
     var highlightBg = [Color(0xFF96c93f), Color(0xFF09a593)];
+    var disabledBg = [Color(0xFFD3D3D3), Color(0xFFD3D3D3)];
 
     return BoxDecoration(
         boxShadow: [BoxShadow(color: Color(0xAA000000), offset: Offset(2.0, 2.0), blurRadius: 2.0)],
         border: Border.all(color: highlighted? Colors.transparent : Colors.white),
         gradient: LinearGradient(
-            colors: (highlighted ? highlightBg : defaultBg),
+            colors: (enabled == false ? disabledBg: (highlighted ? highlightBg : defaultBg)),
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter),
         borderRadius: BorderRadius.circular(5.0));

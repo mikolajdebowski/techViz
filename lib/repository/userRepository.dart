@@ -21,8 +21,8 @@ class UserRepository implements IRepository<User>{
       Map<String, dynamic> userMap = queryResult.first;
       var u = User(
         UserID: userMap['UserID'] as String,
-        UserRoleID: userMap['UserID'] as String,
-        UserStatusID: userMap['UserStatusID'] as String,
+        UserRoleID: int.parse(userMap['UserRoleID'].toString()),
+        UserStatusID: int.parse(userMap['UserStatusID'].toString()),
       );
       return u;
     }

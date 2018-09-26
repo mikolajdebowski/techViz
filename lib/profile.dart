@@ -37,8 +37,8 @@ class ProfileState extends State<Profile>
     Map<String, String> usrMap = {
       'UserID': session.user.UserID,
       'UserName': session.user.UserName,
-      'UserRoleID': session.user.UserRoleID,
-      'UserStatusID': session.user.UserStatusID,
+      'UserRoleID': session.user.UserRoleID.toString(),
+      'UserStatusID': session.user.UserStatusID.toString(),
     };
 
     setState(() {

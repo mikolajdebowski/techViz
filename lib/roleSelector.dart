@@ -30,6 +30,7 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
     Session session = Session();
     roleListPresenter = new RoleListPresenter(this);
     roleListPresenter.loadUserRoles(session.user.UserID);
+
   }
 
   void validate(BuildContext context) async {
@@ -50,7 +51,7 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
 
     var defaultBgDeco = BoxDecoration(gradient: LinearGradient(colors: [Color(0xFF636f7e), Color(0xFF9aa8b0)], begin: Alignment.topCenter, end: Alignment.bottomCenter));
 
-    var okBtn = VizButton(title: 'OK', highlighted: true, onTap: () => validate(context));
+    var okBtn = VizButton(title: 'OK', highlighted: true, onTap: () => validate(context), enabled: selectedRoleID != null);
 
     var body = GridView.count(
       shrinkWrap: true,
@@ -102,10 +103,17 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
     if(result.length==1){
       Navigator.pushReplacement(context, MaterialPageRoute<Home>(builder: (BuildContext context) => Home()));
       return;
-
     }
     setState(() {
       roleList = result;
+
+      var defaultUserRoleID = Session().user.UserRoleID;
+      if(defaultUserRoleID!=null){
+        var defaultRole = roleList.where((Role r) => r.id == defaultUserRoleID);
+        if(defaultRole!=null){
+          selectedRoleID = defaultRole.first.id.toString();
+        }
+      }
     });
   }
 }
