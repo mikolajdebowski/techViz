@@ -181,24 +181,24 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
               ),
             ),
             Expanded(
-              flex: 3,
+              flex: 4,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Text('Task Type', style: TextStyle(color: Color(0xFF9aa8b0), fontSize: 12.0)),
-                  Padding(padding: EdgeInsets.only(top: 5.0), child: Text(_selectedTask!= null ? _selectedTask.taskType.description : '', style: TextStyle(color: Colors.white, fontSize: 16.0), softWrap: false))
+                  Padding(padding: EdgeInsets.only(top: 5.0), child: Text(_selectedTask!= null ? _selectedTask.taskType.description : '', maxLines: 2, overflow:TextOverflow.ellipsis, textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontSize: 16.0), softWrap: false))
                 ],
               ),
             ),
             Expanded(
-              flex: 5,
+              flex: 4,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Text('Task Status', style: TextStyle(color: Color(0xFF9aa8b0), fontSize: 12.0)),
                   Padding(
                       padding: EdgeInsets.only(top: 5.0),
-                      child: Text(_selectedTask!=null ? _selectedTask.taskStatus.description : '', style: TextStyle(color: Colors.white, fontSize: 16.0, fontWeight: FontWeight.bold)))
+                      child: Text(_selectedTask!=null ? _selectedTask.taskStatus.description : '', textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontSize: 16.0, fontWeight: FontWeight.bold)))
                 ],
               ),
             ),
@@ -350,7 +350,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
                           color: Color(0xFF444444),
                           fontSize: 14.0,
                         ))),
-                Padding(padding: EdgeInsets.only(top: 5.0), child: Text(playerName, style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 20.0, fontWeight: FontWeight.bold)))
+                Padding(padding: EdgeInsets.only(top: 5.0), child: Text(playerName, style: TextStyle(color: Color(0xFFFFFFFF), fontSize: taskInfoDescription.length > 10 ? 14.0 : 20.0, fontWeight: FontWeight.bold)))
               ],
             ),
           );
