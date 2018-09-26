@@ -15,7 +15,7 @@ class UserSectionRepository implements IRepository<UserSection> {
   Future<List<UserSection>> getUserSection(String userID) async {
     LocalRepository localRepo = LocalRepository();
 
-    String sql = "SELECT UserID, SectionID FROM UserSection";
+    String sql = "SELECT UserID, SectionID FROM UserSection WHERE UserID = '$userID'";
     List<Map<String, dynamic>> queryResult = await localRepo.rawQuery(sql);
 
     List<UserSection> toReturn = List<UserSection>();
@@ -51,7 +51,7 @@ class UserSectionRepository implements IRepository<UserSection> {
 
       var toSend = {'userID': userID, 'sections': sections};
       UserSectionChannel userSectionChannel = UserSectionChannel();
-      await userSectionChannel.submit(toSend);
+      userSectionChannel.submit(toSend);
 
       print('rabbitmq update sent');
     }

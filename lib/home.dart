@@ -7,7 +7,10 @@ import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizSearch.dart';
 import 'package:techviz/components/vizSelector.dart';
 import 'package:techviz/menu.dart';
+import 'package:techviz/model/userSection.dart';
 import 'package:techviz/model/userStatus.dart';
+import 'package:techviz/repository/session.dart';
+import 'package:techviz/repository/userSectionRepository.dart';
 import 'package:techviz/sectionSelector.dart';
 import 'package:techviz/statusSelector.dart';
 
@@ -24,13 +27,14 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
   GlobalKey<AttendantHomeState> keyAttendant;
   bool initialLoading = false;
 
-  String currentZones = '-';
+  List<String> currentSections = List<String>();
   UserStatus currentStatus;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    loadDefaultSections();
   }
 
   @override
@@ -46,6 +50,19 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
     );
   }
 
+  void loadDefaultSections(){
+    UserSectionRepository userSectionRepo = UserSectionRepository();
+    Session session = Session();
+    userSectionRepo.getUserSection(session.user.UserID).then((List<UserSection> list) {
+      setState(() {
+        if(list.length>0)
+          currentSections = list.map((UserSection us) => us.SectionID).toList();
+        else currentSections =  List<String>();
+      });
+    });
+  }
+
+
   void didChangeAppLifecycleState(AppLifecycleState state) {
     setState(() {
       _notification = state;
@@ -56,20 +73,25 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
   void onUserSectionsChangedCallback(List<String> sections) {
     print("onUserSectionsChangedCallback: ${sections.length.toString()}");
     setState(() {
-      currentZones = "";
-      if (sections.length == 0) {
-        currentZones = "-";
-      }
-
-      if (sections.length > 4) {
-        currentZones = "4+";
-      } else {
-        sections.forEach((section) {
-          currentZones += section + " ";
-        });
-        currentZones = currentZones.trim();
-      }
+      currentSections = sections;
     });
+  }
+
+  String get getSectionsText {
+    String sections = "";
+    if (currentSections.length == 0) {
+      sections = "-";
+    }
+
+    if (currentSections.length > 4) {
+      sections = "4+";
+    } else {
+      currentSections.forEach((String section) {
+        sections += section + " ";
+      });
+      sections = sections.trim();
+    }
+    return sections;
   }
 
   void onMyStatusSelectorCallbackOK(UserStatus userStatusSelected) {
@@ -129,17 +151,17 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
     var statusWidgetBtn = VizButton(customWidget: statusInnerWidget, flex: 3, onTap: goToStatusSelector);
 
     //ZONES
-    var zonesInnerWidget = Column(
+    var sectionsInnerWidget = Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Text('My Sections', style: TextStyle(color: Color(0xFF566474), fontSize: 13.0)),
-        Text(currentZones,
+        Text(getSectionsText,
             style: TextStyle(color: Colors.black, fontSize: 16.0), overflow: TextOverflow.ellipsis)
       ],
     );
 
-    var zonesWidgetBtn = VizButton(customWidget: zonesInnerWidget, flex: 3, onTap: goToSectionSelector);
+    var sectionsWidgetBtn = VizButton(customWidget: sectionsInnerWidget, flex: 3, onTap: goToSectionSelector);
 
     //NOTIFICATIONS
     var notificationInnerWidget = Column(
@@ -168,7 +190,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
     //
     var actionBarCentralWidgets = <Widget>[
       statusWidgetBtn,
-      zonesWidgetBtn,
+      sectionsWidgetBtn,
       notificationWidgetBtn,
       searchIconWidget
     ];
