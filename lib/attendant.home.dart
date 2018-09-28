@@ -262,7 +262,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
         Center mainActionText = Center(child: Text(mainActionTextSource, style: TextStyle(color: enabled? Colors.white: Colors.grey, fontStyle: FontStyle.italic, fontSize: 20.0, fontWeight: FontWeight.bold)));
 
         var requiredAction = Padding(
-          padding: EdgeInsets.all(5.0),
+          padding: EdgeInsets.all(2.0),
           child: GestureDetector(
             onTap: actionCallBack,
             child: Container(
@@ -289,14 +289,14 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
       var taskInfo = Expanded(
           flex: 2,
           child: Padding(
-              padding: EdgeInsets.all(4.0),
+              padding: EdgeInsets.all(2.0),
               child: Container(
                   constraints: BoxConstraints.tightFor(height: 60.0),
                   decoration: actionBoxDecoration,
                   child: Column(
                     children: <Widget>[
                       Padding(
-                          padding: EdgeInsets.only(top: 5.0),
+                          padding: EdgeInsets.only(top: 3.0),
                           child: Text('Task Info',
                               style: TextStyle(
                                 color: Color(0xFF444444),
@@ -307,13 +307,14 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
                           child: Text(taskInfoDescription,
                               overflow: TextOverflow.fade,
                               softWrap: false,
-                              style: TextStyle(color: Color(0xFFFFFFFF), fontSize: (taskInfoDescription.length > 10 ? 14.0 : 20.0), fontWeight: FontWeight.bold)))
+                              style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 14.0, fontWeight: FontWeight.bold)))
                     ],
                   ))));
 
       List<Widget> taskDetailsHeader = <Widget>[];
       if (_selectedTask != null) {
         taskDetailsHeader.add(taskInfo);
+
         if (_selectedTask.playerID != null && _selectedTask.playerID.length > 0) {
           String playerName = '${_selectedTask.playerFirstName} ${_selectedTask.playerLastName}';
 
@@ -331,7 +332,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
           var playerTierWidget = Align(
             alignment: Alignment.centerRight,
             child: Container(
-              padding: EdgeInsets.all(5.0),
+              padding: EdgeInsets.all(2.0),
               child: Container(
                 width: 10.0,
                 decoration: boxDecoForTierWidget,
@@ -339,39 +340,41 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
             ),
           );
 
+
           var playerDetailsWidget = Align(
-            alignment: Alignment.center,
-            child: Column(
+              alignment: Alignment.center,
+              child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Padding(
                     padding: EdgeInsets.only(top: 5.0),
                     child: Text('Customer',
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Color(0xFF444444),
                           fontSize: 14.0,
                         ))),
-                Padding(padding: EdgeInsets.only(top: 5.0), child: Text(playerName, style: TextStyle(color: Color(0xFFFFFFFF), fontSize: taskInfoDescription.length > 10 ? 14.0 : 20.0, fontWeight: FontWeight.bold)))
+                Padding(padding: EdgeInsets.only(top: 3.0), child: Text(playerName, maxLines: 2, textAlign: TextAlign.center, overflow:TextOverflow.ellipsis, style: TextStyle(color: Color(0xFFFFFFFF), fontSize: (playerName.length > 20 ? 12.0 : 14.0), fontWeight: FontWeight.bold)))
               ],
-            ),
+            )
           );
 
           var taskCustomer = Expanded(
               flex: 3,
-              child: Padding(
-                  padding: EdgeInsets.all(4.0),
-                  child: Container(
+              child: Container(
+                      margin: EdgeInsets.only(left: 2.0),
                       constraints: BoxConstraints.tightFor(height: 60.0),
                       decoration: actionBoxDecoration,
                       child: Stack(
                         children: <Widget>[playerDetailsWidget, playerTierWidget],
-                      ))));
+                      )));
 
           taskDetailsHeader.add(taskCustomer);
         }
       }
 
       taskBody = Padding(
-        padding: EdgeInsets.only(left: 25.0, top: 5.0, right: 25.0, bottom: 5.0),
+        padding: EdgeInsets.only(left: 15.0, top: 5.0, right: 15.0, bottom: 5.0),
         child: Column(
           children: <Widget>[
             Row(
