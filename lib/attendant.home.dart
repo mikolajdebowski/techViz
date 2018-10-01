@@ -233,33 +233,33 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
         String mainActionTextSource;
         VoidCallback actionCallBack;
 
-        bool enabled = _selectedTask.dirty == false;
+        bool btnEnabled = _selectedTask.dirty == false;
 
         if (_selectedTask.taskStatus.id == 1) {
           mainActionImageSource = "assets/images/ic_barcode.png";
           mainActionTextSource = 'Acknowledge';
           actionCallBack = (){
-            if(enabled)
+            if(btnEnabled)
               TaskRepository().update(_selectedTask.id, taskStatusID: "2", callBack: taskUpdateCallback, updateRemote: true);
           };
         } else if (_selectedTask.taskStatus.id == 2) {
           mainActionImageSource = "assets/images/ic_barcode.png";
           mainActionTextSource = 'Card in/Scan';
           actionCallBack = (){
-            if(enabled)
+            if(btnEnabled)
               TaskRepository().update(_selectedTask.id, taskStatusID: "3", callBack: taskUpdateCallback, updateRemote: true);
           };
         } else if (_selectedTask.taskStatus.id == 3) {
           mainActionImageSource = "assets/images/ic_barcode.png";
           mainActionTextSource = 'Complete';
           actionCallBack = (){
-            if(enabled)
+            if(btnEnabled)
               TaskRepository().update(_selectedTask.id, taskStatusID: "13", callBack: taskUpdateCallback, updateRemote: true);
           };
         }
 
-        ImageIcon mainActionIcon = ImageIcon(AssetImage(mainActionImageSource), size: 60.0, color: enabled? Colors.white: Colors.grey);
-        Center mainActionText = Center(child: Text(mainActionTextSource, style: TextStyle(color: enabled? Colors.white: Colors.grey, fontStyle: FontStyle.italic, fontSize: 20.0, fontWeight: FontWeight.bold)));
+        ImageIcon mainActionIcon = ImageIcon(AssetImage(mainActionImageSource), size: 60.0, color: btnEnabled? Colors.white: Colors.white70);
+        Center mainActionText = Center(child: Text(mainActionTextSource, style: TextStyle(color: btnEnabled? Colors.white: Colors.white70, fontStyle: FontStyle.italic, fontSize: 20.0, fontWeight: FontWeight.bold)));
 
         var requiredAction = Padding(
           padding: EdgeInsets.all(2.0),
@@ -443,16 +443,18 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
 
     List<VizTaskActionButton> rightActionWidgets = List<VizTaskActionButton>();
     if (_selectedTask != null) {
+
+      bool enableButtons = _selectedTask.dirty == false;
       if (_selectedTask.taskStatus.id == 2 || _selectedTask.taskStatus.id == 3) {
-        rightActionWidgets.add(VizTaskActionButton('Cancel', [Color(0xFF433177), Color(0xFFF2003C)], onTapCallback: () {
+        rightActionWidgets.add(VizTaskActionButton('Cancel', [Color(0xFF433177), Color(0xFFF2003C)], enabled: enableButtons, onTapCallback: () {
           _showConfirmationDialogWithOptions('Cancel a task', () {
-            TaskRepository().update(_selectedTask.id, taskStatusID: "12", callBack: taskUpdateCallback, updateRemote: true);
+           TaskRepository().update(_selectedTask.id, taskStatusID: "12", callBack: taskUpdateCallback, updateRemote: true);
           });
         }));
       }
 
       if (_selectedTask.taskStatus.id == 3) {
-        rightActionWidgets.add(VizTaskActionButton('Escalate', [Color(0xFFAAAAAA), Color(0xFFAAAAAA)], onTapCallback: () {
+        rightActionWidgets.add(VizTaskActionButton('Escalate', [Color(0xFFAAAAAA), Color(0xFFAAAAAA)], enabled: enableButtons, onTapCallback: () {
           _showConfirmationDialogWithOptions('Escalate a task', () {
             TaskRepository().update(_selectedTask.id, taskStatusID: "5", callBack: taskUpdateCallback, updateRemote: true);
           });
