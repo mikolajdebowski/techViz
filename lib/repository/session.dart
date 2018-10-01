@@ -48,6 +48,12 @@ class Session {
     UserChannel userChannel = UserChannel();
     userChannel.submit(toSend);
 
+    if(_rabbitmqClient!=null){
+      _rabbitmqClient.close();
+    }
+
+
+
     user = null;
   }
 
