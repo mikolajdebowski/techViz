@@ -245,8 +245,8 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
               TaskRepository().update(_selectedTask.id, taskStatusID: "2", callBack: taskUpdateCallback, updateRemote: true);
           };
         } else if (_selectedTask.taskStatus.id == 2) {
-          mainActionImageSource = "assets/images/ic_barcode.png";
-          mainActionTextSource = 'Card in/Scan';
+          mainActionImageSource = "assets/images/ic_cardin.png";
+          mainActionTextSource = 'Card in';
           actionCallBack = (){
             if(btnEnabled)
               TaskRepository().update(_selectedTask.id, taskStatusID: "3", callBack: taskUpdateCallback, updateRemote: true);

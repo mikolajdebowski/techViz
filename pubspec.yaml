@@ -69,6 +69,7 @@ flutter:
     - assets/images/ic_barcode.png
     - assets/images/ic_camera.png
     - assets/images/my_profile_graph.png
+    - assets/images/ic_cardin.png
 
 #    - images/a_dot_ham.jpeg
 
