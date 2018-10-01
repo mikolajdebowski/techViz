@@ -19,6 +19,7 @@ class AttendantHome extends StatefulWidget {
 }
 
 class AttendantHomeState extends State<AttendantHome> implements ITaskListPresenter<Task>, HomeEvents {
+  bool _isUserOnline = false;
   bool _isLoadingTasks = false;
   TaskListPresenter _taskPresenter;
   Task _selectedTask = null;
@@ -174,7 +175,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
                       padding: EdgeInsets.only(top: 5.0),
                       child: Text(
                         (_selectedTask != null ? _selectedTask.location : ''),
-                        style: TextStyle(color: Colors.lightBlue, fontSize: 16.0),
+                        style: TextStyle(color: Colors.lightBlue, fontSize: 20.0),
                         softWrap: false,
                       ))
                 ],
@@ -238,7 +239,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
         bool btnEnabled = _selectedTask.dirty == false;
 
         if (_selectedTask.taskStatus.id == 1) {
-          mainActionImageSource = "assets/images/ic_barcode.png";
+          mainActionImageSource = "assets/images/ic_acknowledge.png";
           mainActionTextSource = 'Acknowledge';
           actionCallBack = (){
             if(btnEnabled)
@@ -489,25 +490,48 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
         ));
   }
 
+
   @override
   void onUserStatusChanged(UserStatus us) {
     if(us.isOnline){
       setState(() {
         _isLoadingTasks = true;
+        _isUserOnline = us.isOnline;
       });
-      Session session = Session();
 
-      Repository().taskRepository.fetch().then((dynamic b){
-        _taskPresenter.loadTaskList(session.user.UserID);
-        TaskQueue().listen(taskInfoQueueCallback);
-      });
+      loadTasks();
     }
     else{
+      setState(() {
+        _isLoadingTasks = false;
+        _isUserOnline = us.isOnline;
+      });
+
       _taskList = List<Task>();
       _selectedTask = null;
       TaskQueue().StopListening();
     }
   }
+
+  @override
+  void onUserSectionsChanged(Object obj) {
+    if(_isUserOnline){
+      loadTasks();
+    }
+  }
+
+  void loadTasks(){
+    setState(() {
+      _isLoadingTasks = true;
+    });
+
+    Session session = Session();
+    Repository().taskRepository.fetch().then((dynamic b){
+      _taskPresenter.loadTaskList(session.user.UserID);
+      TaskQueue().listen(taskInfoQueueCallback);
+    });
+  }
+
 
   void taskInfoQueueCallback(Task task) {
     Session session = Session();
@@ -551,8 +575,5 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
     });
   }
 
-  @override
-  void onUserSectionsChanged(Object obj) {
-    // TODO: implement onZoneChanged
-  }
+
 }

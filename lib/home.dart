@@ -75,6 +75,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
     setState(() {
       currentSections = sections;
     });
+    keyAttendant.currentState.onUserSectionsChanged(currentSections);
   }
 
   String get getSectionsText {
@@ -97,8 +98,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
   void onMyStatusSelectorCallbackOK(UserStatus userStatusSelected) {
     setState(() {
       currentStatus = userStatusSelected;
-      keyAttendant.currentState.onUserStatusChanged(currentStatus);
     });
+    keyAttendant.currentState.onUserStatusChanged(currentStatus);
   }
 
   void goToSectionSelector() {
