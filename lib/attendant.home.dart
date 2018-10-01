@@ -227,6 +227,8 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
         });
     }
 
+
+
     if (_selectedTask != null) {
 
         String mainActionImageSource;

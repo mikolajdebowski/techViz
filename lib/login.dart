@@ -38,6 +38,9 @@ class LoginState extends State<Login> {
 
   final usernameAddressController = TextEditingController();
   final passwordAddressController = TextEditingController();
+  final FocusNode txtPwdFocusNode = FocusNode();
+  final FocusNode btnLoginFocusNode = FocusNode();
+
 
   SharedPreferences prefs;
 
@@ -51,11 +54,13 @@ class LoginState extends State<Login> {
         usernameAddressController.text = prefs.getString(Login.USERNAME);
       }
 
-      //if(Utils.isDebug){
-        if (prefs.getKeys().contains(Login.PASSWORD)) {
-          passwordAddressController.text = prefs.getString(Login.PASSWORD);
+      Utils.isEmulator.then((bool isEmulator){
+        if(isEmulator){
+          if (prefs.getKeys().contains(Login.PASSWORD)) {
+            passwordAddressController.text = prefs.getString(Login.PASSWORD);
+          }
         }
-      //}
+      });
     });
 
     getAppInfo();
@@ -104,6 +109,8 @@ class LoginState extends State<Login> {
   }
 
   void loginTap() async {
+    FocusScope.of(context).requestFocus(FocusNode());
+
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
 
@@ -184,6 +191,9 @@ class LoginState extends State<Login> {
               return 'Username is required';
             }
           },
+          onEditingComplete: (){
+            FocusScope.of(context).requestFocus(txtPwdFocusNode);
+          },
           decoration: InputDecoration(
               fillColor: Colors.black87,
               filled: true,
@@ -194,9 +204,10 @@ class LoginState extends State<Login> {
           style: textFieldStyle),
     );
 
-    var txtPassword = Padding(
+    final txtPassword = Padding(
       padding: defaultPadding,
       child: TextFormField(
+          focusNode: txtPwdFocusNode,
           controller: passwordAddressController,
           onSaved: (String value) {
             print('saving password: $value');
@@ -207,6 +218,9 @@ class LoginState extends State<Login> {
             if (value.isEmpty) {
               return 'Password is required';
             }
+          },
+          onEditingComplete: (){
+            loginTap();
           },
           obscureText: true,
           decoration: InputDecoration(
@@ -219,7 +233,7 @@ class LoginState extends State<Login> {
           style: textFieldStyle),
     );
 
-    var btnLogin = VizButton(title: 'Login', onTap: loginTap, highlighted: false);
+    final btnLogin = VizButton(title: 'Login', onTap: loginTap, highlighted: false);
 
     var btnBox = Padding(
         padding: defaultPadding,

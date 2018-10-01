@@ -20,12 +20,14 @@ class VizButton extends StatelessWidget {
   final Widget customWidget;
   final bool enabled;
 
+  void tap(){
+    onTap();
+  }
 
   @override
   Widget build(BuildContext context) {
     var txtDefaultColor = Color(0xFF636f7e);
     var txtHighlightColor = Colors.white;
-
 
     Widget innerWidget = null;
     if(customWidget != null){
