@@ -131,19 +131,20 @@ class ConfigState extends State<Config> {
       ],
     );
 
-    return Scaffold(
-        body: Container(
-            decoration: backgroundDecoration,
-            child: Stack(
-              children: <Widget>[
-                Align(
-                    alignment: Alignment.center,
-                    child: Container(
-                      height: 110.0,
-                      child: row,
-                    )),
-                Align(alignment: Alignment.bottomCenter, child: VizRainbow()),
-              ],
-            )));
+    var container = Container(
+        decoration: backgroundDecoration,
+        child: Stack(
+          children: <Widget>[
+            Align(
+                alignment: Alignment.center,
+                child: Container(
+                  height: 110.0,
+                  child: row,
+                )),
+            Align(alignment: Alignment.bottomCenter, child: VizRainbow()),
+          ],
+        ));
+
+    return Scaffold(body: SafeArea(child: container, top: false, bottom: false));
   }
 }

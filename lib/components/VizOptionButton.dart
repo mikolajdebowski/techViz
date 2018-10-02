@@ -72,11 +72,11 @@ class VizOptionButton extends StatelessWidget {
   }
 
   TextStyle get DefaultTextStyle{
-    return TextStyle(color: Color(0xFF474f5b), fontSize: 14.0);
+    return TextStyle(color: Color(0xFF474f5b), fontSize: 16.0);
   }
 
   TextStyle get HighlightedTextStyle{
-    return TextStyle(color: Color(0xFFFFFFFF), fontSize: 14.0);
+    return TextStyle(color: Color(0xFFFFFFFF), fontSize: 16.0);
   }
 
   BoxDecoration get DefaultBoxDecoration{

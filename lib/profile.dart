@@ -110,7 +110,9 @@ class ProfileState extends State<Profile>
               tileMode: TileMode.repeated)),
     );
 
-    return Scaffold(backgroundColor: Colors.black, appBar: ActionBar(title: 'My Profile'), body: container);
+    var safe = SafeArea(child: container, top: false, bottom: false);
+
+    return Scaffold(backgroundColor: Colors.black, appBar: ActionBar(title: 'My Profile'), body: safe);
   }
 
   @override

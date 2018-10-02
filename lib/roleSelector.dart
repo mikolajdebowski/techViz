@@ -76,14 +76,16 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
         enabled: enabled);
      }).toList());
 
+    var container = Container(
+      decoration: defaultBgDeco,
+      constraints: BoxConstraints.expand(),
+      child: body,
+    );
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: ActionBar(title: 'My Role', titleColor: Colors.blue, isRoot: true, tailWidget:okBtn),
-      body: Container(
-        decoration: defaultBgDeco,
-        constraints: BoxConstraints.expand(),
-        child: body,
-      ),
+      body:  SafeArea(child: container, top: false, bottom: false)
     );
   }
 

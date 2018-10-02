@@ -70,14 +70,18 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
             selected: selected);
      }).toList());
 
+
+    var container = Container(
+      decoration: defaultBgDeco,
+      constraints: BoxConstraints.expand(),
+      child: body,
+    );
+
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: ActionBar(title: 'My Status', titleColor: Colors.blue, isRoot: false, tailWidget:okBtn),
-      body: Container(
-        decoration: defaultBgDeco,
-        constraints: BoxConstraints.expand(),
-        child: body,
-      ),
+      body: SafeArea(child: container, top: false, bottom: false),
     );
   }
 

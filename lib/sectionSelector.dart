@@ -75,31 +75,32 @@ class SectionSelectorState extends State<SectionSelector>
               onTap: onOptionSelected, tag: section.sectionID, selected: section.selected);
         }).toList());
 
+
+    var container = Container(
+      decoration: defaultBgDeco,
+      constraints: BoxConstraints.expand(),
+      child: Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(top: 60.0),
+            child: body,
+          ),
+          Positioned(
+              height: 60.0,
+              width: MediaQuery.of(context).size.width,
+              top: 0.0,
+              child: Row(
+                  children: actions)
+          )
+        ],
+      ),
+    );
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: ActionBar(title: 'My Sections', titleColor: Colors.blue, isRoot: false, tailWidget: okBtn),
-      body:
-
-      Container(
-        decoration: defaultBgDeco,
-        constraints: BoxConstraints.expand(),
-        child: Stack(
-          fit: StackFit.expand,
-          children: <Widget>[
-            Padding(
-                padding: const EdgeInsets.only(top: 60.0),
-                  child: body,
-            ),
-            Positioned(
-                height: 60.0,
-                width: MediaQuery.of(context).size.width,
-                top: 0.0,
-                child: Row(
-                    children: actions)
-            )
-          ],
-        ),
-      )
+      body: SafeArea(child: container, top: false, bottom: false)
     );
   }
 

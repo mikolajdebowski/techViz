@@ -272,27 +272,31 @@ class LoginState extends State<Login> {
 
     );
 
+
+    var container = Container(
+        decoration: backgroundDecoration,
+        child: Stack(
+          children: <Widget>[
+            Padding(
+                padding: EdgeInsets.only(top:20.0),
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: IconButton(
+                    icon: Icon(Icons.settings),
+                    onPressed: () {
+                      Navigator.pushReplacementNamed(context, '/config');
+                    },
+                  ),
+                )),
+            Align(alignment: Alignment.center, child: loginForm),
+            Align(alignment: Alignment.bottomCenter, child: VizRainbow()),
+            VizLoadingIndicator(message: _loadingMessage, isLoading: _isLoading)
+          ],
+        ));
+
     return Scaffold(
-      body: Container(
-            decoration: backgroundDecoration,
-            child: Stack(
-              children: <Widget>[
-                Padding(
-                    padding: EdgeInsets.only(top:20.0),
-                    child: Align(
-                      alignment: Alignment.topRight,
-                      child: IconButton(
-                        icon: Icon(Icons.settings),
-                        onPressed: () {
-                          Navigator.pushReplacementNamed(context, '/config');
-                        },
-                      ),
-                    )),
-                Align(alignment: Alignment.center, child: loginForm),
-                Align(alignment: Alignment.bottomCenter, child: VizRainbow()),
-                VizLoadingIndicator(message: _loadingMessage, isLoading: _isLoading)
-              ],
-            )),
+      backgroundColor: Colors.black,
+      body: SafeArea(child: container, top: false, bottom: false),
     );
   }
 }

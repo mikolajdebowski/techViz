@@ -21,6 +21,7 @@ class TechVizApp extends StatelessWidget {
     SystemChrome.setEnabledSystemUIOverlays([]);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+
       title: 'TechViz',
       home: Splash(),
       routes: <String, WidgetBuilder> {

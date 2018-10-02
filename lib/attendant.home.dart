@@ -99,7 +99,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
                   child: Center(
                       child: Text(
                     task.location,
-                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15.0),
+                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16.0),
                   )),
                 ),
               ),

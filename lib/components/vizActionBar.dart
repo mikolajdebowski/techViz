@@ -111,7 +111,7 @@ class _ActionBarState extends State<ActionBar> {
       ),
     );
 
-    return container;
+    return SafeArea(child: container, top: false, bottom: false);
   }
 
 
