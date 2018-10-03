@@ -79,19 +79,14 @@ class SectionSelectorState extends State<SectionSelector>
     var container = Container(
       decoration: defaultBgDeco,
       constraints: BoxConstraints.expand(),
-      child: Stack(
-        fit: StackFit.expand,
+      child: Column(
         children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(top: 60.0),
-            child: body,
+          SizedBox(
+            height: 60.0,
+            child: Row(children: actions),
           ),
-          Positioned(
-              height: 60.0,
-              width: MediaQuery.of(context).size.width,
-              top: 0.0,
-              child: Row(
-                  children: actions)
+          Expanded(
+            child: body,
           )
         ],
       ),

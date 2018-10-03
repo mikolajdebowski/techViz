@@ -457,7 +457,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
       }
 
       if (_selectedTask.taskStatus.id == 3) {
-        rightActionWidgets.add(VizTaskActionButton('Escalate', [Color(0xFFAAAAAA), Color(0xFFAAAAAA)], enabled: enableButtons, onTapCallback: () {
+        rightActionWidgets.add(VizTaskActionButton('Escalate', [Color(0xFF1356ab), Color(0xFF23ABE7)], enabled: enableButtons, onTapCallback: () {
           _showConfirmationDialogWithOptions('Escalate a task', () {
             TaskRepository().update(_selectedTask.id, taskStatusID: "5", callBack: taskUpdateCallback, updateRemote: true);
           });

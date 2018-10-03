@@ -145,6 +145,6 @@ class ConfigState extends State<Config> {
           ],
         ));
 
-    return Scaffold(body: SafeArea(child: container, top: false, bottom: false));
+    return Scaffold(backgroundColor: Colors.black, body: SafeArea(child: container, top: false, bottom: false));
   }
 }

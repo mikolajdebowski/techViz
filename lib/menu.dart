@@ -11,11 +11,13 @@ class Menu extends StatefulWidget {
 }
 
 class _MenuState extends State<Menu> {
-  void logOut(Object tag) async{
+  void logOut(Object tag){
     Session session = Session();
-    await session.clear();
+    session.logOut().then((dynamic d){
+      session.stopListening();
+    });
 
-    Navigator.pushReplacementNamed(context, '/login');
+    Navigator.pushNamedAndRemoveUntil(context, '/login', (Route<dynamic> route) => false);
   }
 
   void goToMyProfile(Object tag){

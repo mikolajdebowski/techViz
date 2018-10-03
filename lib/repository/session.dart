@@ -21,7 +21,6 @@ class Session {
     print('Session instance');
   }
 
-
   Future<Client> get rabbitmqClient async{
     if(_rabbitmqClient==null){
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -36,25 +35,26 @@ class Session {
         print('unknown connection error');
       });
     }
-    await _rabbitmqClient.connect();
+    _rabbitmqClient.connect();
     return _rabbitmqClient;
   }
 
-  void clear(){
+  Future<dynamic> logOut() async{
     Session session = Session();
     var toSend = {'userStatusID': 10, 'userID': session.user.UserID};
     //todo: hardcoded off-shift id
 
     UserChannel userChannel = UserChannel();
-    userChannel.submit(toSend);
+    return userChannel.submit(toSend);
+  }
 
+  void stopListening(){
     if(_rabbitmqClient!=null){
-      _rabbitmqClient.close();
+      _rabbitmqClient.close().then((dynamic d){
+        print('_rabbitmqClient closed');
+        _rabbitmqClient = null;
+      });
     }
-
-
-
-    user = null;
   }
 
 }
