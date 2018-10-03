@@ -165,22 +165,24 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
     var sectionsWidgetBtn = VizButton(customWidget: sectionsInnerWidget, flex: 3, onTap: goToSectionSelector);
 
     //NOTIFICATIONS
-    var notificationInnerWidget = Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Text('Notifications', style: TextStyle(color: Color(0xFF566474), fontSize: 13.0)),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text('7', style: TextStyle(color: Colors.black, fontSize: 18.0), overflow: TextOverflow.ellipsis),
-            ImageIcon(AssetImage("assets/images/ic_alert.png"), size: 15.0, color: Color(0xFFCD0000))
-          ],
-        )
-      ],
-    );
+//    var notificationInnerWidget = Column(
+//      crossAxisAlignment: CrossAxisAlignment.center,
+//      mainAxisAlignment: MainAxisAlignment.center,
+//      children: <Widget>[
+//        Text('Notifications', style: TextStyle(color: Color(0xFF566474), fontSize: 13.0)),
+//        Row(
+//          mainAxisAlignment: MainAxisAlignment.center,
+//          children: <Widget>[
+//            Text('7', style: TextStyle(color: Colors.black, fontSize: 18.0), overflow: TextOverflow.ellipsis),
+//            ImageIcon(AssetImage("assets/images/ic_alert.png"), size: 15.0, color: Color(0xFFCD0000))
+//          ],
+//        )
+//      ],
+//    );
+//
+//    var notificationWidgetBtn = VizButton(customWidget: notificationInnerWidget, flex: 3);
 
-    var notificationWidgetBtn = VizButton(customWidget: notificationInnerWidget, flex: 3);
+    var notificationWidgetBtn = Spacer(flex: 3);
 
     //SEARCH
     var searchIconWidget = VizButton(
