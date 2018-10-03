@@ -99,7 +99,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
                   child: Center(
                       child: Text(
                     task.location,
-                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16.0),
+                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15.0),
                   )),
                 ),
               ),
@@ -253,7 +253,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
               TaskRepository().update(_selectedTask.id, taskStatusID: "3", callBack: taskUpdateCallback, updateRemote: true);
           };
         } else if (_selectedTask.taskStatus.id == 3) {
-          mainActionImageSource = "assets/images/ic_barcode.png";
+          mainActionImageSource = "assets/images/ic_complete.png";
           mainActionTextSource = 'Complete';
           actionCallBack = (){
             if(btnEnabled)
@@ -505,10 +505,11 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
       setState(() {
         _isLoadingTasks = false;
         _isUserOnline = us.isOnline;
+
+        _taskList = List<Task>();
+        _selectedTask = null;
       });
 
-      _taskList = List<Task>();
-      _selectedTask = null;
       TaskQueue().StopListening();
     }
   }
