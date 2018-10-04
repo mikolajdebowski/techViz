@@ -43,8 +43,11 @@ class ProcessorTaskRepository extends IRemoteRepository<Task>{
         map['Location'] = values[_columnNames.indexOf("Location")];
         map['TaskStatusID'] = values[_columnNames.indexOf("TaskStatusID")];
         map['TaskTypeID'] = values[_columnNames.indexOf("TaskTypeID")];
-        map['TaskCreated'] = values[_columnNames.indexOf("TaskCreated")];
-        map['TaskAssigned'] = values[_columnNames.indexOf("TaskAssigned")];
+
+        map['TaskCreated'] = DateTime.parse(values[_columnNames.indexOf("TaskCreated")].toString()).toLocal().toString();
+        map['TaskAssigned'] = DateTime.parse(values[_columnNames.indexOf("TaskAssigned")].toString()).toLocal().toString();
+
+
         map['PlayerID'] = values[_columnNames.indexOf("PlayerID")];
         map['Amount'] = values[_columnNames.indexOf("Amount")] == '' ? 0.0 : values[_columnNames.indexOf("Amount")];
         map['EventDesc'] = values[_columnNames.indexOf("EventDesc")];
