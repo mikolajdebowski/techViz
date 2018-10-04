@@ -64,7 +64,6 @@ class TaskQueue implements IRemoteQueue<dynamic>{
         LocalRepository localRepo = LocalRepository();
         await localRepo.open();
 
-
         Map<String, dynamic> map = Map<String, dynamic>();
         map['_ID'] = jsonResult['_ID'] as String;
         map['_Version'] = jsonResult['_version'];
@@ -74,8 +73,8 @@ class TaskQueue implements IRemoteQueue<dynamic>{
         map['Location'] = jsonResult['location'];
         map['TaskStatusID'] = jsonResult['taskStatusID'];
         map['TaskTypeID'] = jsonResult['taskTypeID'];
-        map['TaskCreated'] = DateTime.parse(jsonResult['taskCreated'].toString()).toLocal().toString();
-        map['TaskAssigned'] = DateTime.parse(jsonResult['taskAssigned'].toString()).toLocal().toString();
+        map['TaskCreated'] = jsonResult['taskCreated'].toString();
+        map['TaskAssigned'] = jsonResult['taskAssigned'].toString();
         map['PlayerID'] = jsonResult['playerID'];
         map['Amount'] = jsonResult['amount'] == null ? 0 : jsonResult['amount'];
         map['EventDesc'] = jsonResult['eventDesc'];

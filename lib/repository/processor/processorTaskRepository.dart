@@ -44,9 +44,13 @@ class ProcessorTaskRepository extends IRemoteRepository<Task>{
         map['TaskStatusID'] = values[_columnNames.indexOf("TaskStatusID")];
         map['TaskTypeID'] = values[_columnNames.indexOf("TaskTypeID")];
 
-        map['TaskCreated'] = DateTime.parse(values[_columnNames.indexOf("TaskCreated")].toString()).toLocal().toString();
-        map['TaskAssigned'] = DateTime.parse(values[_columnNames.indexOf("TaskAssigned")].toString()).toLocal().toString();
+        var dateCreated = DateTime.parse(values[_columnNames.indexOf("TaskCreated")].toString());
+        var utcCreated = DateTime.utc(dateCreated.year, dateCreated.month, dateCreated.day, dateCreated.hour, dateCreated.minute, dateCreated.second, dateCreated.millisecond);
+        map['TaskCreated'] = utcCreated.toString();
 
+        var dateAssigned = DateTime.parse(values[_columnNames.indexOf("TaskAssigned")].toString());
+        var utcAssigned = DateTime.utc(dateAssigned.year, dateAssigned.month, dateAssigned.day, dateAssigned.hour, dateAssigned.minute, dateAssigned.second, dateAssigned.millisecond);
+        map['TaskAssigned'] = utcAssigned.toString();
 
         map['PlayerID'] = values[_columnNames.indexOf("PlayerID")];
         map['Amount'] = values[_columnNames.indexOf("Amount")] == '' ? 0.0 : values[_columnNames.indexOf("Amount")];
