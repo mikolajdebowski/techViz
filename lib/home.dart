@@ -9,6 +9,7 @@ import 'package:techviz/components/vizSelector.dart';
 import 'package:techviz/menu.dart';
 import 'package:techviz/model/userSection.dart';
 import 'package:techviz/model/userStatus.dart';
+import 'package:techviz/repository/rabbitmq/queue/taskQueue.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:techviz/repository/userSectionRepository.dart';
 import 'package:techviz/sectionSelector.dart';
@@ -99,8 +100,34 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
     setState(() {
       currentStatus = userStatusSelected;
     });
+
+    if(userStatusSelected.isOnline){
+      TaskQueue().listen((dynamic tasks){
+        keyAttendant.currentState.onTaskReceived(tasks);
+      });
+    }
+    else{
+      TaskQueue().StopListening();
+    }
+
+
     keyAttendant.currentState.onUserStatusChanged(currentStatus);
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   void goToSectionSelector() {
     var selector = SectionSelector(
@@ -219,4 +246,5 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
 abstract class HomeEvents {
   void onUserStatusChanged(UserStatus us);
   void onUserSectionsChanged(Object obj);
+  void onTaskReceived(dynamic obj);
 }

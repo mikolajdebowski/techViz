@@ -5,11 +5,11 @@ import 'package:event_bus/event_bus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techviz/config.dart';
 import 'package:techviz/model/user.dart';
+import 'package:techviz/repository/local/userTable.dart';
 import 'package:techviz/repository/rabbitmq/channel/userChannel.dart';
 
 class Session {
   User user;
-  EventBus eventBus;
   Client _rabbitmqClient;
 
   static final Session _singleton = Session._internal();
@@ -41,14 +41,20 @@ class Session {
 
   Future<dynamic> logOut() async{
     Session session = Session();
-    var toSend = {'userStatusID': 10, 'userID': session.user.UserID};
+
+
+    if(session.user.UserStatusID!=0 && session.user.UserStatusID != 10){
+
+      session.user = await UserTable.updateStatusID(session.user.UserID, "10");
+    }
+    var toSend = {'userStatusID': session.user.UserStatusID, 'userID': session.user.UserID};
     //todo: hardcoded off-shift id
 
     UserChannel userChannel = UserChannel();
     return userChannel.submit(toSend);
   }
 
-  void stopListening(){
+  void disconnectRabbitmq(){
     if(_rabbitmqClient!=null){
       _rabbitmqClient.close().then((dynamic d){
         print('_rabbitmqClient closed');

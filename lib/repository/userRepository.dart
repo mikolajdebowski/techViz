@@ -11,24 +11,7 @@ class UserRepository implements IRepository<User>{
   IRemoteChannel remoteChannel;
   UserRepository({this.remoteRepository});
 
-  Future<User> getUser() async {
-    LocalRepository localRepo = LocalRepository();
 
-    String sql = "SELECT UserID, UserRoleID, UserStatusID FROM User";
-    List<Map<String, dynamic>> queryResult = await localRepo.rawQuery(sql);
-
-    if(queryResult.length>0){
-      Map<String, dynamic> userMap = queryResult.first;
-      var u = User(
-        UserID: userMap['UserID'] as String,
-        UserRoleID: int.parse(userMap['UserRoleID'].toString()),
-        UserStatusID: int.parse(userMap['UserStatusID'].toString()),
-      );
-      return u;
-    }
-
-    throw Exception('User was not found');
-  }
 
   @override
   Future fetch() {

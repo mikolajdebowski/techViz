@@ -16,7 +16,7 @@ class RoleRepository implements IRepository<Role>{
       sqlQuery += " WHERE UserRoleID IN (${ids.join(',')})";
     }
 
-    List<Map<String, dynamic>> queryResult = await localRepo.rawQuery(sqlQuery);
+    List<Map<String, dynamic>> queryResult = await localRepo.db.rawQuery(sqlQuery);
 
     List<Role> toReturn = List<Role>();
     queryResult.forEach((Map<String, dynamic> role) {

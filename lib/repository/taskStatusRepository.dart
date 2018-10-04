@@ -11,7 +11,7 @@ class TaskStatusRepository implements IRepository<TaskStatus>{
   Future<List<TaskStatus>> getAll() async {
     LocalRepository localRepo = LocalRepository();
 
-    List<Map<String, dynamic>> queryResult = await localRepo.rawQuery('SELECT * FROM TaskStatus');
+    List<Map<String, dynamic>> queryResult = await localRepo.db.rawQuery('SELECT * FROM TaskStatus');
 
     List<TaskStatus> toReturn = List<TaskStatus>();
     queryResult.forEach((Map<String, dynamic> task) {

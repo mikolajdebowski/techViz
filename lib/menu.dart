@@ -14,7 +14,7 @@ class _MenuState extends State<Menu> {
   void logOut(Object tag){
     Session session = Session();
     session.logOut().then((dynamic d){
-      session.stopListening();
+      session.disconnectRabbitmq();
     });
 
     Navigator.pushNamedAndRemoveUntil(context, '/login', (Route<dynamic> route) => false);

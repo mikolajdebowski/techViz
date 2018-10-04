@@ -8,6 +8,7 @@ import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizLoadingIndicator.dart';
 import 'package:techviz/components/vizRainbow.dart';
 import 'package:techviz/config.dart';
+import 'package:techviz/repository/local/userTable.dart';
 import 'package:techviz/repository/rabbitmq/channel/deviceChannel.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/session.dart';
@@ -93,16 +94,14 @@ class LoginState extends State<Login> {
     await repo.initialFetch(onMessage);
   }
 
-  Future<void> setupUser() async{
-
+  Future<void> setupUser(String userID) async{
     //CREATE SESSION
     Session session = Session();
-    session.user = await UserRepository().getUser();
+    session.user = await UserTable.getUser(userID);
 
     DeviceInfo deviceInfo = await Utils.deviceInfo;
-    String userID = session.user.UserID;
 
-    var toSend = {'userID': userID, 'deviceID': deviceInfo.DeviceID, 'model': deviceInfo.Model, 'OSName': deviceInfo.OSName, 'OSVersion': deviceInfo.OSVersion };
+    var toSend = {'userID': session.user.UserID, 'deviceID': deviceInfo.DeviceID, 'model': deviceInfo.Model, 'OSName': deviceInfo.OSName, 'OSVersion': deviceInfo.OSVersion };
 
     DeviceChannel deviceChannel = DeviceChannel();
     await deviceChannel.submit(toSend);
@@ -132,7 +131,7 @@ class LoginState extends State<Login> {
         await prefs.setString(Login.PASSWORD, passwordAddressController.text);
 
         await loadInitialData();
-        await setupUser();
+        await setupUser(usernameAddressController.text);
 
         Future.delayed( Duration(milliseconds:  200), () {
           Navigator.pushReplacement(context, MaterialPageRoute<RoleSelector>(builder: (BuildContext context) => RoleSelector()));

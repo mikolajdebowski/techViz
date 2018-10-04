@@ -16,7 +16,7 @@ class UserSectionRepository implements IRepository<UserSection> {
     LocalRepository localRepo = LocalRepository();
 
     String sql = "SELECT UserID, SectionID FROM UserSection WHERE UserID = '$userID'";
-    List<Map<String, dynamic>> queryResult = await localRepo.rawQuery(sql);
+    List<Map<String, dynamic>> queryResult = await localRepo.db.rawQuery(sql);
 
     List<UserSection> toReturn = List<UserSection>();
     queryResult.forEach((Map<String, dynamic> section) {

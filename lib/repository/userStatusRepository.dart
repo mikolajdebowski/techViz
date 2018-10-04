@@ -12,7 +12,7 @@ class UserStatusRepository implements IRepository<UserStatus>{
     LocalRepository localRepo = LocalRepository();
 
     String sql = "SELECT UserStatusID, Description, IsOnline FROM UserStatus";
-    List<Map<String, dynamic>> queryResult = await localRepo.rawQuery(sql);
+    List<Map<String, dynamic>> queryResult = await localRepo.db.rawQuery(sql);
 
     List<UserStatus> toReturn = List<UserStatus>();
     queryResult.forEach((Map<String, dynamic> status) {

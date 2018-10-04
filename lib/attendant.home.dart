@@ -509,8 +509,6 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
         _taskList = List<Task>();
         _selectedTask = null;
       });
-
-      TaskQueue().StopListening();
     }
   }
 
@@ -529,14 +527,14 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
     Session session = Session();
     Repository().taskRepository.fetch().then((dynamic b){
       _taskPresenter.loadTaskList(session.user.UserID);
-      TaskQueue().listen(taskInfoQueueCallback);
     });
   }
 
+  @override
+  void onTaskReceived(dynamic d) {
+    Task task  = d as Task;
 
-  void taskInfoQueueCallback(Task task) {
     Session session = Session();
-
     if(session.user==null)
       return;
 

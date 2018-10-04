@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:techviz/repository/local/taskTable.dart';
+import 'package:techviz/repository/local/userTable.dart';
 
 class LocalRepository {
 
@@ -24,6 +25,8 @@ class LocalRepository {
         onCreate: (Database db, int version) async {
 
           TaskTable.create(db);
+
+          UserTable.create(db);
 
           await db.execute('''
             create table TaskStatus ( 
@@ -54,14 +57,6 @@ class LocalRepository {
                 )
             ''');
 
-          await db.execute('''
-            create table User ( 
-                UserID TEXT NOT NULL,
-                UserName TEXT NOT NULL,
-                UserRoleID TEXT NOT NULL,
-                UserStatusID TEXT NOT NULL
-                )
-            ''');
 
           await db.execute('''
             create table UserStatus ( 
@@ -90,11 +85,6 @@ class LocalRepository {
   Future<int> insert(String table, Map<String, dynamic> values) async {
     int id = await db.insert(table, values);
     return id;
-  }
-
-  Future<List<Map<String, dynamic>>> rawQuery(String query, {List<dynamic> args}) async {
-    var result = await db.rawQuery(query, args);
-    return result;
   }
 
   Future close() async => db.close();

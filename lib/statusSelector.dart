@@ -4,8 +4,10 @@ import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/statusListPresenter.dart';
+import 'package:techviz/repository/local/userTable.dart';
 import 'package:techviz/repository/rabbitmq/channel/userChannel.dart';
 import 'package:techviz/repository/session.dart';
+import 'package:techviz/repository/userRepository.dart';
 
 typedef fncOnTapOK(UserStatus selected);
 
@@ -37,8 +39,12 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
       return;
 
     Session session = Session();
-    var toSend = {'userStatusID': selectedStatus.id, 'userID': session.user.UserID};
 
+    //update locally
+    await UserTable.updateStatusID(session.user.UserID, selectedStatus.id);
+
+    //update remotely
+    var toSend = {'userStatusID': selectedStatus.id, 'userID': session.user.UserID};
     UserChannel userChannel = UserChannel();
     userChannel.submit(toSend);
 

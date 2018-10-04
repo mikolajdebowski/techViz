@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dart_amqp/dart_amqp.dart';
+import 'package:event_bus/event_bus.dart';
 import 'package:techviz/model/task.dart';
 import 'package:techviz/repository/local/localRepository.dart';
 import 'package:techviz/repository/local/taskTable.dart';
@@ -11,6 +12,8 @@ import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 class TaskQueue implements IRemoteQueue<dynamic>{
   Consumer consumer;
+  Queue queue;
+  EventBus eventBus;
   static final TaskQueue _singleton = TaskQueue._internal();
   factory TaskQueue() {
     return _singleton;
@@ -21,9 +24,17 @@ class TaskQueue implements IRemoteQueue<dynamic>{
   }
 
   void StopListening() async{
-    print('StopListening');
+    print('StopListening called');
 
-    Session().stopListening();
+    if(consumer!=null){
+      consumer.cancel().then((Consumer consumer){
+        print('Consumer canceled');
+
+        queue.delete().then((Queue queue){
+          print('Queue deleted');
+        });
+      });
+    }
   }
 
   @override
@@ -38,7 +49,7 @@ class TaskQueue implements IRemoteQueue<dynamic>{
     Channel channel = await rabbitmqClient.channel();
     Exchange exchange = await channel.exchange("techViz", ExchangeType.TOPIC, durable: true );
 
-    Queue queue = await channel.queue(routingKey, autoDelete: true).then((Queue queue){
+    queue = await channel.queue(routingKey, autoDelete: true).then((Queue queue){
       return queue.bind(exchange, routingKey);
     });
 
