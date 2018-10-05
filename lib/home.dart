@@ -13,6 +13,7 @@ import 'package:techviz/repository/rabbitmq/queue/taskQueue.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:techviz/repository/userSectionRepository.dart';
 import 'package:techviz/sectionSelector.dart';
+import 'package:techviz/slotLookup.dart';
 import 'package:techviz/statusSelector.dart';
 
 class Home extends StatefulWidget {
@@ -144,9 +145,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
   void goToSearchSelector() {
     Navigator.push<VizSelector>(
       context,
-      MaterialPageRoute(
-          builder: (context) =>
-              VizSearch<MachineModel>(domain: 'Machine, Players, etc', searchAdapter: new MachineAdapter())),
+      MaterialPageRoute(builder: (context) =>SlotLookup()),
     );
   }
 
@@ -205,7 +204,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
     //SEARCH
     var searchIconWidget = VizButton(
         customWidget: ImageIcon(AssetImage("assets/images/ic_search.png"), size: 30.0),
-        //onTap: goToSearchSelector,
+        onTap: goToSearchSelector,
         flex: 1);
 
     //

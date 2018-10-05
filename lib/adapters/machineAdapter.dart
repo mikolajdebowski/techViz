@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:techviz/adapters/searchAdapter.dart';
 import 'dart:convert';
 
-class MachineAdapter implements SearchAdapter<MachineModel>{
+class SlotAdapter implements SearchAdapter<MachineModel>{
 
   @override
   Future<List<MachineModel>> find() async {
