@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:dart_amqp/dart_amqp.dart';
-import 'package:event_bus/event_bus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techviz/config.dart';
 import 'package:techviz/model/user.dart';

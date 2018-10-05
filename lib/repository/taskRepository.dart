@@ -81,7 +81,8 @@ class TaskRepository implements IRepository<Task>{
       LocalRepository localRepo = LocalRepository();
       localRepo.open();
 
-      TaskTable.insertOrUpdate(localRepo.db, result);
+      await TaskTable.cleanUp(localRepo.db);
+      await TaskTable.insertOrUpdate(localRepo.db, result);
 
       _completer.complete(true);
     });

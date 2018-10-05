@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:techviz/repository/local/localRepository.dart';
-import 'package:techviz/repository/local/taskTable.dart';
 import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
 import 'package:techviz/repository/processor/processorRoleRepository.dart';
 import 'package:techviz/repository/processor/processorSectionRepository.dart';

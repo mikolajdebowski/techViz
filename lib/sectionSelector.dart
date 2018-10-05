@@ -4,7 +4,6 @@ import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/model/userSection.dart';
 import 'package:techviz/presenter/sectionListPresenter.dart';
-import 'package:techviz/repository/rabbitmq/channel/userSectionChannel.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:techviz/repository/userSectionRepository.dart';
 

@@ -5,7 +5,6 @@ import 'package:techviz/home.dart';
 import 'package:techviz/model/task.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/taskListPresenter.dart';
-import 'package:techviz/repository/rabbitmq/queue/taskQueue.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:techviz/repository/taskRepository.dart';
@@ -574,5 +573,10 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
     });
   }
 
-
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if(state == AppLifecycleState.resumed){
+      loadTasks();
+    }
+  }
 }

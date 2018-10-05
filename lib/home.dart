@@ -23,8 +23,6 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> with WidgetsBindingObserver{
-  AppLifecycleState _notification;
-
   GlobalKey<AttendantHomeState> keyAttendant;
   bool initialLoading = false;
 
@@ -66,8 +64,11 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
 
   void didChangeAppLifecycleState(AppLifecycleState state) {
     setState(() {
-      _notification = state;
-      print(_notification);
+      keyAttendant.currentState.didChangeAppLifecycleState(state);
+
+      if(state == AppLifecycleState.resumed){
+        bindListeners();
+      }
     });
   }
 
@@ -102,32 +103,24 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
     });
 
     if(userStatusSelected.isOnline){
-      TaskQueue().listen((dynamic tasks){
-        keyAttendant.currentState.onTaskReceived(tasks);
-      });
+      bindListeners();
     }
     else{
-      TaskQueue().StopListening();
+      unBindListeners();
     }
-
 
     keyAttendant.currentState.onUserStatusChanged(currentStatus);
   }
 
+  void bindListeners(){
+    TaskQueue().listen((dynamic tasks){
+      keyAttendant.currentState.onTaskReceived(tasks);
+    });
+  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+  void unBindListeners(){
+    TaskQueue().StopListening();
+  }
 
   void goToSectionSelector() {
     var selector = SectionSelector(
@@ -245,4 +238,5 @@ abstract class HomeEvents {
   void onUserStatusChanged(UserStatus us);
   void onUserSectionsChanged(Object obj);
   void onTaskReceived(dynamic obj);
+  void didChangeAppLifecycleState(AppLifecycleState state);
 }

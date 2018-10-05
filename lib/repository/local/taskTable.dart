@@ -39,4 +39,8 @@ class TaskTable{
     return Future<int>.value(totalRows);
   }
 
+  static Future<int> cleanUp(Database db) {
+    return db.delete('Task');
+  }
+
 }

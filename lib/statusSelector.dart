@@ -7,7 +7,6 @@ import 'package:techviz/presenter/statusListPresenter.dart';
 import 'package:techviz/repository/local/userTable.dart';
 import 'package:techviz/repository/rabbitmq/channel/userChannel.dart';
 import 'package:techviz/repository/session.dart';
-import 'package:techviz/repository/userRepository.dart';
 
 typedef fncOnTapOK(UserStatus selected);
 

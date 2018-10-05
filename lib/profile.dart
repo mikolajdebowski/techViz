@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:techviz/components/vizActionBar.dart';
-import 'dart:math';
 import 'package:techviz/presenter/roleListPresenter.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:techviz/model/role.dart';
@@ -126,8 +125,8 @@ class ProfileState extends State<Profile>
       return;
     }
 
-    Session session = Session();
-    var user = session.user;
+//Session session = Session();
+//var user = session.user;
 
     print("roles loaded");
 
@@ -138,10 +137,10 @@ class ProfileState extends State<Profile>
 
   @override
   void onStatusListLoaded(List<UserStatus> result) {
-    // TODO: implement onStatusListLoaded
-
-    Session session = Session();
-    var user = session.user;
+// TODO: implement onStatusListLoaded
+//
+//    Session session = Session();
+//    var user = session.user;
 
     print("statuses loaded");
 //    setState(() {

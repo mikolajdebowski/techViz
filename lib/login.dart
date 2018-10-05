@@ -12,7 +12,6 @@ import 'package:techviz/repository/local/userTable.dart';
 import 'package:techviz/repository/rabbitmq/channel/deviceChannel.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/session.dart';
-import 'package:techviz/repository/userRepository.dart';
 import 'package:techviz/roleSelector.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 

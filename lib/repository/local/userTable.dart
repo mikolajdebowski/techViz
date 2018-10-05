@@ -19,7 +19,7 @@ class UserTable{
   static Future<User> updateStatusID(String userID, String userStatusID) async {
     LocalRepository localRepo = LocalRepository();
 
-    int updated = await localRepo.db.rawUpdate('UPDATE User SET UserStatusID = ? WHERE UserID = ?', [userStatusID, userID].toList());
+    await localRepo.db.rawUpdate('UPDATE User SET UserStatusID = ? WHERE UserID = ?', [userStatusID, userID].toList());
 
     return getUser(userID);
   }
