@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:techviz/adapters/machineAdapter.dart';
 import 'package:techviz/attendant.home.dart';
 import 'package:techviz/common/slideRightRoute.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
-import 'package:techviz/components/vizSearch.dart';
 import 'package:techviz/components/vizSelector.dart';
 import 'package:techviz/menu.dart';
 import 'package:techviz/model/userSection.dart';

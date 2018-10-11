@@ -32,26 +32,28 @@ class ProcessorRepositoryConfig {
       throw Exception('No mobile document');
     }
 
-
     DocumentID = documentMobile['ID'] as String;
 
     String documentStr = await client.get("visualDoc/${DocumentID}.json?&itemCount=200");
     Map<String,dynamic> documentJson = json.decode(documentStr);
     List<dynamic> liveTableslist = documentJson['liveDataDefinition']['liveTables'];
 
+    List<LiveTableType> mandatorySyncTablesTags = List<LiveTableType>();
+    mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_TASK);
+    mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_TASK_STATUS);
+    mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_TASK_TYPE);
+    mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_ROLE);
+    mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_USER_ROLE);
+    mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_USER);
+    mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_USER_STATUS);
+    mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_SECTION);
+    mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_USER_SECTION);
+
+    List<LiveTableType> laterSyncTablesTags = List<LiveTableType>();
+    laterSyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_SLOTS);
+
+
     LiveTables = List<LiveTable>();
-    List<LiveTableType> listTableTags = List<LiveTableType>();
-    listTableTags.add(LiveTableType.TECHVIZ_MOBILE_TASK);
-    listTableTags.add(LiveTableType.TECHVIZ_MOBILE_TASK_STATUS);
-    listTableTags.add(LiveTableType.TECHVIZ_MOBILE_TASK_TYPE);
-    listTableTags.add(LiveTableType.TECHVIZ_MOBILE_ROLE);
-    listTableTags.add(LiveTableType.TECHVIZ_MOBILE_USER_ROLE);
-    listTableTags.add(LiveTableType.TECHVIZ_MOBILE_USER);
-    listTableTags.add(LiveTableType.TECHVIZ_MOBILE_USER_STATUS);
-    listTableTags.add(LiveTableType.TECHVIZ_MOBILE_SECTION);
-    listTableTags.add(LiveTableType.TECHVIZ_MOBILE_USER_SECTION);
-
-
     for(Map<String,dynamic> liveTable in liveTableslist){
       String liveTableTag = liveTable['tags'];
       if(liveTableTag.length==0)
@@ -61,11 +63,15 @@ class ProcessorRepositoryConfig {
 
       LiveTableType liveTableTagTyped = LiveTableType.values.firstWhere((e)=> e.toString() == liveTableTag, orElse: () => null);
 
-      if(liveTableTagTyped!= null && listTableTags.contains(liveTableTagTyped)){
+      if(liveTableTagTyped==null)
+        continue;
+
+      if(mandatorySyncTablesTags.contains(liveTableTagTyped)){
         LiveTables.add(LiveTable(liveTable['ID'].toString(), liveTableTag, []));
+      }
+      else if(laterSyncTablesTags.contains(liveTableTagTyped)){
+        LiveTables.add(LiveTable(liveTable['ID'].toString(), liveTableTag, [], initialSync: false));
       };
-
-
     }
 
     print('done setup');
@@ -197,13 +203,15 @@ enum LiveTableType{
   TECHVIZ_MOBILE_USER,
   TECHVIZ_MOBILE_USER_STATUS,
   TECHVIZ_MOBILE_SECTION,
-  TECHVIZ_MOBILE_USER_SECTION
+  TECHVIZ_MOBILE_USER_SECTION,
+  TECHVIZ_MOBILE_SLOTS
 }
 
 class LiveTable{
   final String ID;
   final String Tags;
   final List<String> Columns;
+  final bool initialSync;
 
-  LiveTable(/*this.Type, */this.ID, this.Tags, this.Columns);
+  LiveTable(this.ID, this.Tags, this.Columns, {this.initialSync = true});
 }
