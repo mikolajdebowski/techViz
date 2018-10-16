@@ -16,10 +16,10 @@ class SlotMachinePresenter{
     _repo = ProcessorSlotLookupRepository();
   }
 
-  void load(String query) async {
+  void search({String query}) async {
     assert(_view != null);
 
-    var list = await _repo.search(query);
+    List<SlotMachine> list = await _repo.search(query);
 
     _view.onSlotMachinesLoaded(list);
   }

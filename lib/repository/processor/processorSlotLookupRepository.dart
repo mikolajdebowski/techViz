@@ -2,22 +2,17 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:techviz/model/slotMachine.dart';
-import 'package:techviz/repository/local/localRepository.dart';
 import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
 import 'package:techviz/repository/remoteRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 class ProcessorSlotLookupRepository extends IRemoteRepository<SlotMachine> {
 
+  List<SlotMachine> cache;
 
   @override
   Future fetch() {
-    throw UnimplementedError();
-  }
-
-  Future<List<SlotMachine>> search(String query) {
-
-    Completer<List<SlotMachine>> _completer = Completer<List<SlotMachine>>();
+    Completer _completer = Completer<void>();
     SessionClient client = SessionClient.getInstance();
 
     var config = ProcessorRepositoryConfig();
@@ -49,11 +44,14 @@ class ProcessorSlotLookupRepository extends IRemoteRepository<SlotMachine> {
             _standID,
             _machineTypeName,
             machineStatusID:_machineStatusID,
-              reservationStatusID: _reservationStatusID,
-              reservationTime: _reservationTime,
-              denom: _denom));
+            reservationStatusID: _reservationStatusID,
+            reservationTime: _reservationTime,
+            denom: _denom));
       });
-      _completer.complete(listToReturn);
+
+      cache = listToReturn;
+
+      _completer.complete();
 
     }).catchError((Error onError){
       print(onError.toString());
@@ -61,7 +59,19 @@ class ProcessorSlotLookupRepository extends IRemoteRepository<SlotMachine> {
     });
 
     return _completer.future;
-
   }
+
+  Future search(String query) async{
+    if(cache==null || cache.length==0)
+       await this.fetch();
+
+
+    if(query==null || query.length==0)
+      return cache;
+
+    var filtered = cache.where((SlotMachine sm) => sm.standID.toLowerCase().contains(query.toLowerCase()) || sm.machineTypeName.toLowerCase().contains(query.toLowerCase()));
+    return filtered!=null? filtered.toList() : List<SlotMachine>();
+  }
+
 
 }
