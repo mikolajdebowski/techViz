@@ -51,8 +51,6 @@ const Color _kErrorLight = Colors.red;
 final Color _kErrorDark = Colors.red.shade400;
 const Color _kCircleActiveLight = Colors.white;
 const Color _kCircleActiveDark = Colors.black87;
-const Color _kDisabledLight = Colors.black38;
-const Color _kDisabledDark = Colors.white30;
 const double _kStepSize = 24.0;
 const double _kTriangleHeight = _kStepSize * 0.866025; // Triangle height. sqrt(3.0) / 2.0
 
@@ -171,45 +169,7 @@ class VizStepper extends StatefulWidget {
   ///
   /// This callback which takes in a context and two functions,[onStepContinue]
   /// and [onStepCancel]. These can be used to control the stepper.
-  ///
-  /// ## Sample Code:
-  /// Creates a stepper control with custom buttons.
-  ///
-  /// ```dart
-  /// Stepper(
-  ///   controlsBuilder:
-  ///     (BuildContext context, {VoidCallback onStepContinue, VoidCallback onStepCancel}) {
-  ///        return Row(
-  ///          children: <Widget>[
-  ///            FlatButton(
-  ///              onPressed: onStepContinue,
-  ///              child: const Text('My Awesome Continue Message!'),
-  ///            ),
-  ///            FlatButton(
-  ///              onPressed: onStepCancel,
-  ///              child: const Text('My Awesome Cancel Message!'),
-  ///            ),
-  ///          ],
-  ///        ),
-  ///     },
-  ///   steps: const <Step>[
-  ///     Step(
-  ///       title: Text('A'),
-  ///       content: SizedBox(
-  ///         width: 100.0,
-  ///         height: 100.0,
-  ///       ),
-  ///     ),
-  ///     Step(
-  ///       title: Text('B'),
-  ///       content: SizedBox(
-  ///         width: 100.0,
-  ///         height: 100.0,
-  ///       ),
-  ///     ),
-  ///   ],
-  /// )
-  /// ```
+
   final ControlsWidgetBuilder controlsBuilder;
 
   @override
@@ -241,28 +201,12 @@ class _StepperState extends State<VizStepper> with TickerProviderStateMixin {
       _oldStates[i] = oldWidget.steps[i].state;
   }
 
-  bool _isFirst(int index) {
-    return index == 0;
-  }
-
   bool _isLast(int index) {
     return widget.steps.length - 1 == index;
   }
 
-  bool _isCurrent(int index) {
-    return widget.currentStep == index;
-  }
-
   bool _isDark() {
     return Theme.of(context).brightness == Brightness.dark;
-  }
-
-  Widget _buildLine(bool visible) {
-    return Container(
-      width: visible ? 1.0 : 0.0,
-      height: 16.0,
-      color: Colors.grey.shade400,
-    );
   }
 
   Widget _buildCircleChild(int index, bool oldState) {
@@ -412,182 +356,6 @@ class _StepperState extends State<VizStepper> with TickerProviderStateMixin {
     );
   }
 
-  TextStyle _titleStyle(int index) {
-    final ThemeData themeData = Theme.of(context);
-    final TextTheme textTheme = themeData.textTheme;
-
-    assert(widget.steps[index].state != null);
-    switch (widget.steps[index].state) {
-      case VizStepState.indexed:
-      case VizStepState.editing:
-      case VizStepState.complete:
-        return textTheme.body2;
-      case VizStepState.disabled:
-        return textTheme.body2.copyWith(
-            color: _isDark() ? _kDisabledDark : _kDisabledLight
-        );
-      case VizStepState.error:
-        return textTheme.body2.copyWith(
-            color: _isDark() ? _kErrorDark : _kErrorLight
-        );
-    }
-    return null;
-  }
-
-  TextStyle _subtitleStyle(int index) {
-    final ThemeData themeData = Theme.of(context);
-    final TextTheme textTheme = themeData.textTheme;
-
-    assert(widget.steps[index].state != null);
-    switch (widget.steps[index].state) {
-      case VizStepState.indexed:
-      case VizStepState.editing:
-      case VizStepState.complete:
-        return textTheme.caption;
-      case VizStepState.disabled:
-        return textTheme.caption.copyWith(
-            color: _isDark() ? _kDisabledDark : _kDisabledLight
-        );
-      case VizStepState.error:
-        return textTheme.caption.copyWith(
-            color: _isDark() ? _kErrorDark : _kErrorLight
-        );
-    }
-    return null;
-  }
-
-  Widget _buildHeaderText(int index) {
-    final List<Widget> children = <Widget>[
-      AnimatedDefaultTextStyle(
-        style: _titleStyle(index),
-        duration: kThemeAnimationDuration,
-        curve: Curves.fastOutSlowIn,
-        child: widget.steps[index].title,
-      ),
-    ];
-
-    if (widget.steps[index].subtitle != null)
-      children.add(
-        Container(
-          margin: const EdgeInsets.only(top: 2.0),
-          child: AnimatedDefaultTextStyle(
-            style: _subtitleStyle(index),
-            duration: kThemeAnimationDuration,
-            curve: Curves.fastOutSlowIn,
-            child: widget.steps[index].subtitle,
-          ),
-        ),
-      );
-
-    return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: children
-    );
-  }
-
-  Widget _buildVerticalHeader(int index) {
-    return Container(
-        margin: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Row(
-            children: <Widget>[
-              Column(
-                  children: <Widget>[
-                    // Line parts are always added in order for the ink splash to
-                    // flood the tips of the connector lines.
-                    _buildLine(!_isFirst(index)),
-                    _buildIcon(index),
-                    _buildLine(!_isLast(index)),
-                  ]
-              ),
-              Container(
-                  margin: const EdgeInsetsDirectional.only(start: 12.0),
-                  child: _buildHeaderText(index)
-              )
-            ]
-        )
-    );
-  }
-
-  Widget _buildVerticalBody(int index) {
-    return Stack(
-      children: <Widget>[
-        PositionedDirectional(
-          start: 24.0,
-          top: 0.0,
-          bottom: 0.0,
-          child: SizedBox(
-            width: 24.0,
-            child: Center(
-              child: SizedBox(
-                width: _isLast(index) ? 0.0 : 1.0,
-                child: Container(
-                  color: Colors.grey.shade400,
-                ),
-              ),
-            ),
-          ),
-        ),
-        AnimatedCrossFade(
-          firstChild: Container(height: 0.0),
-          secondChild: Container(
-            margin: const EdgeInsetsDirectional.only(
-              start: 60.0,
-              end: 24.0,
-              bottom: 24.0,
-            ),
-            child: Column(
-              children: <Widget>[
-                widget.steps[index].content,
-                _buildVerticalControls(),
-              ],
-            ),
-          ),
-          firstCurve: const Interval(0.0, 0.6, curve: Curves.fastOutSlowIn),
-          secondCurve: const Interval(0.4, 1.0, curve: Curves.fastOutSlowIn),
-          sizeCurve: Curves.fastOutSlowIn,
-          crossFadeState: _isCurrent(index) ? CrossFadeState.showSecond : CrossFadeState.showFirst,
-          duration: kThemeAnimationDuration,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildVertical() {
-    final List<Widget> children = <Widget>[];
-
-    for (int i = 0; i < widget.steps.length; i += 1) {
-      children.add(
-          Column(
-              key: _keys[i],
-              children: <Widget>[
-                InkWell(
-                    onTap: widget.steps[i].state != VizStepState.disabled ? () {
-                      // In the vertical case we need to scroll to the newly tapped
-                      // step.
-                      Scrollable.ensureVisible(
-                        _keys[i].currentContext,
-                        curve: Curves.fastOutSlowIn,
-                        duration: kThemeAnimationDuration,
-                      );
-
-                      if (widget.onStepTapped != null)
-                        widget.onStepTapped(i);
-                    } : null,
-                    child: _buildVerticalHeader(i)
-                ),
-                _buildVerticalBody(i)
-              ]
-          )
-      );
-    }
-
-    return ListView(
-      shrinkWrap: true,
-      children: children,
-    );
-  }
-
   Widget _buildHorizontal() {
     final List<Widget> children = <Widget>[];
 
@@ -606,10 +374,6 @@ class _StepperState extends State<VizStepper> with TickerProviderStateMixin {
                   child: _buildIcon(i),
                 ),
               ),
-//              Container(
-//                margin: const EdgeInsetsDirectional.only(start: 12.0),
-//                child: _buildHeaderText(i),
-//              ),
             ],
           ),
         ),
@@ -671,13 +435,7 @@ class _StepperState extends State<VizStepper> with TickerProviderStateMixin {
       return true;
     }());
     assert(widget.type != null);
-    switch (widget.type) {
-      case VizStepperType.vertical:
-        return _buildVertical();
-      case VizStepperType.horizontal:
-        return _buildHorizontal();
-    }
-    return null;
+    return _buildHorizontal();
   }
 }
 

@@ -123,7 +123,7 @@ class ProfileState extends State<Profile>
     var leftPanel = Expanded(flex: 1, child: _buildProfileList());
 
     var rightPanel = Expanded(
-      flex: 3,
+      flex: 1,
       child: Container(
           child: VizStepper(
 //        controlsBuilder: (BuildContext context, {VoidCallback onStepContinue, VoidCallback onStepCancel}) {
@@ -238,20 +238,5 @@ class ProfileItem implements ListItem {
   final String columnName;
   final String value;
 
-//  final String UserID;
-//  final String UserName;
-//  final String UserRoleID;
-//  final String UserStatusID;
-
-// instantiation
-//  Expanded(child: Products(products, deleteProduct:deleteProduct))
-
-  // in class contructror
-//  final List<Map<String, String>> products;
-//  final Function deleteProduct;
-//
-//  Products(this.products, {this.deleteProduct});
-
-//  const User({this.UserID, this.UserName, this.UserRoleID, this.UserStatusID});
   ProfileItem({this.columnName, this.value});
 }
