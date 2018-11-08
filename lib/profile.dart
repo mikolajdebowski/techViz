@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:techviz/components/vizActionBar.dart';
+import 'package:techviz/components/vizStepper.dart';
+
 import 'package:techviz/presenter/roleListPresenter.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:techviz/model/role.dart';
@@ -17,21 +19,59 @@ class Profile extends StatefulWidget {
 
 class ProfileState extends State<Profile>
     implements IRoleListPresenter<Role>, IStatusListPresenter<UserStatus> {
-
   List<ProfileItem> _userInfo = [];
   RoleListPresenter roleListPresenter;
   StatusListPresenter statusListPresenter;
 
+  int current_step = 0;
+
+  List<VizStep> my_steps = [
+    VizStep(
+        // Title of the Step
+        title: Text("Graph 1"),
+        // Content, it can be any widget here. Using basic Text for this example
+        content: Container(
+          width: 100,
+          height: 100,
+          decoration: BoxDecoration(color: Colors.white),
+        ),
+        isActive: true),
+    VizStep(
+        title: Text("Graph 2"),
+        content: Container(
+          width: 100,
+          height: 100,
+          decoration: BoxDecoration(color: Colors.red),
+        ),
+        // You can change the style of the step icon i.e number, editing, etc.
+//        state: VizStepState.editing,
+        isActive: true),
+    VizStep(
+        title: Text("Graph 3"),
+        content: Container(
+          width: 100,
+          height: 100,
+          decoration: BoxDecoration(color: Colors.green),
+        ),
+        isActive: true),
+    VizStep(
+        title: Text("Graph 4"),
+        content: Container(
+          width: 100,
+          height: 100,
+          decoration: BoxDecoration(color: Colors.blue),
+        ),
+        isActive: true),
+  ];
+
   @override
   void initState() {
-
     Session session = Session();
-    roleListPresenter = new RoleListPresenter(this);
+    roleListPresenter = RoleListPresenter(this);
     roleListPresenter.loadUserRoles(session.user.UserID);
 
     statusListPresenter = StatusListPresenter(this);
     statusListPresenter.loadUserRoles(session.user.UserID);
-
 
     Map<String, String> usrMap = {
       'UserID': session.user.UserID,
@@ -41,13 +81,11 @@ class ProfileState extends State<Profile>
     };
 
     setState(() {
-      usrMap.forEach((k,v) {
+      usrMap.forEach((k, v) {
         var item = ProfileItem(columnName: '${k}', value: '${v}');
         _userInfo.add(item);
       });
-
     });
-
 
     super.initState();
   }
@@ -85,14 +123,58 @@ class ProfileState extends State<Profile>
     var leftPanel = Expanded(flex: 1, child: _buildProfileList());
 
     var rightPanel = Expanded(
-      flex: 1,
-      child: Column(
-        children: <Widget>[
-          Container(
-            child: Image.asset("assets/images/my_profile_graph.png"),
-          ),
-        ],
-      ),
+      flex: 3,
+      child: Container(
+          child: VizStepper(
+//        controlsBuilder: (BuildContext context, {VoidCallback onStepContinue, VoidCallback onStepCancel}) {
+//          return Row(
+//            children: <Widget>[
+//              Container(),
+//              Container(),
+//            ],
+//          );
+//        },
+
+        // Using a variable here for handling the currentStep
+        currentStep: this.current_step,
+        // List the steps you would like to have
+        steps: my_steps,
+        // Define the type of Stepper style
+        type: VizStepperType.horizontal,
+        // Know the step that is tapped
+        onStepTapped: (step) {
+          // Log function callS
+          print("onStepTapped : " + step.toString());
+        },
+        onStepCancel: () {
+          // On hitting cancel button, change the state
+          setState(() {
+            // update the variable handling the current step value
+            // going back one step i.e subtracting 1, until its 0
+            if (current_step > 0) {
+              current_step = current_step - 1;
+            } else {
+              current_step = 0;
+            }
+          });
+          // Log function call
+          print("onStepCancel : " + current_step.toString());
+        },
+        // On hitting continue button, change the state
+        onStepContinue: () {
+          setState(() {
+            // update the variable handling the current step value
+            // going back one step i.e adding 1, until its the length of the step
+            if (current_step < my_steps.length - 1) {
+              current_step = current_step + 1;
+            } else {
+              current_step = 0;
+            }
+          });
+          // Log function call
+          print("onStepContinue : " + current_step.toString());
+        },
+      )),
     );
 
     Container container = Container(
