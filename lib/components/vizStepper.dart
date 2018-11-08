@@ -51,7 +51,7 @@ const Color _kErrorLight = Colors.red;
 final Color _kErrorDark = Colors.red.shade400;
 const Color _kCircleActiveLight = Colors.white;
 const Color _kCircleActiveDark = Colors.black87;
-const double _kStepSize = 24.0;
+const double _kStepSize = 16.0;
 const double _kTriangleHeight = _kStepSize * 0.866025; // Triangle height. sqrt(3.0) / 2.0
 
 /// A material step used in [Stepper]. The step can have a title and subtitle,
@@ -62,12 +62,12 @@ const double _kTriangleHeight = _kStepSize * 0.866025; // Triangle height. sqrt(
 ///
 ///  * [Stepper]
 ///  * <https://material.google.com/components/steppers.html>
-@immutable
+
 class VizStep {
   /// Creates a step for a [Stepper].
   ///
   /// The [title], [content], and [state] arguments must not be null.
-  const VizStep({
+  VizStep({
     @required this.title,
     this.subtitle,
     @required this.content,
@@ -96,7 +96,7 @@ class VizStep {
   final VizStepState state;
 
   /// Whether or not the step is active. The flag only influences styling.
-  final bool isActive;
+  bool isActive;
 }
 
 /// A material stepper widget that displays progress through a sequence of
@@ -212,7 +212,7 @@ class _StepperState extends State<VizStepper> with TickerProviderStateMixin {
       case VizStepState.indexed:
       case VizStepState.disabled:
         return Text(
-          '${index + 1}',
+          '',
           style: isDarkActive ? _kStepStyle.copyWith(color: Colors.black87) : _kStepStyle,
         );
       case VizStepState.editing:
@@ -236,7 +236,7 @@ class _StepperState extends State<VizStepper> with TickerProviderStateMixin {
   Color _circleColor(int index) {
     final ThemeData themeData = Theme.of(context);
     if (!_isDark()) {
-      return widget.steps[index].isActive ? themeData.primaryColor : Colors.black38;
+      return widget.steps[index].isActive ? Color(0xFF1968b5) : Colors.white70;
     } else {
       return widget.steps[index].isActive ? themeData.accentColor : themeData.backgroundColor;
     }

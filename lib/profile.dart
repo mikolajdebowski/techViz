@@ -29,13 +29,12 @@ class ProfileState extends State<Profile>
     VizStep(
         // Title of the Step
         title: Text("Graph 1"),
-        // Content, it can be any widget here. Using basic Text for this example
         content: Container(
           width: 100,
           height: 100,
           decoration: BoxDecoration(color: Colors.white),
         ),
-        isActive: true),
+        isActive: false),
     VizStep(
         title: Text("Graph 2"),
         content: Container(
@@ -43,9 +42,7 @@ class ProfileState extends State<Profile>
           height: 100,
           decoration: BoxDecoration(color: Colors.red),
         ),
-        // You can change the style of the step icon i.e number, editing, etc.
-//        state: VizStepState.editing,
-        isActive: true),
+        isActive: false),
     VizStep(
         title: Text("Graph 3"),
         content: Container(
@@ -53,7 +50,7 @@ class ProfileState extends State<Profile>
           height: 100,
           decoration: BoxDecoration(color: Colors.green),
         ),
-        isActive: true),
+        isActive: false),
     VizStep(
         title: Text("Graph 4"),
         content: Container(
@@ -61,17 +58,16 @@ class ProfileState extends State<Profile>
           height: 100,
           decoration: BoxDecoration(color: Colors.blue),
         ),
-        isActive: true),
+        isActive: false),
     VizStep(
       // Title of the Step
         title: Text("Graph 1"),
-        // Content, it can be any widget here. Using basic Text for this example
         content: Container(
           width: 100,
           height: 100,
           decoration: BoxDecoration(color: Colors.white),
         ),
-        isActive: true),
+        isActive: false),
     VizStep(
         title: Text("Graph 2"),
         content: Container(
@@ -79,9 +75,7 @@ class ProfileState extends State<Profile>
           height: 100,
           decoration: BoxDecoration(color: Colors.red),
         ),
-        // You can change the style of the step icon i.e number, editing, etc.
-//        state: VizStepState.editing,
-        isActive: true),
+        isActive: false),
     VizStep(
         title: Text("Graph 3"),
         content: Container(
@@ -89,7 +83,7 @@ class ProfileState extends State<Profile>
           height: 100,
           decoration: BoxDecoration(color: Colors.green),
         ),
-        isActive: true),
+        isActive: false),
     VizStep(
         title: Text("Graph 4"),
         content: Container(
@@ -97,7 +91,7 @@ class ProfileState extends State<Profile>
           height: 100,
           decoration: BoxDecoration(color: Colors.blue),
         ),
-        isActive: true),
+        isActive: false),
   ];
 
   @override
@@ -176,8 +170,14 @@ class ProfileState extends State<Profile>
         type: VizStepperType.horizontal,
 
         onStepTapped: (step) {
-          print("onStepTapped : " + step.toString());
+          print("view loaded : " + step.toString());
+
           setState(() {
+
+            for (int i = 0; i < my_steps.length; i += 1)
+              my_steps[i].isActive = false;
+
+            my_steps[step].isActive = true;
             current_step = step;
           });
         },
