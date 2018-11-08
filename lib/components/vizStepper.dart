@@ -384,7 +384,7 @@ class _StepperState extends State<VizStepper> with TickerProviderStateMixin {
           Expanded(
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 8.0),
-              height: 1.0,
+              height: 0.0,
               color: Colors.grey.shade400,
             ),
           ),
@@ -411,7 +411,7 @@ class _StepperState extends State<VizStepper> with TickerProviderStateMixin {
         ),
         Container(
           child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 24.0),
+            margin: const EdgeInsets.symmetric(horizontal: 64.0),
             child: Row(
               children: children,
             ),

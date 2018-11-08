@@ -62,6 +62,42 @@ class ProfileState extends State<Profile>
           decoration: BoxDecoration(color: Colors.blue),
         ),
         isActive: true),
+    VizStep(
+      // Title of the Step
+        title: Text("Graph 1"),
+        // Content, it can be any widget here. Using basic Text for this example
+        content: Container(
+          width: 100,
+          height: 100,
+          decoration: BoxDecoration(color: Colors.white),
+        ),
+        isActive: true),
+    VizStep(
+        title: Text("Graph 2"),
+        content: Container(
+          width: 100,
+          height: 100,
+          decoration: BoxDecoration(color: Colors.red),
+        ),
+        // You can change the style of the step icon i.e number, editing, etc.
+//        state: VizStepState.editing,
+        isActive: true),
+    VizStep(
+        title: Text("Graph 3"),
+        content: Container(
+          width: 100,
+          height: 100,
+          decoration: BoxDecoration(color: Colors.green),
+        ),
+        isActive: true),
+    VizStep(
+        title: Text("Graph 4"),
+        content: Container(
+          width: 100,
+          height: 100,
+          decoration: BoxDecoration(color: Colors.blue),
+        ),
+        isActive: true),
   ];
 
   @override
