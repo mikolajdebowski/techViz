@@ -162,54 +162,26 @@ class ProfileState extends State<Profile>
       flex: 1,
       child: Container(
           child: VizStepper(
-//        controlsBuilder: (BuildContext context, {VoidCallback onStepContinue, VoidCallback onStepCancel}) {
-//          return Row(
-//            children: <Widget>[
-//              Container(),
-//              Container(),
-//            ],
-//          );
-//        },
+        controlsBuilder: (BuildContext context, {VoidCallback onStepContinue, VoidCallback onStepCancel}) {
+          return Row(
+            children: <Widget>[
+              Container(),
+              Container(),
+            ],
+          );
+        },
 
-        // Using a variable here for handling the currentStep
         currentStep: this.current_step,
-        // List the steps you would like to have
         steps: my_steps,
-        // Define the type of Stepper style
         type: VizStepperType.horizontal,
-        // Know the step that is tapped
+
         onStepTapped: (step) {
-          // Log function callS
           print("onStepTapped : " + step.toString());
-        },
-        onStepCancel: () {
-          // On hitting cancel button, change the state
           setState(() {
-            // update the variable handling the current step value
-            // going back one step i.e subtracting 1, until its 0
-            if (current_step > 0) {
-              current_step = current_step - 1;
-            } else {
-              current_step = 0;
-            }
+            current_step = step;
           });
-          // Log function call
-          print("onStepCancel : " + current_step.toString());
         },
-        // On hitting continue button, change the state
-        onStepContinue: () {
-          setState(() {
-            // update the variable handling the current step value
-            // going back one step i.e adding 1, until its the length of the step
-            if (current_step < my_steps.length - 1) {
-              current_step = current_step + 1;
-            } else {
-              current_step = 0;
-            }
-          });
-          // Log function call
-          print("onStepContinue : " + current_step.toString());
-        },
+
       )),
     );
 

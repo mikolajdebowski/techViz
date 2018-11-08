@@ -177,17 +177,12 @@ class VizStepper extends StatefulWidget {
 }
 
 class _StepperState extends State<VizStepper> with TickerProviderStateMixin {
-  List<GlobalKey> _keys;
+
   final Map<int, VizStepState> _oldStates = <int, VizStepState>{};
 
   @override
   void initState() {
     super.initState();
-    _keys = List<GlobalKey>.generate(
-    widget.steps.length,
-    (int i) => GlobalKey(),
-    );
-
     for (int i = 0; i < widget.steps.length; i += 1)
     _oldStates[i] = widget.steps[i].state;
   }
