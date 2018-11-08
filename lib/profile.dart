@@ -32,15 +32,21 @@ class ProfileState extends State<Profile>
         content: Container(
           width: 100,
           height: 100,
-          decoration: BoxDecoration(color: Colors.white),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.rectangle,
+          ),
         ),
-        isActive: false),
+        isActive: true),
     VizStep(
         title: Text("Graph 2"),
         content: Container(
           width: 100,
           height: 100,
-          decoration: BoxDecoration(color: Colors.red),
+          decoration: BoxDecoration(
+            color: Colors.red,
+            shape: BoxShape.circle,
+          ),
         ),
         isActive: false),
     VizStep(
@@ -48,7 +54,10 @@ class ProfileState extends State<Profile>
         content: Container(
           width: 100,
           height: 100,
-          decoration: BoxDecoration(color: Colors.green),
+          decoration: BoxDecoration(
+            color: Colors.green,
+            shape: BoxShape.rectangle,
+          ),
         ),
         isActive: false),
     VizStep(
@@ -56,7 +65,10 @@ class ProfileState extends State<Profile>
         content: Container(
           width: 100,
           height: 100,
-          decoration: BoxDecoration(color: Colors.blue),
+          decoration: BoxDecoration(
+            color: Colors.blue,
+            shape: BoxShape.circle,
+          ),
         ),
         isActive: false),
     VizStep(
@@ -65,7 +77,10 @@ class ProfileState extends State<Profile>
         content: Container(
           width: 100,
           height: 100,
-          decoration: BoxDecoration(color: Colors.white),
+          decoration: BoxDecoration(
+            color: Colors.black87,
+            shape: BoxShape.circle,
+          ),
         ),
         isActive: false),
     VizStep(
@@ -73,7 +88,10 @@ class ProfileState extends State<Profile>
         content: Container(
           width: 100,
           height: 100,
-          decoration: BoxDecoration(color: Colors.red),
+          decoration: BoxDecoration(
+            color: Colors.amber,
+            shape: BoxShape.rectangle,
+          ),
         ),
         isActive: false),
     VizStep(
@@ -81,7 +99,10 @@ class ProfileState extends State<Profile>
         content: Container(
           width: 100,
           height: 100,
-          decoration: BoxDecoration(color: Colors.green),
+          decoration: BoxDecoration(
+            color: Colors.greenAccent,
+            shape: BoxShape.circle,
+          ),
         ),
         isActive: false),
     VizStep(
@@ -89,7 +110,10 @@ class ProfileState extends State<Profile>
         content: Container(
           width: 100,
           height: 100,
-          decoration: BoxDecoration(color: Colors.blue),
+          decoration: BoxDecoration(
+            color: Colors.pink,
+            shape: BoxShape.circle,
+          ),
         ),
         isActive: false),
   ];
