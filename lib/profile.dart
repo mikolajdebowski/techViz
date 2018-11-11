@@ -177,7 +177,7 @@ class ProfileState extends State<Profile>
     var leftPanel = Expanded(flex: 1, child: _buildProfileList());
 
     var rightPanel = Expanded(
-      flex: 1,
+      flex: 2,
       child: Container(
           child: VizStepper(
         controlsBuilder: (BuildContext context, {VoidCallback onStepContinue, VoidCallback onStepCancel}) {
