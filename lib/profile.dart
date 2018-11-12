@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:techviz/components/charts/stackedHorizontalBarChart.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizStepper.dart';
 
@@ -7,6 +8,9 @@ import 'package:techviz/repository/session.dart';
 import 'package:techviz/model/role.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/statusListPresenter.dart';
+
+/// Bar chart example
+import 'package:charts_flutter/flutter.dart' as charts;
 
 class Profile extends StatefulWidget {
   Profile() {}
@@ -25,6 +29,50 @@ class ProfileState extends State<Profile>
 
   int current_step = 0;
 
+  static List<charts.Series<OrdinalSales, String>> _createSampleData() {
+    final desktopSalesData = [
+      new OrdinalSales('2014', 5),
+      new OrdinalSales('2015', 25),
+      new OrdinalSales('2016', 100),
+      new OrdinalSales('2017', 75),
+    ];
+
+    final tableSalesData = [
+      new OrdinalSales('2014', 25),
+      new OrdinalSales('2015', 50),
+      new OrdinalSales('2016', 10),
+      new OrdinalSales('2017', 20),
+    ];
+
+    final mobileSalesData = [
+      new OrdinalSales('2014', 10),
+      new OrdinalSales('2015', 15),
+      new OrdinalSales('2016', 50),
+      new OrdinalSales('2017', 45),
+    ];
+
+    return [
+      new charts.Series<OrdinalSales, String>(
+        id: 'Desktop',
+        domainFn: (OrdinalSales sales, _) => sales.year,
+        measureFn: (OrdinalSales sales, _) => sales.sales,
+        data: desktopSalesData,
+      ),
+      new charts.Series<OrdinalSales, String>(
+        id: 'Tablet',
+        domainFn: (OrdinalSales sales, _) => sales.year,
+        measureFn: (OrdinalSales sales, _) => sales.sales,
+        data: tableSalesData,
+      ),
+      new charts.Series<OrdinalSales, String>(
+        id: 'Mobile',
+        domainFn: (OrdinalSales sales, _) => sales.year,
+        measureFn: (OrdinalSales sales, _) => sales.sales,
+        data: mobileSalesData,
+      ),
+    ];
+  }
+
   List<VizStep> my_steps = [
     VizStep(
         // Title of the Step
@@ -32,10 +80,11 @@ class ProfileState extends State<Profile>
         content: Container(
           width: 100,
           height: 100,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.rectangle,
-          ),
+//          decoration: BoxDecoration(
+//            color: Colors.white,
+//            shape: BoxShape.rectangle,
+//          ),
+        child: StackedHorizontalBarChart(_createSampleData()),
         ),
         isActive: true),
     VizStep(
@@ -117,6 +166,7 @@ class ProfileState extends State<Profile>
         ),
         isActive: false),
   ];
+
 
   @override
   void initState() {

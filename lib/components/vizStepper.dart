@@ -390,6 +390,14 @@ class _StepperState extends State<VizStepper> with TickerProviderStateMixin {
     return Column(
       children: <Widget>[
 
+        Padding(
+          padding: EdgeInsets.only(top: 18.0),
+          child: Text(
+            "Today's Stats",
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: Colors.black),
+          ),
+        ),
+
         Expanded(
           child: ListView(
             padding: const EdgeInsets.all(24.0),
@@ -404,6 +412,7 @@ class _StepperState extends State<VizStepper> with TickerProviderStateMixin {
             ],
           ),
         ),
+
         Container(
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 120.0),
