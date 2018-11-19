@@ -52,13 +52,30 @@ class ProfileState extends State<Profile>
         domainFn: (TodayStats stats, _) => stats.name,
         measureFn: (TodayStats stats, _) => stats.value,
         data: todayStatsB,
-        labelAccessorFn: (TodayStats sales, _) => '${sales.value.toString()}'),
+        labelAccessorFn: (TodayStats sales, _){
+          if(columnName == 'TimeAvailable'){
+            Duration timeAvailable = new Duration(seconds: int.parse(sales.value.toString()) );
+            return '${timeAvailable.inHours} hr ${timeAvailable.inMinutes%60} min';
+          }else{
+            return '${sales.value.toString()}';
+          }
+        }
+
+      ),
       new charts.Series<TodayStats, String>(
         id: 'Personal',
         domainFn: (TodayStats sales, _) => sales.name,
         measureFn: (TodayStats sales, _) => sales.value,
         data: todayStatsA,
-        labelAccessorFn: (TodayStats sales, _) => '${sales.value.toString()}'),
+          labelAccessorFn: (TodayStats sales, _){
+            if(columnName == 'TimeAvailable'){
+              Duration timeAvailable = new Duration(seconds: int.parse(sales.value.toString()) );
+              return '${timeAvailable.inHours} hr ${timeAvailable.inMinutes%60} min';
+            }else{
+              return '${sales.value.toString()}';
+            }
+          }
+      ),
     ];
   }
 
