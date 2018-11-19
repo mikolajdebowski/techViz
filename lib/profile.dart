@@ -11,6 +11,11 @@ import 'package:techviz/presenter/statusListPresenter.dart';
 
 /// Bar chart example
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'dart:async' show Future;
+import 'package:flutter/services.dart' show rootBundle;
+
+import 'dart:async';
+import 'dart:convert';
 
 class Profile extends StatefulWidget {
   Profile() {}
@@ -29,147 +34,38 @@ class ProfileState extends State<Profile>
 
   int current_step = 0;
 
-  static List<charts.Series<OrdinalSales, String>> _createSampleData() {
-    final desktopSalesData = [
-      new OrdinalSales('2014', 5),
-      new OrdinalSales('2015', 25),
-      new OrdinalSales('2016', 100),
-      new OrdinalSales('2017', 75),
+  static List<charts.Series<TodayStats, String>> _createData( String columnName, dynamic val1, dynamic val2) {
+
+    print('columnName ${columnName}, value ${val1}, value ${val2}');
+
+    final todayStatsA = [
+      TodayStats('Personal', num.parse(val1.toString())),
     ];
 
-    final tableSalesData = [
-      new OrdinalSales('2014', 25),
-      new OrdinalSales('2015', 50),
-      new OrdinalSales('2016', 10),
-      new OrdinalSales('2017', 20),
-    ];
-
-    final mobileSalesData = [
-      new OrdinalSales('2014', 10),
-      new OrdinalSales('2015', 15),
-      new OrdinalSales('2016', 50),
-      new OrdinalSales('2017', 45),
+    final todayStatsB = [
+      TodayStats('Team Avg', num.parse(val2.toString())),
     ];
 
     return [
-      new charts.Series<OrdinalSales, String>(
-        id: 'Desktop',
-        domainFn: (OrdinalSales sales, _) => sales.year,
-        measureFn: (OrdinalSales sales, _) => sales.sales,
-        data: desktopSalesData,
-      ),
-      new charts.Series<OrdinalSales, String>(
-        id: 'Tablet',
-        domainFn: (OrdinalSales sales, _) => sales.year,
-        measureFn: (OrdinalSales sales, _) => sales.sales,
-        data: tableSalesData,
-      ),
-      new charts.Series<OrdinalSales, String>(
-        id: 'Mobile',
-        domainFn: (OrdinalSales sales, _) => sales.year,
-        measureFn: (OrdinalSales sales, _) => sales.sales,
-        data: mobileSalesData,
-      ),
+      new charts.Series<TodayStats, String>(
+        id: 'Team Avg',
+        domainFn: (TodayStats stats, _) => stats.name,
+        measureFn: (TodayStats stats, _) => stats.value,
+        data: todayStatsB,
+        labelAccessorFn: (TodayStats sales, _) => '${sales.value.toString()}'),
+      new charts.Series<TodayStats, String>(
+        id: 'Personal',
+        domainFn: (TodayStats sales, _) => sales.name,
+        measureFn: (TodayStats sales, _) => sales.value,
+        data: todayStatsA,
+        labelAccessorFn: (TodayStats sales, _) => '${sales.value.toString()}'),
     ];
   }
 
-  List<VizStep> my_steps = [
-    VizStep(
-        // Title of the Step
-        title: Text("Graph 1"),
-        content: Container(
-          width: 100,
-          height: 100,
-//          decoration: BoxDecoration(
-//            color: Colors.white,
-//            shape: BoxShape.rectangle,
-//          ),
-        child: StackedHorizontalBarChart(_createSampleData()),
-        ),
-        isActive: true),
-    VizStep(
-        title: Text("Graph 2"),
-        content: Container(
-          width: 100,
-          height: 100,
-          decoration: BoxDecoration(
-            color: Colors.red,
-            shape: BoxShape.circle,
-          ),
-        ),
-        isActive: false),
-    VizStep(
-        title: Text("Graph 3"),
-        content: Container(
-          width: 100,
-          height: 100,
-          decoration: BoxDecoration(
-            color: Colors.green,
-            shape: BoxShape.rectangle,
-          ),
-        ),
-        isActive: false),
-    VizStep(
-        title: Text("Graph 4"),
-        content: Container(
-          width: 100,
-          height: 100,
-          decoration: BoxDecoration(
-            color: Colors.blue,
-            shape: BoxShape.circle,
-          ),
-        ),
-        isActive: false),
-    VizStep(
-      // Title of the Step
-        title: Text("Graph 1"),
-        content: Container(
-          width: 100,
-          height: 100,
-          decoration: BoxDecoration(
-            color: Colors.black87,
-            shape: BoxShape.circle,
-          ),
-        ),
-        isActive: false),
-    VizStep(
-        title: Text("Graph 2"),
-        content: Container(
-          width: 100,
-          height: 100,
-          decoration: BoxDecoration(
-            color: Colors.amber,
-            shape: BoxShape.rectangle,
-          ),
-        ),
-        isActive: false),
-    VizStep(
-        title: Text("Graph 3"),
-        content: Container(
-          width: 100,
-          height: 100,
-          decoration: BoxDecoration(
-            color: Colors.greenAccent,
-            shape: BoxShape.circle,
-          ),
-        ),
-        isActive: false),
-    VizStep(
-        title: Text("Graph 4"),
-        content: Container(
-          width: 100,
-          height: 100,
-          decoration: BoxDecoration(
-            color: Colors.pink,
-            shape: BoxShape.circle,
-          ),
-        ),
-        isActive: false),
-  ];
-
+  List<VizStep> my_steps = [];
 
   @override
-  void initState() {
+  void initState(){
     Session session = Session();
     roleListPresenter = RoleListPresenter(this);
     roleListPresenter.loadUserRoles(session.user.UserID);
@@ -191,7 +87,100 @@ class ProfileState extends State<Profile>
       });
     });
 
+    loadStats();
+
+
     super.initState();
+  }
+
+
+  void loadStats() async{
+
+    var statsList = await Future.wait([loadUserStats(), loadTeamStats()]);
+    var userStatsRaw = statsList[0];
+    var teamStatsRaw = statsList[1];
+
+    Map<String,dynamic> decodedUser = json.decode(userStatsRaw);
+    List<dynamic> rowsUser = decodedUser['Rows'];
+    var _columnNamesUser = (decodedUser['ColumnNames'] as String).split(',');
+    Map<String, dynamic> userStatsMap;
+
+    rowsUser.forEach((dynamic d) {
+      dynamic values = d['Values'];
+
+      userStatsMap = Map<String, dynamic>();
+      userStatsMap['TimeAvailable'] = values[_columnNamesUser.indexOf("TimeAvailable")];
+      userStatsMap['TasksPerHour'] = values[_columnNamesUser.indexOf("TasksPerHour")];
+      userStatsMap['AvgResponseTime'] = values[_columnNamesUser.indexOf("AvgResponseTime")];
+      userStatsMap['AvgCompletionTime'] = values[_columnNamesUser.indexOf("AvgCompletionTime")];
+      userStatsMap['TasksEscalated'] = values[_columnNamesUser.indexOf("TasksEscalated")];
+      userStatsMap['PercentEscalated'] = values[_columnNamesUser.indexOf("PercentEscalated")];
+
+//    Duration timeAvailable = new Duration(seconds: int.parse(userStatsMap['TimeAvailable'].toString()) );
+//    print(timeAvailable.toString());
+    });
+
+
+    Map<String,dynamic> decodedTeam = json.decode(teamStatsRaw);
+    List<dynamic> rowsTeam = decodedTeam['Rows'];
+    var _columnNamesTeam = (decodedTeam['ColumnNames'] as String).split(',');
+    Map<String, dynamic> teamStatsMap;
+
+    rowsTeam.forEach((dynamic d) {
+      dynamic values = d['Values'];
+
+      teamStatsMap = Map<String, dynamic>();
+      teamStatsMap['TimeAvailable'] = values[_columnNamesTeam.indexOf("AvgTimeAvailable")];
+      teamStatsMap['TasksPerHour'] = values[_columnNamesTeam.indexOf("AvgTasksPerHour")];
+      teamStatsMap['AvgResponseTime'] = values[_columnNamesTeam.indexOf("AvgResponseTime")];
+      teamStatsMap['AvgCompletionTime'] = values[_columnNamesTeam.indexOf("AvgCompletionTime")];
+      teamStatsMap['TasksEscalated'] = values[_columnNamesTeam.indexOf("AvgTasksEscalated")];
+      teamStatsMap['PercentEscalated'] = values[_columnNamesTeam.indexOf("AvgPercentEscalated")];
+
+//    Duration timeAvailable = new Duration(seconds: int.parse(teamStatsMap['TimeAvailable'].toString()) );
+//    print(timeAvailable.toString());
+    });
+
+
+    setState(() {
+      userStatsMap.forEach((columnName, dynamic v) {
+
+        var step = VizStep(
+            title: insertSpaces(columnName),
+            content: Container(
+              width: 100,
+              height: 100,
+              child: StackedHorizontalBarChart(_createData(columnName, v, teamStatsMap[columnName])),
+            ),
+            isActive: true);
+
+        my_steps.add(step);
+
+      });
+
+      for (int i = 0; i < my_steps.length; i += 1)
+        my_steps[i].isActive = false;
+
+      my_steps[0].isActive = true;
+    });
+
+  }
+
+  String insertSpaces(String columnName) {
+    columnName = columnName.split(RegExp("(?=[A-Z])")).join(" ");
+    return columnName;
+  }
+
+  Future<String> loadUserStats() async {
+    return await rootBundle.loadString('assets/json/UserStatsCurrentDay.json');
+  }
+
+  Future<String> loadTeamStats() async {
+    return await rootBundle.loadString('assets/json/TeamStatsCurrentDay.json');
+  }
+
+  Future<String> loadTeamTasks() async {
+    return await rootBundle.loadString('assets/json/TeamTasksCompletedCurrentDay.json');
   }
 
   Widget _buildProfileItem(BuildContext context, int index) {
@@ -222,14 +211,9 @@ class ProfileState extends State<Profile>
     return list;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    var leftPanel = Expanded(flex: 1, child: _buildProfileList());
-
-    var rightPanel = Expanded(
-      flex: 2,
-      child: Container(
-          child: VizStepper(
+  Widget _buildRightChild() {
+    if (my_steps.length > 0) {
+      return VizStepper(
         controlsBuilder: (BuildContext context, {VoidCallback onStepContinue, VoidCallback onStepCancel}) {
           return Row(
             children: <Widget>[
@@ -256,7 +240,19 @@ class ProfileState extends State<Profile>
           });
         },
 
-      )),
+      );
+    }
+
+    return Container();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var leftPanel = Expanded(flex: 1, child: _buildProfileList());
+    var rightPanel = Expanded(
+      flex: 2,
+      child: Container(
+          child: _buildRightChild()),
     );
 
     Container container = Container(

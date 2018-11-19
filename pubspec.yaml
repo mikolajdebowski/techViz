@@ -77,6 +77,11 @@ flutter:
     - assets/images/2.0x/ic_scan_machine.png
     - assets/images/2.0x/ic_complete.png
 
+    #TODO just temporairly
+    - assets/json/TeamStatsCurrentDay.json
+    - assets/json/UserStatsCurrentDay.json
+    - assets/json/TeamTasksCompletedCurrentDay.json
+
 #    - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

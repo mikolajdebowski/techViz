@@ -78,7 +78,7 @@ class VizStep {
         assert(state != null);
 
   /// The title of the step that typically describes it.
-  final Widget title;
+  final String title;
 
   /// The subtitle of the step that appears below the title and has a smaller
   /// font size. It typically gives more details that complement the title.
@@ -303,54 +303,6 @@ class _StepperState extends State<VizStepper> with TickerProviderStateMixin {
     }
   }
 
-  Widget _buildVerticalControls() {
-    if (widget.controlsBuilder != null)
-      return widget.controlsBuilder(context, onStepContinue: widget.onStepContinue, onStepCancel: widget.onStepCancel);
-
-    Color cancelColor;
-
-    switch (Theme.of(context).brightness) {
-      case Brightness.light:
-        cancelColor = Colors.black54;
-        break;
-      case Brightness.dark:
-        cancelColor = Colors.white70;
-        break;
-    }
-
-    assert(cancelColor != null);
-
-    final ThemeData themeData = Theme.of(context);
-    final MaterialLocalizations localizations = MaterialLocalizations.of(context);
-
-    return Container(
-      margin: const EdgeInsets.only(top: 16.0),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints.tightFor(height: 48.0),
-        child: Row(
-          children: <Widget>[
-            FlatButton(
-              onPressed: widget.onStepContinue,
-              color: _isDark() ? themeData.backgroundColor : themeData.primaryColor,
-              textColor: Colors.white,
-              textTheme: ButtonTextTheme.normal,
-              child: Text(localizations.continueButtonLabel),
-            ),
-            Container(
-              margin: const EdgeInsetsDirectional.only(start: 8.0),
-              child: FlatButton(
-                onPressed: widget.onStepCancel,
-                textColor: cancelColor,
-                textTheme: ButtonTextTheme.normal,
-                child: Text(localizations.cancelButtonLabel),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildHorizontal() {
     final List<Widget> children = <Widget>[];
 
@@ -398,6 +350,14 @@ class _StepperState extends State<VizStepper> with TickerProviderStateMixin {
           ),
         ),
 
+        Padding(
+          padding: EdgeInsets.only(top: 18.0),
+          child: Text(
+            widget.steps[widget.currentStep].title,
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black),
+          ),
+        ),
+
         Expanded(
           child: ListView(
             padding: const EdgeInsets.all(24.0),
@@ -408,7 +368,6 @@ class _StepperState extends State<VizStepper> with TickerProviderStateMixin {
                 vsync: this,
                 child: widget.steps[widget.currentStep].content,
               ),
-              _buildVerticalControls(),
             ],
           ),
         ),
