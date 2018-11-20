@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:techviz/components/charts/pieChart.dart';
 import 'package:techviz/components/charts/stackedHorizontalBarChart.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizStepper.dart';
@@ -33,6 +34,24 @@ class ProfileState extends State<Profile>
   StatusListPresenter statusListPresenter;
 
   int current_step = 0;
+
+  /// Create one series with sample hard coded data.
+  static List<charts.Series<LinearSales, int>> _createSamplePieData() {
+    final data = [
+      new LinearSales(0, 100),
+      new LinearSales(1, 75),
+    ];
+
+    return [
+      new charts.Series<LinearSales, int>(
+        id: 'Sales',
+        domainFn: (LinearSales sales, _) => sales.year,
+        measureFn: (LinearSales sales, _) => sales.sales,
+        data: data,
+      )
+    ];
+  }
+
 
   static List<charts.Series<TodayStats, String>> _createData( String columnName, dynamic val1, dynamic val2) {
 
@@ -162,12 +181,19 @@ class ProfileState extends State<Profile>
     setState(() {
       userStatsMap.forEach((columnName, dynamic v) {
 
+        Widget chart;
+        if(columnName.contains('Percent')){
+          chart = SimplePieChart(_createSamplePieData());
+        }else{
+          chart = StackedHorizontalBarChart(_createData(columnName, v, teamStatsMap[columnName]));
+        }
+
         var step = VizStep(
             title: insertSpaces(columnName),
             content: Container(
-              width: 100,
-              height: 100,
-              child: StackedHorizontalBarChart(_createData(columnName, v, teamStatsMap[columnName])),
+              width: 150,
+              height: 150,
+              child: chart,
             ),
             isActive: true);
 
