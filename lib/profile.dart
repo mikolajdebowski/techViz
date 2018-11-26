@@ -38,8 +38,9 @@ class ProfileState extends State<Profile>
   /// Create one series with sample hard coded data.
   static List<charts.Series<LinearSales, int>> _createSamplePieData() {
     final data = [
-      new LinearSales(0, 100),
-      new LinearSales(1, 75),
+      LinearSales(0, 100),
+      LinearSales(1, 75),
+      LinearSales(2, 25),
     ];
 
     return [
@@ -48,6 +49,7 @@ class ProfileState extends State<Profile>
         domainFn: (LinearSales sales, _) => sales.year,
         measureFn: (LinearSales sales, _) => sales.sales,
         data: data,
+        labelAccessorFn: (LinearSales row, _) => '${row.year}: ${row.sales}'
       )
     ];
   }
