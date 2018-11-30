@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:observable/observable.dart';
 import 'package:techviz/attendant.home.dart';
 import 'package:techviz/common/slideRightRoute.dart';
 import 'package:techviz/components/VizButton.dart';
@@ -33,6 +34,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     loadDefaultSections();
+
+    Session().changes.listen((List<ChangeRecord> data){
+
+    });
   }
 
   @override
@@ -64,11 +69,13 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
   void didChangeAppLifecycleState(AppLifecycleState state) {
     setState(() {
       keyAttendant.currentState.didChangeAppLifecycleState(state);
+    });
 
+    if(Session().connectionStatus == ConnectionStatus.Online){
       if(state == AppLifecycleState.resumed){
         bindListeners();
       }
-    });
+    }
   }
 
   void onUserSectionsChangedCallback(List<String> sections) {
@@ -102,9 +109,12 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
     });
 
     if(userStatusSelected.isOnline){
+      Session().UpdateConnectionStatus(ConnectionStatus.Connecting);
+
       bindListeners();
     }
     else{
+      Session().UpdateConnectionStatus(ConnectionStatus.Offline);
       unBindListeners();
     }
 
@@ -146,6 +156,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
       MaterialPageRoute(builder: (context) =>SlotLookup()),
     );
   }
+  
+  
 
   @override
   Widget build(BuildContext context) {
@@ -186,7 +198,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Text('Notifications', style: TextStyle(color: Color(0xFF566474), fontSize: 13.0)),
+        Text('Offline', style: TextStyle(color: Color(0xFF566474), fontSize: 13.0)),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[

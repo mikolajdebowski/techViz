@@ -45,7 +45,7 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
     //update remotely
     var toSend = {'userStatusID': selectedStatus.id, 'userID': session.user.UserID};
     UserChannel userChannel = UserChannel();
-    userChannel.submit(toSend);
+    await userChannel.submit(toSend);
 
     widget.onTapOK(selectedStatus);
 

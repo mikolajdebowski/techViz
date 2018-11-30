@@ -17,6 +17,7 @@ dependencies:
   event_bus: ^1.0.1
   intl: ^0.15.7
   flutter_is_emulator: ^1.0.0
+  observable: any
 
   #vizexplorer_mobile_common:
   #git: http://git.colo.bis2.net/Mobile/Plugins/common.git

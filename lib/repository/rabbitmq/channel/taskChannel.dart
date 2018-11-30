@@ -5,6 +5,6 @@ import 'package:techviz/repository/rabbitmq/channel/iRemoteChannel.dart';
 class TaskChannel extends BasicRemoteChannel implements IRemoteChannel<dynamic> {
   @override
   Future submit(dynamic object) async {
-    return super.remoteSubmit(object, "mobile.task.update", "techViz");
+    return await super.remoteSubmit(object, "mobile.task.update", "techViz");
   }
 }

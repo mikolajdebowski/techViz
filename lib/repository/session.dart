@@ -6,10 +6,18 @@ import 'package:techviz/config.dart';
 import 'package:techviz/model/user.dart';
 import 'package:techviz/repository/local/userTable.dart';
 import 'package:techviz/repository/rabbitmq/channel/userChannel.dart';
+import 'package:observable/observable.dart';
 
-class Session {
+enum ConnectionStatus{
+  Offline,
+  Online,
+  Connecting
+}
+
+class Session extends PropertyChangeNotifier {
   User user;
   Client _rabbitmqClient;
+  ConnectionStatus connectionStatus;
 
   static final Session _singleton = Session._internal();
   factory Session() {
@@ -27,14 +35,14 @@ class Session {
       Uri hostURI =  Uri.parse(host);
 
       ConnectionSettings settings = ConnectionSettings(host: hostURI.host, authProvider: AmqPlainAuthenticator("test", "test"));
+      settings.maxConnectionAttempts = 1;
+
       _rabbitmqClient = Client(settings: settings);
-      _rabbitmqClient.errorListener((Object onData) {
-        print(onData);
-      }, onError: (Object data){
-        print('unknown connection error');
-      });
     }
-    _rabbitmqClient.connect();
+    await _rabbitmqClient.connect();
+
+    print(_rabbitmqClient.tuningSettings.heartbeatPeriod);
+
     return _rabbitmqClient;
   }
 
@@ -53,7 +61,16 @@ class Session {
     return userChannel.submit(toSend);
   }
 
+  void UpdateConnectionStatus(ConnectionStatus newStatus){
+    ConnectionStatus oldVakue = connectionStatus;
+    connectionStatus = newStatus;
+
+    notifyPropertyChange(#connectionStatus, oldVakue, newStatus);
+  }
+
   void disconnectRabbitmq(){
+    UpdateConnectionStatus(ConnectionStatus.Offline);
+
     if(_rabbitmqClient!=null){
       _rabbitmqClient.close().then((dynamic d){
         print('_rabbitmqClient closed');

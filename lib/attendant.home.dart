@@ -18,7 +18,6 @@ class AttendantHome extends StatefulWidget {
 }
 
 class AttendantHomeState extends State<AttendantHome> implements ITaskListPresenter<Task>, HomeEvents {
-  bool _isUserOnline = false;
   bool _isLoadingTasks = false;
   TaskListPresenter _taskPresenter;
   Task _selectedTask = null;
@@ -492,41 +491,36 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
 
   @override
   void onUserStatusChanged(UserStatus us) {
-    if(us.isOnline){
-      setState(() {
-        _isLoadingTasks = true;
-        _isUserOnline = us.isOnline;
-      });
 
-      loadTasks();
-    }
-    else{
-      setState(() {
-        _isLoadingTasks = false;
-        _isUserOnline = us.isOnline;
+    setState(() {
+      _isLoadingTasks = false; //force an
+    });
 
-        _taskList = List<Task>();
-        _selectedTask = null;
-      });
-    }
+    loadTasks();
   }
 
   @override
   void onUserSectionsChanged(Object obj) {
-    if(_isUserOnline){
+    if(Session().connectionStatus == ConnectionStatus.Online){
       loadTasks();
     }
   }
 
   void loadTasks(){
     setState(() {
-      _isLoadingTasks = true;
+      _isLoadingTasks = Session().connectionStatus == ConnectionStatus.Online;
     });
 
-    Session session = Session();
-    Repository().taskRepository.fetch().then((dynamic b){
-      _taskPresenter.loadTaskList(session.user.UserID);
-    });
+    if(Session().connectionStatus == ConnectionStatus.Online){
+      Session session = Session();
+      Repository().taskRepository.fetch().then((dynamic b){
+        _taskPresenter.loadTaskList(session.user.UserID);
+      });
+    }
+    else{
+      _taskList = List<Task>();
+      _selectedTask = null;
+    }
   }
 
   @override
