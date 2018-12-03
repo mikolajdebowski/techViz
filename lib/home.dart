@@ -27,7 +27,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
   bool initialLoading = false;
 
   List<String> currentSections = List<String>();
-  UserStatus currentStatus;
+  UserStatus currentUserStatus;
+
+  String _userStatusText;
+  bool _isOnline = false;
 
   @override
   void initState() {
@@ -35,14 +38,17 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
     WidgetsBinding.instance.addObserver(this);
     loadDefaultSections();
 
-    Session().changes.listen((List<ChangeRecord> data){
-
+    Session().changes.listen((List<ChangeRecord> changes){
+      print('changes from Session[0]: ${changes[0]}');
+      print('length ${changes.length}');
     });
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+
+    print("Home dispose");
     super.dispose();
   }
 
@@ -104,10 +110,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
   }
 
   void onMyStatusSelectorCallbackOK(UserStatus userStatusSelected) {
-    setState(() {
-      currentStatus = userStatusSelected;
-    });
-
     if(userStatusSelected.isOnline){
       Session().UpdateConnectionStatus(ConnectionStatus.Connecting);
 
@@ -118,7 +120,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
       unBindListeners();
     }
 
-    keyAttendant.currentState.onUserStatusChanged(currentStatus);
+    _userStatusText = userStatusSelected.description;
+    _isOnline = userStatusSelected.isOnline;
+
+    keyAttendant.currentState.onUserStatusChanged(userStatusSelected); //TODO: NULL?
   }
 
   void bindListeners(){
@@ -143,7 +148,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
   }
 
   void goToStatusSelector() {
-    var selector = StatusSelector(onTapOK: onMyStatusSelectorCallbackOK, preSelected: currentStatus);
+    var selector = StatusSelector(onTapOK: onMyStatusSelectorCallbackOK, preSelectedID: Session().user.UserStatusID);
     Navigator.push<VizSelector>(
       context,
       MaterialPageRoute(builder: (context) => selector),
@@ -157,16 +162,14 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
     );
   }
   
-  
+
 
   @override
   Widget build(BuildContext context) {
     var leadingMenuButton = VizButton(title: 'Menu', onTap: goToMenu);
 
-    //STATUS
-    var statusText = currentStatus == null ? "OFF SHIFT" : currentStatus.description;
-    var statusTextColor =
-        currentStatus == null || currentStatus.isOnline == false ? Colors.red : Colors.black;
+    var statusText = _userStatusText == null ? "OFF SHIFT" : _userStatusText;
+    var statusTextColor = _isOnline == false ? Colors.red : Colors.black;
 
     var statusInnerWidget = Column(
       crossAxisAlignment: CrossAxisAlignment.center,

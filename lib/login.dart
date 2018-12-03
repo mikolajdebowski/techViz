@@ -10,6 +10,7 @@ import 'package:techviz/components/vizRainbow.dart';
 import 'package:techviz/config.dart';
 import 'package:techviz/repository/local/userTable.dart';
 import 'package:techviz/repository/rabbitmq/channel/deviceChannel.dart';
+import 'package:techviz/repository/rabbitmq/channel/userChannel.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:techviz/roleSelector.dart';
@@ -96,14 +97,20 @@ class LoginState extends State<Login> {
   Future<void> setupUser(String userID) async{
     //CREATE SESSION
     Session session = Session();
-    session.user = await UserTable.getUser(userID);
+    var user = await UserTable.updateStatusID(userID, "10"); //FORCE OFF-SHIFT LOCALLY
+    print('UserStatusID ${user.UserStatusID}');
+    await session.init(userID);
 
     DeviceInfo deviceInfo = await Utils.deviceInfo;
 
-    var toSend = {'userID': session.user.UserID, 'deviceID': deviceInfo.DeviceID, 'model': deviceInfo.Model, 'OSName': deviceInfo.OSName, 'OSVersion': deviceInfo.OSVersion };
+    var toSendDeviceDetails = {'userID': session.user.UserID, 'deviceID': deviceInfo.DeviceID, 'model': deviceInfo.Model, 'OSName': deviceInfo.OSName, 'OSVersion': deviceInfo.OSVersion };
+    await DeviceChannel().submit(toSendDeviceDetails);
 
-    DeviceChannel deviceChannel = DeviceChannel();
-    await deviceChannel.submit(toSend);
+    var toSendUserStatus = {'userStatusID': 10, 'userID':session.user.UserID}; //FORCE OFF-SHIFT REMOTE
+    await UserChannel().submit(toSendUserStatus);
+
+
+
   }
 
   void loginTap() async {

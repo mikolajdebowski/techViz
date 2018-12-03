@@ -36,7 +36,6 @@ class _MenuState extends State<Menu> {
     //Navigator.pushReplacementNamed(context, '/about');
   }
 
-
   @override
   Widget build(BuildContext context) {
     Row rowProfileSettings = Row(

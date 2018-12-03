@@ -28,6 +28,16 @@ class Session extends PropertyChangeNotifier {
     print('Session instance');
   }
 
+  void init(String userID) async {
+    user = await UserTable.getUser(userID);
+    user.changes.listen((List<ChangeRecord> changes) {
+      print('changes from User: ');
+      print(changes[0]);
+
+      notifyChange(changes[0]);
+    });
+  }
+
   Future<Client> get rabbitmqClient async{
     if(_rabbitmqClient==null){
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -38,17 +48,18 @@ class Session extends PropertyChangeNotifier {
       settings.maxConnectionAttempts = 1;
 
       _rabbitmqClient = Client(settings: settings);
+      _rabbitmqClient.errorListener((Exception error){
+        print('onData error: ' + error.toString());
+      });
     }
     await _rabbitmqClient.connect();
-
-    print(_rabbitmqClient.tuningSettings.heartbeatPeriod);
+    Session().UpdateConnectionStatus(ConnectionStatus.Online);
 
     return _rabbitmqClient;
   }
 
   Future<dynamic> logOut() async{
     Session session = Session();
-
 
     if(session.user.UserStatusID!=0 && session.user.UserStatusID != 10){
 

@@ -11,9 +11,11 @@ import 'package:techviz/repository/session.dart';
 typedef fncOnTapOK(UserStatus selected);
 
 class StatusSelector extends StatefulWidget {
-  StatusSelector({Key key, @required this.onTapOK, this.preSelected}) : super(key: key);
+  StatusSelector({Key key, @required this.onTapOK, this.preSelectedID}) : super(key: key){
+    print('preSelectedID: ${this.preSelectedID}');
+  }
   final fncOnTapOK onTapOK;
-  final UserStatus preSelected;
+  final int preSelectedID;
 
   @override
   State<StatefulWidget> createState() => StatusSelectorState();
@@ -39,13 +41,12 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
 
     Session session = Session();
 
-    //update locally
-    await UserTable.updateStatusID(session.user.UserID, selectedStatus.id);
-
     //update remotely
     var toSend = {'userStatusID': selectedStatus.id, 'userID': session.user.UserID};
-    UserChannel userChannel = UserChannel();
-    await userChannel.submit(toSend);
+    await UserChannel().submit(toSend);
+
+    //update locally
+    Session().user = await UserTable.updateStatusID(session.user.UserID, selectedStatus.id);
 
     widget.onTapOK(selectedStatus);
 
@@ -105,10 +106,12 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
   void onStatusListLoaded(List<UserStatus> result) {
     setState(() {
       statusList = result;
-      if(widget.preSelected==null){
+      if(widget.preSelectedID==null){
         selectedStatus = statusList.where((UserStatus us) => us.isOnline == false).first;
       }
-      else selectedStatus = widget.preSelected;
+      else{
+        selectedStatus = statusList.where((UserStatus us) => us.id == widget.preSelectedID.toString()).first;
+      }
     });
   }
 }
