@@ -20,8 +20,7 @@ class SimplePieChart extends StatelessWidget {
 
 /// Sample linear data type.
 class LinearSales {
-  final int year;
-  final int sales;
+  final num percent;
 
-  LinearSales(this.year, this.sales);
+  LinearSales(this.percent);
 }

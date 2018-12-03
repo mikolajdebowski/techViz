@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:techviz/components/charts/groupedBarChart.dart';
 import 'package:techviz/components/charts/pieChart.dart';
 import 'package:techviz/components/charts/stackedHorizontalBarChart.dart';
 import 'package:techviz/components/vizActionBar.dart';
@@ -35,29 +36,67 @@ class ProfileState extends State<Profile>
 
   int current_step = 0;
 
-  /// Create one series with sample hard coded data.
-  static List<charts.Series<LinearSales, int>> _createSamplePieData() {
-    final data = [
-      LinearSales(0, 100),
-      LinearSales(1, 75),
-      LinearSales(2, 25),
+  // Create one series with sample hard coded data.
+  static List<charts.Series<LinearSales, num>> _createPieChartData(dynamic value) {
+
+    final todayStats = [
+      LinearSales(100 - num.parse(value.toString())),
+      LinearSales(num.parse(value.toString())),
+    ];
+
+
+    return [
+      new charts.Series<LinearSales, num>(
+        id: 'todayStats',
+        domainFn: (LinearSales sales, _) => sales.percent,
+        measureFn: (LinearSales sales, _) => sales.percent,
+        data: todayStats,
+        labelAccessorFn: (LinearSales row, _) => '${row.percent.round()}%'
+      )
+    ];
+  }
+
+  /// Create series list with multiple series
+  static List<charts.Series<AvgTasksCompleted, String>> _createDataForTasks(List<dynamic> tasksCompletedByType) {
+
+    final averageData = <AvgTasksCompleted>[];
+
+    tasksCompletedByType.forEach((dynamic element) {
+//      print(element);
+      String desc = element['TaskDescription'].toString();
+      double avrTasksCompleted = double.parse(element['AvgTasksCompleted'].toString());
+      AvgTasksCompleted task = AvgTasksCompleted(desc, avrTasksCompleted);
+      averageData.add(task);
+    });
+
+
+
+    final personalData = [
+      new AvgTasksCompleted('Change Light', 2.0),
+      new AvgTasksCompleted('Jackpot', 1.0),
+      new AvgTasksCompleted('Printer', 3.0),
     ];
 
     return [
-      new charts.Series<LinearSales, int>(
-        id: 'Sales',
-        domainFn: (LinearSales sales, _) => sales.year,
-        measureFn: (LinearSales sales, _) => sales.sales,
-        data: data,
-        labelAccessorFn: (LinearSales row, _) => '${row.year}: ${row.sales}'
-      )
+      new charts.Series<AvgTasksCompleted, String>(
+        id: 'PersonalData',
+        domainFn: (AvgTasksCompleted sales, _) => sales.name,
+        measureFn: (AvgTasksCompleted sales, _) => sales.avrTasksCompleted,
+        data: personalData,
+      ),
+      new charts.Series<AvgTasksCompleted, String>(
+        id: 'AvrData',
+        domainFn: (AvgTasksCompleted sales, _) => sales.name,
+        measureFn: (AvgTasksCompleted sales, _) => sales.avrTasksCompleted,
+        data: averageData,
+      ),
     ];
   }
 
 
   static List<charts.Series<TodayStats, String>> _createData( String columnName, dynamic val1, dynamic val2) {
 
-    print('columnName ${columnName}, value ${val1}, value ${val2}');
+//    print('columnName ${columnName}, value ${val1}, value ${val2}');
 
     final todayStatsA = [
       TodayStats('Personal', num.parse(val1.toString())),
@@ -134,9 +173,10 @@ class ProfileState extends State<Profile>
 
   void loadStats() async{
 
-    var statsList = await Future.wait([loadUserStats(), loadTeamStats()]);
+    var statsList = await Future.wait([loadUserStats(), loadTeamStats(), loadTeamTasks()]);
     var userStatsRaw = statsList[0];
     var teamStatsRaw = statsList[1];
+    var teamTeamTasksRaw = statsList[2];
 
     Map<String,dynamic> decodedUser = json.decode(userStatsRaw);
     List<dynamic> rowsUser = decodedUser['Rows'];
@@ -153,9 +193,6 @@ class ProfileState extends State<Profile>
       userStatsMap['AvgCompletionTime'] = values[_columnNamesUser.indexOf("AvgCompletionTime")];
       userStatsMap['TasksEscalated'] = values[_columnNamesUser.indexOf("TasksEscalated")];
       userStatsMap['PercentEscalated'] = values[_columnNamesUser.indexOf("PercentEscalated")];
-
-//    Duration timeAvailable = new Duration(seconds: int.parse(userStatsMap['TimeAvailable'].toString()) );
-//    print(timeAvailable.toString());
     });
 
 
@@ -174,18 +211,57 @@ class ProfileState extends State<Profile>
       teamStatsMap['AvgCompletionTime'] = values[_columnNamesTeam.indexOf("AvgCompletionTime")];
       teamStatsMap['TasksEscalated'] = values[_columnNamesTeam.indexOf("AvgTasksEscalated")];
       teamStatsMap['PercentEscalated'] = values[_columnNamesTeam.indexOf("AvgPercentEscalated")];
-
-//    Duration timeAvailable = new Duration(seconds: int.parse(teamStatsMap['TimeAvailable'].toString()) );
-//    print(timeAvailable.toString());
     });
 
+    Map<String,dynamic> decodedTeamTasks = json.decode(teamTeamTasksRaw);
+    List<dynamic> rowsTeamTasks = decodedTeamTasks['Rows'];
+    var _columnNamesTeamTasks = (decodedTeamTasks['ColumnNames'] as String).split(',');
+    List<dynamic> teamTasksMapAll = new List<dynamic>();
+
+    rowsTeamTasks.forEach((dynamic d) {
+      dynamic values = d['Values'];
+
+      Map<String, dynamic> teamTasksMap = Map<String, dynamic>();
+      teamTasksMap['SiteID'] = values[_columnNamesTeamTasks.indexOf("SiteID")];
+      teamTasksMap['TaskTypeID'] = values[_columnNamesTeamTasks.indexOf("TaskTypeID")];
+      teamTasksMap['TaskDescription'] = values[_columnNamesTeamTasks.indexOf("TaskDescription")];
+      teamTasksMap['AvgTasksCompleted'] = values[_columnNamesTeamTasks.indexOf("AvgTasksCompleted")];
+
+      teamTasksMapAll.add(teamTasksMap);
+    });
+
+    userStatsMap['TasksCompletedByType'] = teamTasksMapAll;
 
     setState(() {
       userStatsMap.forEach((columnName, dynamic v) {
 
         Widget chart;
+        double radius = 133.0;
+
         if(columnName.contains('Percent')){
-          chart = SimplePieChart(_createSamplePieData());
+          chart = Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+            Column(children: <Widget>[
+              Container(
+                width: radius,
+                height: radius,
+                child: SimplePieChart(_createPieChartData(v)),
+              ),
+              Text('Personal')
+            ],),
+            Column(children: <Widget>[
+              Container(
+                width: radius,
+                height: radius,
+                child: SimplePieChart(_createPieChartData(teamStatsMap[columnName])),
+              ),
+              Text('Team Avg')
+            ],),
+          ],);
+
+        }else if(columnName.contains('TasksCompletedByType')){
+          chart = GroupedBarChart(_createDataForTasks(userStatsMap['TasksCompletedByType'] as List<dynamic>));
         }else{
           chart = StackedHorizontalBarChart(_createData(columnName, v, teamStatsMap[columnName]));
         }
