@@ -301,7 +301,7 @@ class LoginState extends State<Login> {
 
     return Scaffold(
       backgroundColor: Colors.black,
-      body: SafeArea(child: container, top: false, bottom: false),
+      body: SafeArea(child: container),
     );
   }
 }

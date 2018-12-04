@@ -98,11 +98,11 @@ class _ActionBarState extends State<ActionBar> {
 
     var topMargin = Platform.isIOS? 0.0: 21.0;
 
-    const paddingIOS = EdgeInsets.only(left: 2.0, bottom: 2.0, right: 2.0, top: 18.0);
+    const paddingIOS = EdgeInsets.only(left: 2.0, bottom: 2.0, right: 2.0);
     const paddingAndroid = EdgeInsets.only(left: 2.0, bottom: 2.0, right: 2.0);
 
     var container = Container(
-      margin: EdgeInsets.only(top: topMargin),
+      //margin: EdgeInsets.only(top: topMargin),
       height: widget.barHeight,
       padding: Platform.isIOS ? paddingIOS: paddingAndroid,
       decoration: boxDecoration,
@@ -111,7 +111,7 @@ class _ActionBarState extends State<ActionBar> {
       ),
     );
 
-    return SafeArea(child: container, top: false, bottom: false);
+    return SafeArea(child: container, bottom: false);
   }
 
 

@@ -241,7 +241,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
           leadingWidget: leadingMenuButton,
           centralWidgets: actionBarCentralWidgets,
           isRoot: true),
-      body: SafeArea(child: view, top: false, bottom: false), // This trailing comma makes auto-formatting nicer for build methods.
+      body: SafeArea(child: view), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
