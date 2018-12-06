@@ -13,7 +13,7 @@ class ActionBar extends StatefulWidget implements PreferredSizeWidget {
       this.titleColor = const Color(0xFF0073C1),
       this.isRoot = false});
 
-  final double barHeight = Platform.isIOS? 70.0: 65.0;
+  final double barHeight = Platform.isIOS? 60.0: 65.0;
   final Widget tailWidget;
   final Widget leadingWidget;
   final List<Widget> centralWidgets;
