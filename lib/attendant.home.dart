@@ -494,6 +494,9 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
 
     setState(() {
       _isLoadingTasks = false; //force an
+      if(us.isOnline){
+        Session().connectionStatus = ConnectionStatus.Online;
+      }
     });
 
     loadTasks();
