@@ -13,26 +13,18 @@ import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 class TaskQueue implements IRemoteQueue<dynamic>{
   Consumer consumer;
   Queue queue;
-  EventBus eventBus;
+
   static final TaskQueue _singleton = TaskQueue._internal();
   factory TaskQueue() {
     return _singleton;
   }
 
-  TaskQueue._internal() {
-    print('TaskQueue instance');
-  }
+  TaskQueue._internal() {}
 
   void StopListening() async{
-    print('StopListening called');
-
     if(consumer!=null){
       consumer.cancel().then((Consumer consumer){
-        print('Consumer canceled');
-
-        queue.delete().then((Queue queue){
-          print('Queue deleted');
-        });
+        print('Consumer ${consumer.toString()} cancalled.');
       });
     }
   }
@@ -42,18 +34,21 @@ class TaskQueue implements IRemoteQueue<dynamic>{
     Session session = Session();
     DeviceInfo info = await Utils.deviceInfo;
 
-    String routingKey = "mobile.task.${info.DeviceID}";
-    print('listening to the routingKey ' + routingKey);
+    String queueName = "mobile.${info.DeviceID}";
+    String routingKeyName = "mobile.task.${info.DeviceID}";
 
     Client rabbitmqClient = await session.rabbitmqClient;
     Channel channel = await rabbitmqClient.channel();
-    Exchange exchange = await channel.exchange("techViz", ExchangeType.TOPIC, durable: true );
+    Exchange exchange = await channel.exchange("techViz", ExchangeType.TOPIC, durable: true);
 
-    queue = await channel.queue(routingKey, autoDelete: true).then((Queue queue){
-      return queue.bind(exchange, routingKey);
+    queue = await channel.queue(queueName, autoDelete: true).then((Queue queue){
+      return queue.bind(exchange, routingKeyName);
     });
 
     consumer = await queue.consume();
+
+    print('listening to the queue {$queueName} and routing key ${routingKeyName}');
+
     consumer.listen((AmqpMessage message) async {
       Map<String, dynamic> jsonResult = message.payloadAsJson;
       print('Task received ====> ID: ${jsonResult['_ID']}         Location: ${jsonResult['location']}         StatusID: ${jsonResult['taskStatusID']}         UserID: ${jsonResult['userID']}');
