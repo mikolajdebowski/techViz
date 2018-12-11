@@ -44,7 +44,7 @@ class Session extends PropertyChangeNotifier {
       String host = prefs.getString(Config.SERVERURL);
       Uri hostURI =  Uri.parse(host);
 
-      ConnectionSettings settings = ConnectionSettings(host: hostURI.host, authProvider: AmqPlainAuthenticator("test", "test"));
+      ConnectionSettings settings = ConnectionSettings(host: hostURI.host, authProvider: AmqPlainAuthenticator("mobile", "mobile"));
       settings.maxConnectionAttempts = 1;
 
       _rabbitmqClient = Client(settings: settings);

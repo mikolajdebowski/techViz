@@ -7,6 +7,7 @@ import 'package:techviz/presenter/statusListPresenter.dart';
 import 'package:techviz/repository/local/userTable.dart';
 import 'package:techviz/repository/rabbitmq/channel/userChannel.dart';
 import 'package:techviz/repository/session.dart';
+import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 typedef fncOnTapOK(UserStatus selected);
 
@@ -41,8 +42,9 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
 
     Session session = Session();
 
+    DeviceInfo deviceInfo = await Utils.deviceInfo;
     //update remotely
-    var toSend = {'userStatusID': selectedStatus.id, 'userID': session.user.UserID};
+    var toSend = {'userStatusID': selectedStatus.id, 'userID': session.user.UserID, 'deviceID': deviceInfo.DeviceID};
     await UserChannel().submit(toSend);
 
     //update locally

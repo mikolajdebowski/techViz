@@ -106,10 +106,8 @@ class LoginState extends State<Login> {
     var toSendDeviceDetails = {'userID': session.user.UserID, 'deviceID': deviceInfo.DeviceID, 'model': deviceInfo.Model, 'OSName': deviceInfo.OSName, 'OSVersion': deviceInfo.OSVersion };
     await DeviceChannel().submit(toSendDeviceDetails);
 
-    var toSendUserStatus = {'userStatusID': 10, 'userID':session.user.UserID}; //FORCE OFF-SHIFT REMOTE
+    var toSendUserStatus = {'userStatusID': 10, 'userID':session.user.UserID, 'deviceID': deviceInfo.DeviceID }; //FORCE OFF-SHIFT REMOTE
     await UserChannel().submit(toSendUserStatus);
-
-
 
   }
 
