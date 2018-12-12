@@ -51,7 +51,7 @@ class UserSectionRepository implements IRepository<UserSection> {
 
       var toSend = {'userID': userID, 'sections': sections};
       UserSectionChannel userSectionChannel = UserSectionChannel();
-      userSectionChannel.submit(toSend);
+      userSectionChannel.publishMessage(toSend);
 
       print('rabbitmq update sent');
     }

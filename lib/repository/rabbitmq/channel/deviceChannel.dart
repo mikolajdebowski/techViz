@@ -2,9 +2,13 @@ import 'dart:async';
 import 'package:techviz/repository/rabbitmq/channel/basicRemoteChannel.dart';
 import 'package:techviz/repository/rabbitmq/channel/iRemoteChannel.dart';
 
-class DeviceChannel extends BasicRemoteChannel implements IRemoteChannel<dynamic> {
+class DeviceChannel implements IRemoteChannel<dynamic,void> {
   @override
-  Future submit(dynamic object) async {
-    return await super.remoteSubmit(object, "mobile.device.update", "techViz");
+  Future<void> publishMessage(dynamic object, {String deviceID}) {
+    return BasicRemoteChannel<void>().publishMessage(
+        object,
+        "mobile.device.update",
+        "techViz"
+    );
   }
 }

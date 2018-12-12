@@ -125,13 +125,13 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
   }
 
   void bindListeners(){
-    TaskQueue().listen((dynamic tasks){
-      keyAttendant.currentState.onTaskReceived(tasks);
-    });
+//    TaskQueue().listen((dynamic tasks){
+//      keyAttendant.currentState.onTaskReceived(tasks);
+//    });
   }
 
   void unBindListeners(){
-    TaskQueue().StopListening();
+    //TaskQueue().StopListening();
   }
 
   void goToSectionSelector() {

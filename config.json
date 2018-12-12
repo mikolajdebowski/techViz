@@ -1,0 +1,6 @@
+{
+  "rabbitmq": {
+    "port": 5672,
+    "exchange_name": "techViz"
+  }
+}

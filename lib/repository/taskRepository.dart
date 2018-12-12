@@ -110,7 +110,7 @@ class TaskRepository implements IRepository<Task>{
     if(updateRemote){
       var toSend = {'taskID': taskID, 'taskStatusID': taskStatusID};
       TaskChannel taskChannel = TaskChannel();
-      await taskChannel.submit(toSend);
+      await taskChannel.publishMessage(toSend);
 
       print('rabbitmq update sent');
     }

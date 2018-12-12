@@ -68,8 +68,7 @@ class Session extends PropertyChangeNotifier {
     var toSend = {'userStatusID': session.user.UserStatusID, 'userID': session.user.UserID};
     //todo: hardcoded off-shift id
 
-    UserChannel userChannel = UserChannel();
-    return userChannel.submit(toSend);
+    return UserChannel().publishMessage(toSend);
   }
 
   void UpdateConnectionStatus(ConnectionStatus newStatus){

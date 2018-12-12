@@ -104,10 +104,10 @@ class LoginState extends State<Login> {
     DeviceInfo deviceInfo = await Utils.deviceInfo;
 
     var toSendDeviceDetails = {'userID': session.user.UserID, 'deviceID': deviceInfo.DeviceID, 'model': deviceInfo.Model, 'OSName': deviceInfo.OSName, 'OSVersion': deviceInfo.OSVersion };
-    await DeviceChannel().submit(toSendDeviceDetails);
+    await DeviceChannel().publishMessage(toSendDeviceDetails);
 
     var toSendUserStatus = {'userStatusID': 10, 'userID':session.user.UserID, 'deviceID': deviceInfo.DeviceID }; //FORCE OFF-SHIFT REMOTE
-    await UserChannel().submit(toSendUserStatus);
+    await UserChannel().publishMessage(toSendUserStatus);
 
   }
 
