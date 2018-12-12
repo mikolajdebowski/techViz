@@ -3,6 +3,7 @@ import 'package:techviz/components/charts/groupedBarChart.dart';
 import 'package:techviz/components/charts/pieChart.dart';
 import 'package:techviz/components/charts/stackedHorizontalBarChart.dart';
 import 'package:techviz/components/vizActionBar.dart';
+import 'package:techviz/components/vizLegend.dart';
 import 'package:techviz/components/vizStepper.dart';
 
 import 'package:techviz/presenter/roleListPresenter.dart';
@@ -35,6 +36,44 @@ class ProfileState extends State<Profile>
   StatusListPresenter statusListPresenter;
 
   int current_step = 0;
+
+  List<Role> rolesList = List<Role>();
+  List<UserStatus> userStatusList = List<UserStatus>();
+
+  String _currentRole;
+  String _currentStatus;
+
+  List<DropdownMenuItem<String>> getStatus() {
+    List<DropdownMenuItem<String>> items = List();
+    for (UserStatus status in userStatusList) {
+      items.add(DropdownMenuItem(value: status.id.toString(), child: Text(status.description)));
+    }
+
+    return items;
+  }
+
+  List<DropdownMenuItem<String>> getRoles() {
+    List<DropdownMenuItem<String>> items = List();
+    for (Role role in rolesList) {
+      items.add(DropdownMenuItem(value: role.id.toString(), child: Text(role.description)));
+    }
+
+    return items;
+  }
+
+  void changedStatusDropDownItem(String selectedStatus) {
+    setState(() {
+      _currentStatus = selectedStatus;
+    });
+  }
+
+  void changedRoleDropDownItem(String selectedRole) {
+    setState(() {
+      _currentRole = selectedRole;
+    });
+  }
+
+
 
   // Create one series with sample hard coded data.
   static List<charts.Series<LinearSales, num>> _createPieChartData(dynamic value) {
@@ -261,7 +300,17 @@ class ProfileState extends State<Profile>
           ],);
 
         }else if(columnName.contains('TasksCompletedByType')){
-          chart = GroupedBarChart(_createDataForTasks(userStatsMap['TasksCompletedByType'] as List<dynamic>));
+        chart =  Row(children: <Widget>[
+          Container(
+            width: 257,
+            height: 140,
+            child: GroupedBarChart(_createDataForTasks(userStatsMap['TasksCompletedByType'] as List<dynamic>)),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
+            child: VizLegend(),
+          ),
+        ],);
         }else{
           chart = StackedHorizontalBarChart(_createData(columnName, v, teamStatsMap[columnName]));
         }
@@ -305,13 +354,31 @@ class ProfileState extends State<Profile>
   }
 
   Widget _buildProfileItem(BuildContext context, int index) {
+    Widget subItem;
+    if(_userInfo[index].columnName == 'UserStatusID'){
+      subItem = DropdownButton(
+        value: _currentStatus,
+        items: getStatus(),
+        onChanged: changedStatusDropDownItem,
+      );
+    }else if(_userInfo[index].columnName == 'UserRoleID'){
+      subItem = DropdownButton(
+        value: _currentRole,
+        items: getRoles(),
+        onChanged: changedRoleDropDownItem,
+      );
+    }
+    else{
+      subItem = Text(_userInfo[index].value);
+    }
+
     return Container(
       height: 70.0,
       margin: EdgeInsets.only(top: 0.0, bottom: 0.0, left: 0.0, right: 0.0),
       color: (index % 2 == 0 ? Color(0xFFeff4f5) : Color(0xFFffffff)),
       child: ListTile(
         title: Text(_userInfo[index].columnName),
-        subtitle: Text(_userInfo[index].value),
+        subtitle: subItem,
       ),
     );
   }
@@ -391,7 +458,6 @@ class ProfileState extends State<Profile>
     );
 
     var safe = SafeArea(child: container, top: false, bottom: false);
-
     return Scaffold(backgroundColor: Colors.black, appBar: ActionBar(title: 'My Profile'), body: safe);
   }
 
@@ -406,27 +472,20 @@ class ProfileState extends State<Profile>
       return;
     }
 
-//Session session = Session();
-//var user = session.user;
-
-    print("roles loaded");
-
-//    setState(() {
-//      roleList = result;
-//    });
+    setState(() {
+      rolesList = result;
+    });
   }
 
   @override
   void onStatusListLoaded(List<UserStatus> result) {
-// TODO: implement onStatusListLoaded
-//
-//    Session session = Session();
-//    var user = session.user;
+    if (result.length == 1) {
+      return;
+    }
 
-    print("statuses loaded");
-//    setState(() {
-//      roleList = result;
-//    });
+    setState(() {
+      userStatusList = result;
+    });
   }
 }
 

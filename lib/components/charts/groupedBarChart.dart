@@ -15,6 +15,17 @@ class GroupedBarChart extends StatelessWidget {
       seriesList,
       animate: animate,
       barGroupingType: charts.BarGroupingType.grouped,
+      primaryMeasureAxis: new charts.NumericAxisSpec(
+          renderSpec: new charts.GridlineRendererSpec(
+
+            // Tick and Label styling here.
+              labelStyle: new charts.TextStyleSpec(
+                  fontSize: 12, // size in Pts.
+                  color: charts.MaterialPalette.black),
+
+              // Change the line colors to match text color.
+              lineStyle: new charts.LineStyleSpec(
+                  color: charts.MaterialPalette.black))),
     );
   }
 }

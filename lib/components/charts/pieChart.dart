@@ -11,9 +11,14 @@ class SimplePieChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new charts.PieChart<dynamic>(seriesList, animate: animate,
+    return new charts.PieChart<dynamic>(
+        seriesList,
+        animate: animate,
         defaultRenderer: new charts.ArcRendererConfig<dynamic>(
-        arcRendererDecorators: [new charts.ArcLabelDecorator<dynamic>()]));
+        arcRendererDecorators: [new charts.ArcLabelDecorator<dynamic>(
+          insideLabelStyleSpec: new charts.TextStyleSpec(fontSize: 12, // size in Pts.
+              color: charts.MaterialPalette.black),
+        )]));
   }
 
 }
