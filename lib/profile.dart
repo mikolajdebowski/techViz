@@ -5,6 +5,7 @@ import 'package:techviz/components/charts/stackedHorizontalBarChart.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizLegend.dart';
 import 'package:techviz/components/vizStepper.dart';
+import 'package:techviz/model/user.dart';
 
 import 'package:techviz/presenter/roleListPresenter.dart';
 import 'package:techviz/repository/session.dart';
@@ -43,24 +44,6 @@ class ProfileState extends State<Profile>
   String _currentRole;
   String _currentStatus;
 
-  List<DropdownMenuItem<String>> getStatus() {
-    List<DropdownMenuItem<String>> items = List();
-    for (UserStatus status in userStatusList) {
-      items.add(DropdownMenuItem(value: status.id.toString(), child: Text(status.description)));
-    }
-
-    return items;
-  }
-
-  List<DropdownMenuItem<String>> getRoles() {
-    List<DropdownMenuItem<String>> items = List();
-    for (Role role in rolesList) {
-      items.add(DropdownMenuItem(value: role.id.toString(), child: Text(role.description)));
-    }
-
-    return items;
-  }
-
   void changedStatusDropDownItem(String selectedStatus) {
     setState(() {
       _currentStatus = selectedStatus;
@@ -72,7 +55,6 @@ class ProfileState extends State<Profile>
       _currentRole = selectedRole;
     });
   }
-
 
 
   // Create one series with sample hard coded data.
@@ -182,6 +164,10 @@ class ProfileState extends State<Profile>
 
   @override
   void initState(){
+
+    rolesList.add(Role());
+    userStatusList.add(UserStatus());
+
     Session session = Session();
     roleListPresenter = RoleListPresenter(this);
     roleListPresenter.loadUserRoles(session.user.UserID);
@@ -202,6 +188,7 @@ class ProfileState extends State<Profile>
         _userInfo.add(item);
       });
     });
+
 
     loadStats();
 
@@ -354,17 +341,29 @@ class ProfileState extends State<Profile>
   }
 
   Widget _buildProfileItem(BuildContext context, int index) {
+
     Widget subItem;
     if(_userInfo[index].columnName == 'UserStatusID'){
       subItem = DropdownButton(
         value: _currentStatus,
-        items: getStatus(),
+        items: userStatusList.map((UserStatus status){
+          return DropdownMenuItem(
+            value: '${status.description}',
+            child: Text('${status.description}'),
+          );
+        }).toList(),
         onChanged: changedStatusDropDownItem,
       );
+
     }else if(_userInfo[index].columnName == 'UserRoleID'){
       subItem = DropdownButton(
         value: _currentRole,
-        items: getRoles(),
+        items: rolesList.map((Role val){
+          return DropdownMenuItem(
+            value: '${val.description}',
+            child: Text('${val.description}'),
+          );
+        }).toList(),
         onChanged: changedRoleDropDownItem,
       );
     }
@@ -474,6 +473,14 @@ class ProfileState extends State<Profile>
 
     setState(() {
       rolesList = result;
+
+      Session session = Session();
+      User user = session.user;
+      rolesList.forEach((Role role) {
+        if(role.id.toString() == user.UserStatusID.toString()){
+          _currentRole = role.description;
+        }
+      });
     });
   }
 
@@ -485,7 +492,18 @@ class ProfileState extends State<Profile>
 
     setState(() {
       userStatusList = result;
+
+      Session session = Session();
+      User user = session.user;
+      userStatusList.forEach((UserStatus status) {
+        if(status.id.toString() == user.UserStatusID.toString()){
+          _currentStatus = status.description;
+        }
+      });
+
     });
+
+//    print('done');
   }
 }
 
