@@ -5,6 +5,7 @@ import 'package:techviz/home.dart';
 import 'package:techviz/model/task.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/taskListPresenter.dart';
+import 'package:techviz/repository/local/taskTable.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:techviz/repository/taskRepository.dart';
@@ -21,12 +22,12 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
   bool _isLoadingTasks = false;
   TaskListPresenter _taskPresenter;
   Task _selectedTask = null;
-  List<Task> _taskList = [];
+  List<Task> _taskList;
   var _taskListStatusIcon = "assets/images/ic_processing.png";
 
   @override
   initState() {
-    _taskList = [];
+    _taskList = List<Task>();
     _taskPresenter = TaskListPresenter(this);
     _taskListStatusIcon = "assets/images/ic_processing.png";
 
@@ -413,7 +414,8 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
       padding: EdgeInsets.only(top: 7.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[Text('Time Taken', style: TextStyle(color: Colors.grey, fontSize: 12.0)), VizTimer(timeStarted: _selectedTask != null ? _selectedTask.taskCreated : null)],
+        //children: <Widget>[Text('Time Taken', style: TextStyle(color: Colors.grey, fontSize: 12.0)), VizTimer(timeStarted: _selectedTask != null ? _selectedTask.taskCreated : null)],
+        children: <Widget>[Text('Time Taken', style: TextStyle(color: Colors.grey, fontSize: 12.0)), VizTimer(timeStarted: null)],
       ),
     );
 
@@ -493,9 +495,12 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
   void onUserStatusChanged(UserStatus us) {
 
     setState(() {
-      _isLoadingTasks = false; //force an
+      _isLoadingTasks = false; //TODO: REVIEW
       if(us.isOnline){
         Session().connectionStatus = ConnectionStatus.Online;
+      }
+      else{
+
       }
     });
 
@@ -527,16 +532,22 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
   }
 
   @override
-  void onTaskReceived(dynamic d) {
-    Task task  = d as Task;
+  void onTaskReceived(Task task) {
+
+    if(task == null){
+      return;
+    }
+
+    print('onTaskReceived => ${task.id} ${task.taskStatus.id}');
 
     Session session = Session();
     if(session.user==null)
       return;
 
     setState(() {
+
       if([1,2,3].toList().contains(task.taskStatus.id) && task.userID ==  session.user.UserID){ //update the view
-        print(task.id + ' received with StatusID ' +task.taskStatus.id.toString());
+        print(task.id + ' add/update the view ' +task.taskStatus.id.toString());
 
         if(_selectedTask!=null && _selectedTask.id == task.id){
           _selectedTask = task;
@@ -557,6 +568,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
         }
       }
       else{ //remove from the view
+        print(task.id + ' remove from the view ' +task.taskStatus.id.toString());
         if(_selectedTask!=null && _selectedTask.id == task.id){
           _selectedTask = null;
           print(task.id + ' removed from selected because StatusID is ' +task.taskStatus.id.toString());

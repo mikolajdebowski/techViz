@@ -5,8 +5,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techviz/config.dart';
 import 'package:techviz/model/user.dart';
 import 'package:techviz/repository/local/userTable.dart';
-import 'package:techviz/repository/rabbitmq/channel/userChannel.dart';
+import 'package:techviz/repository/async/userMessage.dart';
 import 'package:observable/observable.dart';
+import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 enum ConnectionStatus{
   Offline,
@@ -68,7 +69,9 @@ class Session extends PropertyChangeNotifier {
     var toSend = {'userStatusID': session.user.UserStatusID, 'userID': session.user.UserID};
     //todo: hardcoded off-shift id
 
-    return UserChannel().publishMessage(toSend);
+    DeviceInfo deviceInfo = await Utils.deviceInfo;
+
+    return UserMessage().publishMessage(toSend, deviceID: deviceInfo.DeviceID);
   }
 
   void UpdateConnectionStatus(ConnectionStatus newStatus){

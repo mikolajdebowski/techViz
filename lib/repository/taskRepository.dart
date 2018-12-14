@@ -5,7 +5,7 @@ import 'package:techviz/model/taskType.dart';
 import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/local/localRepository.dart';
 import 'package:techviz/repository/local/taskTable.dart';
-import 'package:techviz/repository/rabbitmq/channel/taskChannel.dart';
+import 'package:techviz/repository/async/taskMessage.dart';
 import 'package:techviz/repository/remoteRepository.dart';
 
 typedef TaskUpdateCallBack = void Function(String taskID);
@@ -17,56 +17,64 @@ class TaskRepository implements IRepository<Task>{
 
   Future<List<Task>> getTaskList(String userID) async {
     LocalRepository localRepo = LocalRepository();
-    await localRepo.open();
+    if(!localRepo.db.isOpen)
+      await localRepo.open();
 
     String sql = "SELECT "
         "t.*"
         ", ts.TaskStatusDescription "
         ", tt.TaskTypeDescription "
-        "FROM Task t INNER JOIN TaskStatus ts on t.TaskStatusID == ts.TaskStatusID INNER JOIN TaskType tt on t.TaskTypeID == tt.TaskTypeID and t.TaskStatusID in (1,2,3) AND t.UserID = '${userID}' ORDER BY t.TaskCreated ASC;";
+        "FROM TASK t INNER JOIN TaskStatus ts on t.TASKSTATUSID == ts.TaskStatusID INNER JOIN TaskType tt on t.TASKTYPEID == tt.TaskTypeID and t.TASKSTATUSID in (1,2,3) AND t.USERID = '${userID}' ORDER BY t.TASKCREATED ASC;";
 
     List<Map<String, dynamic>> queryResult = await localRepo.db.rawQuery(sql);
 
     List<Task> list = List<Task>();
     queryResult.forEach((Map<String, dynamic> task) {
-      list.add(_parse(task));
+      list.add(_fromMap(task));
     });
+
+    print("list  ${list.length}");
 
     return list;
   }
 
   Future<Task> getTask(String taskID) async {
     LocalRepository localRepo = LocalRepository();
-    await localRepo.open();
+    if(!localRepo.db.isOpen)
+      await localRepo.open();
 
     String sql = "SELECT "
         "t.* "
         ",ts.TaskStatusDescription "
         ",tt.TaskTypeDescription "
-        "FROM Task t INNER JOIN TaskStatus ts on t.TaskStatusID == ts.TaskStatusID INNER JOIN TaskType tt on t.TaskTypeID == tt.TaskTypeID AND t._ID == '${taskID}';";
+        "FROM TASK t INNER JOIN TaskStatus ts on t.TASKSTATUSID == ts.TaskStatusID INNER JOIN TaskType tt on t.TASKTYPEID == tt.TaskTypeID WHERE t._ID == '${taskID}';";
 
-    List<Map<String, dynamic>> queryResult = await localRepo.db.rawQuery(sql);
+    List<Map<String, dynamic>> queryResult = await LocalRepository().db.rawQuery(sql);
 
-    return _parse(queryResult.first);
+    //print("query length => ${queryResult.length}");
+
+    //print("getTask: ${queryResult}");
+
+    return Future.value(queryResult.length>0? _fromMap(queryResult.first): null);
   }
 
-  Task _parse(Map<String, dynamic> task){
+  Task _fromMap(Map<String, dynamic> task){
     var t = Task(
         dirty: task['_Dirty'] == 1,
-        version: task['_Version'] as int,
-        userID: task['UserID'] as String,
+        version: task['_VERSION'] as int,
+        userID: task['USERID'] as String,
         id: task['_ID'] as String,
-        location: task['Location'] as String,
-        amount: task['Amount'] as double,
-        eventDesc: task['EventDesc'] as String,
-        taskCreated: DateTime.parse(task['TaskCreated'] as String),
-        playerID: task['PlayerID']!=null ? task['PlayerID'] as String : '',
-        playerFirstName: task['PlayerFirstName']!=null ? task['PlayerFirstName'] as String : '',
-        playerLastName: task['PlayerLastName']!=null ? task['PlayerLastName'] as String : '',
-        playerTier: task['PlayerTier']!=null ? task['PlayerTier'] as String : null,
-        playerTierColorHEX: task['PlayerTierColorHex']!=null ? task['PlayerTierColorHex'] as String : null,
-        taskType: TaskType(id: task['TaskTypeID'] as int, description: task['TaskTypeDescription'] as String),
-        taskStatus: TaskStatus(id: task['TaskStatusID'] as int, description: task['TaskStatusDescription'] as String),
+        location: task['LOCATION'] as String,
+        amount: task['AMOUNT'] as double,
+        eventDesc: task['EVENTDESC'] as String,
+        taskCreated: DateTime.parse(task['TASKCREATED'] as String),
+        playerID: task['PLAYERID']!=null ? task['PlayerID'] as String : '',
+        playerFirstName: task['PLAYERFIRSTNAME']!=null ? task['PLAYERFIRSTNAME'] as String : '',
+        playerLastName: task['PLAYERLASTNAME']!=null ? task['PLAYERLASTNAME'] as String : '',
+        playerTier: task['PLAYERTIER']!=null ? task['PlayerTier'] as String : null,
+        playerTierColorHEX: task['PLAYERTIERCOLORHEX']!=null ? task['PLAYERTIERCOLORHEX'] as String : null,
+        taskType: TaskType(id: task['TASKTYPEID'] as int, description: task['TaskTypeDescription'] as String),
+        taskStatus: TaskStatus(id: task['TASKSTATUSID'] as int, description: task['TaskStatusDescription'] as String),
     );
 
     return t;
@@ -78,11 +86,9 @@ class TaskRepository implements IRepository<Task>{
 
     Completer _completer = Completer<bool>();
     this.remoteRepository.fetch().then((Object result) async{
-      LocalRepository localRepo = LocalRepository();
-      localRepo.open();
 
-      await TaskTable.cleanUp(localRepo.db);
-      await TaskTable.insertOrUpdate(localRepo.db, result);
+      //await TaskTable.cleanUp();
+      await TaskTable.insertOrUpdate(result);
 
       _completer.complete(true);
     });
@@ -98,18 +104,18 @@ class TaskRepository implements IRepository<Task>{
   Future update(String taskID, {String taskStatusID, TaskUpdateCallBack callBack, bool markAsDirty = true, bool updateRemote = false} ) async {
     print('updating local...');
     LocalRepository localRepo = LocalRepository();
-    await localRepo.open();
+    if(!localRepo.db.isOpen)
+      await localRepo.open();
 
     int dirty = markAsDirty?1:0;
 
     if(taskStatusID!=null){
-      await localRepo.db.rawUpdate('UPDATE Task SET _Dirty = ?, TaskStatusID = ? WHERE _ID = ?', [dirty, taskStatusID, taskID].toList());
+      await  LocalRepository().db.rawUpdate('UPDATE TASK SET _DIRTY = ?, TASKSTATUSID = ? WHERE _ID = ?', [dirty, taskStatusID, taskID].toList());
     }
-    await localRepo.db.close();
 
     if(updateRemote){
       var toSend = {'taskID': taskID, 'taskStatusID': taskStatusID};
-      TaskChannel taskChannel = TaskChannel();
+      TaskMessage taskChannel = TaskMessage();
       await taskChannel.publishMessage(toSend);
 
       print('rabbitmq update sent');

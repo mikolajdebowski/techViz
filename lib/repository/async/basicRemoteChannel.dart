@@ -9,8 +9,6 @@ class BasicRemoteChannel<T>  {
 
     final Completer<T> _completer = Completer();
 
-    print('Starting completer ${exchangeName} hash ${_completer.hashCode} completed? ${_completer.isCompleted}');
-
     Session().rabbitmqClient.then((Client client){
       return client.channel();
     }).then((Channel channel){
@@ -28,26 +26,39 @@ class BasicRemoteChannel<T>  {
         }).then((Queue queue){
           return queue.consume();
         }).then((Consumer consumer){
+
           consumer.listen((AmqpMessage message) {
-            Map<String, dynamic> jsonResult = message.payloadAsJson;
-            print('Completing  ${exchangeName} hash ${_completer.hashCode} completed? ${_completer.isCompleted}');
-
-            return consumer.cancel().then((Consumer consumer){
-              return _completer.complete(parser(jsonResult) as T);
-            });
-
+            if(message.routingKey == routingKeyName){
+              Map<String, dynamic> jsonResult = message.payloadAsJson;
+              return consumer.cancel().then((Consumer consumer){
+                return _completer.complete(parser(jsonResult) as T);
+              });
+            }
           });
           exchange.publish(JsonEncoder().convert(object), routingKeyName, properties: props);
         });
       }
       else{
         exchange.publish(JsonEncoder().convert(object), routingKeyName, properties: props);
-
-        print('Completing  ${exchangeName} hash ${_completer.hashCode} completed? ${_completer.isCompleted}');
         return _completer.complete();
       }
     });
 
     return _completer.future;
+  }
+
+  void publishSimpleMessage(dynamic object, String routingKeyName, String exchangeName) {
+
+    Session().rabbitmqClient.then((Client client){
+      return client.channel();
+    }).then((Channel channel){
+      return channel.exchange(exchangeName, ExchangeType.TOPIC, durable: true );
+    }).then((Exchange exchange){
+      MessageProperties props = MessageProperties();
+      props.persistent = true;
+      props.contentType = 'application/json';
+
+      exchange.publish(JsonEncoder().convert(object), routingKeyName, properties: props);
+    });
   }
 }

@@ -9,8 +9,9 @@ import 'package:techviz/components/VizLoadingIndicator.dart';
 import 'package:techviz/components/vizRainbow.dart';
 import 'package:techviz/config.dart';
 import 'package:techviz/repository/local/userTable.dart';
-import 'package:techviz/repository/rabbitmq/channel/deviceChannel.dart';
-import 'package:techviz/repository/rabbitmq/channel/userChannel.dart';
+import 'package:techviz/repository/async/deviceMessage.dart';
+import 'package:techviz/repository/async/userMessage.dart';
+import 'package:techviz/repository/async/messageClient.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:techviz/roleSelector.dart';
@@ -103,11 +104,15 @@ class LoginState extends State<Login> {
 
     DeviceInfo deviceInfo = await Utils.deviceInfo;
 
+    await MessageClient().init(deviceInfo.DeviceID).then((dynamic d){
+      MessageClient().listen();
+    });
+
     var toSendDeviceDetails = {'userID': session.user.UserID, 'deviceID': deviceInfo.DeviceID, 'model': deviceInfo.Model, 'OSName': deviceInfo.OSName, 'OSVersion': deviceInfo.OSVersion };
-    await DeviceChannel().publishMessage(toSendDeviceDetails);
+    await DeviceMessage().publishMessage(toSendDeviceDetails);
 
     var toSendUserStatus = {'userStatusID': 10, 'userID':session.user.UserID, 'deviceID': deviceInfo.DeviceID }; //FORCE OFF-SHIFT REMOTE
-    await UserChannel().publishMessage(toSendUserStatus);
+    await UserMessage().publishMessage(toSendUserStatus, deviceID: deviceInfo.DeviceID);
 
   }
 
