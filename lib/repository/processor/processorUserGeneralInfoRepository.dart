@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:techviz/model/userRole.dart';
 import 'package:techviz/repository/local/localRepository.dart';
 import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
 import 'package:techviz/repository/remoteRepository.dart';
@@ -24,8 +23,8 @@ class ProcessorUserGeneralInfoRepository extends IRemoteRepository<dynamic>{
 
     }).then((String rawResult) async {
       try{
-        Map<String,dynamic> decoded = json.decode(rawResult);
-        List<dynamic> rows = decoded['Rows'];
+        dynamic decoded = json.decode(rawResult);
+        List<dynamic> rows = decoded['Rows'] as List<dynamic>;
 
         var _columnNames = (decoded['ColumnNames'] as String).split(',');
 

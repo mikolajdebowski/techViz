@@ -23,8 +23,8 @@ class ProcessorTaskRepository extends IRemoteRepository<Task>{
       print(onError.toString());
       _completer.completeError(onError);
     }).then((String rawResult) async{
-      Map<String,dynamic> decoded = json.decode(rawResult);
-      List<dynamic> rows = decoded['Rows'];
+      dynamic decoded = json.decode(rawResult);
+      List<dynamic> rows = decoded['Rows'] as List<dynamic>;
 
       var _columnNames = (decoded['ColumnNames'] as String).split(',');
 

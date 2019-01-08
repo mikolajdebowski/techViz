@@ -1,8 +1,5 @@
 import 'dart:async';
-import 'package:techviz/model/userSection.dart';
 import 'package:techviz/repository/common/IRepository.dart';
-import 'package:techviz/repository/local/localRepository.dart';
-import 'package:techviz/repository/rabbitmq/channel/userSectionChannel.dart';
 import 'package:techviz/repository/remoteRepository.dart';
 
 class UserGeneralInfoRepository implements IRepository<dynamic> {

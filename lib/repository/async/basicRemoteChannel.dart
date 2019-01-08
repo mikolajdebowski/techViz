@@ -29,7 +29,7 @@ class BasicRemoteChannel<T>  {
 
           consumer.listen((AmqpMessage message) {
             if(message.routingKey == routingKeyName){
-              Map<String, dynamic> jsonResult = message.payloadAsJson;
+              Map<String, dynamic> jsonResult = message.payloadAsJson as Map<String, dynamic>;
               return consumer.cancel().then((Consumer consumer){
                 return _completer.complete(parser(jsonResult) as T);
               });

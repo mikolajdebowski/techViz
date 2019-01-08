@@ -24,8 +24,8 @@ class ProcessorUserRoleRepository extends IRemoteRepository<UserRole>{
 
     }).then((String rawResult) async {
       try{
-        Map<String,dynamic> decoded = json.decode(rawResult);
-        List<dynamic> rows = decoded['Rows'];
+        dynamic decoded = json.decode(rawResult);
+        List<dynamic> rows = decoded['Rows'] as List<dynamic>;
 
         var _columnNames = (decoded['ColumnNames'] as String).split(',');
 

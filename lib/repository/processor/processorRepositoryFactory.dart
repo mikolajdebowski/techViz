@@ -17,11 +17,11 @@ class ProcessorRepositoryConfig {
 
   Future<void> Setup(SessionClient client) async{
     String documentListStr = await client.post("visualDocIndex/advancedSearch.json", advancedSearchXML);
-    List<dynamic> documentList = json.decode(documentListStr);
+    dynamic documentList = json.decode(documentListStr);
     Map<String,dynamic> documentMobile = null;
 
     for(Map<String,dynamic> doc  in documentList){
-      String tag = doc['Tag'];
+      String tag = doc['Tag'] as String;
       if(tag.contains('TechVizMobile')){
         documentMobile = doc;
         break;
@@ -35,8 +35,8 @@ class ProcessorRepositoryConfig {
     DocumentID = documentMobile['ID'] as String;
 
     String documentStr = await client.get("visualDoc/${DocumentID}.json?&itemCount=200");
-    Map<String,dynamic> documentJson = json.decode(documentStr);
-    List<dynamic> liveTableslist = documentJson['liveDataDefinition']['liveTables'];
+    dynamic documentJson = json.decode(documentStr);
+    List<Map<String,dynamic>> liveTableslist = documentJson['liveDataDefinition']['liveTables'] as List<Map<String,dynamic>>;
 
     List<LiveTableType> mandatorySyncTablesTags = List<LiveTableType>();
     mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_TASK);
@@ -59,7 +59,7 @@ class ProcessorRepositoryConfig {
 
     LiveTables = List<LiveTable>();
     for(Map<String,dynamic> liveTable in liveTableslist){
-      String liveTableTag = liveTable['tags'];
+      String liveTableTag = liveTable['tags'] as String;
       if(liveTableTag.length==0)
         continue;
 
