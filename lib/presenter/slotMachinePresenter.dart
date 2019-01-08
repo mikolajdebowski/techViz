@@ -19,9 +19,9 @@ class SlotMachinePresenter{
   void search({String query}) async {
     assert(_view != null);
 
-    List<SlotMachine> list = await _repo.search(query);
+    //List<SlotMachine> list = await _repo.search(query);
 
-    _view.onSlotMachinesLoaded(list);
+    _view.onSlotMachinesLoaded([]);
   }
 }
 

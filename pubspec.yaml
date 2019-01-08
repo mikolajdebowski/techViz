@@ -17,6 +17,7 @@ dependencies:
   event_bus: ^1.0.1
   intl: ^0.15.7
   flutter_is_emulator: ^1.0.0
+  charts_flutter: 0.5.0
   observable: any
   flushbar: ^1.2.0
 
@@ -69,7 +70,6 @@ flutter:
     - assets/images/ic_settings.png
     - assets/images/ic_up_download.png
     - assets/images/ic_camera.png
-    - assets/images/my_profile_graph.png
     - assets/images/ic_cardin.png
     - assets/images/ic_acknowledge.png
     - assets/images/ic_scan_machine.png
@@ -78,6 +78,11 @@ flutter:
     - assets/images/2.0x/ic_acknowledge.png
     - assets/images/2.0x/ic_scan_machine.png
     - assets/images/2.0x/ic_complete.png
+
+    #TODO just temporairly
+    - assets/json/TeamStatsCurrentDay.json
+    - assets/json/UserStatsCurrentDay.json
+    - assets/json/TeamTasksCompletedCurrentDay.json
 
 #    - images/a_dot_ham.jpeg
 

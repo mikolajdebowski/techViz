@@ -1,0 +1,29 @@
+{
+  "ID": {
+    "idStr": "0-0"
+  },
+  "LastModified": 1541455098290,
+  "StartRow": 0,
+  "ColumnNames": "SiteID,UserID,TimeAvailable,TasksPerHour,AvgResponseTime,AvgCompletionTime,TasksEscalated,PercentEscalated",
+  "ColumnConfigIds": "5f380563e00-1666025783a,5f3805661a7-166602c1bef,5f380563d95-16660256416,5f3805668f1-166602dd6c2,5f3805668f1-166123dd6c2,5f3805668f1-123602dd6c2,5f3805668f1-123123dd6c2,123123668f1-166602dd6c2",
+  "QueryPlan": "SELECT 1 FROM ExampleQueryPlan",
+  "queryStartDate": "19700101000000000",
+  "queryEndDate": "19700101000000000",
+  "Rows": [
+    {
+      "hasScdHistoryOnly": false,
+      "History": [],
+      "I": 0,
+      "Values": [
+        "1",
+        "irina",
+        "19800",
+        "6.0",
+        "34",
+        "180",
+        "2.0",
+        "33.333"
+      ]
+    }
+  ]
+}

@@ -1,13 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:techviz/model/userRole.dart';
 import 'package:techviz/repository/local/localRepository.dart';
 import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
 import 'package:techviz/repository/remoteRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
-class ProcessorUserRoleRepository extends IRemoteRepository<UserRole>{
+class ProcessorUserGeneralInfoRepository extends IRemoteRepository<dynamic>{
 
   @override
   Future fetch() {
@@ -15,7 +14,7 @@ class ProcessorUserRoleRepository extends IRemoteRepository<UserRole>{
     SessionClient client = SessionClient.getInstance();
 
     var config = ProcessorRepositoryConfig();
-    String liveTableID = config.GetLiveTable(LiveTableType.TECHVIZ_MOBILE_USER_ROLE.toString()).ID;
+    String liveTableID = config.GetLiveTable(LiveTableType.TECHVIZ_MOBILE_USER_GENERAL_INFO.toString()).ID;
     String url = 'live/${config.DocumentID}/${liveTableID}/select.json';
 
     client.get(url).catchError((Error onError){
@@ -38,9 +37,12 @@ class ProcessorUserRoleRepository extends IRemoteRepository<UserRole>{
           dynamic values = d['Values'];
 
           Map<String, dynamic> map = Map<String, dynamic>();
-          map['UserID'] = values[_columnNames.indexOf("UserID")];
+          map['Name'] = values[_columnNames.indexOf("Name")];
+          map['StaffID'] = values[_columnNames.indexOf("StaffID")];
+          map['UserName'] = values[_columnNames.indexOf("UserName")];
           map['UserRoleID'] = values[_columnNames.indexOf("UserRoleID")];
-          localRepo.insert('UserRole', map);
+
+//          localRepo.insert('User', map);
         });
 
         _completer.complete();
@@ -50,6 +52,7 @@ class ProcessorUserRoleRepository extends IRemoteRepository<UserRole>{
         _completer.completeError(e);
       }
     });
+
 
     return _completer.future;
   }

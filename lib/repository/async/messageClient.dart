@@ -77,7 +77,7 @@ class MessageClient {
       if (where != null && where.length > 0) {
         RoutingKeyCallback callback = where.first;
 
-        Map<String, dynamic> jsonResult = message.payloadAsJson;
+        Map<String, dynamic> jsonResult = message.payloadAsJson as Map<String, dynamic>;
 
         print("PAYLOAD: ${jsonResult}");
 
