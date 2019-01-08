@@ -36,7 +36,7 @@ class ProcessorRepositoryConfig {
 
     String documentStr = await client.get("visualDoc/${DocumentID}.json?&itemCount=200");
     dynamic documentJson = json.decode(documentStr);
-    List<Map<String,dynamic>> liveTableslist = documentJson['liveDataDefinition']['liveTables'] as List<Map<String,dynamic>>;
+    List<dynamic> liveTableslist = documentJson['liveDataDefinition']['liveTables'] as List<dynamic>;
 
     List<LiveTableType> mandatorySyncTablesTags = List<LiveTableType>();
     mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_TASK);
@@ -49,9 +49,6 @@ class ProcessorRepositoryConfig {
     mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_SECTION);
     mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_USER_SECTION);
     mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_USER_GENERAL_INFO);
-
-
-
 
     List<LiveTableType> laterSyncTablesTags = List<LiveTableType>();
     laterSyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_SLOTS);
