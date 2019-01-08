@@ -48,6 +48,10 @@ class ProcessorRepositoryConfig {
     mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_USER_STATUS);
     mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_SECTION);
     mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_USER_SECTION);
+    mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_USER_GENERAL_INFO);
+
+
+
 
     List<LiveTableType> laterSyncTablesTags = List<LiveTableType>();
     laterSyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_SLOTS);
@@ -204,7 +208,8 @@ enum LiveTableType{
   TECHVIZ_MOBILE_USER_STATUS,
   TECHVIZ_MOBILE_SECTION,
   TECHVIZ_MOBILE_USER_SECTION,
-  TECHVIZ_MOBILE_SLOTS
+  TECHVIZ_MOBILE_SLOTS,
+  TECHVIZ_MOBILE_USER_GENERAL_INFO
 }
 
 class LiveTable{
