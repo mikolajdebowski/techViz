@@ -9,7 +9,9 @@ import 'package:techviz/components/VizLoadingIndicator.dart';
 import 'package:techviz/components/vizRainbow.dart';
 import 'package:techviz/config.dart';
 import 'package:techviz/repository/local/userTable.dart';
-import 'package:techviz/repository/rabbitmq/channel/deviceChannel.dart';
+import 'package:techviz/repository/async/deviceMessage.dart';
+import 'package:techviz/repository/async/userMessage.dart';
+import 'package:techviz/repository/async/messageClient.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:techviz/roleSelector.dart';
@@ -96,14 +98,22 @@ class LoginState extends State<Login> {
   Future<void> setupUser(String userID) async{
     //CREATE SESSION
     Session session = Session();
-    session.user = await UserTable.getUser(userID);
+    var user = await UserTable.updateStatusID(userID, "10"); //FORCE OFF-SHIFT LOCALLY
+    print('UserStatusID ${user.UserStatusID}');
+    await session.init(userID);
 
     DeviceInfo deviceInfo = await Utils.deviceInfo;
 
-    var toSend = {'userID': session.user.UserID, 'deviceID': deviceInfo.DeviceID, 'model': deviceInfo.Model, 'OSName': deviceInfo.OSName, 'OSVersion': deviceInfo.OSVersion };
+    await MessageClient().init(deviceInfo.DeviceID).then((dynamic d){
+      MessageClient().listen();
+    });
 
-    DeviceChannel deviceChannel = DeviceChannel();
-    await deviceChannel.submit(toSend);
+    var toSendDeviceDetails = {'userID': session.user.UserID, 'deviceID': deviceInfo.DeviceID, 'model': deviceInfo.Model, 'OSName': deviceInfo.OSName, 'OSVersion': deviceInfo.OSVersion };
+    await DeviceMessage().publishMessage(toSendDeviceDetails);
+
+    var toSendUserStatus = {'userStatusID': 10, 'userID':session.user.UserID, 'deviceID': deviceInfo.DeviceID }; //FORCE OFF-SHIFT REMOTE
+    await UserMessage().publishMessage(toSendUserStatus, deviceID: deviceInfo.DeviceID);
+
   }
 
   void loginTap() async {
@@ -294,7 +304,7 @@ class LoginState extends State<Login> {
 
     return Scaffold(
       backgroundColor: Colors.black,
-      body: SafeArea(child: container, top: false, bottom: false),
+      body: SafeArea(child: container),
     );
   }
 }

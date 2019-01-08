@@ -35,31 +35,31 @@ class ProcessorTaskRepository extends IRemoteRepository<Task>{
 
         Map<String, dynamic> map = Map<String, dynamic>();
         map['_ID'] = values[_columnNames.indexOf("_ID")] as String;
-        map['_Version'] = values[_columnNames.indexOf("_Version")] as String;
-        map['UserID'] = values[_columnNames.indexOf("UserID")] as String;
-        map['_Dirty'] = false;
-        map['MachineID'] = values[_columnNames.indexOf("MachineID")];
-        map['MachineID'] = values[_columnNames.indexOf("MachineID")];
-        map['Location'] = values[_columnNames.indexOf("Location")];
-        map['TaskStatusID'] = values[_columnNames.indexOf("TaskStatusID")];
-        map['TaskTypeID'] = values[_columnNames.indexOf("TaskTypeID")];
+        map['_VERSION'] = values[_columnNames.indexOf("_Version")] as String;
+        map['USERID'] = values[_columnNames.indexOf("UserID")] as String;
+        map['_DIRTY'] = false;
+        map['MACHINEID'] = values[_columnNames.indexOf("MachineID")];
+        map['MACHINEID'] = values[_columnNames.indexOf("MachineID")];
+        map['LOCATION'] = values[_columnNames.indexOf("Location")];
+        map['TASKSTATUSID'] = values[_columnNames.indexOf("TaskStatusID")];
+        map['TASKTYPEID'] = values[_columnNames.indexOf("TaskTypeID")];
 
         var dateCreated = DateTime.parse(values[_columnNames.indexOf("TaskCreated")].toString());
         var utcCreated = DateTime.utc(dateCreated.year, dateCreated.month, dateCreated.day, dateCreated.hour, dateCreated.minute, dateCreated.second, dateCreated.millisecond);
-        map['TaskCreated'] = utcCreated.toString();
+        map['TASKCREATED'] = utcCreated.toString();
 
         var dateAssigned = DateTime.parse(values[_columnNames.indexOf("TaskAssigned")].toString());
         var utcAssigned = DateTime.utc(dateAssigned.year, dateAssigned.month, dateAssigned.day, dateAssigned.hour, dateAssigned.minute, dateAssigned.second, dateAssigned.millisecond);
-        map['TaskAssigned'] = utcAssigned.toString();
+        map['TASKASSIGNED'] = utcAssigned.toString();
 
-        map['PlayerID'] = values[_columnNames.indexOf("PlayerID")];
-        map['Amount'] = values[_columnNames.indexOf("Amount")] == '' ? 0.0 : values[_columnNames.indexOf("Amount")];
-        map['EventDesc'] = values[_columnNames.indexOf("EventDesc")];
-        map['PlayerID'] = values[_columnNames.indexOf("PlayerID")];
-        map['PlayerFirstName'] = values[_columnNames.indexOf("FirstName")];
-        map['PlayerLastName'] = values[_columnNames.indexOf("LastName")];
-        map['PlayerTier'] = values[_columnNames.indexOf("Tier")];
-        map['PlayerTierColorHex'] = values[_columnNames.indexOf("TierColorHex")];
+        map['PLAYERID'] = values[_columnNames.indexOf("PlayerID")];
+        map['AMOUNT'] = values[_columnNames.indexOf("Amount")] == '' ? 0.0 : values[_columnNames.indexOf("Amount")];
+        map['EVENTDESC'] = values[_columnNames.indexOf("EventDesc")];
+        map['PLAYERID'] = values[_columnNames.indexOf("PlayerID")];
+        map['PLAYERFIRSTNAME'] = values[_columnNames.indexOf("FirstName")];
+        map['PLAYERLASTNAME'] = values[_columnNames.indexOf("LastName")];
+        map['PLAYERTIER'] = values[_columnNames.indexOf("Tier")];
+        map['PLAYERTIERCOLORHEX'] = values[_columnNames.indexOf("TierColorHex")];
 
         listToReturn.add(map);
       });

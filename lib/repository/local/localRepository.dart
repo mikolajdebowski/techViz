@@ -16,6 +16,10 @@ class LocalRepository {
 
   LocalRepository._internal();
 
+  bool isOpen(){
+    return db.isOpen;
+  }
+
   Future open() async {
 
     var databasesPath = await getDatabasesPath();

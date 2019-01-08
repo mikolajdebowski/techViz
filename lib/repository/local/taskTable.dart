@@ -1,46 +1,105 @@
 import 'dart:async';
-
 import 'package:sqflite/sqflite.dart';
+import 'package:techviz/repository/local/localRepository.dart';
 
-class TaskTable{
+class TaskTable {
   static Future<dynamic> create(Database db) {
     return db.execute('''
-              create table Task ( 
-                  _Dirty INT NOT NULL,
-                  _Version INT NOT NULL,
+              CREATE TABLE TASK ( 
                   _ID TEXT PRIMARY KEY NOT NULL, 
-                  EventID INT,
-                  UserID TEXT,
-                  MachineID TEXT,
-                  TaskStatusID INT NOT NULL,
-                  TaskTypeID INT,
-                  TaskCreated DATETIME,
-                  TaskAssigned DATETIME,
-                  TaskNote TEXT,
-                  TaskResponded DATETIME,
-                  Amount REAL,
-                  Location TEXT,
-                  EventDesc TEXT,
-                  PlayerID TEXT,
-                  PlayerFirstName TEXT,
-                  PlayerLastName TEXT,
-                  PlayerTier TEXT,
-                  PlayerTierColorHex TEXT)
+                  _DIRTY INT NOT NULL,
+                  _VERSION INT NOT NULL,
+                  EVENTID INT,
+                  USERID TEXT,
+                  MACHINEID TEXT,
+                  TASKSTATUSID INT NOT NULL,
+                  TASKTYPEID INT,
+                  TASKCREATED DATETIME,
+                  TASKASSIGNED DATETIME,
+                  TASKNOTE TEXT,
+                  TASKRESPONDED DATETIME,
+                  AMOUNT REAL,
+                  LOCATION TEXT,
+                  EVENTDESC TEXT,
+                  PLAYERID TEXT,
+                  PLAYERFIRSTNAME TEXT,
+                  PLAYERLASTNAME TEXT,
+                  PLAYERTIER TEXT,
+                  PLAYERTIERCOLORHEX TEXT)
               ''');
-    }
+  }
 
-  static Future<dynamic> insertOrUpdate(Database db, dynamic values) {
-    int totalRows = 0;
+  static Future<int> insertOrUpdate(dynamic toInsert) async {
+    LocalRepository localRepo = LocalRepository();
+    if (!localRepo.db.isOpen) await localRepo.open();
 
-    values.forEach((Map<String,dynamic> each) async{
-      totalRows += await db.insert('Task', each, conflictAlgorithm: ConflictAlgorithm.replace);
+    int insertedRows = 0;
+    int updatedRows = 0;
+
+    await toInsert.forEach((Map<String, dynamic> entry) async {
+
+      await localRepo.db.transaction((txn) async {
+        var batch = txn.batch();
+
+        List<Map<String,dynamic>> exists = await txn.rawQuery("SELECT _ID FROM TASK WHERE _ID = '${entry['_ID'].toString()}';");
+        if(exists!=null && exists.length>0){
+          String sqlUpdate = buildUpdateSQL(entry);
+          updatedRows = await txn.rawUpdate(sqlUpdate);
+        }
+        else{
+          insertedRows += await txn.insert('Task', entry, conflictAlgorithm: ConflictAlgorithm.replace);
+        }
+
+        batch.commit();
+      });
+
+
     });
-
-    return Future<int>.value(totalRows);
+    return Future.value(insertedRows+updatedRows);
   }
 
-  static Future<int> cleanUp(Database db) {
-    return db.delete('Task');
+  static Future<int> invalidateTasks() async
+  {
+    LocalRepository localRepo = LocalRepository();
+    if (!localRepo.db.isOpen) await localRepo.open();
+
+    String sqlUpdate = "UPDATE TASK SET TASKSTATUSID = 7 WHERE TASKSTATUSID IN (1,2,3);";
+    int updatedRows = await localRepo.db.rawUpdate(sqlUpdate);
+
+    return Future.value(updatedRows);
   }
 
+  static String buildUpdateSQL(Map<String, dynamic> row){
+    String sql = "UPDATE TASK SET ";
+    row.forEach((String key, dynamic value)
+    {
+        if(value == null){
+          sql += " ${key} = null,";
+        }
+        else if(value.runtimeType == String || value.runtimeType == DateTime){
+          sql += " ${key} = '${value}',";
+        }
+        else if(value.runtimeType == bool){
+          bool bValue = value as bool;
+          sql += " ${key} = ${(bValue) ? 1: 0},";
+        }
+        else {
+          sql += " ${key} = ${value},";
+        }
+    });
+    sql = (sql.substring(0, sql.length - 1));
+    sql += " WHERE _ID = '${row['_ID']}'; ";
+
+    //print("UPDATING... " + sql);
+    return sql;
+  }
+
+  static Future<int> cleanUp() async {
+    LocalRepository localRepo = LocalRepository();
+    if (!localRepo.db.isOpen) await localRepo.open();
+
+    int deletedRows = await localRepo.db.delete('Task');
+
+    return Future.value(deletedRows);
+  }
 }

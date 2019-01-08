@@ -36,7 +36,6 @@ class _MenuState extends State<Menu> {
     //Navigator.pushReplacementNamed(context, '/about');
   }
 
-
   @override
   Widget build(BuildContext context) {
     Row rowProfileSettings = Row(
@@ -59,8 +58,7 @@ class _MenuState extends State<Menu> {
       decoration: BoxDecoration(gradient: LinearGradient(colors: [Color(0xFF586676), Color(0xFF8B9EA7)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
     );
 
-    var safe = SafeArea(child: container, top: false, bottom: false);
-
+    var safe = SafeArea(child: container);
     return Scaffold(backgroundColor: Colors.black, appBar: ActionBar(title: 'Menu'), body: safe);
   }
 }

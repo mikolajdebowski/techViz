@@ -64,8 +64,8 @@ class Repository{
   Future<void> initialFetch(fncOnMessage onMessage) async{
 
 
-    LocalRepository localRepo = LocalRepository();
-    await localRepo.open();
+    //LocalRepository localRepo = LocalRepository();
+//    await localRepo.open();
 
     onMessage('Fetching User Data...');
     await userRepository.fetch();

@@ -31,13 +31,7 @@ class UserTable{
     List<Map<String, dynamic>> queryResult = await localRepo.db.rawQuery(sql, [userID].toList());
 
     if(queryResult.length>0){
-      Map<String, dynamic> userMap = queryResult.first;
-      var u = User(
-        UserID: userMap['UserID'] as String,
-        UserRoleID: int.parse(userMap['UserRoleID'].toString()),
-        UserStatusID: int.parse(userMap['UserStatusID'].toString()),
-      );
-      return u;
+      return User.fromMap(queryResult.first);
     }
 
     throw Exception('User was not found');

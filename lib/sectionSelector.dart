@@ -94,7 +94,7 @@ class SectionSelectorState extends State<SectionSelector>
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: ActionBar(title: 'My Sections', titleColor: Colors.blue, isRoot: false, tailWidget: okBtn),
-      body: SafeArea(child: container, top: false, bottom: false)
+      body: SafeArea(child: container)
     );
   }
 

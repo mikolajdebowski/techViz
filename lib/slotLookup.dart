@@ -139,7 +139,7 @@ class SlotLookupState extends State<SlotLookup> implements ISlotMachinePresenter
       ),
     );
 
-    return Scaffold(backgroundColor: Colors.black, appBar: ActionBar(centralWidgets: [searchComponent]), body: SafeArea(child: body, top: false, bottom: false));
+    return Scaffold(backgroundColor: Colors.black, appBar: ActionBar(centralWidgets: [searchComponent]), body: SafeArea(child: body));
   }
 
   Expanded headerColumn(int flex, String title) {

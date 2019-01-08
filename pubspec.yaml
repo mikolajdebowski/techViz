@@ -18,6 +18,8 @@ dependencies:
   intl: ^0.15.7
   flutter_is_emulator: ^1.0.0
   charts_flutter: 0.5.0
+  observable: any
+  flushbar: ^1.2.0
 
   #vizexplorer_mobile_common:
   #git: http://git.colo.bis2.net/Mobile/Plugins/common.git

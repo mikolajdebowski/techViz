@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:techviz/model/userSection.dart';
 import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/local/localRepository.dart';
-import 'package:techviz/repository/rabbitmq/channel/userSectionChannel.dart';
+import 'package:techviz/repository/async/userSectionMessage.dart';
 import 'package:techviz/repository/remoteRepository.dart';
 
 typedef UserSectionUpdateCallBack = void Function(List<String> sections);
@@ -50,8 +50,8 @@ class UserSectionRepository implements IRepository<UserSection> {
     if (updateRemote) {
 
       var toSend = {'userID': userID, 'sections': sections};
-      UserSectionChannel userSectionChannel = UserSectionChannel();
-      userSectionChannel.submit(toSend);
+      UserSectionMessage userSectionChannel = UserSectionMessage();
+      userSectionChannel.publishMessage(toSend);
 
       print('rabbitmq update sent');
     }

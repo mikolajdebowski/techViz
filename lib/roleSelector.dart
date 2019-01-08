@@ -5,7 +5,7 @@ import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/home.dart';
 import 'package:techviz/model/role.dart';
 import 'package:techviz/presenter/roleListPresenter.dart';
-import 'package:techviz/repository/rabbitmq/channel/userChannel.dart';
+import 'package:techviz/repository/async/userMessage.dart';
 import 'package:techviz/repository/session.dart';
 
 class RoleSelector extends StatefulWidget {
@@ -40,8 +40,7 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
     Session session = Session();
     var toSend = {'userRoleID': selectedRoleID, 'userID': session.user.UserID};
 
-    UserChannel userChannel = UserChannel();
-    userChannel.submit(toSend);
+    UserMessage().publishMessage(toSend);
 
     Navigator.pushReplacement(context, MaterialPageRoute<Home>(builder: (BuildContext context) => Home()));
   }
@@ -85,7 +84,7 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: ActionBar(title: 'My Role', titleColor: Colors.blue, isRoot: true, tailWidget:okBtn),
-      body:  SafeArea(child: container, top: false, bottom: false)
+      body:  SafeArea(child: container),
     );
   }
 
