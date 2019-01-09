@@ -409,13 +409,18 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
       ),
     );
 
+
+    if(_selectedTask!=null){
+      print('task ${_selectedTask.location} time =====> ${ _selectedTask.taskCreated}');
+    }
+
     //RIGHT PANEL WIDGETS
     var timerWidget = Padding(
       padding: EdgeInsets.only(top: 7.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
-        //children: <Widget>[Text('Time Taken', style: TextStyle(color: Colors.grey, fontSize: 12.0)), VizTimer(timeStarted: _selectedTask != null ? _selectedTask.taskCreated : null)],
-        children: <Widget>[Text('Time Taken', style: TextStyle(color: Colors.grey, fontSize: 12.0)), VizTimer(timeStarted: null)],
+        children: <Widget>[Text('Time Taken', style: TextStyle(color: Colors.grey, fontSize: 12.0)), VizTimer(timeStarted: _selectedTask != null ? _selectedTask.taskCreated : null)],
+        //children: <Widget>[Text('Time Taken', style: TextStyle(color: Colors.grey, fontSize: 12.0)), VizTimer(timeStarted: null)],
       ),
     );
 

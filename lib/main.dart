@@ -33,8 +33,6 @@ class TechVizAppState extends State<TechVizApp> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-
-    print("main dispose");
     super.dispose();
   }
 

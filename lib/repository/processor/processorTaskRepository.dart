@@ -45,12 +45,12 @@ class ProcessorTaskRepository extends IRemoteRepository<Task>{
         map['TASKTYPEID'] = values[_columnNames.indexOf("TaskTypeID")];
 
         var dateCreated = DateTime.parse(values[_columnNames.indexOf("TaskCreated")].toString());
-        var utcCreated = DateTime.utc(dateCreated.year, dateCreated.month, dateCreated.day, dateCreated.hour, dateCreated.minute, dateCreated.second, dateCreated.millisecond);
-        map['TASKCREATED'] = utcCreated.toString();
+        //var utcCreated = DateTime.utc(dateCreated.year, dateCreated.month, dateCreated.day, dateCreated.hour, dateCreated.minute, dateCreated.second, dateCreated.millisecond);
+        map['TASKCREATED'] = dateCreated.toString();
 
         var dateAssigned = DateTime.parse(values[_columnNames.indexOf("TaskAssigned")].toString());
-        var utcAssigned = DateTime.utc(dateAssigned.year, dateAssigned.month, dateAssigned.day, dateAssigned.hour, dateAssigned.minute, dateAssigned.second, dateAssigned.millisecond);
-        map['TASKASSIGNED'] = utcAssigned.toString();
+        //var utcAssigned = DateTime.utc(dateAssigned.year, dateAssigned.month, dateAssigned.day, dateAssigned.hour, dateAssigned.minute, dateAssigned.second, dateAssigned.millisecond);
+        map['TASKASSIGNED'] = dateAssigned.toString();
 
         map['PLAYERID'] = values[_columnNames.indexOf("PlayerID")];
         map['AMOUNT'] = values[_columnNames.indexOf("Amount")] == '' ? 0.0 : values[_columnNames.indexOf("Amount")];

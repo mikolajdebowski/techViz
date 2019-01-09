@@ -79,7 +79,7 @@ class MessageClient {
 
         Map<String, dynamic> jsonResult = message.payloadAsJson as Map<String, dynamic>;
 
-        print("PAYLOAD: ${jsonResult}");
+        //print("PAYLOAD: ${jsonResult}");
 
         callback.callbackFunction(jsonResult);
       }
