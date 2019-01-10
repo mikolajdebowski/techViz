@@ -59,19 +59,18 @@ class Session extends PropertyChangeNotifier {
     return _rabbitmqClient;
   }
 
-  Future<dynamic> logOut() async{
+  void logOut(){
     Session session = Session();
 
-    if(session.user.UserStatusID!=0 && session.user.UserStatusID != 10){
-
-      session.user = await UserTable.updateStatusID(session.user.UserID, "10");
-    }
-    var toSend = {'userStatusID': session.user.UserStatusID, 'userID': session.user.UserID};
-    //todo: hardcoded off-shift id
-
-    DeviceInfo deviceInfo = await Utils.deviceInfo;
-
-    return UserMessage().publishMessage(toSend, deviceID: deviceInfo.DeviceID);
+    UserTable.updateStatusID(session.user.UserID, "10").then((User user){
+      session.user = user;
+      return Utils.deviceInfo;
+    }).then((DeviceInfo deviceInfo){
+      var toSend = {'userStatusID': session.user.UserStatusID, 'userID': session.user.UserID};
+      return UserMessage().publishMessage(toSend, deviceID: deviceInfo.DeviceID, noWait: true);
+    }).then((User user){
+      return ;
+    });
   }
 
   void UpdateConnectionStatus(ConnectionStatus newStatus){
@@ -81,11 +80,11 @@ class Session extends PropertyChangeNotifier {
     notifyPropertyChange(#connectionStatus, oldVakue, newStatus);
   }
 
-  void disconnectRabbitmq(){
+  void disconnectRabbitmq() async{
     UpdateConnectionStatus(ConnectionStatus.Offline);
 
     if(_rabbitmqClient!=null){
-      _rabbitmqClient.close().then((dynamic d){
+      await _rabbitmqClient.close().then((dynamic d){
         print('_rabbitmqClient closed');
         _rabbitmqClient = null;
       });

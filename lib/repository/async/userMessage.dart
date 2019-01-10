@@ -6,10 +6,12 @@ class UserMessage implements IMessageClient<dynamic,User> {
   RoutingKeyCallback callback;
 
   @override
-  Future<User> publishMessage(dynamic object, {String deviceID}) async{
-    Completer<User> _completer = Completer();
+  Future<User> publishMessage(dynamic object, {String deviceID, bool noWait = false}) async{
+    print('publishMessage starts ${this.hashCode}');
 
+    Completer<User> _completer = Completer();
     void callbackFunction(Map<String, dynamic> map){
+      print('callbackFunction called ${this.hashCode}');
       User user = fromMap(map);
 
       MessageClient().unbindRoutingKey(callback.routingKeyName).then((dynamic d){
@@ -17,20 +19,27 @@ class UserMessage implements IMessageClient<dynamic,User> {
       });
     }
 
-    if(deviceID!=null){
+    void _publishMesssage(){
+      print('publishing message ${this.hashCode}');
+      MessageClient().publishMessage(
+          object,
+          "mobile.user.update"
+      );
+    }
+
+    if(noWait){
+      _publishMesssage();
+    }
+    else{
       callback = RoutingKeyCallback();
       callback.routingKeyName = "mobile.user.${deviceID}";
       callback.callbackFunction = callbackFunction;
 
-      MessageClient().bindRoutingKey(callback).then((dynamic d){
-        MessageClient().publishMessage(
-            object,
-            "mobile.user.update"
-        );
+      MessageClient client = MessageClient();
+      client.bindRoutingKey(callback).then((dynamic d){
+        print('binded to routingKey ${this.hashCode}');
+        _publishMesssage();
       });
-    }
-    else{
-      _completer.complete();
     }
 
     return _completer.future;

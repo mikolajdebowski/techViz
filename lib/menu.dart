@@ -12,12 +12,15 @@ class Menu extends StatefulWidget {
 
 class _MenuState extends State<Menu> {
   void logOut(Object tag){
-    Session session = Session();
-    session.logOut().then((dynamic d){
-      session.disconnectRabbitmq();
-    });
+    Session().logOut();
 
     Navigator.pushNamedAndRemoveUntil(context, '/login', (Route<dynamic> route) => false);
+  }
+
+  @override
+  void dispose(){
+    print('_MenuState dispose');
+    super.dispose();
   }
 
   void goToMyProfile(Object tag){

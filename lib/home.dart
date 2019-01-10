@@ -130,7 +130,9 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
   void bindTaskListener() async {
     void callbackFunction(Task task) async {
-      keyAttendant.currentState.onTaskReceived(task);
+      if(keyAttendant!=null && keyAttendant.currentState!=null){
+        keyAttendant.currentState.onTaskReceived(task);
+      }
     }
 
     TaskMessage().bind(callbackFunction);

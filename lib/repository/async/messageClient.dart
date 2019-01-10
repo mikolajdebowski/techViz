@@ -60,9 +60,9 @@ class MessageClient {
   }
 
   Future bindRoutingKey(RoutingKeyCallback routingKeyCallback) {
-    if (callbacks.indexWhere((RoutingKeyCallback rkc) => rkc.routingKeyName == routingKeyCallback.routingKeyName) == -1) {
-      callbacks.add(routingKeyCallback);
-    }
+    callbacks.removeWhere((RoutingKeyCallback rkc) => rkc.routingKeyName == routingKeyCallback.routingKeyName);
+    callbacks.add(routingKeyCallback);
+
     return queue.bind(exchange, routingKeyCallback.routingKeyName).then<Queue>((Queue _queue) {
       queue = _queue;
       return queue;
@@ -96,6 +96,7 @@ class MessageClient {
 }
 
 class RoutingKeyCallback {
+  int callbackId;
   String routingKeyName;
   Function callbackFunction;
   Function mapper;
