@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:techviz/components/taskList/VizTaskItem.dart';
 import 'package:techviz/components/vizTaskActionButton.dart';
 import 'package:techviz/components/vizTimer.dart';
 import 'package:techviz/home.dart';
@@ -50,6 +51,12 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
   }
 
 
+  void onTaskItemTapCallback(String taskID){
+    setState(() {
+      _selectedTask = _taskList.where((Task task) => task.id == taskID).first;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -58,61 +65,17 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
         gradient: LinearGradient(colors: [Color(0xFF4D4D4D), Color(0xFF000000)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated));
 
     //LEFT PANEL WIDGETS
-    //task list header and task list
-
-    void _onTaskItemTapped(Task task) {
-      setState(() {
-        _selectedTask = task;
-      });
-    }
-
     var listTasks = <Widget>[];
-
     for (var i = 1; i <= _taskList.length; i++) {
       Task task = _taskList[i - 1];
-      var taskItem = GestureDetector(
-          onTap: () {
-            _onTaskItemTapped(task);
-          },
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                flex: 1,
-                child: Container(
-                  height: 60.0,
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                          colors: _selectedTask!= null && _selectedTask.id == task.id ? [Color(0xFF65b1d9), Color(0xFF0268a2)] : [Color(0xFF45505D), Color(0xFF282B34)],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          tileMode: TileMode.repeated)),
-                  child: Center(child: Text(i.toString(), style: TextStyle(color: Colors.white))),
-                ),
-              ),
-              Expanded(
-                flex: 4,
-                child: Container(
-                  height: 60.0,
-                  decoration:
-                      BoxDecoration(gradient: LinearGradient(colors: [Color(0xFFB2C7CF), Color(0xFFE4EDEF)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
-                  child: Center(
-                      child: Text(
-                    task.location,
-                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15.0),
-                  )),
-                ),
-              ),
-            ],
-          ));
 
+      var taskItem = VizTaskItem(task.id, task.location, i, onTaskItemTapCallback, _selectedTask!=null && _selectedTask.id == task.id, task.urgencyHEXColor);
       listTasks.add(taskItem);
     }
-
 
     var taskTextStr = listTasks.length == 0 ? 'No tasks' : (listTasks.length == 1 ? '1 Task' : '${listTasks.length} Tasks');
 
     Widget listContainer = Center(child: null);
-
     if(_isLoadingTasks){
       listContainer = Center(child: CircularProgressIndicator());
     }
@@ -498,7 +461,6 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
 
   @override
   void onUserStatusChanged(UserStatus us) {
-
     setState(() {
       _isLoadingTasks = false; //TODO: REVIEW
       if(us.isOnline){
