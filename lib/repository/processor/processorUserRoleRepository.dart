@@ -11,6 +11,8 @@ class ProcessorUserRoleRepository extends IRemoteRepository<UserRole>{
 
   @override
   Future fetch() {
+    print('Fetching '+this.toString());
+
     Completer _completer = Completer<void>();
     SessionClient client = SessionClient.getInstance();
 
@@ -31,8 +33,6 @@ class ProcessorUserRoleRepository extends IRemoteRepository<UserRole>{
 
         LocalRepository localRepo = LocalRepository();
         await localRepo.open();
-
-        print(rows.length);
 
         rows.forEach((dynamic d) {
           dynamic values = d['Values'];

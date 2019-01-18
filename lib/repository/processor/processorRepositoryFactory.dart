@@ -75,7 +75,7 @@ class ProcessorRepositoryConfig {
       };
     }
 
-    print('done setup');
+    print('Setup is done');
 
   }
 

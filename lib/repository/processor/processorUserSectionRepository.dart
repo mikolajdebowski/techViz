@@ -10,6 +10,8 @@ import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 class ProcessorUserSectionRepository extends IRemoteRepository<UserSection> {
   @override
   Future fetch() {
+    print('Fetching '+this.toString());
+
     Completer _completer = Completer<void>();
     SessionClient client = SessionClient.getInstance();
 
@@ -29,8 +31,6 @@ class ProcessorUserSectionRepository extends IRemoteRepository<UserSection> {
 
         LocalRepository localRepo = LocalRepository();
         await localRepo.open();
-
-        print(rows.length);
 
         rows.forEach((dynamic d) {
           dynamic values = d['Values'];

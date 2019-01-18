@@ -120,49 +120,56 @@ class LoginState extends State<Login> {
   }
 
   void loginTap() async {
+
+    if(_isLoading)
+      return;
+
     FocusScope.of(context).requestFocus(FocusNode());
 
-    if (_formKey.currentState.validate()) {
-      _formKey.currentState.save();
-
-      setState(() {
-        _isLoading = true;
-        _loadingMessage = 'Authenticating...';
-      });
-
-      SessionClient client = SessionClient.getInstance();
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String serverUrl = prefs.get(Config.SERVERURL) as String;
-
-      client.init(ClientType.PROCESSOR, serverUrl);
-
-      Future<String> authResponse = client.auth(_formData['username'], _formData['password']);
-      authResponse.then((String response) async {
-
-        await prefs.setString(Login.USERNAME, usernameAddressController.text);
-        await prefs.setString(Login.PASSWORD, passwordAddressController.text);
-
-        await loadInitialData();
-        await setupUser(usernameAddressController.text);
-
-        Future.delayed( Duration(milliseconds:  200), () {
-          Navigator.pushReplacement(context, MaterialPageRoute<RoleSelector>(builder: (BuildContext context) => RoleSelector()));
-        });
-      }).catchError((Object error) {
-        setState(() {
-          _isLoading = false;
-        });
-        showModalBottomSheet<String>(
-            context: context,
-            builder: (BuildContext context) {
-              return Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(80.0),
-                    child: Text(error.toString()),
-                  ));
-            });
-      });
+    if (!_formKey.currentState.validate()) {
+      return;
     }
+
+    _formKey.currentState.save();
+
+    setState(() {
+      _isLoading = true;
+      _loadingMessage = 'Authenticating...';
+    });
+
+    SessionClient client = SessionClient.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String serverUrl = prefs.get(Config.SERVERURL) as String;
+
+    client.init(ClientType.PROCESSOR, serverUrl);
+
+    Future<String> authResponse = client.auth(_formData['username'], _formData['password']);
+    authResponse.then((String response) async {
+
+      await prefs.setString(Login.USERNAME, usernameAddressController.text);
+      await prefs.setString(Login.PASSWORD, passwordAddressController.text);
+
+      await loadInitialData();
+      await setupUser(usernameAddressController.text);
+
+      Future.delayed( Duration(milliseconds:  200), () {
+        Navigator.pushReplacement(context, MaterialPageRoute<RoleSelector>(builder: (BuildContext context) => RoleSelector()));
+      });
+    }).catchError((Object error) {
+      setState(() {
+        _isLoading = false;
+      });
+      showModalBottomSheet<String>(
+          context: context,
+          builder: (BuildContext context) {
+            return Center(
+                child: Padding(
+                  padding: EdgeInsets.all(80.0),
+                  child: Text(error.toString()),
+                ));
+          });
+    });
+
   }
 
   @override
@@ -195,7 +202,7 @@ class LoginState extends State<Login> {
           autocorrect: false,
           onSaved: (String value) {
             _formData['username'] = value;
-            print('saving username: $value');
+            //print('saving username: $value');
           },
           validator: (String value) {
             if (value.isEmpty) {
@@ -221,7 +228,7 @@ class LoginState extends State<Login> {
           focusNode: txtPwdFocusNode,
           controller: passwordAddressController,
           onSaved: (String value) {
-            print('saving password: $value');
+            //print('saving password: $value');
             _formData['password'] = value;
           },
           autocorrect: false,

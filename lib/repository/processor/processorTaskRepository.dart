@@ -12,6 +12,8 @@ class ProcessorTaskRepository extends IRemoteRepository<Task>{
    */
   @override
   Future<dynamic> fetch()  {
+    print('Fetching '+this.toString());
+
     Completer _completer = Completer<List<Map<String, dynamic>>>();
     SessionClient client = SessionClient.getInstance();
 

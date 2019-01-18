@@ -26,7 +26,7 @@ class Session extends PropertyChangeNotifier {
   }
 
   Session._internal() {
-    print('Session instance');
+    //print('Session instance');
   }
 
   void init(String userID) async {

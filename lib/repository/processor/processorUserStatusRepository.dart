@@ -11,6 +11,8 @@ class ProcessorUserStatusRepository extends IRemoteRepository<UserStatus>{
 
   @override
   Future fetch() {
+    print('Fetching '+this.toString());
+
     Completer _completer = Completer<void>();
     SessionClient client = SessionClient.getInstance();
 

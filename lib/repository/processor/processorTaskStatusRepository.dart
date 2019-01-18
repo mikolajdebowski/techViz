@@ -11,6 +11,8 @@ class ProcessorTaskStatusRepository extends IRemoteRepository<TaskStatus>{
 
   @override
   Future fetch() {
+    print('Fetching '+this.toString());
+
     Completer _completer = Completer<void>();
     SessionClient client = SessionClient.getInstance();
 
