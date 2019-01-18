@@ -20,11 +20,7 @@ class ProcessorUserStatusRepository extends IRemoteRepository<UserStatus>{
     String liveTableID = config.GetLiveTable(LiveTableType.TECHVIZ_MOBILE_USER_STATUS.toString()).ID;
     String url = 'live/${config.DocumentID}/${liveTableID}/select.json';
 
-    client.get(url).catchError((Error onError){
-      print(onError.toString());
-      _completer.completeError(onError);
-
-    }).then((String rawResult) async {
+    client.get(url).then((String rawResult) async {
 
       try{
         dynamic decoded = json.decode(rawResult);

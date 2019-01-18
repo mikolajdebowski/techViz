@@ -20,11 +20,7 @@ class ProcessorRoleRepository extends IRemoteRepository<Role>{
     String liveTableID = config.GetLiveTable(LiveTableType.TECHVIZ_MOBILE_ROLE.toString()).ID;
     String url = 'live/${config.DocumentID}/${liveTableID}/select.json';
 
-    client.get(url).catchError((Error onError){
-      print(onError.toString());
-      _completer.completeError(onError);
-
-    }).then((String rawResult) async {
+    client.get(url).then((String rawResult) async {
       dynamic decoded = json.decode(rawResult);
       List<dynamic> rows = decoded['Rows'] as List<dynamic>;
 
@@ -44,7 +40,7 @@ class ProcessorRoleRepository extends IRemoteRepository<Role>{
 
       _completer.complete();
 
-    }).catchError((Error e)
+    }).catchError((dynamic e)
     {
       print(e.toString());
       _completer.completeError(e);

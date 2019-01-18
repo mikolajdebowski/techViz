@@ -20,11 +20,7 @@ class ProcessorTaskStatusRepository extends IRemoteRepository<TaskStatus>{
     String liveTableID = config.GetLiveTable(LiveTableType.TECHVIZ_MOBILE_TASK_STATUS.toString()).ID;
     String url = 'live/${config.DocumentID}/${liveTableID}/select.json';
 
-    client.get(url).catchError((Error onError){
-      print(onError.toString());
-      _completer.completeError(onError);
-
-    }).then((String rawResult) async {
+    client.get(url).then((String rawResult) async {
 
       dynamic decoded = json.decode(rawResult);
       List<dynamic> rows = decoded['Rows'] as List<dynamic>;
