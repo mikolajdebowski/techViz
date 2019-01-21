@@ -20,7 +20,7 @@ class ProcessorUserSectionRepository extends IRemoteRepository<UserSection> {
     String url = 'live/${config.DocumentID}/${liveTableID}/select.json';
 
     client.get(url).then((String rawResult) async {
-      try {
+
         dynamic decoded = json.decode(rawResult);
         List<dynamic> rows = decoded['Rows'] as List<dynamic>;
 
@@ -39,10 +39,10 @@ class ProcessorUserSectionRepository extends IRemoteRepository<UserSection> {
         });
 
         _completer.complete();
-      } catch (e) {
-        print(e.toString());
-        _completer.completeError(e);
-      }
+
+    }).catchError((dynamic e){
+      print(e.toString());
+      _completer.completeError(e);
     });
 
     return _completer.future;

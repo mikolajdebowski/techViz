@@ -21,30 +21,29 @@ class ProcessorUserRoleRepository extends IRemoteRepository<UserRole>{
     String url = 'live/${config.DocumentID}/${liveTableID}/select.json';
 
     client.get(url).then((String rawResult) async {
-      try{
-        dynamic decoded = json.decode(rawResult);
-        List<dynamic> rows = decoded['Rows'] as List<dynamic>;
 
-        var _columnNames = (decoded['ColumnNames'] as String).split(',');
+      dynamic decoded = json.decode(rawResult);
+      List<dynamic> rows = decoded['Rows'] as List<dynamic>;
 
-        LocalRepository localRepo = LocalRepository();
-        await localRepo.open();
+      var _columnNames = (decoded['ColumnNames'] as String).split(',');
 
-        rows.forEach((dynamic d) {
-          dynamic values = d['Values'];
+      LocalRepository localRepo = LocalRepository();
+      await localRepo.open();
 
-          Map<String, dynamic> map = Map<String, dynamic>();
-          map['UserID'] = values[_columnNames.indexOf("UserID")];
-          map['UserRoleID'] = values[_columnNames.indexOf("UserRoleID")];
-          localRepo.insert('UserRole', map);
-        });
+      rows.forEach((dynamic d) {
+        dynamic values = d['Values'];
 
-        _completer.complete();
-      }
-      catch (e){
-        print(e.toString());
-        _completer.completeError(e);
-      }
+        Map<String, dynamic> map = Map<String, dynamic>();
+        map['UserID'] = values[_columnNames.indexOf("UserID")];
+        map['UserRoleID'] = values[_columnNames.indexOf("UserRoleID")];
+        localRepo.insert('UserRole', map);
+      });
+
+      _completer.complete();
+
+    }).catchError((dynamic e){
+      print(e.toString());
+      _completer.completeError(e);
     });
 
     return _completer.future;

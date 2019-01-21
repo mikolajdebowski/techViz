@@ -22,34 +22,32 @@ class ProcessorUserRepository extends IRemoteRepository<User>{
 
     client.get(url).then((String rawResult) async {
 
-      try{
-        dynamic decoded = json.decode(rawResult);
-        List<dynamic> rows = decoded['Rows'] as List<dynamic>;
+      dynamic decoded = json.decode(rawResult);
+      List<dynamic> rows = decoded['Rows'] as List<dynamic>;
 
-        var _columnNames = (decoded['ColumnNames'] as String).split(',');
+      var _columnNames = (decoded['ColumnNames'] as String).split(',');
 
-        LocalRepository localRepo = LocalRepository();
-        await localRepo.open();
+      LocalRepository localRepo = LocalRepository();
+      await localRepo.open();
 
-        rows.forEach((dynamic d) {
-          dynamic values = d['Values'];
+      rows.forEach((dynamic d) {
+        dynamic values = d['Values'];
 
-          Map<String, dynamic> map = Map<String, dynamic>();
-          map['UserID'] = values[_columnNames.indexOf("UserID")];
-          //map['SectionList'] = values[_columnNames.indexOf("SectionList")];
-          map['UserRoleID'] = values[_columnNames.indexOf("UserRoleID")];
-          map['UserName'] = values[_columnNames.indexOf("UserName")];
-          map['UserStatusID'] = values[_columnNames.indexOf("UserStatusID")];
+        Map<String, dynamic> map = Map<String, dynamic>();
+        map['UserID'] = values[_columnNames.indexOf("UserID")];
+        //map['SectionList'] = values[_columnNames.indexOf("SectionList")];
+        map['UserRoleID'] = values[_columnNames.indexOf("UserRoleID")];
+        map['UserName'] = values[_columnNames.indexOf("UserName")];
+        map['UserStatusID'] = values[_columnNames.indexOf("UserStatusID")];
 
-          localRepo.insert('User', map);
-        });
+        localRepo.insert('User', map);
+      });
 
-        _completer.complete();
-      }
-      catch (e){
-        print(e.toString());
-        _completer.completeError(e);
-      }
+      _completer.complete();
+
+    }).catchError((dynamic e){
+      print(e.toString());
+      _completer.completeError(e);
     });
 
 
