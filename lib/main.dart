@@ -41,17 +41,27 @@ class TechVizAppState extends State<TechVizApp> with WidgetsBindingObserver {
     setState(() {
 
       if(_lastLifecycleState == AppLifecycleState.inactive && state == AppLifecycleState.resumed){
-        Session().rabbitmqClient.then((Client client){
-          Session().UpdateConnectionStatus(ConnectionStatus.Connecting);
-          print('Reconnecting...');
-          client.connect().catchError((dynamic err){
-            Session().UpdateConnectionStatus(ConnectionStatus.Offline);
-            print(err);
-          }).then((dynamic d){
-            Channel channel = d as Channel;
+
+        Session().ResetRabbitmqClient();
+        Session().UpdateConnectionStatus(ConnectionStatus.Connecting);
+        print('Reconnecting...');
+
+        Session().rabbitmqClient.then((Client client) async {
+          Session().initRabbitMQ().then((dynamic d){
             Session().UpdateConnectionStatus(ConnectionStatus.Online);
-            print(channel);
           });
+        }).catchError((dynamic err){
+          print(err);
+          Session().UpdateConnectionStatus(ConnectionStatus.Offline);
+          showModalBottomSheet<String>(
+              context: context,
+              builder: (BuildContext context) {
+                return Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(80.0),
+                      child: Text(err.toString()),
+                    ));
+              });
         });
       }
 

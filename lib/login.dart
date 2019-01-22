@@ -99,24 +99,21 @@ class LoginState extends State<Login> {
     //CREATE SESSION
     Session session = Session();
     var user = await UserTable.updateStatusID(userID, "10"); //FORCE OFF-SHIFT LOCALLY
-    print('UserStatusID is ${user.UserStatusID}');
-    await session.init(userID);
 
     DeviceInfo deviceInfo = await Utils.deviceInfo;
 
-    await MessageClient().init(deviceInfo.DeviceID).then((dynamic d) async{
-      MessageClient().listen();
-
-      setState(() {
-        _loadingMessage = 'Updating user and device info...';
-      });
-
-      var toSendDeviceDetails = {'userID': session.user.UserID, 'deviceID': deviceInfo.DeviceID, 'model': deviceInfo.Model, 'OSName': deviceInfo.OSName, 'OSVersion': deviceInfo.OSVersion };
-      await DeviceMessage().publishMessage(toSendDeviceDetails);
-
-      var toSendUserStatus = {'userStatusID': 10, 'userID':session.user.UserID, 'deviceID': deviceInfo.DeviceID }; //FORCE OFF-SHIFT REMOTE
-      await UserMessage().publishMessage(toSendUserStatus, deviceID: deviceInfo.DeviceID);
+    print('UserStatusID is ${user.UserStatusID}');
+    await session.init(userID);
+    await session.initRabbitMQ();
+    setState(() {
+      _loadingMessage = 'Updating user and device info...';
     });
+
+    var toSendDeviceDetails = {'userID': session.user.UserID, 'deviceID': deviceInfo.DeviceID, 'model': deviceInfo.Model, 'OSName': deviceInfo.OSName, 'OSVersion': deviceInfo.OSVersion };
+    await DeviceMessage().publishMessage(toSendDeviceDetails);
+
+    var toSendUserStatus = {'userStatusID': 10, 'userID':session.user.UserID, 'deviceID': deviceInfo.DeviceID }; //FORCE OFF-SHIFT REMOTE
+    await UserMessage().publishMessage(toSendUserStatus, deviceID: deviceInfo.DeviceID);
   }
 
   void loginTap() async {

@@ -4,6 +4,7 @@ import 'package:dart_amqp/dart_amqp.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techviz/config.dart';
 import 'package:techviz/model/user.dart';
+import 'package:techviz/repository/async/messageClient.dart';
 import 'package:techviz/repository/local/userTable.dart';
 import 'package:techviz/repository/async/userMessage.dart';
 import 'package:observable/observable.dart';
@@ -12,7 +13,8 @@ import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 enum ConnectionStatus{
   Offline,
   Online,
-  Connecting
+  Connecting,
+  Errored
 }
 
 class Session extends PropertyChangeNotifier {
@@ -39,7 +41,24 @@ class Session extends PropertyChangeNotifier {
     });
   }
 
+  Future initRabbitMQ() async{
+    Completer _completer = Completer<void>();
+    print('initRabbitMQ');
+    DeviceInfo deviceInfo = await Utils.deviceInfo;
+
+    MessageClient().init(deviceInfo.DeviceID).then((dynamic d) {
+      MessageClient().listen();
+
+      _completer.complete();
+    });
+
+    return _completer.future;
+  }
+
   Future<Client> get rabbitmqClient async{
+
+    Completer<Client> _completer = Completer<Client>();
+
     if(_rabbitmqClient==null){
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String host = prefs.getString(Config.SERVERURL);
@@ -53,10 +72,22 @@ class Session extends PropertyChangeNotifier {
         print('onData error: ' + error.toString());
       });
     }
-    await _rabbitmqClient.connect();
-    Session().UpdateConnectionStatus(ConnectionStatus.Online);
 
-    return _rabbitmqClient;
+    _rabbitmqClient.connect().then((dynamic client){
+      print('RabbitMQ connected');
+
+      Session().UpdateConnectionStatus(ConnectionStatus.Online);
+      return _completer.complete(_rabbitmqClient);
+    }).catchError((dynamic e){
+      Session().UpdateConnectionStatus(ConnectionStatus.Errored);
+      return _completer.completeError(e);
+    });
+
+    return _completer.future;
+  }
+
+  void ResetRabbitmqClient(){
+    this._rabbitmqClient = null;
   }
 
   void logOut(){

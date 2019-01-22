@@ -40,7 +40,7 @@ class ProcessorTaskTypeRepository extends IRemoteRepository<TaskType>{
       });
       _completer.complete();
 
-    }).catchError((Error e)
+    }).catchError((dynamic e)
     {
       print(e.toString());
       _completer.completeError(e);

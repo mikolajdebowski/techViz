@@ -41,9 +41,10 @@ class ProcessorTaskStatusRepository extends IRemoteRepository<TaskStatus>{
 
       _completer.complete();
 
-    }).catchError((Error onError)
+    }).catchError((dynamic onError)
     {
       print(onError.toString());
+      _completer.completeError(onError);
     });
 
     return _completer.future;

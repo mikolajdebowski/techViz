@@ -37,7 +37,7 @@ class ProcessorSectionRepository extends IRemoteRepository<Role> {
       });
 
       _completer.complete();
-    }).catchError((Error e) {
+    }).catchError((dynamic e) {
       print(e.toString());
       _completer.completeError(e);
     });

@@ -52,7 +52,7 @@ class ProcessorSlotLookupRepository extends IRemoteRepository<SlotMachine> {
 
       _completer.complete();
 
-    }).catchError((Error onError){
+    }).catchError((dynamic onError){
       print(onError.toString());
       _completer.completeError(onError);
     });
