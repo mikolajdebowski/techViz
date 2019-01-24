@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:observable/observable.dart';
 import 'package:techviz/components/taskList/VizTaskItem.dart';
 import 'package:techviz/components/vizTaskActionButton.dart';
 import 'package:techviz/components/vizTimer.dart';
@@ -6,7 +9,6 @@ import 'package:techviz/home.dart';
 import 'package:techviz/model/task.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/taskListPresenter.dart';
-import 'package:techviz/repository/local/taskTable.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:techviz/repository/taskRepository.dart';
@@ -31,6 +33,10 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
     _taskList = List<Task>();
     _taskPresenter = TaskListPresenter(this);
     _taskListStatusIcon = "assets/images/ic_processing.png";
+
+    Session().changes.listen((List<ChangeRecord> changes) {
+      loadTasks();
+    });
 
     super.initState();
   }
@@ -551,8 +557,8 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if(state == AppLifecycleState.resumed){
-      loadTasks();
-    }
+
   }
+
+
 }
