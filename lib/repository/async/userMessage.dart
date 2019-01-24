@@ -7,11 +7,8 @@ class UserMessage implements IMessageClient<dynamic,User> {
 
   @override
   Future<User> publishMessage(dynamic object, {String deviceID, bool noWait = false}) async{
-    //print('publishMessage starts ${this.hashCode}');
-
     Completer<User> _completer = Completer();
     void callbackFunction(Map<String, dynamic> map){
-      //print('callbackFunction called ${this.hashCode}');
       User user = fromMap(map);
 
       MessageClient().unbindRoutingKey(callback.routingKeyName).then((dynamic d){
@@ -20,7 +17,6 @@ class UserMessage implements IMessageClient<dynamic,User> {
     }
 
     void _publishMesssage(){
-      //print('publishing message ${this.hashCode}');
       MessageClient().publishMessage(
           object,
           "mobile.user.update"
@@ -37,7 +33,6 @@ class UserMessage implements IMessageClient<dynamic,User> {
 
       MessageClient client = MessageClient();
       client.bindRoutingKey(callback).then((dynamic d){
-        //print('binded to routingKey ${this.hashCode}');
         _publishMesssage();
       });
     }

@@ -73,17 +73,23 @@ class MessageClient {
     consumer.listen((AmqpMessage message) {
       if (message.routingKey == null) return;
 
-      var where = callbacks.where((RoutingKeyCallback rkc) => rkc.routingKeyName == message.routingKey);
-      if (where != null && where.length > 0) {
-        RoutingKeyCallback callback = where.first;
-
+      RoutingKeyCallback callback = getCallback(message.routingKey);
+      if(callback!=null){
         Map<String, dynamic> jsonResult = message.payloadAsJson as Map<String, dynamic>;
-
-        //print("PAYLOAD: ${jsonResult}");
-
         callback.callbackFunction(jsonResult);
       }
+
+    }).onError((dynamic error){
+      print(error);
     });
+  }
+
+  RoutingKeyCallback getCallback(String routingKey){
+    var where = callbacks.where((RoutingKeyCallback rkc) => rkc.routingKeyName == routingKey);
+    if (where != null && where.length > 0) {
+      return where.first;
+    }
+    else return null;
   }
 
   void stopListening() async {
@@ -99,6 +105,7 @@ class RoutingKeyCallback {
   int callbackId;
   String routingKeyName;
   Function callbackFunction;
+  Function onError;
   Function mapper;
 }
 

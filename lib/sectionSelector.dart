@@ -30,17 +30,18 @@ class SectionSelectorState extends State<SectionSelector>
     sectionPresenter.loadSections();
   }
 
-  void validate(BuildContext context) async {
+  void onTap(BuildContext context) async {
     Session session = Session();
-    List<String> sections = List<String>();
-    sectionList.forEach((SectionModelPresenter s) {
-      if(s.selected){
-        sections.add(s.sectionID);
-      }
+    List<String> sections = sectionList.where((SectionModelPresenter s) => s.selected).map((SectionModelPresenter s)=>s.sectionID).toList();
+
+    UserSectionRepository repo = UserSectionRepository();
+    repo.update(session.user.UserID, sections, callBack:updateCallback, updateRemote:true).then((dynamic d){
+      updateCallback(sections);
+      Navigator.of(context).pop();
+    }).catchError((dynamic error){
+      print(error);
     });
 
-    UserSectionRepository().update(session.user.UserID, sections, callBack:updateCallback, updateRemote:true);
-    Navigator.of(context).pop();
   }
 
   void updateCallback(List<String> sections) {
@@ -55,7 +56,7 @@ class SectionSelectorState extends State<SectionSelector>
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter));
 
-    var okBtn = VizButton(title: 'OK', highlighted: true, onTap: () => validate(context));
+    var okBtn = VizButton(title: 'OK', highlighted: true, onTap: () => onTap(context));
 
     var actions = <Widget>[];
     actions.add(VizButton(title: 'All', onTap: onSelectAllTapped));
