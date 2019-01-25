@@ -66,7 +66,7 @@ flutter:
     - assets/images/ic_processing.png
     - assets/images/ic_reserve.png
     - assets/images/ic_search.png
-    - assets/images/splash.png
+    - assets/images/bg_splash.png
     - assets/images/ic_settings.png
     - assets/images/ic_up_download.png
     - assets/images/ic_camera.png

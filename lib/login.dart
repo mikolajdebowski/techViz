@@ -11,7 +11,6 @@ import 'package:techviz/config.dart';
 import 'package:techviz/repository/local/userTable.dart';
 import 'package:techviz/repository/async/deviceMessage.dart';
 import 'package:techviz/repository/async/userMessage.dart';
-import 'package:techviz/repository/async/messageClient.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:techviz/roleSelector.dart';
