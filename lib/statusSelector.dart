@@ -6,7 +6,7 @@ import 'package:techviz/components/vizDialog.dart';
 import 'package:techviz/model/user.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/statusListPresenter.dart';
-import 'package:techviz/repository/async/userMessage.dart';
+//import 'package:techviz/repository/async/userMessage.dart';
 import 'package:techviz/repository/local/userTable.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
@@ -49,18 +49,18 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
 
     DeviceInfo deviceInfo = await Utils.deviceInfo;
     var toSend = {'userStatusID': selectedStatus.id, 'userID': Session().user.UserID, 'deviceID': deviceInfo.DeviceID};
-    UserMessage().publishMessage(toSend, deviceID: deviceInfo.DeviceID).then((User returnUser) {
-      loadingBar.dismiss();
-      UserTable.updateStatusID(returnUser.UserID, returnUser.UserStatusID.toString()).then((User user) {
-        Session().user = user;
-        widget.onTapOK(selectedStatus);
-        Navigator.of(context).pop();
-      });
-    }).catchError((Object error) {
-      loadingBar.dismiss();
-      VizDialog.Alert(context, 'Error', error.toString());
-      print(error);
-    });
+//    UserMessage().publishMessage(toSend, deviceID: deviceInfo.DeviceID).then((User returnUser) {
+//      loadingBar.dismiss();
+//      UserTable.updateStatusID(returnUser.UserID, returnUser.UserStatusID.toString()).then((User user) {
+//        Session().user = user;
+//        widget.onTapOK(selectedStatus);
+//        Navigator.of(context).pop();
+//      });
+//    }).catchError((Object error) {
+//      loadingBar.dismiss();
+//      VizDialog.Alert(context, 'Error', error.toString());
+//      print(error);
+//    });
   }
 
   @override

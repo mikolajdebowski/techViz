@@ -4,13 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techviz/common/LowerCaseTextFormatter.dart';
+import 'package:techviz/components/VizAlert.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizLoadingIndicator.dart';
 import 'package:techviz/components/vizRainbow.dart';
 import 'package:techviz/config.dart';
+import 'package:techviz/repository/async/DeviceRouting.dart';
+import 'package:techviz/repository/async/UserRouting.dart';
 import 'package:techviz/repository/local/userTable.dart';
-import 'package:techviz/repository/async/deviceMessage.dart';
-import 'package:techviz/repository/async/userMessage.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:techviz/roleSelector.dart';
@@ -95,28 +96,35 @@ class LoginState extends State<Login> {
   }
 
   Future<void> setupUser(String userID) async{
-    //CREATE SESSION
-    Session session = Session();
-    var user = await UserTable.updateStatusID(userID, "10"); //FORCE OFF-SHIFT LOCALLY
-
     DeviceInfo deviceInfo = await Utils.deviceInfo;
+    Completer<void> _completer = Completer<void>();
 
-    print('UserStatusID is ${user.UserStatusID}');
+
+    Session session = Session();
+    await UserTable.updateStatusID(userID, "10"); //FORCE OFF-SHIFT LOCALLY
     await session.init(userID);
-    await session.initRabbitMQ();
-    setState(() {
-      _loadingMessage = 'Updating user and device info...';
-    });
 
-    var toSendDeviceDetails = {'userID': session.user.UserID, 'deviceID': deviceInfo.DeviceID, 'model': deviceInfo.Model, 'OSName': deviceInfo.OSName, 'OSVersion': deviceInfo.OSVersion };
-    await DeviceMessage().publishMessage(toSendDeviceDetails);
+    try{
+      setState(() {
+        _loadingMessage = 'Updating user and device info...';
+      });
 
-    var toSendUserStatus = {'userStatusID': 10, 'userID':session.user.UserID, 'deviceID': deviceInfo.DeviceID }; //FORCE OFF-SHIFT REMOTE
-    await UserMessage().publishMessage(toSendUserStatus, deviceID: deviceInfo.DeviceID);
+      var toSendUserStatus = {'userStatusID': 10, 'userID':session.user.UserID, 'deviceID': deviceInfo.DeviceID }; //FORCE OFF-SHIFT REMOTE
+      await UserRouting().PublishMessage(toSendUserStatus);
+
+      var toSendDeviceDetails = {'userID': session.user.UserID, 'deviceID': deviceInfo.DeviceID, 'model': deviceInfo.Model, 'OSName': deviceInfo.OSName, 'OSVersion': deviceInfo.OSVersion };
+      await DeviceRouting().PublishMessage(toSendDeviceDetails);
+
+      _completer.complete();
+    }
+    catch (error){
+      _completer.complete(error);
+    }
+
+    _completer.future;
   }
 
   void loginTap() async {
-
     if(_isLoading)
       return;
 
@@ -155,15 +163,7 @@ class LoginState extends State<Login> {
       setState(() {
         _isLoading = false;
       });
-      showModalBottomSheet<String>(
-          context: context,
-          builder: (BuildContext context) {
-            return Center(
-                child: Padding(
-                  padding: EdgeInsets.all(80.0),
-                  child: Text(error.toString()),
-                ));
-          });
+      VizAlert.Show(context, error.toString());
     });
 
   }

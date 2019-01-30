@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:techviz/model/task.dart';
-import 'package:techviz/repository/async/basicRemoteChannel.dart';
-import 'package:techviz/repository/async/messageClient.dart';
+import 'package:techviz/repository/async/basicRemoteChannel.dart.old';
+import 'package:techviz/repository/async/messageClient.dart.old';
 import 'package:techviz/repository/local/taskTable.dart';
 import 'package:techviz/repository/taskRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
@@ -12,7 +12,6 @@ class TaskMessage implements IMessageClient<dynamic,void> {
     return BasicRemoteChannel<void>().publishMessage(
       object,
       "mobile.task.update",
-      "techViz",
     );
   }
 

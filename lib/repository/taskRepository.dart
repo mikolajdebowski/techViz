@@ -5,7 +5,7 @@ import 'package:techviz/model/taskType.dart';
 import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/local/localRepository.dart';
 import 'package:techviz/repository/local/taskTable.dart';
-import 'package:techviz/repository/async/taskMessage.dart';
+//import 'package:techviz/repository/async/taskMessage.dart';
 import 'package:techviz/repository/remoteRepository.dart';
 
 typedef TaskUpdateCallBack = void Function(String taskID);
@@ -115,8 +115,8 @@ class TaskRepository implements IRepository<Task>{
 
     if(updateRemote){
       var toSend = {'taskID': taskID, 'taskStatusID': taskStatusID};
-      TaskMessage taskChannel = TaskMessage();
-      await taskChannel.publishMessage(toSend);
+      //TaskMessage taskChannel = TaskMessage();
+      //await taskChannel.publishMessage(toSend);
 
       print('rabbitmq update sent');
     }

@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:techviz/model/userSection.dart';
-import 'package:techviz/repository/async/messageClient.dart';
+//import 'package:techviz/repository/async/messageClient.dart.old';
 import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/local/localRepository.dart';
-import 'package:techviz/repository/async/userSectionMessage.dart';
+//import 'package:techviz/repository/async/userSectionMessage.dart';
 import 'package:techviz/repository/remoteRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
@@ -36,33 +36,33 @@ class UserSectionRepository implements IRepository<UserSection> {
       String routingKeyName = "mobile.section.update";
       DeviceInfo info = await await Utils.deviceInfo;;
 
-      RoutingKeyCallback callback = RoutingKeyCallback();
-      callback.callbackFunction = (dynamic payload) async{
-
-          //update database
-        LocalRepository localRepo = LocalRepository();
-        await localRepo.open();
-        await localRepo.db.delete('UserSection');
-
-        if (sections != null) {
-          Future.forEach(sections, (dynamic section) async{
-            Map<String, dynamic> map = Map<String, dynamic>();
-            map['SectionID'] = section;
-            map['UserID'] = userID;
-            await localRepo.insert('UserSection', map);
-          });
-        }
-        _completer.complete(payload);
-      };
-
-      callback.routingKeyName = routingKeyName;
-
-      MessageClient client = MessageClient();
-      client.bindRoutingKey(callback);
-
-
-      var toSubmit = {'userID': userID, 'sections': sections, 'deviceID': info.DeviceID};
-      client.publishMessage(toSubmit, routingKeyName);
+      //RoutingKeyCallback callback = RoutingKeyCallback();
+////      callback.callbackFunction = (dynamic payload) async{
+////
+////          //update database
+////        LocalRepository localRepo = LocalRepository();
+////        await localRepo.open();
+////        await localRepo.db.delete('UserSection');
+////
+////        if (sections != null) {
+////          Future.forEach(sections, (dynamic section) async{
+////            Map<String, dynamic> map = Map<String, dynamic>();
+////            map['SectionID'] = section;
+////            map['UserID'] = userID;
+////            await localRepo.insert('UserSection', map);
+////          });
+////        }
+////        _completer.complete(payload);
+////      };
+////
+////      callback.routingKeyName = routingKeyName;
+////
+////      //MessageClient client = MessageClient();
+////      client.bindRoutingKey(callback);
+//
+//
+//      var toSubmit = {'userID': userID, 'sections': sections, 'deviceID': info.DeviceID};
+//      client.publishMessage(toSubmit, routingKeyName);
 
      return _completer.future;
 

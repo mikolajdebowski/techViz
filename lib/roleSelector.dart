@@ -5,7 +5,7 @@ import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/home.dart';
 import 'package:techviz/model/role.dart';
 import 'package:techviz/presenter/roleListPresenter.dart';
-import 'package:techviz/repository/async/userMessage.dart';
+//import 'package:techviz/repository/async/userMessage.dart';
 import 'package:techviz/repository/session.dart';
 
 class RoleSelector extends StatefulWidget {
@@ -40,7 +40,7 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
     Session session = Session();
     var toSend = {'userRoleID': selectedRoleID, 'userID': session.user.UserID};
 
-    UserMessage().publishMessage(toSend);
+//    UserMessage().publishMessage(toSend);
 
     Navigator.pushReplacement(context, MaterialPageRoute<Home>(builder: (BuildContext context) => Home()));
   }

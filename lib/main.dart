@@ -6,6 +6,7 @@ import 'package:techviz/home.dart';
 import 'package:techviz/login.dart';
 import 'package:techviz/menu.dart';
 import 'package:techviz/profile.dart';
+import 'package:techviz/repository/async/MessageClient.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:techviz/splash.dart';
 
@@ -27,6 +28,9 @@ class TechVizAppState extends State<TechVizApp> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+
+    connectRabbitMQ();
+
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -41,32 +45,18 @@ class TechVizAppState extends State<TechVizApp> with WidgetsBindingObserver {
     setState(() {
 
       if(_lastLifecycleState == AppLifecycleState.inactive && state == AppLifecycleState.resumed){
-
-        Session().ResetRabbitmqClient();
-        Session().UpdateConnectionStatus(ConnectionStatus.Connecting);
-        print('Reconnecting...');
-
-        Session().rabbitmqClient.then((Client client) async {
-          Session().initRabbitMQ().then((dynamic d){
-            Session().UpdateConnectionStatus(ConnectionStatus.Online);
-          });
-        }).catchError((dynamic err){
-          print(err);
-          Session().UpdateConnectionStatus(ConnectionStatus.Offline);
-          showModalBottomSheet<String>(
-              context: context,
-              builder: (BuildContext context) {
-                return Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(80.0),
-                      child: Text(err.toString()),
-                    ));
-              });
-        });
+        connectRabbitMQ();
       }
-
       _lastLifecycleState = state;
       print(_lastLifecycleState);
+    });
+  }
+
+  void connectRabbitMQ(){
+    Session().UpdateConnectionStatus(ConnectionStatus.Connecting);
+
+    MessageClient().Init("techViz").then((dynamic afterInit){
+      Session().UpdateConnectionStatus(ConnectionStatus.Online);
     });
   }
 

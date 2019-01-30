@@ -9,9 +9,9 @@ import 'package:techviz/menu.dart';
 import 'package:techviz/model/task.dart';
 import 'package:techviz/model/userSection.dart';
 import 'package:techviz/model/userStatus.dart';
-import 'package:techviz/repository/async/taskMessage.dart';
+//import 'package:techviz/repository/async/taskMessage.dart';
 import 'package:techviz/repository/local/taskTable.dart';
-import 'package:techviz/repository/async/messageClient.dart';
+//import 'package:techviz/repository/async/messageClient.dart.old';
 import 'package:techviz/repository/session.dart';
 import 'package:techviz/repository/userSectionRepository.dart';
 import 'package:techviz/sectionSelector.dart';
@@ -135,12 +135,12 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       }
     }
 
-    TaskMessage().bind(callbackFunction);
+    //TaskMessage().bind(callbackFunction);
   }
 
   void unTaskBindListener() async {
     DeviceInfo info = await Utils.deviceInfo;
-    MessageClient().unbindRoutingKey("mobile.task.${info.DeviceID}");
+    //MessageClient().unbindRoutingKey("mobile.task.${info.DeviceID}");
   }
 
   void goToSectionSelector() {
