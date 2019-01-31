@@ -3,6 +3,7 @@ import 'package:techviz/model/user.dart';
 import 'package:techviz/repository/async/UserRouting.dart';
 import 'package:techviz/repository/local/userTable.dart';
 import 'package:observable/observable.dart';
+import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 enum ConnectionStatus{
   Offline,
@@ -34,20 +35,23 @@ class Session extends PropertyChangeNotifier {
     });
   }
 
-  Future logOut()  {
+  Future logOut() async  {
+    DeviceInfo info = await Utils.deviceInfo;
+
     Completer<void> _completer = Completer<void>();
     Session session = Session();
 
-    UserTable.updateStatusID(session.user.UserID, "10").then((User user){
-      Session().user = user;
-      var toSend = {'userStatusID': session.user.UserStatusID, 'userID': session.user.UserID};
-
-      UserRouting ur = UserRouting();
-      ur.ListenQueue((dynamic result){
+    UserRouting ur = UserRouting();
+    var toSend = {'userStatusID': '10', 'userID': session.user.UserID, 'deviceID': info.DeviceID};
+    ur.PublishMessage(toSend, callback: (User user){
+      UserTable.updateStatusID(session.user.UserID, "10").then((User user) {
+        Session().user = user;
         _completer.complete();
       });
-      ur.PublishMessage(toSend);
+    }, callbackError: (dynamic error){
+      _completer.completeError(error);
     });
+
     return _completer.future;
   }
 

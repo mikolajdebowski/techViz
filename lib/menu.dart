@@ -1,6 +1,8 @@
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
+import 'package:techviz/components/vizDialog.dart';
 import 'package:techviz/repository/session.dart';
 
 class Menu extends StatefulWidget {
@@ -11,10 +13,24 @@ class Menu extends StatefulWidget {
 }
 
 class _MenuState extends State<Menu> {
-  void logOut(Object tag){
-    Session().logOut();
+  Flushbar loadingBar;
 
-    Navigator.pushNamedAndRemoveUntil(context, '/login', (Route<dynamic> route) => false);
+  void logOut(Object tag){
+    loadingBar.show(context);
+
+    Session().logOut().then((dynamic d){
+      loadingBar.dismiss();
+      Navigator.pushNamedAndRemoveUntil(context, '/login', (Route<dynamic> route) => false);
+    }).catchError((dynamic error){
+      loadingBar.dismiss();
+      VizDialog.Alert(context, 'Error', error.toString());
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadingBar = VizDialog.LoadingBar(message: 'Sending request...');
   }
 
   @override
