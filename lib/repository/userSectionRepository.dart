@@ -31,69 +31,20 @@ class UserSectionRepository implements IRepository<UserSection> {
     return toReturn;
   }
 
-  Future update(String userID, List<String> sections, {UserSectionUpdateCallBack callBack, bool updateRemote = true}) async{
-    Completer<dynamic> _completer = Completer<dynamic>();
-      String routingKeyName = "mobile.section.update";
-      DeviceInfo info = await await Utils.deviceInfo;;
+  void update(String userID, List<String> sections) async{
 
-      //RoutingKeyCallback callback = RoutingKeyCallback();
-////      callback.callbackFunction = (dynamic payload) async{
-////
-////          //update database
-////        LocalRepository localRepo = LocalRepository();
-////        await localRepo.open();
-////        await localRepo.db.delete('UserSection');
-////
-////        if (sections != null) {
-////          Future.forEach(sections, (dynamic section) async{
-////            Map<String, dynamic> map = Map<String, dynamic>();
-////            map['SectionID'] = section;
-////            map['UserID'] = userID;
-////            await localRepo.insert('UserSection', map);
-////          });
-////        }
-////        _completer.complete(payload);
-////      };
-////
-////      callback.routingKeyName = routingKeyName;
-////
-////      //MessageClient client = MessageClient();
-////      client.bindRoutingKey(callback);
-//
-//
-//      var toSubmit = {'userID': userID, 'sections': sections, 'deviceID': info.DeviceID};
-//      client.publishMessage(toSubmit, routingKeyName);
+    LocalRepository localRepo = LocalRepository();
+    await localRepo.open();
+    await localRepo.db.delete('UserSection');
 
-     return _completer.future;
-
-
-//
-//    print('updating local...');
-//    LocalRepository localRepo = LocalRepository();
-//    await localRepo.open();
-//    await localRepo.db.delete('UserSection');
-//
-//    if (sections != null) {
-//      await sections.forEach((dynamic section) {
-//        Map<String, dynamic> map = Map<String, dynamic>();
-//        map['SectionID'] = section;
-//        map['UserID'] = userID;
-//        localRepo.insert('UserSection', map);
-//      });
-//    }
-//
-//    if (updateRemote) {
-//
-//      var toSend = {'userID': userID, 'sections': sections};
-//      UserSectionMessage userSectionChannel = UserSectionMessage();
-//      userSectionChannel.publishMessage(toSend);
-//
-//      print('rabbitmq update sent');
-//    }
-//
-//    if (callBack != null) {
-//      callBack(sections);
-//    }
+    if (sections != null) {
+      Future.forEach(sections, (dynamic section) async{
+        Map<String, dynamic> map = Map<String, dynamic>();
+        map['SectionID'] = section;
+        map['UserID'] = userID;
+        await localRepo.insert('UserSection', map);
+      });
+    }
   }
 
   @override

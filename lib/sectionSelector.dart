@@ -1,11 +1,16 @@
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
+import 'package:techviz/components/vizDialog.dart';
+import 'package:techviz/model/section.dart';
 import 'package:techviz/model/userSection.dart';
 import 'package:techviz/presenter/sectionListPresenter.dart';
+import 'package:techviz/repository/async/SectionRouting.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:techviz/repository/userSectionRepository.dart';
+import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 typedef fncOnUserSectionsChanged(List<String> sections);
 
@@ -21,6 +26,7 @@ class SectionSelectorState extends State<SectionSelector>
     implements ISectionListPresenter<SectionModelPresenter> {
   List<SectionModelPresenter> sectionList = List<SectionModelPresenter>();
   SectionListPresenter sectionPresenter;
+  Flushbar loadingBar;
 
   @override
   void initState() {
@@ -28,24 +34,43 @@ class SectionSelectorState extends State<SectionSelector>
 
     sectionPresenter = SectionListPresenter(this);
     sectionPresenter.loadSections();
+
+    loadingBar = VizDialog.LoadingBar(message: 'Sending request...');
   }
 
   void onTap(BuildContext context) async {
+    if (loadingBar.isShowing()) return;
+
+    loadingBar.show(context);
+
     Session session = Session();
     List<String> sections = sectionList.where((SectionModelPresenter s) => s.selected).map((SectionModelPresenter s)=>s.sectionID).toList();
 
-    UserSectionRepository repo = UserSectionRepository();
-    repo.update(session.user.UserID, sections, callBack:updateCallback, updateRemote:true).then((dynamic d){
-      updateCallback(sections);
-      Navigator.of(context).pop();
-    }).catchError((dynamic error){
-      print(error);
+    DeviceInfo info = await Utils.deviceInfo;
+    var toSubmit = {'userID': session.user.UserID, 'sections': sections, 'deviceID': info.DeviceID};
+
+    SectionRouting().PublishMessage(toSubmit, callback: (List<Section> list) async {
+      loadingBar.dismiss();
+
+      await UserSectionRepository().update(session.user.UserID, sections);
+
+      backToMain(list);
+
+    }, callbackError: (dynamic error){
+      loadingBar.dismiss();
+      VizDialog.Alert(context, 'Error', error.toString());
     });
 
   }
 
-  void updateCallback(List<String> sections) {
-    widget.onUserSectionsChanged(sections);
+  void backToMain(List<Section> sections){
+    List<String> toMain = List<String>();
+    if(sections.length>0){
+      toMain = sections.map((Section s)=> s.SectionID).toList();
+    }
+
+    widget.onUserSectionsChanged(toMain);
+    Navigator.of(context).pop();
   }
 
   @override
