@@ -95,33 +95,36 @@ class LoginState extends State<Login> {
     await repo.initialFetch(onMessage);
   }
 
-  Future<void> setupUser(String userID) async{
-    DeviceInfo deviceInfo = await Utils.deviceInfo;
+  Future setupUser(String userID) async{
     Completer<void> _completer = Completer<void>();
-
+    DeviceInfo deviceInfo = await Utils.deviceInfo;
 
     Session session = Session();
     await UserTable.updateStatusID(userID, "10"); //FORCE OFF-SHIFT LOCALLY
     await session.init(userID);
 
-    try{
-      setState(() {
-        _loadingMessage = 'Updating user and device info...';
-      });
+    setState(() {
+      _loadingMessage = 'Updating user and device info...';
+    });
 
-      var toSendUserStatus = {'userStatusID': 10, 'userID':session.user.UserID, 'deviceID': deviceInfo.DeviceID }; //FORCE OFF-SHIFT REMOTE
-      await UserRouting().PublishMessage(toSendUserStatus);
+    var toSendUserStatus = {'userStatusID': 10, 'userID':session.user.UserID, 'deviceID': deviceInfo.DeviceID }; //FORCE OFF-SHIFT REMOTE
+    var toSendDeviceDetails = {'userID': session.user.UserID, 'deviceID': deviceInfo.DeviceID, 'model': deviceInfo.Model, 'OSName': deviceInfo.OSName, 'OSVersion': deviceInfo.OSVersion };
 
-      var toSendDeviceDetails = {'userID': session.user.UserID, 'deviceID': deviceInfo.DeviceID, 'model': deviceInfo.Model, 'OSName': deviceInfo.OSName, 'OSVersion': deviceInfo.OSVersion };
-      await DeviceRouting().PublishMessage(toSendDeviceDetails);
+    var userUpdateFuture = UserRouting().PublishMessage(toSendUserStatus, callback: (dynamic data){
+      return Future<dynamic>.value(data);
+    }, callbackError: (dynamic error){
+      _completer.completeError(error);
+    });
 
+    var deviceUpdateFuture = DeviceRouting().PublishMessage(toSendDeviceDetails, callbackError: (dynamic error){
+      _completer.completeError(error);
+    });
+
+    Future.wait<dynamic>([userUpdateFuture, deviceUpdateFuture]).then((List<dynamic> l){
       _completer.complete();
-    }
-    catch (error){
-      _completer.complete(error);
-    }
+    });
 
-    _completer.future;
+    return _completer.future;
   }
 
   void loginTap() async {

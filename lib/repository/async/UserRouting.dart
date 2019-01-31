@@ -11,7 +11,7 @@ class UserRouting implements IRouting {
   }
 
   @override
-  Future PublishMessage(dynamic message) {
-    return Routing().PublishMessage(routingPattern, message);
+  Future PublishMessage(dynamic message, {Function callback, Function callbackError}) {
+    return Routing().PublishMessage(routingPattern, message, callback: callback, callbackError: callbackError);
   }
 }
