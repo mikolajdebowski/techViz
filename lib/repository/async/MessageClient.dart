@@ -61,7 +61,7 @@ class MessageClient {
     });
   }
 
-  Future PublishMessage(dynamic object, String routingKeyPattern, {Function callback, Function callbackError}) async {
+  Future PublishMessage(dynamic object, String routingKeyPattern, {Function callback, Function callbackError, Function parser}) async {
     Completer<void> _completer = Completer<void>();
 
     _rabbitmqClient.channel().then((Channel _channel) {
@@ -82,8 +82,18 @@ class MessageClient {
           return queueBinded.consume();
         }).then((Consumer consumer){
           consumer.listen((AmqpMessage message) {
-            callback(message.payloadAsJson);
+
+            consumer.cancel();
+
+            if(parser==null){
+              callback(message.payloadAsJson);
+            }
+            else{
+              callback(parser(message.payloadAsJson));
+            }
+
             if (!_completer.isCompleted) {
+
               _completer.complete(message.payloadAsJson);
             }
           }).onError((dynamic error) {

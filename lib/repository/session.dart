@@ -1,6 +1,4 @@
 import 'dart:async';
-
-import 'package:dart_amqp/dart_amqp.dart';
 import 'package:techviz/model/user.dart';
 import 'package:techviz/repository/async/UserRouting.dart';
 import 'package:techviz/repository/local/userTable.dart';
@@ -15,7 +13,6 @@ enum ConnectionStatus{
 
 class Session extends PropertyChangeNotifier {
   User user;
-  Client _rabbitmqClient;
   ConnectionStatus connectionStatus;
 
   static final Session _singleton = Session._internal();

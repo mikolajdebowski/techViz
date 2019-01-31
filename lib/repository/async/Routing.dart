@@ -40,8 +40,8 @@ class Routing {
     return _completer.future;
   }
 
-  Future PublishMessage(String routingPattern, dynamic object, {Function callback, Function callbackError}) {
-    return MessageClient().PublishMessage(object, routingPattern, callback: callback, callbackError: callbackError);
+  Future PublishMessage(String routingPattern, dynamic object, {Function callback, Function callbackError, Function parser}) {
+    return MessageClient().PublishMessage(object, routingPattern, callback: callback, callbackError: callbackError, parser: parser);
   }
 
 }

@@ -100,17 +100,18 @@ class LoginState extends State<Login> {
     DeviceInfo deviceInfo = await Utils.deviceInfo;
 
     Session session = Session();
-    await UserTable.updateStatusID(userID, "10"); //FORCE OFF-SHIFT LOCALLY
-    await session.init(userID);
 
     setState(() {
       _loadingMessage = 'Updating user and device info...';
     });
 
-    var toSendUserStatus = {'userStatusID': 10, 'userID':session.user.UserID, 'deviceID': deviceInfo.DeviceID }; //FORCE OFF-SHIFT REMOTE
-    var toSendDeviceDetails = {'userID': session.user.UserID, 'deviceID': deviceInfo.DeviceID, 'model': deviceInfo.Model, 'OSName': deviceInfo.OSName, 'OSVersion': deviceInfo.OSVersion };
+    var toSendUserStatus = {'userStatusID': 10, 'userID': userID, 'deviceID': deviceInfo.DeviceID }; //FORCE OFF-SHIFT REMOTE
+    var toSendDeviceDetails = {'userID': userID, 'deviceID': deviceInfo.DeviceID, 'model': deviceInfo.Model, 'OSName': deviceInfo.OSName, 'OSVersion': deviceInfo.OSVersion };
 
-    var userUpdateFuture = UserRouting().PublishMessage(toSendUserStatus, callback: (dynamic data){
+    var userUpdateFuture = UserRouting().PublishMessage(toSendUserStatus, callback: (dynamic data) async{
+      await UserTable.updateStatusID(userID, "10"); //FORCE OFF-SHIFT LOCALLY
+      await session.init(userID);
+
       return Future<dynamic>.value(data);
     }, callbackError: (dynamic error){
       _completer.completeError(error);
