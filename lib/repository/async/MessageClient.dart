@@ -122,36 +122,45 @@ class MessageClient {
   }
 
 
-  Future ListenQueue(String routingPattern, Function callback, {Function callbackError, bool timeOutEnabled = true}) async {
-    Completer<void> _completer = Completer<void>();
+  Future<Consumer> ListenQueue(String routingKeyPattern, Function onData, {Function onError, bool timeOutEnabled = true})  {
+    Completer<Consumer> _completer = Completer<Consumer>();
 
-    DeviceInfo info = await Utils.deviceInfo;
-    String routingKeyNameOfThisDevice = "${routingPattern}.${info.DeviceID}";
-
-    if(timeOutEnabled){
-      Future.delayed(Duration(seconds: 30), (){
-        if(_completer.isCompleted)
+    if (timeOutEnabled) {
+      Future.delayed(Duration(seconds: 30), () {
+        if (_completer.isCompleted)
           _completer.completeError(TimeoutException('timed out for listenqueue'));
       });
     }
 
-    MessageClient().GetConsumerForQueue("${routingPattern}.update", routingKeyNameOfThisDevice).then((Consumer consumer){
-      consumer.listen((AmqpMessage message){
-        if (message.routingKey == null) return;//ignore the message
-        if (message.routingKey != routingKeyNameOfThisDevice) return; //ignore the message
+    _rabbitmqClient.channel().then((Channel _channel) {
+      return _channel.exchange(_exchangeName, ExchangeType.TOPIC, durable: true);
+    }).then((Exchange exchange) async {
+      if (onData != null) {
+        var deviceInfo = await Utils.deviceInfo;
 
-        Map<String, dynamic> jsonResult = message.payloadAsJson as Map<String, dynamic>;
-        callback(jsonResult);
+        String deviceRoutingKeyName = "${routingKeyPattern}.${deviceInfo.DeviceID}";
+        String queueNameForCallback = "${routingKeyPattern}.update";
 
-        _completer.complete();
-      }).onError((dynamic error){
-        print(error);
-        if(callbackError!=null){
-          callbackError(error);
-        }
-        _completer.completeError(error);
-      });
+        Map<String, Object> args = Map<String, String>();
+        args["x-dead-letter-exchange"] = "techViz.error";
+
+        exchange.channel.queue(queueNameForCallback, autoDelete: false, durable: true, arguments: args).then((Queue queue) {
+          return queue.bind(exchange, deviceRoutingKeyName);
+        }).then((Queue queueBinded) {
+          return queueBinded.consume();
+        }).then((Consumer consumer) {
+
+          consumer.listen((AmqpMessage message) {
+            onData(message.payloadAsJson);
+          }).onError((dynamic error) {
+            onError(error);
+          });
+          _completer.complete(consumer);
+        });
+      }
     });
+
     return _completer.future;
   }
+
 }

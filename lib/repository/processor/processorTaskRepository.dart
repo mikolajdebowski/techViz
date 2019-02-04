@@ -38,7 +38,6 @@ class ProcessorTaskRepository extends IRemoteRepository<Task>{
         map['USERID'] = values[_columnNames.indexOf("UserID")] as String;
         map['_DIRTY'] = false;
         map['MACHINEID'] = values[_columnNames.indexOf("MachineID")];
-        map['MACHINEID'] = values[_columnNames.indexOf("MachineID")];
         map['LOCATION'] = values[_columnNames.indexOf("Location")];
         map['TASKSTATUSID'] = values[_columnNames.indexOf("TaskStatusID")];
         map['TASKTYPEID'] = values[_columnNames.indexOf("TaskTypeID")];
@@ -54,7 +53,6 @@ class ProcessorTaskRepository extends IRemoteRepository<Task>{
         map['PLAYERID'] = values[_columnNames.indexOf("PlayerID")];
         map['AMOUNT'] = values[_columnNames.indexOf("Amount")] == '' ? 0.0 : values[_columnNames.indexOf("Amount")];
         map['EVENTDESC'] = values[_columnNames.indexOf("EventDesc")];
-        map['PLAYERID'] = values[_columnNames.indexOf("PlayerID")];
         map['PLAYERFIRSTNAME'] = values[_columnNames.indexOf("FirstName")];
         map['PLAYERLASTNAME'] = values[_columnNames.indexOf("LastName")];
         map['PLAYERTIER'] = values[_columnNames.indexOf("Tier")];

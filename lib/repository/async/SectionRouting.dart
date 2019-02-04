@@ -8,7 +8,7 @@ class SectionRouting implements IRouting {
 
   @override
   void ListenQueue(Function callback, {Function callbackError}) {
-    MessageClient().ListenQueue(routingPattern, callback, callbackError: callbackError);
+    MessageClient().ListenQueue(routingPattern, callback, onError: callbackError);
   }
 
   @override

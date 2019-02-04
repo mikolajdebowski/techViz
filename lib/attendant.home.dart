@@ -1,8 +1,10 @@
-import 'dart:convert';
+import 'dart:async';
 
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:observable/observable.dart';
 import 'package:techviz/components/taskList/VizTaskItem.dart';
+import 'package:techviz/components/vizDialog.dart';
 import 'package:techviz/components/vizTaskActionButton.dart';
 import 'package:techviz/components/vizTimer.dart';
 import 'package:techviz/home.dart';
@@ -27,6 +29,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
   Task _selectedTask = null;
   List<Task> _taskList;
   var _taskListStatusIcon = "assets/images/ic_processing.png";
+  Flushbar loadingBar;
 
   @override
   initState() {
@@ -38,17 +41,32 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
       loadTasks();
     });
 
+    loadingBar = VizDialog.LoadingBar(message: 'Sending request...');
+
     super.initState();
   }
 
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    print('dispose attendant called');
+  }
+
+  @override
   void onTaskListLoaded(List<Task> result) {
+    print('onTaskListLoaded called');
+
     setState(() {
       _taskList = result;
       _taskListStatusIcon = null;
       _isLoadingTasks = false;
     });
+
+    if(_selectedTask!=null){
+      onTaskItemTapCallback(_selectedTask.id);
+    }
   }
 
   @override
@@ -56,13 +74,13 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
     // TODO: implement onLoadError
   }
 
-
   void onTaskItemTapCallback(String taskID){
+    print('onTaskItemTapCallback called');
     setState(() {
       _selectedTask = _taskList.where((Task task) => task.id == taskID).first;
+      print('${_selectedTask.dirty}');
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -183,20 +201,16 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
 
 
     void taskUpdateCallback(String taskID) {
-
-        Session session = Session();
-        TaskRepository().getTask(taskID).then((Task task){
-          setState(()  {
-            if([1,2,3].toList().contains(task.taskStatus.id)){
-            _selectedTask = task;
-            }
-            else _selectedTask = null;
-          });
-          _taskPresenter.loadTaskList(session.user.UserID);
-        });
+      print('taskUpdateCallback called');
+      loadingBar.dismiss();
+      _taskPresenter.loadTaskList(Session().user.UserID);
     }
 
-
+    void updateTaskStatus(String statusID){
+      print('updateTaskStatus called');
+      loadingBar.show(context);
+      TaskRepository().update(_selectedTask.id, taskStatusID: statusID, callBack: taskUpdateCallback);
+    }
 
     if (_selectedTask != null) {
 
@@ -211,26 +225,26 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
           mainActionTextSource = 'Acknowledge';
           actionCallBack = (){
             if(btnEnabled)
-              TaskRepository().update(_selectedTask.id, taskStatusID: "2", callBack: taskUpdateCallback, updateRemote: true);
+              updateTaskStatus("2");
           };
         } else if (_selectedTask.taskStatus.id == 2) {
           mainActionImageSource = "assets/images/ic_cardin.png";
           mainActionTextSource = 'Card in';
           actionCallBack = (){
             if(btnEnabled)
-              TaskRepository().update(_selectedTask.id, taskStatusID: "3", callBack: taskUpdateCallback, updateRemote: true);
+              updateTaskStatus("3");
           };
         } else if (_selectedTask.taskStatus.id == 3) {
           mainActionImageSource = "assets/images/ic_complete.png";
           mainActionTextSource = 'Complete';
           actionCallBack = (){
             if(btnEnabled)
-              TaskRepository().update(_selectedTask.id, taskStatusID: "13", callBack: taskUpdateCallback, updateRemote: true);
+              updateTaskStatus("13");
           };
         }
 
-        ImageIcon mainActionIcon = ImageIcon(AssetImage(mainActionImageSource), size: 60.0, color: btnEnabled? Colors.white: Colors.white70);
-        Center mainActionText = Center(child: Text(mainActionTextSource, style: TextStyle(color: btnEnabled? Colors.white: Colors.white70, fontStyle: FontStyle.italic, fontSize: 20.0, fontWeight: FontWeight.bold)));
+        ImageIcon mainActionIcon = ImageIcon(AssetImage(mainActionImageSource), size: 60.0, color: btnEnabled? Colors.white: Colors.white30);
+        Center mainActionText = Center(child: Text(mainActionTextSource, style: TextStyle(color: btnEnabled? Colors.white: Colors.white30, fontStyle: FontStyle.italic, fontSize: 20.0, fontWeight: FontWeight.bold)));
 
         var requiredAction = Padding(
           padding: EdgeInsets.all(2.0),
@@ -393,7 +407,8 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
       ),
     );
 
-    void _showConfirmationDialogWithOptions(String title, VoidCallback callback){
+    Future<bool> _showConfirmationDialogWithOptions(String title){
+      Completer<bool> _completer = Completer<bool>();
       showDialog<bool>(context: context, builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
@@ -403,19 +418,22 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
             FlatButton(
               child: Text("Cancel"),
               onPressed: () {
+                _completer.complete(false);
                 Navigator.of(context).pop();
               },
             ),
             FlatButton(
               child: Text("Yes"),
               onPressed: () {
-                callback();
+                _completer.complete(true);
                 Navigator.of(context).pop();
               },
             )
           ],
         );
       });
+
+      return _completer.future;
     }
 
     List<VizTaskActionButton> rightActionWidgets = List<VizTaskActionButton>();
@@ -424,16 +442,20 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
       bool enableButtons = _selectedTask.dirty == false;
       if (_selectedTask.taskStatus.id == 2 || _selectedTask.taskStatus.id == 3) {
         rightActionWidgets.add(VizTaskActionButton('Cancel', [Color(0xFF433177), Color(0xFFF2003C)], enabled: enableButtons, onTapCallback: () {
-          _showConfirmationDialogWithOptions('Cancel a task', () {
-           TaskRepository().update(_selectedTask.id, taskStatusID: "12", callBack: taskUpdateCallback, updateRemote: true);
+          _showConfirmationDialogWithOptions('Cancel a task').then((bool choice){
+            if(choice){
+              updateTaskStatus("12");
+            }
           });
         }));
       }
 
       if (_selectedTask.taskStatus.id == 3) {
         rightActionWidgets.add(VizTaskActionButton('Escalate', [Color(0xFF1356ab), Color(0xFF23ABE7)], enabled: enableButtons, onTapCallback: () {
-          _showConfirmationDialogWithOptions('Escalate a task', () {
-            TaskRepository().update(_selectedTask.id, taskStatusID: "5", callBack: taskUpdateCallback, updateRemote: true);
+          _showConfirmationDialogWithOptions('Escalate a task').then((bool choice){
+            if(choice){
+              updateTaskStatus("5");
+            }
           });
         }));
       }
@@ -527,38 +549,22 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
           print(task.id + ' updated selected with StatusID ' +task.taskStatus.id.toString());
         }
 
-        for(int i=0; i< _taskList.length; i++){
-          if(_taskList[i].id == task.id){
-            _taskList[i] = task;
-            print(task.id + ' updated in the local list because StatusID is ' +task.taskStatus.id.toString());
-          }
-        }
-
-        if(_taskList.where((Task thisTask) => task.id == thisTask.id).length==0){
-          _taskList.add(task); //seems ok
-          print(task.id + ' added to the list with StatusID ' +task.taskStatus.id.toString());
-
-        }
+        _taskPresenter.loadTaskList(session.user.UserID);
       }
       else{ //remove from the view
-        print(task.id + ' remove from the view ' +task.taskStatus.id.toString());
         if(_selectedTask!=null && _selectedTask.id == task.id){
           _selectedTask = null;
           print(task.id + ' removed from selected because StatusID is ' +task.taskStatus.id.toString());
         }
 
-        if(_taskList!=null && _taskList.length>0){
-          _taskList = _taskList.where((Task thisTask) => thisTask.id != task.id).toList();
-          print(task.id + ' removed from the list because StatusID is ' +task.taskStatus.id.toString());
-        }
+        _taskPresenter.loadTaskList(session.user.UserID);
       }
     });
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-
+    // TODO: implement didChangeAppLifecycleState
   }
-
 
 }

@@ -1,3 +1,4 @@
+import 'package:dart_amqp/dart_amqp.dart';
 import 'package:flutter/material.dart';
 import 'package:observable/observable.dart';
 import 'package:techviz/attendant.home.dart';
@@ -11,6 +12,7 @@ import 'package:techviz/model/userSection.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/repository/local/taskTable.dart';
 import 'package:techviz/repository/session.dart';
+import 'package:techviz/repository/taskRepository.dart';
 import 'package:techviz/repository/userSectionRepository.dart';
 import 'package:techviz/sectionSelector.dart';
 import 'package:techviz/slotLookup.dart';
@@ -127,18 +129,23 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   }
 
   void bindTaskListener() async {
-    void callbackFunction(Task task) async {
-      if(keyAttendant!=null && keyAttendant.currentState!=null){
-        keyAttendant.currentState.onTaskReceived(task);
-      }
+    if(consumer!=null){
+      consumer.cancel();
     }
 
-    //TaskMessage().bind(callbackFunction);
+    consumer = await TaskRepository().listen((Task task){
+      keyAttendant.currentState.onTaskReceived(task);
+    }, (dynamic error){
+        print(error);
+    });
   }
 
+  Consumer consumer;
+
   void unTaskBindListener() async {
-    DeviceInfo info = await Utils.deviceInfo;
-    //MessageClient().unbindRoutingKey("mobile.task.${info.DeviceID}");
+    if(consumer!=null){
+      consumer.cancel();
+    }
   }
 
   void goToSectionSelector() {

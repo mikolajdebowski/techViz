@@ -1,21 +1,25 @@
 import 'dart:async';
+import 'package:dart_amqp/dart_amqp.dart';
 import 'package:techviz/model/task.dart';
 import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/model/taskType.dart';
+import 'package:techviz/repository/async/TaskRouting.dart';
 import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/local/localRepository.dart';
 import 'package:techviz/repository/local/taskTable.dart';
-//import 'package:techviz/repository/async/taskMessage.dart';
 import 'package:techviz/repository/remoteRepository.dart';
 
 typedef TaskUpdateCallBack = void Function(String taskID);
 typedef TaskSubmitallBack = void Function(String taskID);
 
 class TaskRepository implements IRepository<Task>{
+
   IRemoteRepository remoteRepository;
   TaskRepository({this.remoteRepository});
 
-  Future<List<Task>> getTaskList(String userID) async {
+  Future<List<Task>> getOpenTasks(String userID) async {
+    print('getOpenTasks called');
+
     LocalRepository localRepo = LocalRepository();
     if(!localRepo.db.isOpen)
       await localRepo.open();
@@ -33,7 +37,7 @@ class TaskRepository implements IRepository<Task>{
       list.add(_fromMap(task));
     });
 
-    print("list  ${list.length}");
+    print("getOpenTasks list length: ${list.length}");
 
     return list;
   }
@@ -60,7 +64,7 @@ class TaskRepository implements IRepository<Task>{
 
   Task _fromMap(Map<String, dynamic> task){
     var t = Task(
-        dirty: task['_Dirty'] == 1,
+        dirty: task['_DIRTY'] == 1,
         version: task['_VERSION'] as int,
         userID: task['USERID'] as String,
         id: task['_ID'] as String,
@@ -97,32 +101,62 @@ class TaskRepository implements IRepository<Task>{
   }
 
   @override
-  Future listen() {
-    throw UnimplementedError();
+  Future<Consumer> listen(Function onData, Function onError) async {
+
+    return TaskRouting().ListenQueue((dynamic task) async{
+
+      print('ListenQueue callback called');
+
+      Map<String,dynamic> taskMapped = Map<String,dynamic>();
+      taskMapped['_ID'] = task['_ID'];
+      taskMapped['_DIRTY'] = false;
+      taskMapped['_VERSION'] =  task['_version'];
+      taskMapped['USERID'] = task['userID'];
+      taskMapped['LOCATION'] = task['location'];
+      taskMapped['TASKSTATUSID'] = task['taskStatusID'];
+      taskMapped['TASKTYPEID'] = task['taskTypeID'];
+      taskMapped['MACHINEID'] = task['machineID'];
+
+
+      taskMapped['TASKCREATED'] = task['taskCreated'];
+      taskMapped['TASKASSIGNED'] = task['taskAssigned'];
+      taskMapped['PLAYERID'] = task['playerID'];
+      taskMapped['AMOUNT'] = task['amount'] == null ||  task['amount'] =='' ? 0.0 : task['amount'];
+
+      taskMapped['EVENTDESC'] = task['eventDesc'];
+      taskMapped['PLAYERFIRSTNAME'] = task['firstName'];
+      taskMapped['PLAYERLASTNAME'] = task['lastName'];
+      taskMapped['PLAYERTIER'] = task['tier'];
+      taskMapped['PLAYERTIERCOLORHEX'] = task['tierColorHex'];
+
+
+      await TaskTable.insertOrUpdate([taskMapped]);
+
+      Task taskUpdate = await TaskRepository().getTask(task['_ID'].toString());
+      onData(taskUpdate);
+
+    }, onError: onError, onCancel: (){
+      print('onCancel called');
+    });
   }
 
-  Future update(String taskID, {String taskStatusID, TaskUpdateCallBack callBack, bool markAsDirty = true, bool updateRemote = false} ) async {
+  Future update(String taskID, {String taskStatusID, TaskUpdateCallBack callBack} ) async {
+    Completer<dynamic> _completer = Completer<dynamic>();
     print('updating local...');
     LocalRepository localRepo = LocalRepository();
     if(!localRepo.db.isOpen)
       await localRepo.open();
 
-    int dirty = markAsDirty?1:0;
+    int updated = await  LocalRepository().db.rawUpdate('UPDATE TASK SET _DIRTY = 1 WHERE _ID = ?', [taskID].toList());
 
-    if(taskStatusID!=null){
-      await  LocalRepository().db.rawUpdate('UPDATE TASK SET _DIRTY = ?, TASKSTATUSID = ? WHERE _ID = ?', [dirty, taskStatusID, taskID].toList());
-    }
+    print('updating remote...');
+    var message = {'taskID': taskID, 'taskStatusID': taskStatusID};
 
-    if(updateRemote){
-      var toSend = {'taskID': taskID, 'taskStatusID': taskStatusID};
-      //TaskMessage taskChannel = TaskMessage();
-      //await taskChannel.publishMessage(toSend);
-
-      print('rabbitmq update sent');
-    }
-
-    if(callBack!=null){
+    TaskRouting().PublishMessage(message).then<dynamic>((dynamic d){
       callBack(taskID);
-    }
+      _completer.complete(d);
+    });
+
+    return _completer.future;
   }
 }

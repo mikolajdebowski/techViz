@@ -1,26 +1,20 @@
 import 'dart:async';
+import 'package:dart_amqp/dart_amqp.dart';
 import 'package:techviz/model/task.dart';
-import 'package:techviz/repository/async/IRouting.dart';
 import 'package:techviz/repository/async/MessageClient.dart';
 
-class UserRouting implements IRouting {
+class TaskRouting {
   String routingPattern = "mobile.task";
 
-  @override
-  void ListenQueue(Function callback, {Function callbackError}) {
-    MessageClient().ListenQueue(routingPattern, callback, callbackError: callbackError);
+  Future<Consumer> ListenQueue(Function onData, {Function onError, Function onCancel}) {
+    return MessageClient().ListenQueue(routingPattern, onData, onError: onError, timeOutEnabled: false);
   }
 
-  @override
   Future PublishMessage(dynamic message, {Function callback, Function callbackError}) {
     return MessageClient().PublishMessage(message, routingPattern, callback: callback, callbackError: callbackError, parser: parser);
   }
 
   Task parser(dynamic json){
-      /*
-        taskMapped['TASKSTATUSID'] = task['taskStatusID'];
-        taskMapped['TASKTYPEID'] = task['taskTypeID'];
-      */
     return Task(
       id: json['_ID'] as String,
       dirty: false,
@@ -28,9 +22,9 @@ class UserRouting implements IRouting {
       userID: json['userID'] as String,
       location:  json['location'] as String,
       taskAssigned: json['taskAssigned'] as DateTime,
-      taskCreated: json['taskAssigned'] as DateTime
+      taskCreated: json['taskAssigned'] as DateTime,
+      taskStatusID : int.parse(json['taskStatusID'] as String),
+      taskTypeID : int.parse(json['taskTypeID'] as String)
     );
   }
-
-
 }

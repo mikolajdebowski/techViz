@@ -54,7 +54,7 @@ class UserSectionRepository implements IRepository<UserSection> {
   }
 
   @override
-  Future listen() {
+  Future listen(Function callback, Function callbackError) {
     throw UnimplementedError();
   }
 }
