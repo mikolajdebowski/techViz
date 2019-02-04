@@ -29,7 +29,8 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
   List<UserStatus> statusList = List<UserStatus>();
   StatusListPresenter roleListPresenter;
   UserStatus selectedStatus;
-  Flushbar loadingBar;
+  Flushbar _loadingBar;
+
 
   @override
   void initState() {
@@ -39,19 +40,20 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
     roleListPresenter = StatusListPresenter(this);
     roleListPresenter.loadUserRoles(session.user.UserID);
 
-    loadingBar = VizDialog.LoadingBar(message: 'Sending request...');
+    _loadingBar = VizDialog.LoadingBar(message: 'Sending request...');
   }
 
   void validate(BuildContext context) async {
-    if (loadingBar.isShowing()) return;
+    print(_loadingBar.isShowing());
+    if (_loadingBar.isShowing()) return;
 
-    loadingBar.show(context);
+    _loadingBar.show(context);
 
     DeviceInfo deviceInfo = await Utils.deviceInfo;
     var toSend = {'userStatusID': selectedStatus.id, 'userID': Session().user.UserID, 'deviceID': deviceInfo.DeviceID};
 
     UserRouting().PublishMessage(toSend, callback: (User returnedUser){
-      loadingBar.dismiss();
+      _loadingBar.dismiss();
 
       UserTable.updateStatusID(returnedUser.UserID, returnedUser.UserStatusID.toString()).then((User user) {
         Session().user = user;
@@ -59,8 +61,11 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
         Navigator.of(context).pop();
       });
     }, callbackError: (dynamic error){
-      loadingBar.dismiss();
+      _loadingBar.dismiss();
+
       VizDialog.Alert(context, 'Error', error.toString());
+    }).then<dynamic>((dynamic d){
+      _loadingBar.dismiss();
     });
 
 
