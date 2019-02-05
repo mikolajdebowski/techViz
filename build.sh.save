@@ -1,0 +1,5 @@
+#!/bin/sh
+
+$newVersionText="version=$1"
+
+perl -i -pe "s/version=.*/$newVersionText/g" example.txt
