@@ -64,10 +64,37 @@ class MessageClient {
   Future PublishMessage(dynamic object, String routingKeyPattern, {Function callback, Function callbackError, Function parser}) async {
     Completer<void> _completer = Completer<void>();
 
+    Future<void>.delayed(Duration(seconds: 30), (){
+
+      var excp = Exception('Timeout reached after 30 seconds');
+      if(!_completer.isCompleted){
+        if(callbackError!=null){
+          callbackError(excp);
+        }
+        else _completer.completeError(excp);
+      }
+    });
+
+
+    void _publishMessage(Exchange exchange, dynamic object){
+      MessageProperties props = MessageProperties();
+      props.persistent = true;
+      props.contentType = 'application/json';
+
+      exchange.publish(JsonEncoder().convert(object), "${routingKeyPattern}.update", properties: props);
+    }
+
     _rabbitmqClient.channel().then((Channel _channel) {
       return _channel.exchange(_exchangeName, ExchangeType.TOPIC, durable: true);
     }).then((Exchange exchange) async {
-      if (callback != null) {
+
+
+      if (callback == null) {
+        _publishMessage(exchange, object);
+        _completer.complete();
+      }
+      else{
+
         var deviceInfo = await Utils.deviceInfo;
 
         String deviceRoutingKeyName = "${routingKeyPattern}.${deviceInfo.DeviceID}";
@@ -83,37 +110,36 @@ class MessageClient {
         }).then((Consumer consumer){
           consumer.listen((AmqpMessage message) {
 
-            consumer.cancel();
-
-            if(parser==null){
-              callback(message.payloadAsJson);
-            }
-            else{
-              callback(parser(message.payloadAsJson));
+            if(_completer.isCompleted){
+              consumer.cancel();
             }
 
-            if (!_completer.isCompleted) {
+            if(message.routingKey == deviceRoutingKeyName){
+              consumer.cancel();
 
-              _completer.complete(message.payloadAsJson);
+              if(parser==null){
+                callback(message.payloadAsJson);
+              }
+              else{
+                callback(parser(message.payloadAsJson));
+              }
+
+              if (!_completer.isCompleted) {
+                _completer.complete(message.payloadAsJson);
+              }
             }
+
           }).onError((dynamic error) {
             callbackError(error);
           });
+
+          _publishMessage(exchange, object);
+
         });
       }
 
-
-      MessageProperties props = MessageProperties();
-      props.persistent = true;
-      props.contentType = 'application/json';
-
-      exchange.publish(JsonEncoder().convert(object), "${routingKeyPattern}.update", properties: props);
-
-      if (callback == null) {
-        _completer.complete();
-      }
     }).timeout(Duration(seconds: 30), onTimeout: () {
-      _completer.completeError(TimeoutException('Timeout while creating channel'));
+      throw TimeoutException('Timeout reached after 30 seconds.');
     }).catchError((dynamic e) {
       _completer.completeError(e);
     });
