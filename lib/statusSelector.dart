@@ -60,16 +60,10 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
         widget.onTapOK(selectedStatus);
         Navigator.of(context).pop();
       });
-    }, callbackError: (dynamic error){
+    }).catchError((dynamic error){
       _loadingBar.dismiss();
-
       VizDialog.Alert(context, 'Error', error.toString());
-    }).then<dynamic>((dynamic d){
-      _loadingBar.dismiss();
     });
-
-
-
   }
 
   @override

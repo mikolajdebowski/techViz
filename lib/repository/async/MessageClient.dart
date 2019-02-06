@@ -141,7 +141,8 @@ class MessageClient {
     }).timeout(Duration(seconds: 30), onTimeout: () {
       throw TimeoutException('Timeout reached after 30 seconds.');
     }).catchError((dynamic e) {
-      _completer.completeError(e);
+      if(!_completer.isCompleted)
+        _completer.completeError(e);
     });
 
     return _completer.future;
