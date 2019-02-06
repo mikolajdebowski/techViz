@@ -113,16 +113,14 @@ class LoginState extends State<Login> {
       await session.init(userID);
 
       return Future<dynamic>.value(data);
-    }, callbackError: (dynamic error){
-      _completer.completeError(error);
     });
 
-    var deviceUpdateFuture = DeviceRouting().PublishMessage(toSendDeviceDetails, callbackError: (dynamic error){
-      _completer.completeError(error);
-    });
+    var deviceUpdateFuture = DeviceRouting().PublishMessage(toSendDeviceDetails);
 
     Future.wait<dynamic>([userUpdateFuture, deviceUpdateFuture]).then((List<dynamic> l){
       _completer.complete();
+    }).catchError((dynamic error){
+      _completer.completeError(error);
     });
 
     return _completer.future;
