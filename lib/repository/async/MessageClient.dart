@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-
+import 'package:async/async.dart';
 import 'package:dart_amqp/dart_amqp.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techviz/config.dart';
@@ -43,6 +43,13 @@ class MessageClient {
     return _completer.future;
   }
 
+  Future Close(){
+    if(_rabbitmqClient!=null){
+      return _rabbitmqClient.close();
+    }
+    return Future<dynamic>.value(true);
+  }
+
   Future<Exchange> GetExchange() {
     return _rabbitmqClient.channel().then((Channel _channel) {
       return _channel.exchange(_exchangeName, ExchangeType.TOPIC, durable: true);
@@ -64,17 +71,20 @@ class MessageClient {
   Future PublishMessage(dynamic object, String routingKeyPattern, {Function callback, Function callbackError, Function parser}) async {
     Completer<void> _completer = Completer<void>();
 
-    Future<void>.delayed(Duration(seconds: 30), (){
+    var _delayedFuture = Future<void>.delayed(Duration(seconds: 30));
+    var _streamDelayed = Stream.fromFuture(_delayedFuture).listen((dynamic d){
 
-      var excp = Exception('Timeout reached after 30 seconds');
       if(!_completer.isCompleted){
+        var excp = Exception('Timeout reached after 30 seconds');
         if(callbackError!=null){
           callbackError(excp);
         }
-        else _completer.completeError(excp);
+        else {
+          print('delayed completing error for ${routingKeyPattern} ${_completer.hashCode}');
+          _completer.completeError(excp);
+        }
       }
     });
-
 
     void _publishMessage(Exchange exchange, dynamic object){
       MessageProperties props = MessageProperties();
@@ -88,8 +98,8 @@ class MessageClient {
       return _channel.exchange(_exchangeName, ExchangeType.TOPIC, durable: true);
     }).then((Exchange exchange) async {
 
-
       if (callback == null) {
+        _streamDelayed.cancel();
         _publishMessage(exchange, object);
         _completer.complete();
       }
@@ -111,18 +121,15 @@ class MessageClient {
           consumer.listen((AmqpMessage message) {
 
             if(_completer.isCompleted){
+              _streamDelayed.cancel();
               consumer.cancel();
             }
 
             if(message.routingKey == deviceRoutingKeyName){
+              _streamDelayed.cancel();
               consumer.cancel();
 
-              if(parser==null){
-                callback(message.payloadAsJson);
-              }
-              else{
-                callback(parser(message.payloadAsJson));
-              }
+              callback(parser!=null ? parser(message.payloadAsJson): message.payloadAsJson);
 
               if (!_completer.isCompleted) {
                 _completer.complete(message.payloadAsJson);
@@ -130,6 +137,7 @@ class MessageClient {
             }
 
           }).onError((dynamic error) {
+            _streamDelayed.cancel();
             callbackError(error);
           });
 
@@ -141,13 +149,12 @@ class MessageClient {
     }).timeout(Duration(seconds: 30), onTimeout: () {
       throw TimeoutException('Timeout reached after 30 seconds.');
     }).catchError((dynamic e) {
+      _streamDelayed.cancel();
       if(!_completer.isCompleted)
         _completer.completeError(e);
     });
-
     return _completer.future;
   }
-
 
   Future<Consumer> ListenQueue(String routingKeyPattern, Function onData, {Function onError, bool timeOutEnabled = true})  {
     Completer<Consumer> _completer = Completer<Consumer>();

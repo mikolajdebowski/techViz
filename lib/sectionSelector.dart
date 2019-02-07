@@ -26,7 +26,7 @@ class SectionSelectorState extends State<SectionSelector>
     implements ISectionListPresenter<SectionModelPresenter> {
   List<SectionModelPresenter> sectionList = List<SectionModelPresenter>();
   SectionListPresenter sectionPresenter;
-  Flushbar loadingBar;
+  Flushbar _loadingBar;
 
   @override
   void initState() {
@@ -35,13 +35,13 @@ class SectionSelectorState extends State<SectionSelector>
     sectionPresenter = SectionListPresenter(this);
     sectionPresenter.loadSections();
 
-    loadingBar = VizDialog.LoadingBar(message: 'Sending request...');
+    _loadingBar = VizDialog.LoadingBar(message: 'Sending request...');
   }
 
   void onTap(BuildContext context) async {
-    if (loadingBar.isShowing()) return;
+    if (_loadingBar.isShowing()) return;
 
-    loadingBar.show(context);
+    _loadingBar.show(context);
 
     Session session = Session();
     List<String> sections = sectionList.where((SectionModelPresenter s) => s.selected).map((SectionModelPresenter s)=>s.sectionID).toList();
@@ -50,14 +50,14 @@ class SectionSelectorState extends State<SectionSelector>
     var toSubmit = {'userID': session.user.UserID, 'sections': sections, 'deviceID': info.DeviceID};
 
     SectionRouting().PublishMessage(toSubmit, callback: (List<Section> list) async {
-      loadingBar.dismiss();
+      _loadingBar.dismiss();
 
       await UserSectionRepository().update(session.user.UserID, sections);
 
       backToMain(list);
 
-    }, callbackError: (dynamic error){
-      loadingBar.dismiss();
+    }).catchError((dynamic error){
+      _loadingBar.dismiss();
       VizDialog.Alert(context, 'Error', error.toString());
     });
 

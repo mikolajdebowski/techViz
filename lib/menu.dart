@@ -13,24 +13,12 @@ class Menu extends StatefulWidget {
 }
 
 class _MenuState extends State<Menu> {
-  Flushbar loadingBar;
-
-  void logOut(Object tag){
-    loadingBar.show(context);
-
-    Session().logOut().then((dynamic d){
-      loadingBar.dismiss();
-      Navigator.pushNamedAndRemoveUntil(context, '/login', (Route<dynamic> route) => false);
-    }).catchError((dynamic error){
-      loadingBar.dismiss();
-      VizDialog.Alert(context, 'Error', error.toString());
-    });
-  }
+  Flushbar _loadingBar;
 
   @override
   void initState() {
     super.initState();
-    loadingBar = VizDialog.LoadingBar(message: 'Sending request...');
+    _loadingBar = VizDialog.LoadingBar(message: 'Sending request...');
   }
 
   @override
@@ -55,6 +43,18 @@ class _MenuState extends State<Menu> {
     //Navigator.pushReplacementNamed(context, '/about');
   }
 
+  void onTapLogOut(Object tag){
+    _loadingBar.show(context);
+
+    Session().logOut().then((dynamic d){
+      _loadingBar.dismiss();
+      Navigator.pushNamedAndRemoveUntil(context, '/login', (Route<dynamic> route) => false);
+    }).catchError((dynamic error){
+      _loadingBar.dismiss();
+      VizDialog.Alert(context, 'Error', error.toString());
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     Row rowProfileSettings = Row(
@@ -66,7 +66,7 @@ class _MenuState extends State<Menu> {
     );
 
 
-    VizOptionButton rowLogoff = VizOptionButton('Log Out', iconName: 'ic_logout.png', onTap: logOut, flexible: true);
+    VizOptionButton rowLogoff = VizOptionButton('Log Out', iconName: 'ic_logout.png', onTap: onTapLogOut, flexible: true);
 
     Container container = Container(
       child: Padding(

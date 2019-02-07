@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:techviz/model/user.dart';
+import 'package:techviz/repository/async/MessageClient.dart';
 import 'package:techviz/repository/async/UserRouting.dart';
 import 'package:techviz/repository/local/userTable.dart';
 import 'package:observable/observable.dart';
@@ -38,21 +39,17 @@ class Session extends PropertyChangeNotifier {
   Future logOut() async  {
     DeviceInfo info = await Utils.deviceInfo;
 
-    Completer<void> _completer = Completer<void>();
     Session session = Session();
 
-    UserRouting ur = UserRouting();
     var toSend = {'userStatusID': '10', 'userID': session.user.UserID, 'deviceID': info.DeviceID};
-    ur.PublishMessage(toSend, callback: (User user){
-      UserTable.updateStatusID(session.user.UserID, "10").then((User user) {
-        Session().user = user;
-        _completer.complete();
-      });
-    }, callbackError: (dynamic error){
-      _completer.completeError(error);
+    UserRouting().PublishMessage(toSend, callback: (User user){
+//      UserTable.updateStatusID(session.user.UserID, "10").then((User user) {
+//        Session().user = user;
+//        _completer.complete();
+//      });
     });
 
-    return _completer.future;
+    MessageClient().Close();
   }
 
   void UpdateConnectionStatus(ConnectionStatus newStatus){
