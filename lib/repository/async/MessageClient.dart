@@ -123,6 +123,10 @@ class MessageClient {
             }
 
             if(message.routingKey == deviceRoutingKeyName){
+              print('RECEIVED with routingKey: ${message.routingKey}');
+              print('PAYLOAD: ${message.payloadAsJson}');
+              print('\n\n');
+
               _streamDelayed.cancel();
               consumer.cancel();
 
@@ -170,12 +174,9 @@ class MessageClient {
         var deviceInfo = await Utils.deviceInfo;
 
         String deviceRoutingKeyName = "${routingKeyPattern}.${deviceInfo.DeviceID}";
-        String queueNameForCallback = "${routingKeyPattern}.update";
+        String queueName = "mobile.${deviceInfo.DeviceID}";
 
-        Map<String, Object> args = Map<String, String>();
-        args["x-dead-letter-exchange"] = "techViz.error";
-
-        exchange.channel.queue(queueNameForCallback, autoDelete: false, durable: true, arguments: args).then((Queue queue) {
+        exchange.channel.queue(queueName, autoDelete: false).then((Queue queue) {
           return queue.bind(exchange, deviceRoutingKeyName);
         }).then((Queue queueBinded) {
           return queueBinded.consume();
