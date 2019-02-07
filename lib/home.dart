@@ -17,7 +17,6 @@ import 'package:techviz/repository/userSectionRepository.dart';
 import 'package:techviz/sectionSelector.dart';
 import 'package:techviz/slotLookup.dart';
 import 'package:techviz/statusSelector.dart';
-import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 class Home extends StatefulWidget {
   Home({Key key}) : super(key: key);

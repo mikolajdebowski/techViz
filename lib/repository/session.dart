@@ -43,6 +43,11 @@ class Session extends PropertyChangeNotifier {
 
     var toSend = {'userStatusID': '10', 'userID': session.user.UserID, 'deviceID': info.DeviceID};
     UserRouting().PublishMessage(toSend, callback: (User user){
+      if(user!=null){
+
+      }
+
+
 //      UserTable.updateStatusID(session.user.UserID, "10").then((User user) {
 //        Session().user = user;
 //        _completer.complete();
