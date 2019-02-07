@@ -18,7 +18,7 @@ class TaskRepository implements IRepository<Task>{
   TaskRepository({this.remoteRepository});
 
   Future<List<Task>> getOpenTasks(String userID) async {
-    print('getOpenTasks called');
+    //print('getOpenTasks called');
 
     LocalRepository localRepo = LocalRepository();
     if(!localRepo.db.isOpen)
@@ -37,7 +37,7 @@ class TaskRepository implements IRepository<Task>{
       list.add(_fromMap(task));
     });
 
-    print("getOpenTasks list length: ${list.length}");
+    //print("getOpenTasks list length: ${list.length}");
 
     return list;
   }
@@ -105,7 +105,7 @@ class TaskRepository implements IRepository<Task>{
 
     return TaskRouting().ListenQueue((dynamic task) async{
 
-      print('ListenQueue callback called');
+      //print('ListenQueue callback called');
 
       Map<String,dynamic> taskMapped = Map<String,dynamic>();
       taskMapped['_ID'] = task['_ID'];
@@ -136,20 +136,20 @@ class TaskRepository implements IRepository<Task>{
       onData(taskUpdate);
 
     }, onError: onError, onCancel: (){
-      print('onCancel called');
+      //print('onCancel called');
     });
   }
 
   Future update(String taskID, {String taskStatusID, TaskUpdateCallBack callBack} ) async {
     Completer<dynamic> _completer = Completer<dynamic>();
-    print('updating local...');
+    //print('updating local...');
     LocalRepository localRepo = LocalRepository();
     if(!localRepo.db.isOpen)
       await localRepo.open();
 
     int updated = await  LocalRepository().db.rawUpdate('UPDATE TASK SET _DIRTY = 1 WHERE _ID = ?', [taskID].toList());
 
-    print('updating remote...');
+    //print('updating remote...');
     var message = {'taskID': taskID, 'taskStatusID': taskStatusID};
 
     TaskRouting().PublishMessage(message).then<dynamic>((dynamic d){

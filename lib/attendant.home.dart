@@ -51,12 +51,12 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    print('dispose attendant called');
+    //print('dispose attendant called');
   }
 
   @override
   void onTaskListLoaded(List<Task> result) {
-    print('onTaskListLoaded called');
+    //print('onTaskListLoaded called');
 
     setState(() {
       _taskList = result;
@@ -75,7 +75,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
   }
 
   void onTaskItemTapCallback(String taskID){
-    print('onTaskItemTapCallback called');
+    //print('onTaskItemTapCallback called');
     setState(() {
       _selectedTask = _taskList.where((Task task) => task.id == taskID).first;
       print('${_selectedTask.dirty}');
@@ -201,13 +201,13 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
 
 
     void taskUpdateCallback(String taskID) {
-      print('taskUpdateCallback called');
+      //print('taskUpdateCallback called');
       loadingBar.dismiss();
       _taskPresenter.loadTaskList(Session().user.UserID);
     }
 
     void updateTaskStatus(String statusID){
-      print('updateTaskStatus called');
+      //print('updateTaskStatus called');
       loadingBar.show(context);
       TaskRepository().update(_selectedTask.id, taskStatusID: statusID, callBack: taskUpdateCallback);
     }
@@ -394,7 +394,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
 
 
     if(_selectedTask!=null){
-      print('task ${_selectedTask.location} time =====> ${ _selectedTask.taskCreated}');
+      //print('task ${_selectedTask.location} time =====> ${ _selectedTask.taskCreated}');
     }
 
     //RIGHT PANEL WIDGETS
@@ -533,7 +533,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
       return;
     }
 
-    print('onTaskReceived => ${task.id} ${task.taskStatus.id}');
+    //print('onTaskReceived => ${task.id} ${task.taskStatus.id}');
 
     Session session = Session();
     if(session.user==null)
@@ -542,11 +542,11 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
     setState(() {
 
       if([1,2,3].toList().contains(task.taskStatus.id) && task.userID ==  session.user.UserID){ //update the view
-        print(task.id + ' add/update the view ' +task.taskStatus.id.toString());
+        //print(task.id + ' add/update the view ' +task.taskStatus.id.toString());
 
         if(_selectedTask!=null && _selectedTask.id == task.id){
           _selectedTask = task;
-          print(task.id + ' updated selected with StatusID ' +task.taskStatus.id.toString());
+          //print(task.id + ' updated selected with StatusID ' +task.taskStatus.id.toString());
         }
 
         _taskPresenter.loadTaskList(session.user.UserID);
@@ -554,7 +554,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
       else{ //remove from the view
         if(_selectedTask!=null && _selectedTask.id == task.id){
           _selectedTask = null;
-          print(task.id + ' removed from selected because StatusID is ' +task.taskStatus.id.toString());
+          //print(task.id + ' removed from selected because StatusID is ' +task.taskStatus.id.toString());
         }
 
         _taskPresenter.loadTaskList(session.user.UserID);

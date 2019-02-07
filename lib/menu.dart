@@ -23,7 +23,7 @@ class _MenuState extends State<Menu> {
 
   @override
   void dispose(){
-    print('_MenuState dispose');
+    //print('_MenuState dispose');
     super.dispose();
   }
 

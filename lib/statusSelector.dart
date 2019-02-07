@@ -16,7 +16,7 @@ typedef fncOnTapOK(UserStatus selected);
 
 class StatusSelector extends StatefulWidget {
   StatusSelector({Key key, @required this.onTapOK, this.preSelectedID}) : super(key: key) {
-    print('preSelectedID: ${this.preSelectedID}');
+    //print('preSelectedID: ${this.preSelectedID}');
   }
   final fncOnTapOK onTapOK;
   final int preSelectedID;

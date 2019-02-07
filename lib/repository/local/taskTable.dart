@@ -30,15 +30,25 @@ class TaskTable {
   }
 
   static Future<int> insertOrUpdate(dynamic toInsert) async {
+    var toInsertList = toInsert as List<Map<String, dynamic>>;
+
+    if(toInsertList.length==0)
+      return Future.value(0);
+
+
+    Completer<int> _completer = Completer<int>();
+
     LocalRepository localRepo = LocalRepository();
     if (!localRepo.db.isOpen) await localRepo.open();
 
     int insertedRows = 0;
     int updatedRows = 0;
 
-    await toInsert.forEach((Map<String, dynamic> entry) async {
 
-      await localRepo.db.transaction((txn) async {
+    var processed = 0;
+
+    Future.forEach<Map<String, dynamic>>(toInsertList, (Map<String, dynamic> entry) async{
+      localRepo.db.transaction((txn) async {
         var batch = txn.batch();
 
         List<Map<String,dynamic>> exists = await txn.rawQuery("SELECT _ID FROM TASK WHERE _ID = '${entry['_ID'].toString()}';");
@@ -50,12 +60,17 @@ class TaskTable {
           insertedRows += await txn.insert('Task', entry, conflictAlgorithm: ConflictAlgorithm.replace);
         }
 
-        batch.commit();
+        await batch.commit();
+
+        processed++;
+
+        if(processed == toInsertList.length){
+          _completer.complete(insertedRows+updatedRows);
+        }
       });
-
-
     });
-    return Future.value(insertedRows+updatedRows);
+
+    return _completer.future;
   }
 
   static Future<int> invalidateTasks() async
