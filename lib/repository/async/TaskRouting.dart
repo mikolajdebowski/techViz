@@ -1,17 +1,16 @@
 import 'dart:async';
-import 'package:dart_amqp/dart_amqp.dart';
 import 'package:techviz/model/task.dart';
 import 'package:techviz/repository/async/MessageClient.dart';
 
 class TaskRouting {
   String routingPattern = "mobile.task";
 
-  Future<Consumer> ListenQueue(Function onData, {Function onError, Function onCancel}) {
+  StreamController ListenQueue(Function onData, {Function onError, Function onCancel}) {
     return MessageClient().ListenQueue(routingPattern, onData, onError: onError, timeOutEnabled: false);
   }
 
-  Future PublishMessage(dynamic message, {Function callback, Function callbackError}) {
-    return MessageClient().PublishMessage(message, routingPattern, callback: callback, callbackError: callbackError, parser: parser);
+  Future PublishMessage(dynamic message) {
+    return MessageClient().PublishMessage(message, routingPattern, wait: false);
   }
 
   Task parser(dynamic json){

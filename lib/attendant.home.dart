@@ -78,7 +78,6 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
     //print('onTaskItemTapCallback called');
     setState(() {
       _selectedTask = _taskList.where((Task task) => task.id == taskID).first;
-      print('${_selectedTask.dirty}');
     });
   }
 

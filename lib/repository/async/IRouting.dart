@@ -1,5 +1,5 @@
 
 abstract class IRouting{
-  Future PublishMessage(dynamic object, {Function callback, Function callbackError});
+  Future PublishMessage(dynamic object);
   void ListenQueue(Function callback, {Function callbackError});
 }

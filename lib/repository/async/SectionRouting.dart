@@ -12,8 +12,8 @@ class SectionRouting implements IRouting {
   }
 
   @override
-  Future PublishMessage(dynamic message, {Function callback, Function callbackError}) {
-    return MessageClient().PublishMessage(message, routingPattern, callback: callback, callbackError: callbackError, parser: parser);
+  Future PublishMessage(dynamic message) {
+    return MessageClient().PublishMessage(message, routingPattern, parser: parser);
   }
 
   List<Section> parser(dynamic json){

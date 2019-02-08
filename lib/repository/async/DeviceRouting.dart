@@ -11,7 +11,7 @@ class DeviceRouting implements IRouting {
   }
 
   @override
-  Future PublishMessage(dynamic message, {Function callback, Function callbackError}) {
-    return MessageClient().PublishMessage(message, routingPattern, callback: callback, callbackError: callbackError);
+  Future PublishMessage(dynamic message) {
+    return MessageClient().PublishMessage(message, routingPattern);
   }
 }

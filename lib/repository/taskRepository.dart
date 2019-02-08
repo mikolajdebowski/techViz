@@ -101,7 +101,11 @@ class TaskRepository implements IRepository<Task>{
   }
 
   @override
-  Future<Consumer> listen(Function onData, Function onError) async {
+  Future listen(Function onData, Function onError) async {
+
+  }
+
+  StreamController listenQueue(Function onData, Function onError)  {
 
     return TaskRouting().ListenQueue((dynamic task) async{
 
@@ -147,12 +151,11 @@ class TaskRepository implements IRepository<Task>{
     if(!localRepo.db.isOpen)
       await localRepo.open();
 
-    int updated = await  LocalRepository().db.rawUpdate('UPDATE TASK SET _DIRTY = 1 WHERE _ID = ?', [taskID].toList());
+    await  LocalRepository().db.rawUpdate('UPDATE TASK SET _DIRTY = 1 WHERE _ID = ?', [taskID].toList());
 
-    //print('updating remote...');
     var message = {'taskID': taskID, 'taskStatusID': taskStatusID};
 
-    TaskRouting().PublishMessage(message).then<dynamic>((dynamic d){
+    TaskRouting().PublishMessage(message).then((dynamic d){
       callBack(taskID);
       _completer.complete(d);
     });

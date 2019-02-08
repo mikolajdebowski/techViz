@@ -1,19 +1,16 @@
 import 'dart:async';
 import 'package:techviz/model/user.dart';
-import 'package:techviz/repository/async/IRouting.dart';
 import 'package:techviz/repository/async/MessageClient.dart';
 
-class UserRouting implements IRouting {
+class UserRouting {
   String routingPattern = "mobile.user";
 
-  @override
   void ListenQueue(Function callback, {Function callbackError}) {
-    MessageClient().ListenQueue(routingPattern, callback, onError: callbackError);
+    throw UnimplementedError();
   }
 
-  @override
-  Future PublishMessage(dynamic message, {Function callback, Function callbackError}) {
-    return MessageClient().PublishMessage(message, routingPattern, callback: callback, callbackError: callbackError, parser: parser);
+  Future PublishMessage(dynamic message) {
+    return MessageClient().PublishMessage(message, routingPattern, parser: parser, wait: true);
   }
 
   User parser(dynamic json){

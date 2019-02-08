@@ -52,14 +52,16 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
     DeviceInfo deviceInfo = await Utils.deviceInfo;
     var toSend = {'userStatusID': selectedStatus.id, 'userID': Session().user.UserID, 'deviceID': deviceInfo.DeviceID};
 
-    UserRouting().PublishMessage(toSend, callback: (User returnedUser){
+    UserRouting().PublishMessage(toSend).then((dynamic result){
       _loadingBar.dismiss();
 
+      User returnedUser = result as User;
       UserTable.updateStatusID(returnedUser.UserID, returnedUser.UserStatusID.toString()).then((User user) {
         Session().user = user;
         widget.onTapOK(selectedStatus);
         Navigator.of(context).pop();
       });
+
     }).catchError((dynamic error){
       _loadingBar.dismiss();
       VizDialog.Alert(context, 'Error', error.toString());

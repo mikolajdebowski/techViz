@@ -49,18 +49,16 @@ class SectionSelectorState extends State<SectionSelector>
     DeviceInfo info = await Utils.deviceInfo;
     var toSubmit = {'userID': session.user.UserID, 'sections': sections, 'deviceID': info.DeviceID};
 
-    SectionRouting().PublishMessage(toSubmit, callback: (List<Section> list) async {
+    SectionRouting().PublishMessage(toSubmit).then((dynamic list) async{
       _loadingBar.dismiss();
 
-      await UserSectionRepository().update(session.user.UserID, sections);
+      await UserSectionRepository().update(session.user.UserID, list as List<String>);
 
-      backToMain(list);
-
+      backToMain(sections as List<Section>);
     }).catchError((dynamic error){
       _loadingBar.dismiss();
       VizDialog.Alert(context, 'Error', error.toString());
     });
-
   }
 
   void backToMain(List<Section> sections){

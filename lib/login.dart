@@ -10,6 +10,7 @@ import 'package:techviz/components/VizLoadingIndicator.dart';
 import 'package:techviz/components/vizRainbow.dart';
 import 'package:techviz/config.dart';
 import 'package:techviz/repository/async/DeviceRouting.dart';
+import 'package:techviz/repository/async/MessageClient.dart';
 import 'package:techviz/repository/async/UserRouting.dart';
 import 'package:techviz/repository/local/userTable.dart';
 import 'package:techviz/repository/repository.dart';
@@ -100,6 +101,7 @@ class LoginState extends State<Login> {
     DeviceInfo deviceInfo = await Utils.deviceInfo;
 
     Session session = Session();
+    await MessageClient().Init();
 
     setState(() {
       _loadingMessage = 'Updating user and device info...';
@@ -108,16 +110,16 @@ class LoginState extends State<Login> {
     var toSendUserStatus = {'userStatusID': 10, 'userID': userID, 'deviceID': deviceInfo.DeviceID }; //FORCE OFF-SHIFT REMOTE
     var toSendDeviceDetails = {'userID': userID, 'deviceID': deviceInfo.DeviceID, 'model': deviceInfo.Model, 'OSName': deviceInfo.OSName, 'OSVersion': deviceInfo.OSVersion };
 
-    var userUpdateFuture = UserRouting().PublishMessage(toSendUserStatus, callback: (dynamic data) async{
+    var userUpdateFuture = UserRouting().PublishMessage(toSendUserStatus).then<dynamic>((dynamic user) async{
       await UserTable.updateStatusID(userID, "10"); //FORCE OFF-SHIFT LOCALLY
       await session.init(userID);
 
-      return Future<dynamic>.value(data);
+      return Future<dynamic>.value(user);
     });
 
-    var deviceUpdateFuture = DeviceRouting().PublishMessage(toSendDeviceDetails);
+    //var deviceUpdateFuture = DeviceRouting().PublishMessage(toSendDeviceDetails);
 
-    Future.wait<dynamic>([userUpdateFuture, deviceUpdateFuture]).then((List<dynamic> l){
+    Future.wait<dynamic>([userUpdateFuture, /*deviceUpdateFuture*/]).then((List<dynamic> l){
       _completer.complete();
     }).catchError((dynamic error){
       _completer.completeError(error);

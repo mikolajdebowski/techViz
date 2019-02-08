@@ -45,7 +45,7 @@ class TechVizAppState extends State<TechVizApp> with WidgetsBindingObserver {
     setState(() {
 
       if(_lastLifecycleState == AppLifecycleState.inactive && state == AppLifecycleState.resumed){
-        connectRabbitMQ();
+        //connectRabbitMQ();
       }
       _lastLifecycleState = state;
       print(_lastLifecycleState);
@@ -55,7 +55,7 @@ class TechVizAppState extends State<TechVizApp> with WidgetsBindingObserver {
   void connectRabbitMQ(){
     Session().UpdateConnectionStatus(ConnectionStatus.Connecting);
 
-    MessageClient().Init("techViz").then((dynamic afterInit){
+    MessageClient().Init().then((dynamic afterInit){
       Session().UpdateConnectionStatus(ConnectionStatus.Online);
     });
   }

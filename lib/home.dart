@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dart_amqp/dart_amqp.dart';
 import 'package:flutter/material.dart';
 import 'package:observable/observable.dart';
@@ -34,6 +36,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
   String _userStatusText;
   bool _isOnline = false;
+  StreamController streamController;
 
   @override
   void initState() {
@@ -128,22 +131,20 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   }
 
   void bindTaskListener() async {
-    if(consumer!=null){
-      consumer.cancel();
+    if(streamController!=null){
+      streamController.close();
     }
 
-    consumer = await TaskRepository().listen((Task task){
+    streamController = TaskRepository().listenQueue((Task task){
       keyAttendant.currentState.onTaskReceived(task);
     }, (dynamic error){
         print(error);
     });
   }
 
-  Consumer consumer;
-
   void unTaskBindListener() async {
-    if(consumer!=null){
-      consumer.cancel();
+    if(streamController!=null){
+      streamController.close();
     }
   }
 
