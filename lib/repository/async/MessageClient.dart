@@ -28,16 +28,13 @@ class MessageClient {
   }
 
   Future Init() async {
-
     print('MessageClient: Init');
-
     if(_exchangeName==null){
       //CONFIGURATION
       String loadedConfig = await rootBundle.loadString('assets/json/config.json');
       dynamic jsonConfig = jsonDecode(loadedConfig);
       _exchangeName = jsonConfig['rabbitmq']['exchange_name'] as String;
     }
-
 
     //DEVICEID
     DeviceInfo deviceInfo = await Utils.deviceInfo;
@@ -164,6 +161,9 @@ class MessageClient {
 
   Future PublishMessage(dynamic object, String routingKeyPattern, {bool wait : false, Function parser}) async {
     Completer<void> _completer = Completer<void>();
+    _completer.future.timeout(_timeoutDuration, onTimeout: (){
+      _completer.completeError(TimeoutException('Max connect timeout reached after ${_timeoutDuration.inSeconds} seconds.'));
+    });
 
     String routingKey = '${routingKeyPattern}.${_deviceID}';
 
