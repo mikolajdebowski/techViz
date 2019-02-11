@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:techviz/config.dart';
@@ -9,7 +7,6 @@ import 'package:techviz/menu.dart';
 import 'package:techviz/profile.dart';
 import 'package:techviz/repository/async/MessageClient.dart';
 import 'package:techviz/splash.dart';
-import 'package:connectivity/connectivity.dart';
 
 void main() {
   SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight])
@@ -25,20 +22,12 @@ class TechVizApp extends StatefulWidget {
 
 class TechVizAppState extends State<TechVizApp> with WidgetsBindingObserver {
   AppLifecycleState _lastLifecycleState;
-  StreamSubscription<ConnectivityResult> connectionSubscription;
 
   @override
   void initState() {
     super.initState();
 
     WidgetsBinding.instance.addObserver(this);
-
-//    connectionSubscription = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
-//      print(result);
-//      if(result == ConnectivityResult.wifi || result == ConnectivityResult.mobile){
-//        MessageClient().Init();
-//      }
-//    });
   }
 
   @override
