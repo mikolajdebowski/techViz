@@ -12,7 +12,7 @@ import 'package:techviz/repository/session.dart';
 import 'package:techviz/repository/userSectionRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
-typedef fncOnUserSectionsChanged(List<String> sections);
+typedef fncOnUserSectionsChanged(List<UserSection> sections);
 
 class SectionSelector extends StatefulWidget {
   SectionSelector({Key key, @required this.onUserSectionsChanged}) : super(key: key);
@@ -49,25 +49,26 @@ class SectionSelectorState extends State<SectionSelector>
     DeviceInfo info = await Utils.deviceInfo;
     var toSubmit = {'userID': session.user.UserID, 'sections': sections, 'deviceID': info.DeviceID};
 
-    SectionRouting().PublishMessage(toSubmit).then((dynamic list) async{
+    SectionRouting().PublishMessage(toSubmit).then<List<Section>>((dynamic list) async{
       _loadingBar.dismiss();
 
-      await UserSectionRepository().update(session.user.UserID, list as List<String>);
+      var toUpdateLocally = (list as List<Section>);
 
-      backToMain(sections as List<Section>);
+      await UserSectionRepository().update(session.user.UserID, toUpdateLocally.map((Section s) => s.SectionID).toList());
+
+      print('');
+      UserSectionRepository().getUserSection(session.user.UserID).then((List<UserSection> sectionToMain){
+        backToMain(sectionToMain);
+      });
+
     }).catchError((dynamic error){
       _loadingBar.dismiss();
       VizDialog.Alert(context, 'Error', error.toString());
     });
   }
 
-  void backToMain(List<Section> sections){
-    List<String> toMain = List<String>();
-    if(sections.length>0){
-      toMain = sections.map((Section s)=> s.SectionID).toList();
-    }
-
-    widget.onUserSectionsChanged(toMain);
+  void backToMain(List<UserSection> sections){
+    widget.onUserSectionsChanged(sections);
     Navigator.of(context).pop();
   }
 

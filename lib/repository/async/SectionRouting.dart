@@ -13,7 +13,7 @@ class SectionRouting implements IRouting {
 
   @override
   Future PublishMessage(dynamic message) {
-    return MessageClient().PublishMessage(message, routingPattern, parser: parser);
+    return MessageClient().PublishMessage(message, routingPattern, parser: parser, wait: true);
   }
 
   List<Section> parser(dynamic json){

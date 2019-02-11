@@ -32,7 +32,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   GlobalKey<AttendantHomeState> keyAttendant;
   bool initialLoading = false;
 
-  List<String> currentSections = List<String>();
+  List<UserSection> currentSections = List<UserSection>();
   UserStatus currentUserStatus;
 
   String _userStatusText;
@@ -69,10 +69,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     Session session = Session();
     userSectionRepo.getUserSection(session.user.UserID).then((List<UserSection> list) {
       setState(() {
-        if (list.length > 0)
-          currentSections = list.map((UserSection us) => us.SectionID).toList();
-        else
-          currentSections = List<String>();
+        currentSections = list;
       });
     });
   }
@@ -89,7 +86,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     }
   }
 
-  void onUserSectionsChangedCallback(List<String> sections) {
+  void onUserSectionsChangedCallback(List<UserSection> sections) {
     print("onUserSectionsChangedCallback: ${sections.length.toString()}");
     setState(() {
       currentSections = sections;
@@ -106,8 +103,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     if (currentSections.length > 4) {
       sections = "4+";
     } else {
-      currentSections.forEach((String section) {
-        sections += section + " ";
+      currentSections.forEach((UserSection section) {
+        sections += section.SectionID + " ";
       });
       sections = sections.trim();
     }
