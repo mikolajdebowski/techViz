@@ -35,7 +35,8 @@ class VizTaskItem extends StatelessWidget{
                 height: 60.0,
                 decoration: BoxDecoration(
                     gradient: LinearGradient(
-                        colors: this.selected ? [Color(0xFF65b1d9), Color(0xFF0268a2)] : [iUrgencyColor,iUrgencyColor],
+                        colors: this.selected ? [Color(0xFF65b1d9), Color(0xFF0268a2)] : [Color(0xFF45505D), Color(0xFF282B34)],
+                        //colors: this.selected ? [Color(0xFF65b1d9), Color(0xFF0268a2)] : [iUrgencyColor,iUrgencyColor],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         tileMode: TileMode.repeated)),
@@ -58,5 +59,4 @@ class VizTaskItem extends StatelessWidget{
           ],
         ));
   }
-
 }

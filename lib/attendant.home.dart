@@ -91,7 +91,6 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
     var listTasks = <Widget>[];
     for (var i = 1; i <= _taskList.length; i++) {
       Task task = _taskList[i - 1];
-      //print('${task.urgencyHEXColor}');
 
       var taskItem = VizTaskItem(task.id, task.location, i, onTaskItemTapCallback, _selectedTask!=null && _selectedTask.id == task.id, task.urgencyHEXColor);
       listTasks.add(taskItem);
