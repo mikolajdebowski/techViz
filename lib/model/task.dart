@@ -14,6 +14,7 @@ class Task {
   final TaskStatus taskStatus;
   final int taskStatusID;
 
+  final int taskUrgencyID;
 
   final DateTime taskCreated;
   final DateTime taskAssigned;
@@ -29,7 +30,7 @@ class Task {
   final String urgencyHEXColor;
 
   const Task({this.id, this.version, this.userID, this.dirty, this.location, this.taskType, this.taskStatus, this.machineId, this.taskCreated, this.taskAssigned, this.amount, this.eventDesc, this.playerID,
-  this.playerFirstName, this.playerLastName, this.playerTier, this.playerTierColorHEX, this.urgencyHEXColor, this.taskTypeID, this.taskStatusID});
+  this.playerFirstName, this.playerLastName, this.playerTier, this.playerTierColorHEX, this.urgencyHEXColor, this.taskTypeID, this.taskStatusID, this.taskUrgencyID});
 
 
 }

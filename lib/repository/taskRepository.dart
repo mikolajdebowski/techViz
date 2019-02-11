@@ -28,7 +28,13 @@ class TaskRepository implements IRepository<Task>{
         "t.*"
         ", ts.TaskStatusDescription "
         ", tt.TaskTypeDescription "
-        "FROM TASK t INNER JOIN TaskStatus ts on t.TASKSTATUSID == ts.TaskStatusID INNER JOIN TaskType tt on t.TASKTYPEID == tt.TaskTypeID and t.TASKSTATUSID in (1,2,3) AND t.USERID = '${userID}' ORDER BY t.TASKCREATED ASC;";
+        ", tu.ColorHex "
+        " FROM TASK t "
+        " INNER JOIN TaskStatus ts on t.TASKSTATUSID == ts.TaskStatusID "
+        " INNER JOIN TaskType tt on t.TASKTYPEID == tt.TaskTypeID "
+        " INNER JOIN TaskUrgency tu on t.TaskUrgencyID == tu.ID "
+        " WHERE t.TASKSTATUSID in (1,2,3) AND t.USERID = '${userID}' "
+        " ORDER BY t.TASKCREATED ASC;";
 
     List<Map<String, dynamic>> queryResult = await localRepo.db.rawQuery(sql);
 
@@ -36,8 +42,6 @@ class TaskRepository implements IRepository<Task>{
     queryResult.forEach((Map<String, dynamic> task) {
       list.add(_fromMap(task));
     });
-
-    //print("getOpenTasks list length: ${list.length}");
 
     return list;
   }
@@ -54,10 +58,6 @@ class TaskRepository implements IRepository<Task>{
         "FROM TASK t INNER JOIN TaskStatus ts on t.TASKSTATUSID == ts.TaskStatusID INNER JOIN TaskType tt on t.TASKTYPEID == tt.TaskTypeID WHERE t._ID == '${taskID}';";
 
     List<Map<String, dynamic>> queryResult = await LocalRepository().db.rawQuery(sql);
-
-    //print("query length => ${queryResult.length}");
-
-    //print("getTask: ${queryResult}");
 
     return Future.value(queryResult.length>0? _fromMap(queryResult.first): null);
   }
@@ -79,6 +79,7 @@ class TaskRepository implements IRepository<Task>{
         playerTierColorHEX: task['PLAYERTIERCOLORHEX']!=null ? task['PLAYERTIERCOLORHEX'] as String : null,
         taskType: TaskType(id: task['TASKTYPEID'] as int, description: task['TaskTypeDescription'] as String),
         taskStatus: TaskStatus(id: task['TASKSTATUSID'] as int, description: task['TaskStatusDescription'] as String),
+        urgencyHEXColor: task['ColorHex'] as String
     );
 
     return t;
@@ -109,8 +110,6 @@ class TaskRepository implements IRepository<Task>{
 
     return TaskRouting().ListenQueue((dynamic task) async{
 
-      //print('ListenQueue callback called');
-
       Map<String,dynamic> taskMapped = Map<String,dynamic>();
       taskMapped['_ID'] = task['_ID'];
       taskMapped['_DIRTY'] = false;
@@ -120,7 +119,7 @@ class TaskRepository implements IRepository<Task>{
       taskMapped['TASKSTATUSID'] = task['taskStatusID'];
       taskMapped['TASKTYPEID'] = task['taskTypeID'];
       taskMapped['MACHINEID'] = task['machineID'];
-
+      taskMapped['TASKURGENCYID'] = 2;
 
       taskMapped['TASKCREATED'] = task['taskCreated'];
       taskMapped['TASKASSIGNED'] = task['taskAssigned'];

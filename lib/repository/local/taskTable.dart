@@ -13,6 +13,7 @@ class TaskTable {
                   USERID TEXT,
                   MACHINEID TEXT,
                   TASKSTATUSID INT NOT NULL,
+                  TASKURGENCYID INT NOT NULL,
                   TASKTYPEID INT,
                   TASKCREATED DATETIME,
                   TASKASSIGNED DATETIME,

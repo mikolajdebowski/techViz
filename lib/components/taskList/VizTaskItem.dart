@@ -16,7 +16,7 @@ class VizTaskItem extends StatelessWidget{
       int this.index,
       VizTaskListItemCallback this.itemTapCallback,
       this.selected,
-      this.urgencyHEXColor);
+      this.urgencyHEXColor,);
 
   @override
   Widget build(BuildContext context) {

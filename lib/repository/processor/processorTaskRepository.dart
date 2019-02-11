@@ -41,6 +41,9 @@ class ProcessorTaskRepository extends IRemoteRepository<Task>{
         map['LOCATION'] = values[_columnNames.indexOf("Location")];
         map['TASKSTATUSID'] = values[_columnNames.indexOf("TaskStatusID")];
         map['TASKTYPEID'] = values[_columnNames.indexOf("TaskTypeID")];
+        map['TASKURGENCYID'] = values[_columnNames.indexOf("TaskUrgencyID")];
+
+
 
         var dateCreated = DateTime.parse(values[_columnNames.indexOf("TaskCreated")].toString());
         //var utcCreated = DateTime.utc(dateCreated.year, dateCreated.month, dateCreated.day, dateCreated.hour, dateCreated.minute, dateCreated.second, dateCreated.millisecond);
