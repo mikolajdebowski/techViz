@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:dart_amqp/dart_amqp.dart';
-import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techviz/config.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
@@ -11,8 +10,6 @@ class MessageClient {
   static final MessageClient _instance = MessageClient._internal();
   Client _rabbitmqClient;
   String _exchangeName = null;
-
-
   Duration _timeoutDuration = Duration(seconds: 10);
   Consumer _consumer;
   Exchange _exchange;
@@ -24,16 +21,23 @@ class MessageClient {
     return _instance;
   }
 
-  MessageClient._internal() {}
+  MessageClient._internal() {
+
+
+
+  }
 
   Future Init() async {
 
     print('MessageClient: Init');
 
-    //CONFIGURATION
-    String loadedConfig = await rootBundle.loadString('assets/json/config.json');
-    dynamic jsonConfig = jsonDecode(loadedConfig);
-    _exchangeName = jsonConfig['rabbitmq']['exchange_name'] as String;
+    if(_exchangeName==null){
+      //CONFIGURATION
+      String loadedConfig = await rootBundle.loadString('assets/json/config.json');
+      dynamic jsonConfig = jsonDecode(loadedConfig);
+      _exchangeName = jsonConfig['rabbitmq']['exchange_name'] as String;
+    }
+
 
     //DEVICEID
     DeviceInfo deviceInfo = await Utils.deviceInfo;
@@ -65,23 +69,25 @@ class MessageClient {
         _exchange = exchange;
         return _exchange.channel.queue(queueName, autoDelete: true);
       }).then((Queue queue){
-        print('Queue ${queue.name}');
         return queue.consume();
       }).then((Consumer consumer){
         _consumer = consumer;
-
         _consumer.listen((AmqpMessage message){
-
+          print('RoutingKey: ${message.routingKey}');
+          print('Payload: ${message.payloadAsJson}');
           var mapEntry = _mapStreamControllers[message.routingKey];
           if(mapEntry!=null){
             mapEntry.forEach((StreamController ss){
               ss.add(message);
             });
           }
-
         });
+
+        print('Listening to the queue : ${_consumer.queue.name}');
+
+        return _completer.complete();
       });
-      return _completer.complete();
+
     }).catchError((dynamic e) {
       print('RabbitMQ error: ' + e.toString());
       return _completer.completeError(e);

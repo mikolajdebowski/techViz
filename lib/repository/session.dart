@@ -42,8 +42,7 @@ class Session extends PropertyChangeNotifier {
     Session session = Session();
 
     var toSend = {'userStatusID': '10', 'userID': session.user.UserID, 'deviceID': info.DeviceID};
-    UserRouting().PublishMessage(toSend);
-    MessageClient().Close();
+    await UserRouting().PublishMessage(toSend);
   }
 
   void UpdateConnectionStatus(ConnectionStatus newStatus){
