@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:techviz/repository/local/localRepository.dart';
-import 'package:techviz/repository/processor/ProcessorUserGeneralInfoRepository.dart';
 import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
 import 'package:techviz/repository/processor/processorRoleRepository.dart';
 import 'package:techviz/repository/processor/processorSectionRepository.dart';
@@ -17,7 +16,6 @@ import 'package:techviz/repository/sectionRepository.dart';
 import 'package:techviz/repository/taskRepository.dart';
 import 'package:techviz/repository/taskStatusRepository.dart';
 import 'package:techviz/repository/taskTypeRepository.dart';
-import 'package:techviz/repository/userGeneralInfoRepository.dart';
 import 'package:techviz/repository/userRepository.dart';
 import 'package:techviz/repository/userRoleRepository.dart';
 import 'package:techviz/repository/userSectionRepository.dart';
@@ -63,9 +61,8 @@ class Repository{
 
   Future<void> initialFetch(fncOnMessage onMessage) async{
 
-
-    //LocalRepository localRepo = LocalRepository();
-//    await localRepo.open();
+    LocalRepository localRepo = LocalRepository();
+    await localRepo.open();
 
     onMessage('Fetching User Data...');
     await userRepository.fetch();
@@ -80,17 +77,12 @@ class Repository{
     onMessage('Fetching Task Status...');
     await taskStatusRepository.fetch();
 
-    onMessage('Fetching User General Info...');
-    await userGeneralInfoRepository.fetch();
-
     onMessage('Fetching Task Types...');
     await taskTypeRepository.fetch();
 
     onMessage('Fetching Sections...');
     await sectionRepository.fetch();
     await userSectionRepository.fetch();
-
-
   }
 
   UserSectionRepository get userSectionRepository {
@@ -126,12 +118,6 @@ class Repository{
   UserStatusRepository get userStatusRepository {
     switch(_flavor) {
       default: return UserStatusRepository(remoteRepository: ProcessorUserStatusRepository());
-    }
-  }
-
-  UserGeneralInfoRepository get userGeneralInfoRepository {
-    switch(_flavor) {
-      default: return UserGeneralInfoRepository(remoteRepository: ProcessorUserGeneralInfoRepository());
     }
   }
 
