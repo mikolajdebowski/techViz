@@ -129,9 +129,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   }
 
   void bindTaskListener() async {
-    if(streamController!=null){
-      streamController.close();
-    }
+    await unTaskBindListener();
 
     streamController = TaskRepository().listenQueue((Task task){
       keyAttendant.currentState.onTaskReceived(task);
@@ -141,9 +139,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   }
 
   void unTaskBindListener() async {
-    if(streamController!=null){
-      streamController.close();
+    if(streamController==null || !streamController.isClosed){
+      return;
     }
+    await streamController.close();
   }
 
   void goToSectionSelector() {

@@ -21,11 +21,7 @@ class MessageClient {
     return _instance;
   }
 
-  MessageClient._internal() {
-
-
-
-  }
+  MessageClient._internal() {}
 
   Future Init() async {
     print('MessageClient: Init');
@@ -101,6 +97,7 @@ class MessageClient {
   }
 
   void _bindQueue(String routingKey) async{
+
     try{
       await _consumer.queue.bind(_exchange, routingKey);
     }
@@ -114,6 +111,7 @@ class MessageClient {
   }
 
   void _addRoutingKeyListener(String routingKey, StreamController<AmqpMessage> subscription) async{
+    print('_addRoutingKeyListener  ${routingKey}');
     await _bindQueue(routingKey);
 
     if(!_mapStreamControllers.containsKey(routingKey)){
@@ -123,6 +121,7 @@ class MessageClient {
   }
 
   void _removeRoutingKeyListener(String routingKey){
+    print('_removeRoutingKeyListener  ${routingKey}');
     _consumer.queue.unbind(_exchange, routingKey);
     if(_mapStreamControllers.containsKey(routingKey)){
       _mapStreamControllers.remove(routingKey);
@@ -132,8 +131,6 @@ class MessageClient {
   Future<Exchange> _getDefaultExchange(Channel channel){
     return channel.exchange(_exchangeName, ExchangeType.TOPIC, durable: true);
   }
-
-
 
   Future<Exchange> _getExchange(Channel _channel)  {
     return _getDefaultExchange(_channel).timeout(_timeoutDuration).then((Exchange exchange) {
@@ -157,7 +154,6 @@ class MessageClient {
       }
     });
   }
-
 
   Future PublishMessage(dynamic object, String routingKeyPattern, {bool wait : false, Function parser}) async {
     Completer<void> _completer = Completer<void>();
@@ -188,8 +184,6 @@ class MessageClient {
     return _completer.future;
   }
 
-
-
   StreamController ListenQueue(String routingKeyPattern, Function onData, {Function onError, bool timeOutEnabled = true}) {
     String routingKey = '${routingKeyPattern}.${_deviceID}';
 
@@ -205,186 +199,10 @@ class MessageClient {
     return sc;
   }
 
-
-//
-//  void _publishMessage(Exchange exchange, dynamic object, String routingKeyPattern){
-//      MessageProperties props = MessageProperties();
-//      props.persistent = true;
-//      props.contentType = 'application/json';
-//      exchange.publish(JsonEncoder().convert(object), "${routingKeyPattern}.update", properties: props);
-//  }
-
-
-
-
-
-
-
-
-
-
-
   Future Close(){
     if(_rabbitmqClient!=null){
       return _rabbitmqClient.close();
     }
     return Future<dynamic>.value(true);
   }
-
-
-
-//
-//
-//  Future PublishMessage(dynamic object, String routingKeyPattern, {bool wait : false, Function parser}) async {
-//    Completer<void> _completer = Completer<void>();
-
-//    _getExchange().then((Exchange exchange) async{
-//
-//      if(wait == false){  //NO WAIT, JUST PUBLISH AND COMPLETE
-//        _publishMessage(exchange, object, routingKeyPattern);
-//        _completer.complete();
-//      }
-//      else{
-//
-//        var deviceInfo = await Utils.deviceInfo;
-//        String deviceRoutingKeyName = "${routingKeyPattern}.${deviceInfo.DeviceID}";
-//        String queueName = "mobile.${deviceInfo.DeviceID}";
-//
-//        exchange.channel.queue(queueName, autoDelete: false).then((Queue queue) {
-//          return queue.bind(exchange, deviceRoutingKeyName);
-//        }).then((Queue queueBinded) {
-//          return queueBinded.consume();
-//        }).then((Consumer consumer){
-//          consumer.listen((AmqpMessage message) {
-//            if(message.routingKey == deviceRoutingKeyName){
-//                print('RECEIVED with routingKey: ${message.routingKey}');
-//                print('PAYLOAD: ${message.payloadAsJson}');
-//                print('\n\n');
-//
-//                if (!_completer.isCompleted) {
-//                  _completer.complete(parser!=null ? parser(message.payloadAsJson): message.payloadAsJson);
-//                }
-//              }
-//          }).onError((dynamic listenError){
-//            print(listenError);
-//            _completer.completeError(listenError);
-//          });
-//          _publishMessage(exchange, object, routingKeyPattern);
-//        });
-//      }
-//    }).catchError((dynamic channelError){
-//      _completer.completeError(channelError);
-//    });
-//
-//    return _completer.future;
-
-
-
-
-//
-//        if (callback == null) {
-//          _publishMessage(exchange, object);
-//          _completer.complete();
-//        }
-//        else{
-//
-//          var deviceInfo = await Utils.deviceInfo;
-//
-//          String deviceRoutingKeyName = "${routingKeyPattern}.${deviceInfo.DeviceID}";
-//          String queueName = "mobile.${deviceInfo.DeviceID}";
-//
-//          exchange.channel.queue(queueName, autoDelete: false).then((Queue queue) {
-//            return queue.bind(exchange, deviceRoutingKeyName);
-//          }).then((Queue queueBinded) {
-//            return queueBinded.consume();
-//          }).then((Consumer consumer){
-//            consumer.listen((AmqpMessage message) {
-//
-//              if(_completer.isCompleted){
-//                consumer.cancel();
-//              }
-//
-//              if(message.routingKey == deviceRoutingKeyName){
-//                print('RECEIVED with routingKey: ${message.routingKey}');
-//                print('PAYLOAD: ${message.payloadAsJson}');
-//                print('\n\n');
-//
-//                consumer.cancel();
-//
-//                if (!_completer.isCompleted) {
-//                  _completer.complete(parser!=null ? parser(message.payloadAsJson): message.payloadAsJson);
-//                }
-//              }
-//
-//            }).onError((dynamic error) {
-//              callbackError(error);
-//            });
-//
-//            _publishMessage(exchange, object);
-//
-//          });
-//        }
-//
-//      }).timeout(Duration(seconds: 5), onTimeout: () {
-//        throw TimeoutException('Timeout reached after 30 seconds.');
-//      }).catchError((dynamic e) {
-//        if(!_completer.isCompleted)
-//          _completer.completeError(e);
-//      });
-//      return _completer.future;
-//    };
-
-
-
-//
-//
-//
-//
-//  }
-//
-//  Future<Consumer> ListenQueue(String routingKeyPattern, Function onData, {Function onError, bool timeOutEnabled = true})  {
-//    Completer<Consumer> _completer = Completer<Consumer>();
-//
-//    if (timeOutEnabled) {
-//      Future.delayed(Duration(seconds: 30), () {
-//        if (_completer.isCompleted)
-//          _completer.completeError(TimeoutException('timed out for listenqueue'));
-//      });
-//    }
-//
-//    _rabbitmqClient.channel().then((Channel _channel) {
-//      return _channel.exchange(_exchangeName, ExchangeType.TOPIC, durable: true);
-//    }).then((Exchange exchange) async {
-//      if (onData != null) {
-//        var deviceInfo = await Utils.deviceInfo;
-//
-//        String deviceRoutingKeyName = "${routingKeyPattern}.${deviceInfo.DeviceID}";
-//        String queueName = "mobile.${deviceInfo.DeviceID}";
-//
-//        exchange.channel.queue(queueName, autoDelete: false).then((Queue queue) {
-//          return queue.bind(exchange, deviceRoutingKeyName);
-//        }).then((Queue queueBinded) {
-//          return queueBinded.consume();
-//        }).then((Consumer consumer) {
-//
-//          consumer.listen((AmqpMessage message) {
-//
-//            if(message.routingKey == deviceRoutingKeyName){
-//              print('RECEIVED with routingKey: ${message.routingKey}');
-//              print('PAYLOAD: ${message.payloadAsJson}');
-//              print('\n\n');
-//
-//              onData(message.payloadAsJson);
-//            }
-//          }).onError((dynamic error) {
-//            onError(error);
-//          });
-//          _completer.complete(consumer);
-//        });
-//      }
-//    });
-//
-//    return _completer.future;
-//  }
-
 }
