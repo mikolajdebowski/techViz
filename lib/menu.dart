@@ -1,6 +1,8 @@
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
+import 'package:techviz/components/vizDialog.dart';
 import 'package:techviz/repository/session.dart';
 
 class Menu extends StatefulWidget {
@@ -11,13 +13,18 @@ class Menu extends StatefulWidget {
 }
 
 class _MenuState extends State<Menu> {
-  void logOut(Object tag){
-    Session session = Session();
-    session.logOut().then((dynamic d){
-      session.disconnectRabbitmq();
-    });
+  Flushbar _loadingBar;
 
-    Navigator.pushNamedAndRemoveUntil(context, '/login', (Route<dynamic> route) => false);
+  @override
+  void initState() {
+    super.initState();
+    _loadingBar = VizDialog.LoadingBar(message: 'Sending request...');
+  }
+
+  @override
+  void dispose(){
+    //print('_MenuState dispose');
+    super.dispose();
   }
 
   void goToMyProfile(Object tag){
@@ -36,6 +43,18 @@ class _MenuState extends State<Menu> {
     //Navigator.pushReplacementNamed(context, '/about');
   }
 
+  void onTapLogOut(Object tag){
+    _loadingBar.show(context);
+
+    Session().logOut().then((dynamic d){
+      _loadingBar.dismiss();
+      Navigator.pushNamedAndRemoveUntil(context, '/login', (Route<dynamic> route) => false);
+    }).catchError((dynamic error){
+      _loadingBar.dismiss();
+      VizDialog.Alert(context, 'Error', error.toString());
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     Row rowProfileSettings = Row(
@@ -47,7 +66,7 @@ class _MenuState extends State<Menu> {
     );
 
 
-    VizOptionButton rowLogoff = VizOptionButton('Log Out', iconName: 'ic_logout.png', onTap: logOut, flexible: true);
+    VizOptionButton rowLogoff = VizOptionButton('Log Out', iconName: 'ic_logout.png', onTap: onTapLogOut, flexible: true);
 
     Container container = Container(
       child: Padding(

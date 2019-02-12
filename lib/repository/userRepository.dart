@@ -15,7 +15,7 @@ class UserRepository implements IRepository<User>{
   }
 
   @override
-  Future listen(){
+  Future listen(Function callback, Function callbackError){
     throw new UnimplementedError('Unimplemented method');
   }
 }

@@ -2,14 +2,12 @@ import 'dart:async';
 import 'package:techviz/model/userSection.dart';
 import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/local/localRepository.dart';
-import 'package:techviz/repository/async/userSectionMessage.dart';
 import 'package:techviz/repository/remoteRepository.dart';
 
 typedef UserSectionUpdateCallBack = void Function(List<String> sections);
 
 class UserSectionRepository implements IRepository<UserSection> {
   IRemoteRepository remoteRepository;
-
   UserSectionRepository({this.remoteRepository});
 
   Future<List<UserSection>> getUserSection(String userID) async {
@@ -26,39 +24,33 @@ class UserSectionRepository implements IRepository<UserSection> {
       );
       toReturn.add(s);
     });
-
     return toReturn;
   }
 
-  Future update(String userID, List<String> sections,
-      {UserSectionUpdateCallBack callBack, bool updateRemote = true}) async {
-    print('updating local...');
+  Future update(String userID, List<String> sections) async{
+
+    Completer<void> _completer = Completer<void>();
+
     LocalRepository localRepo = LocalRepository();
     await localRepo.open();
-
     await localRepo.db.delete('UserSection');
 
     if (sections != null) {
-      await sections.forEach((dynamic section) {
+      var batch = localRepo.db.batch();
+
+      await Future.forEach(sections, (dynamic section) async{
         Map<String, dynamic> map = Map<String, dynamic>();
         map['SectionID'] = section;
         map['UserID'] = userID;
-        localRepo.insert('UserSection', map);
+        await localRepo.insert('UserSection', map);
+      });
+
+      batch.commit().then((dynamic d){
+        _completer.complete();
       });
     }
 
-    if (updateRemote) {
-
-      var toSend = {'userID': userID, 'sections': sections};
-      UserSectionMessage userSectionChannel = UserSectionMessage();
-      userSectionChannel.publishMessage(toSend);
-
-      print('rabbitmq update sent');
-    }
-
-    if (callBack != null) {
-      callBack(sections);
-    }
+    return _completer.future;
   }
 
   @override
@@ -68,7 +60,7 @@ class UserSectionRepository implements IRepository<UserSection> {
   }
 
   @override
-  Future listen() {
+  Future listen(Function callback, Function callbackError) {
     throw UnimplementedError();
   }
 }

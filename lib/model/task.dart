@@ -10,7 +10,12 @@ class Task {
   final String userID;
 
   final TaskType taskType;
+  final int taskTypeID;
   final TaskStatus taskStatus;
+  final int taskStatusID;
+
+  final int taskUrgencyID;
+
   final DateTime taskCreated;
   final DateTime taskAssigned;
   final double amount;
@@ -22,19 +27,10 @@ class Task {
   final String playerTier;
   final String playerTierColorHEX;
 
+  final String urgencyHEXColor;
+
   const Task({this.id, this.version, this.userID, this.dirty, this.location, this.taskType, this.taskStatus, this.machineId, this.taskCreated, this.taskAssigned, this.amount, this.eventDesc, this.playerID,
-  this.playerFirstName, this.playerLastName, this.playerTier, this.playerTierColorHEX});
+  this.playerFirstName, this.playerLastName, this.playerTier, this.playerTierColorHEX, this.urgencyHEXColor, this.taskTypeID, this.taskStatusID, this.taskUrgencyID});
 
-
-  static Task fromMap(Map<String, dynamic> map){
-    return Task(
-
-
-
-
-
-
-    );
-  }
 
 }

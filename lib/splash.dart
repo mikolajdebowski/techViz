@@ -13,7 +13,7 @@ class Splash extends StatefulWidget {
 class SplashState extends State<Splash> {
   @override
   void initState() {
-    Timer(const Duration(seconds: 1), () {
+    Timer(const Duration(seconds: 2), () {
       loadConfig();
     });
 
@@ -34,12 +34,17 @@ class SplashState extends State<Splash> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      body: Image.asset('assets/images/splash.png',
-      fit: BoxFit.cover,
-      height: double.infinity,
-      width: double.infinity,
-      alignment: Alignment.center),
-    );
+    String copyright = "Copyright © ${DateTime.now().year}, VizExplorer. All Rights reserved.";
+    var copyrightWidget = Text(copyright, textAlign: TextAlign.right, style: TextStyle(color: Colors.white, fontSize: 10, decoration: TextDecoration.none, fontWeight: FontWeight.normal));
+
+
+
+    return Stack(
+      fit: StackFit.expand,
+      children: <Widget>[
+          Image.asset('assets/images/bg_splash.png',
+              fit: BoxFit.cover),
+          Positioned(child: copyrightWidget, right: 10, bottom: 10)
+      ]);
   }
 }

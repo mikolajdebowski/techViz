@@ -6,7 +6,7 @@ import 'package:techviz/components/vizDialog.dart';
 import 'package:techviz/model/user.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/statusListPresenter.dart';
-import 'package:techviz/repository/async/userMessage.dart';
+import 'package:techviz/repository/async/UserRouting.dart';
 import 'package:techviz/repository/local/userTable.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
@@ -16,7 +16,7 @@ typedef fncOnTapOK(UserStatus selected);
 
 class StatusSelector extends StatefulWidget {
   StatusSelector({Key key, @required this.onTapOK, this.preSelectedID}) : super(key: key) {
-    print('preSelectedID: ${this.preSelectedID}');
+    //print('preSelectedID: ${this.preSelectedID}');
   }
   final fncOnTapOK onTapOK;
   final int preSelectedID;
@@ -29,7 +29,8 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
   List<UserStatus> statusList = List<UserStatus>();
   StatusListPresenter roleListPresenter;
   UserStatus selectedStatus;
-  Flushbar loadingBar;
+  Flushbar _loadingBar;
+
 
   @override
   void initState() {
@@ -39,27 +40,31 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
     roleListPresenter = StatusListPresenter(this);
     roleListPresenter.loadUserRoles(session.user.UserID);
 
-    loadingBar = VizDialog.LoadingBar(message: 'Sending request...');
+    _loadingBar = VizDialog.LoadingBar(message: 'Sending request...');
   }
 
   void validate(BuildContext context) async {
-    if (loadingBar.isShowing()) return;
+    print(_loadingBar.isShowing());
+    if (_loadingBar.isShowing()) return;
 
-    loadingBar.show(context);
+    _loadingBar.show(context);
 
     DeviceInfo deviceInfo = await Utils.deviceInfo;
     var toSend = {'userStatusID': selectedStatus.id, 'userID': Session().user.UserID, 'deviceID': deviceInfo.DeviceID};
-    UserMessage().publishMessage(toSend, deviceID: deviceInfo.DeviceID).then((User returnUser) {
-      loadingBar.dismiss();
-      UserTable.updateStatusID(returnUser.UserID, returnUser.UserStatusID.toString()).then((User user) {
+
+    UserRouting().PublishMessage(toSend).then((dynamic result){
+      _loadingBar.dismiss();
+
+      User returnedUser = result as User;
+      UserTable.updateStatusID(returnedUser.UserID, returnedUser.UserStatusID.toString()).then((User user) {
         Session().user = user;
         widget.onTapOK(selectedStatus);
         Navigator.of(context).pop();
       });
-    }).catchError((Object error) {
-      loadingBar.dismiss();
+
+    }).catchError((dynamic error){
+      _loadingBar.dismiss();
       VizDialog.Alert(context, 'Error', error.toString());
-      print(error);
     });
   }
 

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 class VizButton extends StatelessWidget {
@@ -47,11 +49,23 @@ class VizButton extends StatelessWidget {
       }
     }
 
+    bool clickable = true;
+
     return Flexible(
       fit: FlexFit.tight,
       flex: flex,
       child: GestureDetector(
-          onTap: onTap,
+          onTap: (){
+            if(clickable)
+              onTap();
+
+            clickable = false;
+            Future<void>.delayed(const Duration(seconds: 1), (){
+              clickable = true;
+            });
+
+
+          },
           child: Container(
               margin: EdgeInsets.all(3.0),
               constraints: BoxConstraints.expand(),

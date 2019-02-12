@@ -12,6 +12,8 @@ class ProcessorSlotLookupRepository extends IRemoteRepository<SlotMachine> {
 
   @override
   Future fetch() {
+    print('Fetching '+this.toString());
+
     Completer _completer = Completer<void>();
     SessionClient client = SessionClient.getInstance();
 
@@ -19,10 +21,7 @@ class ProcessorSlotLookupRepository extends IRemoteRepository<SlotMachine> {
     String liveTableID = config.GetLiveTable(LiveTableType.TECHVIZ_MOBILE_SLOTS.toString()).ID;
     String url = 'live/${config.DocumentID}/${liveTableID}/select.json';
 
-    client.get(url).catchError((Error onError){
-      print(onError.toString());
-      _completer.completeError(onError);
-    }).then((String rawResult) async{
+    client.get(url).then((String rawResult) async{
       dynamic decoded = json.decode(rawResult);
       List<dynamic> rows = decoded['Rows'] as List<dynamic>;
 
@@ -53,7 +52,7 @@ class ProcessorSlotLookupRepository extends IRemoteRepository<SlotMachine> {
 
       _completer.complete();
 
-    }).catchError((Error onError){
+    }).catchError((dynamic onError){
       print(onError.toString());
       _completer.completeError(onError);
     });

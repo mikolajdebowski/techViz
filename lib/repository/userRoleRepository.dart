@@ -33,7 +33,7 @@ class UserRoleRepository implements IRepository<UserRole>{
   }
 
   @override
-  Future listen() {
+  Future listen(Function callback, Function callbackError) {
     throw UnimplementedError();
   }
 

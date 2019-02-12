@@ -34,7 +34,7 @@ class UserStatusRepository implements IRepository<UserStatus>{
   }
 
   @override
-  Future listen() {
+  Future listen(Function callback, Function callbackError) {
     throw UnimplementedError();
   }
 }

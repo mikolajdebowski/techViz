@@ -1,23 +1,20 @@
 import 'dart:async';
-
-import 'package:dart_amqp/dart_amqp.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:techviz/config.dart';
 import 'package:techviz/model/user.dart';
+import 'package:techviz/repository/async/MessageClient.dart';
+import 'package:techviz/repository/async/UserRouting.dart';
 import 'package:techviz/repository/local/userTable.dart';
-import 'package:techviz/repository/async/userMessage.dart';
 import 'package:observable/observable.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 enum ConnectionStatus{
   Offline,
   Online,
-  Connecting
+  Connecting,
+  Errored
 }
 
 class Session extends PropertyChangeNotifier {
   User user;
-  Client _rabbitmqClient;
   ConnectionStatus connectionStatus;
 
   static final Session _singleton = Session._internal();
@@ -26,7 +23,7 @@ class Session extends PropertyChangeNotifier {
   }
 
   Session._internal() {
-    print('Session instance');
+    //print('Session instance');
   }
 
   void init(String userID) async {
@@ -39,57 +36,21 @@ class Session extends PropertyChangeNotifier {
     });
   }
 
-  Future<Client> get rabbitmqClient async{
-    if(_rabbitmqClient==null){
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String host = prefs.getString(Config.SERVERURL);
-      Uri hostURI =  Uri.parse(host);
+  Future logOut() async  {
+    DeviceInfo info = await Utils.deviceInfo;
 
-      ConnectionSettings settings = ConnectionSettings(host: hostURI.host, authProvider: AmqPlainAuthenticator("mobile", "mobile"));
-      settings.maxConnectionAttempts = 1;
-
-      _rabbitmqClient = Client(settings: settings);
-      _rabbitmqClient.errorListener((Exception error){
-        print('onData error: ' + error.toString());
-      });
-    }
-    await _rabbitmqClient.connect();
-    Session().UpdateConnectionStatus(ConnectionStatus.Online);
-
-    return _rabbitmqClient;
-  }
-
-  Future<dynamic> logOut() async{
     Session session = Session();
 
-    if(session.user.UserStatusID!=0 && session.user.UserStatusID != 10){
-
-      session.user = await UserTable.updateStatusID(session.user.UserID, "10");
-    }
-    var toSend = {'userStatusID': session.user.UserStatusID, 'userID': session.user.UserID};
-    //todo: hardcoded off-shift id
-
-    DeviceInfo deviceInfo = await Utils.deviceInfo;
-
-    return UserMessage().publishMessage(toSend, deviceID: deviceInfo.DeviceID);
+    var toSend = {'userStatusID': '10', 'userID': session.user.UserID, 'deviceID': info.DeviceID};
+    await UserRouting().PublishMessage(toSend);
   }
 
   void UpdateConnectionStatus(ConnectionStatus newStatus){
-    ConnectionStatus oldVakue = connectionStatus;
+    ConnectionStatus oldValue = connectionStatus;
     connectionStatus = newStatus;
 
-    notifyPropertyChange(#connectionStatus, oldVakue, newStatus);
+    print('Connection status changed: ${oldValue} to ${newStatus}');
+
+    notifyPropertyChange(#connectionStatus, oldValue, newStatus);
   }
-
-  void disconnectRabbitmq(){
-    UpdateConnectionStatus(ConnectionStatus.Offline);
-
-    if(_rabbitmqClient!=null){
-      _rabbitmqClient.close().then((dynamic d){
-        print('_rabbitmqClient closed');
-        _rabbitmqClient = null;
-      });
-    }
-  }
-
 }

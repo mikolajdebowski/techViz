@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:dart_amqp/dart_amqp.dart';
 import 'package:flutter/material.dart';
 import 'package:observable/observable.dart';
 import 'package:techviz/attendant.home.dart';
@@ -9,15 +12,14 @@ import 'package:techviz/menu.dart';
 import 'package:techviz/model/task.dart';
 import 'package:techviz/model/userSection.dart';
 import 'package:techviz/model/userStatus.dart';
-import 'package:techviz/repository/async/taskMessage.dart';
 import 'package:techviz/repository/local/taskTable.dart';
-import 'package:techviz/repository/async/messageClient.dart';
 import 'package:techviz/repository/session.dart';
+import 'package:techviz/repository/taskRepository.dart';
 import 'package:techviz/repository/userSectionRepository.dart';
 import 'package:techviz/sectionSelector.dart';
 import 'package:techviz/slotLookup.dart';
 import 'package:techviz/statusSelector.dart';
-import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
+
 
 class Home extends StatefulWidget {
   Home({Key key}) : super(key: key);
@@ -30,11 +32,12 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   GlobalKey<AttendantHomeState> keyAttendant;
   bool initialLoading = false;
 
-  List<String> currentSections = List<String>();
+  List<UserSection> currentSections = List<UserSection>();
   UserStatus currentUserStatus;
 
   String _userStatusText;
   bool _isOnline = false;
+  StreamController streamController;
 
   @override
   void initState() {
@@ -66,10 +69,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     Session session = Session();
     userSectionRepo.getUserSection(session.user.UserID).then((List<UserSection> list) {
       setState(() {
-        if (list.length > 0)
-          currentSections = list.map((UserSection us) => us.SectionID).toList();
-        else
-          currentSections = List<String>();
+        currentSections = list;
       });
     });
   }
@@ -86,7 +86,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     }
   }
 
-  void onUserSectionsChangedCallback(List<String> sections) {
+  void onUserSectionsChangedCallback(List<UserSection> sections) {
     print("onUserSectionsChangedCallback: ${sections.length.toString()}");
     setState(() {
       currentSections = sections;
@@ -103,8 +103,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     if (currentSections.length > 4) {
       sections = "4+";
     } else {
-      currentSections.forEach((String section) {
-        sections += section + " ";
+      currentSections.forEach((UserSection section) {
+        sections += section.SectionID + " ";
       });
       sections = sections.trim();
     }
@@ -129,16 +129,20 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   }
 
   void bindTaskListener() async {
-    void callbackFunction(Task task) async {
-      keyAttendant.currentState.onTaskReceived(task);
-    }
+    await unTaskBindListener();
 
-    TaskMessage().bind(callbackFunction);
+    streamController = TaskRepository().listenQueue((Task task){
+      keyAttendant.currentState.onTaskReceived(task);
+    }, (dynamic error){
+        print(error);
+    });
   }
 
   void unTaskBindListener() async {
-    DeviceInfo info = await Utils.deviceInfo;
-    MessageClient().unbindRoutingKey("mobile.task.${info.DeviceID}");
+    if(streamController==null || !streamController.isClosed){
+      return;
+    }
+    await streamController.close();
   }
 
   void goToSectionSelector() {

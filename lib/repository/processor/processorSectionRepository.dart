@@ -10,6 +10,8 @@ import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 class ProcessorSectionRepository extends IRemoteRepository<Role> {
   @override
   Future fetch() {
+    print('Fetching '+this.toString());
+
     Completer _completer = Completer<void>();
     SessionClient client = SessionClient.getInstance();
 
@@ -17,10 +19,7 @@ class ProcessorSectionRepository extends IRemoteRepository<Role> {
     String liveTableID = config.GetLiveTable(LiveTableType.TECHVIZ_MOBILE_SECTION.toString()).ID;
     String url = 'live/${config.DocumentID}/${liveTableID}/select.json';
 
-    client.get(url).catchError((Error onError) {
-      print(onError.toString());
-      _completer.completeError(onError);
-    }).then((String rawResult) async {
+    client.get(url).then((String rawResult) async {
       dynamic decoded = json.decode(rawResult);
       List<dynamic> rows = decoded['Rows'] as List<dynamic>;
 
@@ -38,7 +37,7 @@ class ProcessorSectionRepository extends IRemoteRepository<Role> {
       });
 
       _completer.complete();
-    }).catchError((Error e) {
+    }).catchError((dynamic e) {
       print(e.toString());
       _completer.completeError(e);
     });

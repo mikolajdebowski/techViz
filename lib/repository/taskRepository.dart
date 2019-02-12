@@ -1,21 +1,25 @@
 import 'dart:async';
+import 'package:dart_amqp/dart_amqp.dart';
 import 'package:techviz/model/task.dart';
 import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/model/taskType.dart';
+import 'package:techviz/repository/async/TaskRouting.dart';
 import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/local/localRepository.dart';
 import 'package:techviz/repository/local/taskTable.dart';
-import 'package:techviz/repository/async/taskMessage.dart';
 import 'package:techviz/repository/remoteRepository.dart';
 
 typedef TaskUpdateCallBack = void Function(String taskID);
 typedef TaskSubmitallBack = void Function(String taskID);
 
 class TaskRepository implements IRepository<Task>{
+
   IRemoteRepository remoteRepository;
   TaskRepository({this.remoteRepository});
 
-  Future<List<Task>> getTaskList(String userID) async {
+  Future<List<Task>> getOpenTasks(String userID) async {
+    //print('getOpenTasks called');
+
     LocalRepository localRepo = LocalRepository();
     if(!localRepo.db.isOpen)
       await localRepo.open();
@@ -24,7 +28,13 @@ class TaskRepository implements IRepository<Task>{
         "t.*"
         ", ts.TaskStatusDescription "
         ", tt.TaskTypeDescription "
-        "FROM TASK t INNER JOIN TaskStatus ts on t.TASKSTATUSID == ts.TaskStatusID INNER JOIN TaskType tt on t.TASKTYPEID == tt.TaskTypeID and t.TASKSTATUSID in (1,2,3) AND t.USERID = '${userID}' ORDER BY t.TASKCREATED ASC;";
+        ", tu.ColorHex "
+        " FROM TASK t "
+        " INNER JOIN TaskStatus ts on t.TASKSTATUSID == ts.TaskStatusID "
+        " INNER JOIN TaskType tt on t.TASKTYPEID == tt.TaskTypeID "
+        " INNER JOIN TaskUrgency tu on t.TaskUrgencyID == tu.ID "
+        " WHERE t.TASKSTATUSID in (1,2,3) AND t.USERID = '${userID}' "
+        " ORDER BY t.TASKCREATED ASC;";
 
     List<Map<String, dynamic>> queryResult = await localRepo.db.rawQuery(sql);
 
@@ -32,8 +42,6 @@ class TaskRepository implements IRepository<Task>{
     queryResult.forEach((Map<String, dynamic> task) {
       list.add(_fromMap(task));
     });
-
-    print("list  ${list.length}");
 
     return list;
   }
@@ -51,16 +59,12 @@ class TaskRepository implements IRepository<Task>{
 
     List<Map<String, dynamic>> queryResult = await LocalRepository().db.rawQuery(sql);
 
-    //print("query length => ${queryResult.length}");
-
-    //print("getTask: ${queryResult}");
-
     return Future.value(queryResult.length>0? _fromMap(queryResult.first): null);
   }
 
   Task _fromMap(Map<String, dynamic> task){
     var t = Task(
-        dirty: task['_Dirty'] == 1,
+        dirty: task['_DIRTY'] == 1,
         version: task['_VERSION'] as int,
         userID: task['USERID'] as String,
         id: task['_ID'] as String,
@@ -75,6 +79,7 @@ class TaskRepository implements IRepository<Task>{
         playerTierColorHEX: task['PLAYERTIERCOLORHEX']!=null ? task['PLAYERTIERCOLORHEX'] as String : null,
         taskType: TaskType(id: task['TASKTYPEID'] as int, description: task['TaskTypeDescription'] as String),
         taskStatus: TaskStatus(id: task['TASKSTATUSID'] as int, description: task['TaskStatusDescription'] as String),
+        urgencyHEXColor: task['ColorHex'] as String
     );
 
     return t;
@@ -97,32 +102,63 @@ class TaskRepository implements IRepository<Task>{
   }
 
   @override
-  Future listen() {
-    throw UnimplementedError();
+  Future listen(Function onData, Function onError) async {
+
   }
 
-  Future update(String taskID, {String taskStatusID, TaskUpdateCallBack callBack, bool markAsDirty = true, bool updateRemote = false} ) async {
-    print('updating local...');
+  StreamController listenQueue(Function onData, Function onError)  {
+
+    return TaskRouting().ListenQueue((dynamic task) async{
+
+      Map<String,dynamic> taskMapped = Map<String,dynamic>();
+      taskMapped['_ID'] = task['_ID'];
+      taskMapped['_DIRTY'] = false;
+      taskMapped['_VERSION'] =  task['_version'];
+      taskMapped['USERID'] = task['userID'];
+      taskMapped['LOCATION'] = task['location'];
+      taskMapped['TASKSTATUSID'] = task['taskStatusID'];
+      taskMapped['TASKTYPEID'] = task['taskTypeID'];
+      taskMapped['MACHINEID'] = task['machineID'];
+      taskMapped['TASKURGENCYID'] = 2;
+
+      taskMapped['TASKCREATED'] = task['taskCreated'];
+      taskMapped['TASKASSIGNED'] = task['taskAssigned'];
+      taskMapped['PLAYERID'] = task['playerID'];
+      taskMapped['AMOUNT'] = task['amount'] == null ||  task['amount'] =='' ? 0.0 : task['amount'];
+
+      taskMapped['EVENTDESC'] = task['eventDesc'];
+      taskMapped['PLAYERFIRSTNAME'] = task['firstName'];
+      taskMapped['PLAYERLASTNAME'] = task['lastName'];
+      taskMapped['PLAYERTIER'] = task['tier'];
+      taskMapped['PLAYERTIERCOLORHEX'] = task['tierColorHex'];
+
+
+      await TaskTable.insertOrUpdate([taskMapped]);
+
+      Task taskUpdate = await TaskRepository().getTask(task['_ID'].toString());
+      onData(taskUpdate);
+
+    }, onError: onError, onCancel: (){
+      //print('onCancel called');
+    });
+  }
+
+  Future update(String taskID, {String taskStatusID, TaskUpdateCallBack callBack} ) async {
+    Completer<dynamic> _completer = Completer<dynamic>();
+    //print('updating local...');
     LocalRepository localRepo = LocalRepository();
     if(!localRepo.db.isOpen)
       await localRepo.open();
 
-    int dirty = markAsDirty?1:0;
+    await  LocalRepository().db.rawUpdate('UPDATE TASK SET _DIRTY = 1 WHERE _ID = ?', [taskID].toList());
 
-    if(taskStatusID!=null){
-      await  LocalRepository().db.rawUpdate('UPDATE TASK SET _DIRTY = ?, TASKSTATUSID = ? WHERE _ID = ?', [dirty, taskStatusID, taskID].toList());
-    }
+    var message = {'taskID': taskID, 'taskStatusID': taskStatusID};
 
-    if(updateRemote){
-      var toSend = {'taskID': taskID, 'taskStatusID': taskStatusID};
-      TaskMessage taskChannel = TaskMessage();
-      await taskChannel.publishMessage(toSend);
-
-      print('rabbitmq update sent');
-    }
-
-    if(callBack!=null){
+    TaskRouting().PublishMessage(message).then((dynamic d){
       callBack(taskID);
-    }
+      _completer.complete(d);
+    });
+
+    return _completer.future;
   }
 }

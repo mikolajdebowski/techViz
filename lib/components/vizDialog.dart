@@ -9,6 +9,7 @@ class VizDialog {
     if (message != null && message.length > 0)
       fb.message = message;
     fb.showProgressIndicator = true;
+    fb.animationDuration = Duration(milliseconds: 500);
     return fb;
   }
 

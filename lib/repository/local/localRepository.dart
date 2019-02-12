@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:techviz/repository/local/taskTable.dart';
+import 'package:techviz/repository/local/taskUrgencyTable.dart';
 import 'package:techviz/repository/local/userTable.dart';
 
 class LocalRepository {
@@ -29,6 +30,8 @@ class LocalRepository {
         onCreate: (Database db, int version) async {
 
           TaskTable.create(db);
+
+          TaskUrgencyTable.create(db);
 
           UserTable.create(db);
 

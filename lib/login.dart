@@ -4,14 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techviz/common/LowerCaseTextFormatter.dart';
+import 'package:techviz/components/VizAlert.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizLoadingIndicator.dart';
 import 'package:techviz/components/vizRainbow.dart';
 import 'package:techviz/config.dart';
+import 'package:techviz/repository/async/DeviceRouting.dart';
+import 'package:techviz/repository/async/MessageClient.dart';
+import 'package:techviz/repository/async/UserRouting.dart';
 import 'package:techviz/repository/local/userTable.dart';
-import 'package:techviz/repository/async/deviceMessage.dart';
-import 'package:techviz/repository/async/userMessage.dart';
-import 'package:techviz/repository/async/messageClient.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:techviz/roleSelector.dart';
@@ -95,71 +96,80 @@ class LoginState extends State<Login> {
     await repo.initialFetch(onMessage);
   }
 
-  Future<void> setupUser(String userID) async{
-    //CREATE SESSION
-    Session session = Session();
-    var user = await UserTable.updateStatusID(userID, "10"); //FORCE OFF-SHIFT LOCALLY
-    print('UserStatusID ${user.UserStatusID}');
-    await session.init(userID);
-
+  Future setupUser(String userID) async{
+    Completer<void> _completer = Completer<void>();
     DeviceInfo deviceInfo = await Utils.deviceInfo;
 
-    await MessageClient().init(deviceInfo.DeviceID).then((dynamic d){
-      MessageClient().listen();
+    Session session = Session();
+    await MessageClient().Init();
+
+    setState(() {
+      _loadingMessage = 'Updating user and device info...';
     });
 
-    var toSendDeviceDetails = {'userID': session.user.UserID, 'deviceID': deviceInfo.DeviceID, 'model': deviceInfo.Model, 'OSName': deviceInfo.OSName, 'OSVersion': deviceInfo.OSVersion };
-    await DeviceMessage().publishMessage(toSendDeviceDetails);
+    var toSendUserStatus = {'userStatusID': 10, 'userID': userID, 'deviceID': deviceInfo.DeviceID }; //FORCE OFF-SHIFT REMOTE
+    var toSendDeviceDetails = {'userID': userID, 'deviceID': deviceInfo.DeviceID, 'model': deviceInfo.Model, 'OSName': deviceInfo.OSName, 'OSVersion': deviceInfo.OSVersion };
 
-    var toSendUserStatus = {'userStatusID': 10, 'userID':session.user.UserID, 'deviceID': deviceInfo.DeviceID }; //FORCE OFF-SHIFT REMOTE
-    await UserMessage().publishMessage(toSendUserStatus, deviceID: deviceInfo.DeviceID);
+    var userUpdateFuture = UserRouting().PublishMessage(toSendUserStatus).then<dynamic>((dynamic user) async{
+      await UserTable.updateStatusID(userID, "10"); //FORCE OFF-SHIFT LOCALLY
+      await session.init(userID);
 
+      return Future<dynamic>.value(user);
+    });
+
+    var deviceUpdateFuture = DeviceRouting().PublishMessage(toSendDeviceDetails);
+
+    Future.wait<dynamic>([userUpdateFuture, deviceUpdateFuture]).then((List<dynamic> l){
+      _completer.complete();
+    }).catchError((dynamic error){
+      _completer.completeError(error);
+    });
+
+    return _completer.future;
   }
 
   void loginTap() async {
+    if(_isLoading)
+      return;
+
     FocusScope.of(context).requestFocus(FocusNode());
 
-    if (_formKey.currentState.validate()) {
-      _formKey.currentState.save();
-
-      setState(() {
-        _isLoading = true;
-        _loadingMessage = 'Authenticating...';
-      });
-
-      SessionClient client = SessionClient.getInstance();
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String serverUrl = prefs.get(Config.SERVERURL) as String;
-
-      client.init(ClientType.PROCESSOR, serverUrl);
-
-      Future<String> authResponse = client.auth(_formData['username'], _formData['password']);
-      authResponse.then((String response) async {
-
-        await prefs.setString(Login.USERNAME, usernameAddressController.text);
-        await prefs.setString(Login.PASSWORD, passwordAddressController.text);
-
-        await loadInitialData();
-        await setupUser(usernameAddressController.text);
-
-        Future.delayed( Duration(milliseconds:  200), () {
-          Navigator.pushReplacement(context, MaterialPageRoute<RoleSelector>(builder: (BuildContext context) => RoleSelector()));
-        });
-      }).catchError((Object error) {
-        setState(() {
-          _isLoading = false;
-        });
-        showModalBottomSheet<String>(
-            context: context,
-            builder: (BuildContext context) {
-              return Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(80.0),
-                    child: Text(error.toString()),
-                  ));
-            });
-      });
+    if (!_formKey.currentState.validate()) {
+      return;
     }
+
+    _formKey.currentState.save();
+
+    setState(() {
+      _isLoading = true;
+      _loadingMessage = 'Authenticating...';
+    });
+
+    SessionClient client = SessionClient.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String serverUrl = prefs.get(Config.SERVERURL) as String;
+
+    client.init(ClientType.PROCESSOR, serverUrl);
+
+    Future<String> authResponse = client.auth(_formData['username'], _formData['password']);
+    authResponse.then((String response) async {
+
+      await prefs.setString(Login.USERNAME, usernameAddressController.text);
+      await prefs.setString(Login.PASSWORD, passwordAddressController.text);
+
+      await loadInitialData();
+      await setupUser(usernameAddressController.text);
+
+      Future.delayed( Duration(milliseconds:  200), () {
+        Navigator.pushReplacement(context, MaterialPageRoute<RoleSelector>(builder: (BuildContext context) => RoleSelector()));
+      });
+    }).catchError((Object error) {
+      setState(() {
+        _isLoading = false;
+      });
+      VizAlert.Show(context, error.toString());
+    });
+
   }
 
   @override
@@ -192,7 +202,7 @@ class LoginState extends State<Login> {
           autocorrect: false,
           onSaved: (String value) {
             _formData['username'] = value;
-            print('saving username: $value');
+            //print('saving username: $value');
           },
           validator: (String value) {
             if (value.isEmpty) {
@@ -218,7 +228,7 @@ class LoginState extends State<Login> {
           focusNode: txtPwdFocusNode,
           controller: passwordAddressController,
           onSaved: (String value) {
-            print('saving password: $value');
+            //print('saving password: $value');
             _formData['password'] = value;
           },
           autocorrect: false,

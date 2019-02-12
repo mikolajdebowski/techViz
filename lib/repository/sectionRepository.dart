@@ -32,7 +32,7 @@ class SectionRepository implements IRepository<Section> {
   }
 
   @override
-  Future listen() {
+  Future listen(Function callback, Function callbackError) {
     // TODO: implement listen
     throw UnimplementedError();
   }

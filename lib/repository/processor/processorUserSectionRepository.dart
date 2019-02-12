@@ -10,6 +10,8 @@ import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 class ProcessorUserSectionRepository extends IRemoteRepository<UserSection> {
   @override
   Future fetch() {
+    print('Fetching '+this.toString());
+
     Completer _completer = Completer<void>();
     SessionClient client = SessionClient.getInstance();
 
@@ -17,11 +19,8 @@ class ProcessorUserSectionRepository extends IRemoteRepository<UserSection> {
     String liveTableID = config.GetLiveTable(LiveTableType.TECHVIZ_MOBILE_USER_SECTION.toString()).ID;
     String url = 'live/${config.DocumentID}/${liveTableID}/select.json';
 
-    client.get(url).catchError((Error onError) {
-      print(onError.toString());
-      _completer.completeError(onError);
-    }).then((String rawResult) async {
-      try {
+    client.get(url).then((String rawResult) async {
+
         dynamic decoded = json.decode(rawResult);
         List<dynamic> rows = decoded['Rows'] as List<dynamic>;
 
@@ -29,8 +28,6 @@ class ProcessorUserSectionRepository extends IRemoteRepository<UserSection> {
 
         LocalRepository localRepo = LocalRepository();
         await localRepo.open();
-
-        print(rows.length);
 
         rows.forEach((dynamic d) {
           dynamic values = d['Values'];
@@ -42,10 +39,10 @@ class ProcessorUserSectionRepository extends IRemoteRepository<UserSection> {
         });
 
         _completer.complete();
-      } catch (e) {
-        print(e.toString());
-        _completer.completeError(e);
-      }
+
+    }).catchError((dynamic e){
+      print(e.toString());
+      _completer.completeError(e);
     });
 
     return _completer.future;

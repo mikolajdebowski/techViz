@@ -11,6 +11,8 @@ class ProcessorUserRepository extends IRemoteRepository<User>{
 
   @override
   Future fetch() {
+    print('Fetching '+this.toString());
+
     Completer _completer = Completer<void>();
     SessionClient client = SessionClient.getInstance();
 
@@ -18,43 +20,34 @@ class ProcessorUserRepository extends IRemoteRepository<User>{
     String liveTableID = config.GetLiveTable(LiveTableType.TECHVIZ_MOBILE_USER.toString()).ID;
     String url = 'live/${config.DocumentID}/${liveTableID}/select.json';
 
-    client.get(url).catchError((Error onError){
+    client.get(url).then((String rawResult) async {
 
-      print(onError.toString());
-      _completer.completeError(onError);
+      dynamic decoded = json.decode(rawResult);
+      List<dynamic> rows = decoded['Rows'] as List<dynamic>;
 
-    }).then((String rawResult) async {
+      var _columnNames = (decoded['ColumnNames'] as String).split(',');
 
-      try{
-        dynamic decoded = json.decode(rawResult);
-        List<dynamic> rows = decoded['Rows'] as List<dynamic>;
+      LocalRepository localRepo = LocalRepository();
+      await localRepo.open();
 
-        var _columnNames = (decoded['ColumnNames'] as String).split(',');
+      rows.forEach((dynamic d) {
+        dynamic values = d['Values'];
 
-        LocalRepository localRepo = LocalRepository();
-        await localRepo.open();
+        Map<String, dynamic> map = Map<String, dynamic>();
+        map['UserID'] = values[_columnNames.indexOf("UserID")];
+        //map['SectionList'] = values[_columnNames.indexOf("SectionList")];
+        map['UserRoleID'] = values[_columnNames.indexOf("UserRoleID")];
+        map['UserName'] = values[_columnNames.indexOf("UserName")];
+        map['UserStatusID'] = values[_columnNames.indexOf("UserStatusID")];
 
-        print(rows.length);
+        localRepo.insert('User', map);
+      });
 
-        rows.forEach((dynamic d) {
-          dynamic values = d['Values'];
+      _completer.complete();
 
-          Map<String, dynamic> map = Map<String, dynamic>();
-          map['UserID'] = values[_columnNames.indexOf("UserID")];
-          //map['SectionList'] = values[_columnNames.indexOf("SectionList")];
-          map['UserRoleID'] = values[_columnNames.indexOf("UserRoleID")];
-          map['UserName'] = values[_columnNames.indexOf("UserName")];
-          map['UserStatusID'] = values[_columnNames.indexOf("UserStatusID")];
-
-          localRepo.insert('User', map);
-        });
-
-        _completer.complete();
-      }
-      catch (e){
-        print(e.toString());
-        _completer.completeError(e);
-      }
+    }).catchError((dynamic e){
+      print(e.toString());
+      _completer.completeError(e);
     });
 
 

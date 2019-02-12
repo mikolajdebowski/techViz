@@ -11,6 +11,8 @@ class ProcessorUserRoleRepository extends IRemoteRepository<UserRole>{
 
   @override
   Future fetch() {
+    print('Fetching '+this.toString());
+
     Completer _completer = Completer<void>();
     SessionClient client = SessionClient.getInstance();
 
@@ -18,37 +20,30 @@ class ProcessorUserRoleRepository extends IRemoteRepository<UserRole>{
     String liveTableID = config.GetLiveTable(LiveTableType.TECHVIZ_MOBILE_USER_ROLE.toString()).ID;
     String url = 'live/${config.DocumentID}/${liveTableID}/select.json';
 
-    client.get(url).catchError((Error onError){
-      print(onError.toString());
-      _completer.completeError(onError);
+    client.get(url).then((String rawResult) async {
 
-    }).then((String rawResult) async {
-      try{
-        dynamic decoded = json.decode(rawResult);
-        List<dynamic> rows = decoded['Rows'] as List<dynamic>;
+      dynamic decoded = json.decode(rawResult);
+      List<dynamic> rows = decoded['Rows'] as List<dynamic>;
 
-        var _columnNames = (decoded['ColumnNames'] as String).split(',');
+      var _columnNames = (decoded['ColumnNames'] as String).split(',');
 
-        LocalRepository localRepo = LocalRepository();
-        await localRepo.open();
+      LocalRepository localRepo = LocalRepository();
+      await localRepo.open();
 
-        print(rows.length);
+      rows.forEach((dynamic d) {
+        dynamic values = d['Values'];
 
-        rows.forEach((dynamic d) {
-          dynamic values = d['Values'];
+        Map<String, dynamic> map = Map<String, dynamic>();
+        map['UserID'] = values[_columnNames.indexOf("UserID")];
+        map['UserRoleID'] = values[_columnNames.indexOf("UserRoleID")];
+        localRepo.insert('UserRole', map);
+      });
 
-          Map<String, dynamic> map = Map<String, dynamic>();
-          map['UserID'] = values[_columnNames.indexOf("UserID")];
-          map['UserRoleID'] = values[_columnNames.indexOf("UserRoleID")];
-          localRepo.insert('UserRole', map);
-        });
+      _completer.complete();
 
-        _completer.complete();
-      }
-      catch (e){
-        print(e.toString());
-        _completer.completeError(e);
-      }
+    }).catchError((dynamic e){
+      print(e.toString());
+      _completer.completeError(e);
     });
 
     return _completer.future;

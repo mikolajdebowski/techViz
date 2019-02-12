@@ -33,7 +33,7 @@ class TaskTypeRepository implements IRepository<TaskType>{
   }
 
   @override
-  Future listen() {
+  Future listen(Function callback, Function callbackError) {
     throw UnimplementedError();
   }
 }

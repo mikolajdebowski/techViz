@@ -11,6 +11,8 @@ class ProcessorTaskTypeRepository extends IRemoteRepository<TaskType>{
 
   @override
   Future fetch() {
+    print('Fetching '+this.toString());
+
     Completer _completer = Completer<void>();
     SessionClient client = SessionClient.getInstance();
 
@@ -18,10 +20,7 @@ class ProcessorTaskTypeRepository extends IRemoteRepository<TaskType>{
     String liveTableID = config.GetLiveTable(LiveTableType.TECHVIZ_MOBILE_TASK_TYPE.toString()).ID;
     String url = 'live/${config.DocumentID}/${liveTableID}/select.json';
 
-    client.get(url).catchError((Error onError){
-      print(onError.toString());
-      _completer.completeError(onError);
-    }).then((String rawResult) async {
+    client.get(url).then((String rawResult) async {
 
       dynamic decoded = json.decode(rawResult);
       List<dynamic> rows = decoded['Rows'] as List<dynamic>;
@@ -41,7 +40,7 @@ class ProcessorTaskTypeRepository extends IRemoteRepository<TaskType>{
       });
       _completer.complete();
 
-    }).catchError((Error e)
+    }).catchError((dynamic e)
     {
       print(e.toString());
       _completer.completeError(e);

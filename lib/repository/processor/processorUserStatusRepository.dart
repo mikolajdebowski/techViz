@@ -11,6 +11,8 @@ class ProcessorUserStatusRepository extends IRemoteRepository<UserStatus>{
 
   @override
   Future fetch() {
+    print('Fetching '+this.toString());
+
     Completer _completer = Completer<void>();
     SessionClient client = SessionClient.getInstance();
 
@@ -18,37 +20,32 @@ class ProcessorUserStatusRepository extends IRemoteRepository<UserStatus>{
     String liveTableID = config.GetLiveTable(LiveTableType.TECHVIZ_MOBILE_USER_STATUS.toString()).ID;
     String url = 'live/${config.DocumentID}/${liveTableID}/select.json';
 
-    client.get(url).catchError((Error onError){
-      print(onError.toString());
-      _completer.completeError(onError);
+    client.get(url).then((String rawResult) async {
 
-    }).then((String rawResult) async {
 
-      try{
-        dynamic decoded = json.decode(rawResult);
-        List<dynamic> rows = decoded['Rows'] as List<dynamic>;
+      dynamic decoded = json.decode(rawResult);
+      List<dynamic> rows = decoded['Rows'] as List<dynamic>;
 
-        var _columnNames = (decoded['ColumnNames'] as String).split(',');
+      var _columnNames = (decoded['ColumnNames'] as String).split(',');
 
-        LocalRepository localRepo = LocalRepository();
-        await localRepo.open();
+      LocalRepository localRepo = LocalRepository();
+      await localRepo.open();
 
-        rows.forEach((dynamic d) {
-          dynamic values = d['Values'];
+      rows.forEach((dynamic d) {
+        dynamic values = d['Values'];
 
-          Map<String, dynamic> map = Map<String, dynamic>();
-          map['UserStatusID'] = values[_columnNames.indexOf("UserStatusID")];
-          map['Description'] = values[_columnNames.indexOf("UserStatusName")];
-          map['IsOnline'] = values[_columnNames.indexOf("IsOnline")];
-          localRepo.insert('UserStatus', map);
-        });
+        Map<String, dynamic> map = Map<String, dynamic>();
+        map['UserStatusID'] = values[_columnNames.indexOf("UserStatusID")];
+        map['Description'] = values[_columnNames.indexOf("UserStatusName")];
+        map['IsOnline'] = values[_columnNames.indexOf("IsOnline")];
+        localRepo.insert('UserStatus', map);
+      });
 
-        _completer.complete();
-      }
-      catch (e){
-        print(e.toString());
-        _completer.completeError(e);
-      }
+      _completer.complete();
+
+    }).catchError((dynamic e){
+      print(e.toString());
+      _completer.completeError(e);
     });
 
     return _completer.future;

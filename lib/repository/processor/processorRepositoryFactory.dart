@@ -48,7 +48,9 @@ class ProcessorRepositoryConfig {
     mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_USER_STATUS);
     mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_SECTION);
     mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_USER_SECTION);
+    mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_TASK_URGENCY);
     mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_USER_GENERAL_INFO);
+
 
     List<LiveTableType> laterSyncTablesTags = List<LiveTableType>();
     laterSyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_SLOTS);
@@ -75,7 +77,7 @@ class ProcessorRepositoryConfig {
       };
     }
 
-    print('done setup');
+    print('Setup is done');
 
   }
 
@@ -199,6 +201,7 @@ enum LiveTableType{
   TECHVIZ_MOBILE_TASK,
   TECHVIZ_MOBILE_TASK_STATUS,
   TECHVIZ_MOBILE_TASK_TYPE,
+  TECHVIZ_MOBILE_TASK_URGENCY,
   TECHVIZ_MOBILE_ROLE,
   TECHVIZ_MOBILE_USER_ROLE,
   TECHVIZ_MOBILE_USER,

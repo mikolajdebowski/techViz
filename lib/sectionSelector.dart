@@ -1,13 +1,18 @@
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
+import 'package:techviz/components/vizDialog.dart';
+import 'package:techviz/model/section.dart';
 import 'package:techviz/model/userSection.dart';
 import 'package:techviz/presenter/sectionListPresenter.dart';
+import 'package:techviz/repository/async/SectionRouting.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:techviz/repository/userSectionRepository.dart';
+import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
-typedef fncOnUserSectionsChanged(List<String> sections);
+typedef fncOnUserSectionsChanged(List<UserSection> sections);
 
 class SectionSelector extends StatefulWidget {
   SectionSelector({Key key, @required this.onUserSectionsChanged}) : super(key: key);
@@ -21,6 +26,7 @@ class SectionSelectorState extends State<SectionSelector>
     implements ISectionListPresenter<SectionModelPresenter> {
   List<SectionModelPresenter> sectionList = List<SectionModelPresenter>();
   SectionListPresenter sectionPresenter;
+  Flushbar _loadingBar;
 
   @override
   void initState() {
@@ -28,23 +34,42 @@ class SectionSelectorState extends State<SectionSelector>
 
     sectionPresenter = SectionListPresenter(this);
     sectionPresenter.loadSections();
+
+    _loadingBar = VizDialog.LoadingBar(message: 'Sending request...');
   }
 
-  void validate(BuildContext context) async {
+  void onTap(BuildContext context) async {
+    if (_loadingBar.isShowing()) return;
+
+    _loadingBar.show(context);
+
     Session session = Session();
-    List<String> sections = List<String>();
-    sectionList.forEach((SectionModelPresenter s) {
-      if(s.selected){
-        sections.add(s.sectionID);
-      }
-    });
+    List<String> sections = sectionList.where((SectionModelPresenter s) => s.selected).map((SectionModelPresenter s)=>s.sectionID).toList();
 
-    UserSectionRepository().update(session.user.UserID, sections, callBack:updateCallback, updateRemote:true);
-    Navigator.of(context).pop();
+    DeviceInfo info = await Utils.deviceInfo;
+    var toSubmit = {'userID': session.user.UserID, 'sections': sections, 'deviceID': info.DeviceID};
+
+    SectionRouting().PublishMessage(toSubmit).then<List<Section>>((dynamic list) async{
+      _loadingBar.dismiss();
+
+      var toUpdateLocally = (list as List<Section>);
+
+      await UserSectionRepository().update(session.user.UserID, toUpdateLocally.map((Section s) => s.SectionID).toList());
+
+      print('');
+      UserSectionRepository().getUserSection(session.user.UserID).then((List<UserSection> sectionToMain){
+        backToMain(sectionToMain);
+      });
+
+    }).catchError((dynamic error){
+      _loadingBar.dismiss();
+      VizDialog.Alert(context, 'Error', error.toString());
+    });
   }
 
-  void updateCallback(List<String> sections) {
+  void backToMain(List<UserSection> sections){
     widget.onUserSectionsChanged(sections);
+    Navigator.of(context).pop();
   }
 
   @override
@@ -55,7 +80,7 @@ class SectionSelectorState extends State<SectionSelector>
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter));
 
-    var okBtn = VizButton(title: 'OK', highlighted: true, onTap: () => validate(context));
+    var okBtn = VizButton(title: 'OK', highlighted: true, onTap: () => onTap(context));
 
     var actions = <Widget>[];
     actions.add(VizButton(title: 'All', onTap: onSelectAllTapped));
