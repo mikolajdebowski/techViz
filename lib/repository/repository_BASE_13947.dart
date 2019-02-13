@@ -1,13 +1,13 @@
 import 'dart:async';
 
 import 'package:techviz/repository/local/localRepository.dart';
+import 'package:techviz/repository/processor/ProcessorUserGeneralInfoRepository.dart';
 import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
 import 'package:techviz/repository/processor/processorRoleRepository.dart';
 import 'package:techviz/repository/processor/processorSectionRepository.dart';
 import 'package:techviz/repository/processor/processorTaskRepository.dart';
 import 'package:techviz/repository/processor/processorTaskStatusRepository.dart';
 import 'package:techviz/repository/processor/processorTaskTypeRepository.dart';
-import 'package:techviz/repository/processor/processorTaskUrgencyRepository.dart';
 import 'package:techviz/repository/processor/processorUserRepository.dart';
 import 'package:techviz/repository/processor/processorUserRoleRepository.dart';
 import 'package:techviz/repository/processor/processorUserSectionRepository.dart';
@@ -17,7 +17,6 @@ import 'package:techviz/repository/sectionRepository.dart';
 import 'package:techviz/repository/taskRepository.dart';
 import 'package:techviz/repository/taskStatusRepository.dart';
 import 'package:techviz/repository/taskTypeRepository.dart';
-import 'package:techviz/repository/taskUrgencyRepository.dart';
 import 'package:techviz/repository/userGeneralInfoRepository.dart';
 import 'package:techviz/repository/userRepository.dart';
 import 'package:techviz/repository/userRoleRepository.dart';
@@ -64,8 +63,9 @@ class Repository{
 
   Future<void> initialFetch(fncOnMessage onMessage) async{
 
-    LocalRepository localRepo = LocalRepository();
-    await localRepo.open();
+
+    //LocalRepository localRepo = LocalRepository();
+//    await localRepo.open();
 
     onMessage('Fetching User Data...');
     await userRepository.fetch();
@@ -80,15 +80,17 @@ class Repository{
     onMessage('Fetching Task Status...');
     await taskStatusRepository.fetch();
 
+    onMessage('Fetching User General Info...');
+    await userGeneralInfoRepository.fetch();
+
     onMessage('Fetching Task Types...');
     await taskTypeRepository.fetch();
-
-    onMessage('Fetching Task Urgency...');
-    await taskUrgencyRepository.fetch();
 
     onMessage('Fetching Sections...');
     await sectionRepository.fetch();
     await userSectionRepository.fetch();
+
+
   }
 
   UserSectionRepository get userSectionRepository {
@@ -127,6 +129,12 @@ class Repository{
     }
   }
 
+  UserGeneralInfoRepository get userGeneralInfoRepository {
+    switch(_flavor) {
+      default: return UserGeneralInfoRepository(remoteRepository: ProcessorUserGeneralInfoRepository());
+    }
+  }
+
   TaskTypeRepository get taskTypeRepository {
     switch(_flavor) {
       default: return TaskTypeRepository(remoteRepository: ProcessorTaskTypeRepository());
@@ -136,12 +144,6 @@ class Repository{
   TaskStatusRepository get taskStatusRepository {
     switch(_flavor) {
       default: return TaskStatusRepository(remoteRepository: ProcessorTaskStatusRepository());
-    }
-  }
-
-  TaskUrgencyRepository get taskUrgencyRepository {
-    switch(_flavor) {
-      default: return TaskUrgencyRepository(remoteRepository: ProcessorTaskUrgencyRepository());
     }
   }
 

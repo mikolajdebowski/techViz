@@ -1,25 +1,28 @@
+import 'dart:async' show Future;
+import 'dart:async';
+import 'dart:convert';
+
+/// Bar chart example
+import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:techviz/components/charts/groupedBarChart.dart';
 import 'package:techviz/components/charts/pieChart.dart';
 import 'package:techviz/components/charts/stackedHorizontalBarChart.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizLegend.dart';
 import 'package:techviz/components/vizStepper.dart';
-import 'package:techviz/model/user.dart';
-
-import 'package:techviz/presenter/roleListPresenter.dart';
-import 'package:techviz/repository/session.dart';
 import 'package:techviz/model/role.dart';
+import 'package:techviz/model/user.dart';
 import 'package:techviz/model/userStatus.dart';
+import 'package:techviz/presenter/roleListPresenter.dart';
 import 'package:techviz/presenter/statusListPresenter.dart';
+import 'package:techviz/repository/session.dart';
 
+import 'package:techviz/repository/processor/processorUserGeneralInfoRepository.dart';
+import 'package:techviz/repository/userGeneralInfoRepository.dart';
 /// Bar chart example
-import 'package:charts_flutter/flutter.dart' as charts;
-import 'dart:async' show Future;
-import 'package:flutter/services.dart' show rootBundle;
 
-import 'dart:async';
-import 'dart:convert';
 
 class Profile extends StatefulWidget {
   Profile() {}
@@ -415,6 +418,10 @@ class ProfileState extends State<Profile>
         type: VizStepperType.horizontal,
 
         onStepTapped: (step) {
+
+          // TODO change it just for testing
+          fetchUserInfo();
+
           print("view loaded : " + step.toString());
 
           setState(() {
@@ -431,6 +438,23 @@ class ProfileState extends State<Profile>
     }
 
     return Container();
+  }
+
+
+  void fetchUserInfo() async{
+    print('fetchUserInfo');
+    await loadInitialData();
+
+  }
+
+  Future<void> loadInitialData() async{
+    await userGeneralInfoRepository.fetch();
+  }
+
+
+
+  UserGeneralInfoRepository get userGeneralInfoRepository {
+    return UserGeneralInfoRepository(remoteRepository: ProcessorUserGeneralInfoRepository());
   }
 
   @override
