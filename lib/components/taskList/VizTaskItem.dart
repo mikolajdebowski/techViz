@@ -21,7 +21,11 @@ class VizTaskItem extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
 
-    var iUrgencyColor = this.urgencyHEXColor!= null ? Color(int.parse("0xFF${this.urgencyHEXColor}")) : Color(0xFF45505D);
+    var urgencyColorStart = this.urgencyHEXColor!= null ? Color(int.parse("0xFF${this.urgencyHEXColor}")) : Color(0xFF45505D);
+    var urgencyColorEnd = this.urgencyHEXColor!= null ? Color(int.parse("0xAA${this.urgencyHEXColor}")) : Color(0xFF45505D);
+
+    var mainBackgroundColor = this.selected ? [Color(0xFF65b1d9), Color(0xFF0268a2)] : [Color(0xFFB2C7CF), Color(0xFFE4EDEF)];
+    var locationColor =  this.selected ? Colors.white : Colors.black45;
 
     return GestureDetector(
         onTap: () {
@@ -35,8 +39,7 @@ class VizTaskItem extends StatelessWidget{
                 height: 60.0,
                 decoration: BoxDecoration(
                     gradient: LinearGradient(
-                        colors: this.selected ? [Color(0xFF65b1d9), Color(0xFF0268a2)] : [Color(0xFF45505D), Color(0xFF282B34)],
-                        //colors: this.selected ? [Color(0xFF65b1d9), Color(0xFF0268a2)] : [iUrgencyColor,iUrgencyColor],
+                        colors: [urgencyColorStart,urgencyColorEnd],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         tileMode: TileMode.repeated)),
@@ -48,11 +51,11 @@ class VizTaskItem extends StatelessWidget{
               child: Container(
                 height: 60.0,
                 decoration:
-                BoxDecoration(gradient: LinearGradient(colors: [Color(0xFFB2C7CF), Color(0xFFE4EDEF)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
+                BoxDecoration(gradient: LinearGradient(colors: mainBackgroundColor, begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
                 child: Center(
                     child: Text(
                       this.title,
-                      style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15.0),
+                      style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15.0, color: locationColor),
                     )),
               ),
             ),

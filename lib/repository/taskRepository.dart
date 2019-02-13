@@ -119,7 +119,7 @@ class TaskRepository implements IRepository<Task>{
       taskMapped['TASKSTATUSID'] = task['taskStatusID'];
       taskMapped['TASKTYPEID'] = task['taskTypeID'];
       taskMapped['MACHINEID'] = task['machineID'];
-      taskMapped['TASKURGENCYID'] = 2;
+      taskMapped['TASKURGENCYID'] = task['taskUrgencyID'];
 
       taskMapped['TASKCREATED'] = task['taskCreated'];
       taskMapped['TASKASSIGNED'] = task['taskAssigned'];
