@@ -345,14 +345,6 @@ class _StepperState extends State<VizStepper> with TickerProviderStateMixin {
         Padding(
           padding: EdgeInsets.only(top: 12.0),
           child: Text(
-            "Today's Stats",
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600, color: Colors.black),
-          ),
-        ),
-
-        Padding(
-          padding: EdgeInsets.only(top: 12.0),
-          child: Text(
             widget.steps[widget.currentStep].title,
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black),
           ),
