@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:techviz/components/charts/vizChart.dart';
 import 'package:techviz/components/stepper/VizStepperButton.dart';
-import 'package:techviz/model/chart.dart';
-import 'package:techviz/repository/processor/processorUserStatsRepository.dart';
+import 'package:techviz/presenter/statsPresenter.dart';
 
 class Stats extends StatefulWidget {
   Stats();
@@ -16,20 +14,17 @@ enum StatsView { Today, Week, Month }
 
 enum StatsType { User, Team }
 
-class StatsState extends State<Stats> {
-  List<Chart> _listOfCharts = List<Chart>();
+class StatsState extends State<Stats> implements IStatsPresenter {
   StatsView _selectedViewType;
-  List<Chart> _selectedChartsToShow;
+  StatsPresenter _statsPresenter;
+  Map<int, List<Widget>> _charts;
+  bool _isLoading = false;
+  int _idxToLoad;
 
   @override
   void initState() {
     super.initState();
-    _listOfCharts = ProcessorUserStatsRepository().GetChartsAll();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
+    _statsPresenter = StatsPresenter(this);
   }
 
   @override
@@ -37,9 +32,9 @@ class StatsState extends State<Stats> {
     void _onStatTypeTap(StatsView selected) {
       setState(() {
         _selectedViewType = selected;
-        _selectedChartsToShow = _listOfCharts.where((Chart c) => c.statsView == selected).toList();
-
+        _isLoading = true;
       });
+      _statsPresenter.load(_selectedViewType);
     }
 
     if (_selectedViewType == null) {
@@ -76,13 +71,63 @@ class StatsState extends State<Stats> {
 
     var header = Row(children: <Widget>[backBtn, titleWidget]);
 
+
+    List<Widget> stepsToAdd = [];
+    for(int i = 0; i<=5; i++){
+      var btnToAdd = Padding(
+          padding: EdgeInsets.all(5),
+          child: VizStepperButton(
+              title: (i+1).toString(),
+              onTap: () {
+                _stepsRowTap(i);
+              }));
+      stepsToAdd.add(btnToAdd);
+    }
+    var _stepsRow = Row(children: stepsToAdd, crossAxisAlignment: CrossAxisAlignment.center);
+
+
+    Widget _innerWidget = Container();
+    if(_isLoading){
+      _innerWidget = CircularProgressIndicator();
+    }
+    else if(_charts!=null && _charts.length>0 && _idxToLoad!=null)
+    {
+      _innerWidget = Row(children: _charts[_idxToLoad]);
+    }
+
     var chartContainer = Column(
-        children: <Widget>[header, VizChartBuilder(GlobalKey(), _selectedChartsToShow)],
+        children: <Widget>[header, _innerWidget, _stepsRow],
       );
 
     return chartContainer;
   }
+
+
+  @override
+  void onLoaded(Map<int, List<Widget>> charts) {
+    setState(() {
+      _charts = charts;
+      _isLoading = false;
+
+    });
+
+    Future.delayed(Duration(seconds: 1), (){
+      _stepsRowTap(0);
+    });
+  }
+  
+  void _stepsRowTap(int i) {
+    setState(() {
+      _idxToLoad = i;
+    });
+  }
+
 }
+
+
+
+
+
 
 
 

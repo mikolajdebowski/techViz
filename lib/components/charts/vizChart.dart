@@ -1,73 +1,97 @@
 
+import 'package:charts_flutter/flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:techviz/components/stepper/VizStepperButton.dart';
-import 'package:techviz/model/chart.dart';
-import 'package:techviz/presenter/chart/chartPresenter.dart';
+import 'package:techviz/components/charts/groupedBarChart.dart';
+import 'package:techviz/components/charts/pieChart.dart';
+import 'package:techviz/components/charts/stackedHorizontalBarChart.dart';
 
-class VizChartBuilder extends StatefulWidget {
-  final List<Chart> charts;
-  VizChartBuilder(Key key, this.charts) : super(key : key);
+class VizChart extends StatefulWidget {
+  final List<ChartData> chartData;
+  final ChartType chartType;
+  final Function parser;
+  VizChart(Key key, this.chartData, this.chartType, {this.parser}) : super(key : key);
 
   @override
-  State<StatefulWidget> createState() => VizChartBuilderState();
+  State<StatefulWidget> createState() => VizChartState();
 }
 
-class VizChartBuilderState extends State<VizChartBuilder> implements IChartPresenter{
-
-  bool _isLoading;
-  Widget _chartWidget;
-  ChartPresenter _chartPresenter;
+class VizChartState extends State<VizChart>{
 
   @override
   void initState() {
-    _isLoading = true;
-    _chartPresenter = ChartPresenter(this);
-    _chartPresenter.load(widget.charts, 0);
-
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    void _stepsRowTap(int idx){
-      _chartPresenter.load(widget.charts, idx);
+
+    Widget returnWidget;
+
+    if(widget.chartType == ChartType.Pie){
+      returnWidget = buildPieChart(widget.chartData);
+    }
+    else if(widget.chartType == ChartType.VerticalBar){
+      returnWidget = buildBarChart(widget.chartData);
+    }
+    else if(widget.chartType == ChartType.HorizontalBar){
+      returnWidget = buildStackedHorizontalBarChart(widget.chartData);
+    }
+    else {
+      returnWidget = Text('not implemented');
     }
 
-
-    if(_isLoading)
-      return Center(child: CircularProgressIndicator());
-
-
-
-
-    List<Widget> stepsToAdd = [];
-    for(int i = 1; i<=6; i++){
-      var btnToAdd = Padding(
-          padding: EdgeInsets.all(5),
-          child: VizStepperButton(
-              title: (i).toString(),
-              onTap: () {
-                _stepsRowTap(i);
-              }));
-      stepsToAdd.add(btnToAdd);
-    }
-    var _stepsRow = Row(children: stepsToAdd, crossAxisAlignment: CrossAxisAlignment.center);
-
-    return Column(
-      children: <Widget>[
-        _chartWidget,
-        _stepsRow
-      ],
-    );
+    return Container(width: 400, height: 150,child: returnWidget);
   }
 
-  @override
-  void onLoaded(Widget _widget) {
-    setState(() {
-      _isLoading = false;
-      _chartWidget = _widget;
-    });
+  Widget buildBarChart(List<ChartData> data){
+    var seriesToBuild = [
+      Series<ChartData, String>(
+          id: 'id',
+          domainFn: (ChartData stats, _) => stats.name,
+          measureFn: (ChartData stats, _) => stats.value,
+          data: data,
+          labelAccessorFn: (ChartData stats, _){
+            return '${stats.value.toString()}';
+          }
+      )];
+
+    return GroupedBarChart(seriesToBuild);
+  }
+
+  Widget buildStackedHorizontalBarChart(List<ChartData> data){
+    var seriesToBuild = [
+      Series<ChartData, String>(
+          id: 'id',
+          domainFn: (ChartData stats, _) => stats.name,
+          measureFn: (ChartData stats, _) => stats.value,
+          data: data,
+          labelAccessorFn: (ChartData stats, _){
+            if(widget.parser!=null){
+              return widget.parser(stats.value) as String;
+            }
+            return '${stats.value.toString()}';
+          }
+      )];
+
+    return StackedHorizontalBarChart(seriesToBuild);
+  }
+
+
+  Widget buildPieChart(List<ChartData> data){
+
+    var seriesToBuild = [
+      Series<ChartData, String>(
+          id: 'id',
+          domainFn: (ChartData stats, _) => stats.name,
+          measureFn: (ChartData stats, _) => stats.value,
+          data: data,
+          labelAccessorFn: (ChartData stats, _){
+            return '${stats.value.toString()}';
+          }
+      )];
+
+    return SimplePieChart(seriesToBuild);
   }
 }
 
@@ -75,24 +99,10 @@ enum ChartType{
   Pie,VerticalBar,HorizontalBar
 }
 
+class ChartData{
+  final String name;
+  final num value;
 
-/*
-* List<Widget> stepsToAdd = [];
-    _selectedChartsToShow.forEach((final Chart chart) {
-      var btnToAdd = Padding(
-          padding: EdgeInsets.all(5),
-          child: VizStepperButton(
-              title: chart.title,
-              onTap: () {
-                setState(() {
-                  _selectedChart = chart;
-                  loadSelectedChart();
-                });
-              }));
+  ChartData(this.name, this.value);
+}
 
-      stepsToAdd.add(btnToAdd);
-    });
-
-
-
-* */

@@ -1,58 +1,55 @@
 import 'dart:async';
 import 'dart:convert';
-
+import 'dart:core';
 import 'package:flutter/services.dart';
 import 'package:techviz/components/charts/vizChart.dart';
-import 'package:techviz/model/chart.dart';
-import 'package:techviz/model/chartData.dart';
-import 'package:techviz/repository/local/localRepository.dart';
-import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
 import 'package:techviz/repository/remoteRepository.dart';
-import 'package:techviz/stats.dart';
-import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 
-class ProcessorUserStatsRepository extends IRemoteRepository<dynamic>{
+class ProcessoStatsTodayRepository extends IRemoteRepository<dynamic>{
 
-
-  List<Chart> GetChartsAll(){
-    var  _listOfCharts = List<Chart>();
-
-    _listOfCharts.add(Chart(title: 'Chart 1 User', statsView: StatsView.Today, statsType: StatsType.User, chartType: ChartType.Pie, source: 'source 1'));
-    _listOfCharts.add(Chart(title: 'Chart 1 Team', statsView: StatsView.Today, statsType: StatsType.Team, chartType: ChartType.Pie, source: 'source 1'));
-
-//    _listOfCharts.add(Chart(title: 'Chart 1 User', statsView: StatsView.Today, statsType: StatsType.User, chartType: ChartType.Pie, source: 'source 1'));
-//    _listOfCharts.add(Chart(title: 'Chart 1 User', statsView: StatsView.Today, statsType: StatsType.User, chartType: ChartType.Pie, source: 'source 1'));
-//    _listOfCharts.add(Chart(title: 'Chart 1 User', statsView: StatsView.Today, statsType: StatsType.User, chartType: ChartType.Pie, source: 'source 1'));
-//    _listOfCharts.add(Chart(title: 'Chart 1 User', statsView: StatsView.Today, statsType: StatsType.User, chartType: ChartType.Pie, source: 'source 1'));
-
-
-    return _listOfCharts;
-  }
-
-  List<ChartData> GetChartData(String source){
-    var list = [ChartData('AvgTimeAvailable', 1),
-    ChartData('AvgTasksPerHour', 1),
-    ChartData('AvgResponseTime', 1),
-    ChartData('AvgCompletionTime', 1),
-    ChartData('AvgTimeAvailable', 1)];
-
-    String insertSpaces(String columnName) {
-      columnName = columnName.split(RegExp("(?=[A-Z])")).join(" ");
-      return columnName;
-    }
-
-    return List<ChartData>();
-  }
-
-
-
+  var columnsToBeIgnored = ["SiteID", "UserID"];
 
   @override
-  Future fetch() {
+  Future fetch() async {
     print('Fetching '+this.toString());
 
-    Completer _completer = Completer<void>();
+    ChartData extractDataFromValues(List<String> columnNames, String columnName, dynamic values){
+      return ChartData(columnName, num.parse(values[columnNames.indexOf(columnName)] as String));
+    }
+
+    Completer<Map<int,List<ChartData>>> _completer = Completer<Map<int,List<ChartData>>>();
+
+    var futureUser = rootBundle.loadString('assets/json/UserStatsCurrentDay.json');
+    var futureTeam = rootBundle.loadString('assets/json/TeamStatsCurrentDay.json');
+
+    Future.wait([futureUser, futureTeam]).then((List<String> json){
+      var jsonUser = json[0];
+      var jsonTeam = json[1];
+
+      Map<String,dynamic> decodedUser = jsonDecode(jsonUser);
+      Map<String,dynamic> decodedTeam = jsonDecode(jsonTeam);
+
+      List<dynamic> rowsUser = decodedUser['Rows'];
+      List<String> columnNamesUser = (decodedUser['ColumnNames'] as String).split(',');
+
+      List<dynamic> rowsTeam = decodedTeam['Rows'];
+      List<String> columnNamesTeam = (decodedTeam['ColumnNames'] as String).split(',');
+
+
+      List<ChartData> chartTimeAvailable = [];
+      chartTimeAvailable.add(extractDataFromValues(columnNamesUser, 'TimeAvailable', rowsUser[0]['Values']));
+      chartTimeAvailable.add(extractDataFromValues(columnNamesTeam, 'AvgTimeAvailable', rowsTeam[0]['Values']));
+
+      Map<int,List<ChartData>> mapToReturn = Map<int,List<ChartData>>();
+      mapToReturn[0] = chartTimeAvailable;
+
+      _completer.complete(mapToReturn);
+    });
+
+    return _completer.future;
+
+
 
 //
 //    var statsList = await Future.wait([loadUserStats(), loadTeamStats(), loadTeamTasks()]);
@@ -114,21 +111,8 @@ class ProcessorUserStatsRepository extends IRemoteRepository<dynamic>{
 //
 //    userStatsMap['TasksCompletedByType'] = teamTasksMapAll;
 
-    _completer.complete();
 
-    return _completer.future;
   }
 
-  Future<String> loadUserStats() async {
-    return await rootBundle.loadString('assets/json/UserStatsCurrentDay.json');
-  }
-
-  Future<String> loadTeamStats() async {
-    return await rootBundle.loadString('assets/json/TeamStatsCurrentDay.json');
-  }
-
-  Future<String> loadTeamTasks() async {
-    return await rootBundle.loadString('assets/json/TeamTasksCompletedCurrentDay.json');
-  }
 
 }
