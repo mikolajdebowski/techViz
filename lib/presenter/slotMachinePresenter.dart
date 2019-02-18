@@ -1,6 +1,6 @@
 
 import 'package:techviz/model/slotMachine.dart';
-import 'package:techviz/repository/processor/processorSlotLookupRepository.dart';
+import 'package:techviz/repository/processor/processorSlotMachineRepository.dart';
 
 abstract class ISlotMachinePresenter<SlotMachine> {
   void onSlotMachinesLoaded(List<SlotMachine> result);
@@ -10,10 +10,10 @@ abstract class ISlotMachinePresenter<SlotMachine> {
 class SlotMachinePresenter{
 
   ISlotMachinePresenter<SlotMachine> _view;
-  ProcessorSlotLookupRepository _repo;
+  ProcessorSlotMachineRepository _repo;
 
   SlotMachinePresenter(this._view){
-    _repo = ProcessorSlotLookupRepository();
+    _repo = ProcessorSlotMachineRepository();
   }
 
   void search({String query}) async {

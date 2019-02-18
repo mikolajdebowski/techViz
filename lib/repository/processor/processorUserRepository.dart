@@ -7,7 +7,7 @@ import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
 import 'package:techviz/repository/remoteRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
-class ProcessorUserRepository extends IRemoteRepository<User>{
+class ProcessorUserRepository implements IRemoteRepository<User>{
 
   @override
   Future fetch() {

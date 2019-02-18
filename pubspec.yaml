@@ -75,6 +75,10 @@ flutter:
     - assets/images/ic_acknowledge.png
     - assets/images/ic_scan_machine.png
     - assets/images/ic_complete.png
+    - assets/images/ic_machine_available.png
+    - assets/images/ic_machine_inuse.png
+    - assets/images/ic_machine_offline.png
+    - assets/images/ic_machine_reserved.png
     - assets/images/2.0x/ic_cardin.png
     - assets/images/2.0x/ic_acknowledge.png
     - assets/images/2.0x/ic_scan_machine.png

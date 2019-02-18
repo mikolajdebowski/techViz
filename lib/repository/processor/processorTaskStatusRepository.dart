@@ -7,7 +7,7 @@ import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
 import 'package:techviz/repository/remoteRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
-class ProcessorTaskStatusRepository extends IRemoteRepository<TaskStatus>{
+class ProcessorTaskStatusRepository implements IRemoteRepository<TaskStatus>{
 
   @override
   Future fetch() {
