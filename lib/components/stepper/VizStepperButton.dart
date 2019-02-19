@@ -9,7 +9,7 @@ class VizStepperButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double size = 50.0;
+    double size = 30.0;
 
     return InkResponse(
       onTap: onTap,

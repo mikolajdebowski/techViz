@@ -52,14 +52,21 @@ class StatsPresenter {
     }
 
     Map<int, List<Widget>> mapToReturn = Map<int, List<Widget>>();
-    mapToReturn[0] = [VizChart(GlobalKey(), data[0], ChartType.HorizontalBar, parser: convertToHours)];//, VizChart(GlobalKey(), [data['Team'][0]], ChartType.VerticalBar)];
-    //mapToReturn[1] = [VizChart(GlobalKey(), [data['User'][1]], ChartType.VerticalBar), VizChart(GlobalKey(), [data['Team'][1]], ChartType.VerticalBar)];
-    //mapToReturn[2] = [VizChart(GlobalKey(), [data['User'][2]], ChartType.VerticalBar), VizChart(GlobalKey(), [data['Team'][2]], ChartType.VerticalBar)];
-    //mapToReturn[3] = [VizChart(GlobalKey(), [data['User'][3]], ChartType.VerticalBar), VizChart(GlobalKey(), [data['Team'][3]], ChartType.VerticalBar)];
-    //mapToReturn[4] = [VizChart(GlobalKey(), [data['User'][4]], ChartType.VerticalBar), VizChart(GlobalKey(), [data['Team'][4]], ChartType.VerticalBar)];
-    //mapToReturn[5] = [VizChart(GlobalKey(), [data['User'][5]], ChartType.Pie), VizChart(GlobalKey(), [data['Team'][5]], ChartType.Pie)];
+    mapToReturn[0] = [VizChart(GlobalKey(), data[0], ChartType.HorizontalBar, 'Time Available for Tasks', parser: convertToHours)];
+    mapToReturn[1] = [VizChart(GlobalKey(), data[1], ChartType.HorizontalBar, 'Tasks per Logged in Hour')];
+    mapToReturn[2] = [VizChart(GlobalKey(), data[2], ChartType.HorizontalBar, 'Avg Response')];
+    mapToReturn[3] = [VizChart(GlobalKey(), data[3], ChartType.HorizontalBar, 'Completion Times')];
+    mapToReturn[4] = [VizChart(GlobalKey(), data[4], ChartType.HorizontalBar, 'Tasks Escalated')];
 
+    mapToReturn[5] = [VizChart(GlobalKey(), [data[5][0]], ChartType.Pie, 'Percent of Tasks Escalated'),
+                      VizChart(GlobalKey(), [data[5][1]], ChartType.Pie, 'Percent of Tasks Escalated')];
     _view.onLoaded(mapToReturn);
 
+  }
+
+
+  String parseName(String columnName) {
+    columnName = columnName.split(RegExp("(?=[A-Z])")).join(" ");
+    return columnName;
   }
 }

@@ -1,28 +1,19 @@
 import 'dart:async' show Future;
 import 'dart:async';
-import 'dart:convert';
 
-/// Bar chart example
-import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:techviz/components/charts/groupedBarChart.dart';
-import 'package:techviz/components/charts/pieChart.dart';
-import 'package:techviz/components/charts/stackedHorizontalBarChart.dart';
 import 'package:techviz/components/vizActionBar.dart';
-import 'package:techviz/components/vizLegend.dart';
-import 'package:techviz/components/vizStepper.dart';
-import 'package:techviz/model/chart.dart';
 import 'package:techviz/model/role.dart';
 import 'package:techviz/model/user.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/roleListPresenter.dart';
 import 'package:techviz/presenter/statusListPresenter.dart';
-import 'package:techviz/repository/session.dart';
-
 import 'package:techviz/repository/processor/processorUserGeneralInfoRepository.dart';
+import 'package:techviz/repository/session.dart';
 import 'package:techviz/repository/userGeneralInfoRepository.dart';
 import 'package:techviz/stats.dart';
+/// Bar chart example
+
 /// Bar chart example
 
 

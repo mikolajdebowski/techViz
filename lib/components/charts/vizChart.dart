@@ -1,4 +1,3 @@
-
 import 'package:charts_flutter/flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -10,14 +9,15 @@ class VizChart extends StatefulWidget {
   final List<ChartData> chartData;
   final ChartType chartType;
   final Function parser;
-  VizChart(Key key, this.chartData, this.chartType, {this.parser}) : super(key : key);
+  final String title;
+
+  VizChart(Key key, this.chartData, this.chartType, this.title, {this.parser}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => VizChartState();
 }
 
-class VizChartState extends State<VizChart>{
-
+class VizChartState extends State<VizChart> {
   @override
   void initState() {
     super.initState();
@@ -25,84 +25,91 @@ class VizChartState extends State<VizChart>{
 
   @override
   Widget build(BuildContext context) {
-
     Widget returnWidget;
 
-    if(widget.chartType == ChartType.Pie){
+    if (widget.chartType == ChartType.Pie) {
       returnWidget = buildPieChart(widget.chartData);
-    }
-    else if(widget.chartType == ChartType.VerticalBar){
+    } else if (widget.chartType == ChartType.VerticalBar) {
       returnWidget = buildBarChart(widget.chartData);
-    }
-    else if(widget.chartType == ChartType.HorizontalBar){
+    } else if (widget.chartType == ChartType.HorizontalBar) {
       returnWidget = buildStackedHorizontalBarChart(widget.chartData);
-    }
-    else {
+    } else {
       returnWidget = Text('not implemented');
     }
 
-    return Container(width: 400, height: 150,child: returnWidget);
+    return Expanded(child:returnWidget);
   }
 
-  Widget buildBarChart(List<ChartData> data){
+  // vertical bar isFirst
+  Widget buildBarChart(List<ChartData> data) {
     var seriesToBuild = [
       Series<ChartData, String>(
           id: 'id',
           domainFn: (ChartData stats, _) => stats.name,
           measureFn: (ChartData stats, _) => stats.value,
           data: data,
-          labelAccessorFn: (ChartData stats, _){
+          labelAccessorFn: (ChartData stats, _) {
             return '${stats.value.toString()}';
-          }
-      )];
+          })
+    ];
 
     return GroupedBarChart(seriesToBuild);
   }
 
-  Widget buildStackedHorizontalBarChart(List<ChartData> data){
+  // horizontal bar
+  Widget buildStackedHorizontalBarChart(List<ChartData> data) {
     var seriesToBuild = [
       Series<ChartData, String>(
           id: 'id',
-          domainFn: (ChartData stats, _) => stats.name,
+          domainFn: (ChartData stats, _) => stats.label,
           measureFn: (ChartData stats, _) => stats.value,
           data: data,
-          labelAccessorFn: (ChartData stats, _){
-            if(widget.parser!=null){
+          labelAccessorFn: (ChartData stats, _) {
+            if (widget.parser != null) {
               return widget.parser(stats.value) as String;
             }
             return '${stats.value.toString()}';
-          }
-      )];
+          })
+    ];
 
     return StackedHorizontalBarChart(seriesToBuild);
   }
 
+  // pie charts
+  Widget buildPieChart(List<ChartData> data) {
 
-  Widget buildPieChart(List<ChartData> data){
+    if(data.length == 1){
+      var chartData = new ChartData('', 100 - num.parse(data[0].value.toString()), '');
+      data.add(chartData);
+    }
 
     var seriesToBuild = [
       Series<ChartData, String>(
           id: 'id',
-          domainFn: (ChartData stats, _) => stats.name,
+          domainFn: (ChartData stats, _) => stats.label,
           measureFn: (ChartData stats, _) => stats.value,
           data: data,
-          labelAccessorFn: (ChartData stats, _){
-            return '${stats.value.toString()}';
-          }
-      )];
+          labelAccessorFn: (ChartData stats, _) {
+            return '${stats.value.round()}%';
+          })
+    ];
 
-    return SimplePieChart(seriesToBuild);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Expanded(child: SimplePieChart(seriesToBuild)),
+        Text(data[0].label),
+      ],
+    );
   }
 }
 
-enum ChartType{
-  Pie,VerticalBar,HorizontalBar
-}
+enum ChartType { Pie, VerticalBar, HorizontalBar }
 
-class ChartData{
+class ChartData {
   final String name;
   final num value;
+  final String label;
 
-  ChartData(this.name, this.value);
+  ChartData(this.name, this.value, this.label);
 }
-

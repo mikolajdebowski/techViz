@@ -8,14 +8,16 @@ import 'package:techviz/repository/remoteRepository.dart';
 
 class ProcessoStatsTodayRepository extends IRemoteRepository<dynamic>{
 
-  var columnsToBeIgnored = ["SiteID", "UserID"];
+//  var columnsToBeIgnored = ["SiteID", "UserID"];
+  String personalAxisName = 'Personal';
+  String teamAxisName = 'Team Avg';
 
   @override
   Future fetch() async {
     print('Fetching '+this.toString());
 
-    ChartData extractDataFromValues(List<String> columnNames, String columnName, dynamic values){
-      return ChartData(columnName, num.parse(values[columnNames.indexOf(columnName)] as String));
+    ChartData extractDataFromValues(List<String> columnNames, String columnName, dynamic values, String label){
+      return ChartData(columnName, num.parse(values[columnNames.indexOf(columnName)] as String), label);
     }
 
     Completer<Map<int,List<ChartData>>> _completer = Completer<Map<int,List<ChartData>>>();
@@ -36,82 +38,49 @@ class ProcessoStatsTodayRepository extends IRemoteRepository<dynamic>{
       List<dynamic> rowsTeam = decodedTeam['Rows'];
       List<String> columnNamesTeam = (decodedTeam['ColumnNames'] as String).split(',');
 
-
+      // Graph 1 time available for tasks... TimeAvailable and AvgTimeAvailable
       List<ChartData> chartTimeAvailable = [];
-      chartTimeAvailable.add(extractDataFromValues(columnNamesUser, 'TimeAvailable', rowsUser[0]['Values']));
-      chartTimeAvailable.add(extractDataFromValues(columnNamesTeam, 'AvgTimeAvailable', rowsTeam[0]['Values']));
+      chartTimeAvailable.add(extractDataFromValues(columnNamesUser, 'TimeAvailable', rowsUser[0]['Values'], personalAxisName));
+      chartTimeAvailable.add(extractDataFromValues(columnNamesTeam, 'AvgTimeAvailable', rowsTeam[0]['Values'], teamAxisName));
+
+      // Graph 2 tasks per logged in hour... TasksPerHour and AvgTasksPerHour
+      List<ChartData> tasksPerHourAvailable = [];
+      tasksPerHourAvailable.add(extractDataFromValues(columnNamesUser, 'TasksPerHour', rowsUser[0]['Values'], personalAxisName));
+      tasksPerHourAvailable.add(extractDataFromValues(columnNamesTeam, 'AvgTasksPerHour', rowsTeam[0]['Values'], teamAxisName));
+
+      // average response times... AvgResponseTime and AvgResponseTime
+      List<ChartData> avgRespTime = [];
+      avgRespTime.add(extractDataFromValues(columnNamesUser, 'AvgResponseTime', rowsUser[0]['Values'], personalAxisName));
+      avgRespTime.add(extractDataFromValues(columnNamesTeam, 'AvgResponseTime', rowsTeam[0]['Values'], teamAxisName));
+
+      // average completion times... AvgCompletionTime and AvgCompletionTime
+      List<ChartData> completionTimes = [];
+      completionTimes.add(extractDataFromValues(columnNamesUser, 'AvgCompletionTime', rowsUser[0]['Values'], personalAxisName));
+      completionTimes.add(extractDataFromValues(columnNamesTeam, 'AvgCompletionTime', rowsTeam[0]['Values'], teamAxisName));
+
+      // tasks escalated... TasksEscalated and AvgTasksEscalated
+      List<ChartData> tasksEscalated = [];
+      tasksEscalated.add(extractDataFromValues(columnNamesUser, 'TasksEscalated', rowsUser[0]['Values'], personalAxisName));
+      tasksEscalated.add(extractDataFromValues(columnNamesTeam, 'AvgTasksEscalated', rowsTeam[0]['Values'], teamAxisName));
+
+      // percent of tasks escalated... PercentEscalated and AvgPercentEscalated
+      List<ChartData> percentTasksEscalated = [];
+      percentTasksEscalated.add(extractDataFromValues(columnNamesUser, 'PercentEscalated', rowsUser[0]['Values'], personalAxisName));
+      percentTasksEscalated.add(extractDataFromValues(columnNamesTeam, 'AvgPercentEscalated', rowsTeam[0]['Values'], teamAxisName));
+
 
       Map<int,List<ChartData>> mapToReturn = Map<int,List<ChartData>>();
       mapToReturn[0] = chartTimeAvailable;
+      mapToReturn[1] = tasksPerHourAvailable;
+      mapToReturn[2] = avgRespTime;
+      mapToReturn[3] = completionTimes;
+      mapToReturn[4] = tasksEscalated;
+      mapToReturn[5] = percentTasksEscalated;
 
       _completer.complete(mapToReturn);
     });
 
     return _completer.future;
-
-
-
-//
-//    var statsList = await Future.wait([loadUserStats(), loadTeamStats(), loadTeamTasks()]);
-//    var userStatsRaw = statsList[0];
-//    var teamStatsRaw = statsList[1];
-//    var teamTeamTasksRaw = statsList[2];
-//
-//    Map<String,dynamic> decodedUser = json.decode(userStatsRaw);
-//    List<dynamic> rowsUser = decodedUser['Rows'];
-//    var _columnNamesUser = (decodedUser['ColumnNames'] as String).split(',');
-//    Map<String, dynamic> userStatsMap;
-//
-//    rowsUser.forEach((dynamic d) {
-//      dynamic values = d['Values'];
-//
-//      userStatsMap = Map<String, dynamic>();
-//      userStatsMap['TimeAvailable'] = values[_columnNamesUser.indexOf("TimeAvailable")];
-//      userStatsMap['TasksPerHour'] = values[_columnNamesUser.indexOf("TasksPerHour")];
-//      userStatsMap['AvgResponseTime'] = values[_columnNamesUser.indexOf("AvgResponseTime")];
-//      userStatsMap['AvgCompletionTime'] = values[_columnNamesUser.indexOf("AvgCompletionTime")];
-//      userStatsMap['TasksEscalated'] = values[_columnNamesUser.indexOf("TasksEscalated")];
-//      userStatsMap['PercentEscalated'] = values[_columnNamesUser.indexOf("PercentEscalated")];
-//    });
-//
-//
-//    Map<String,dynamic> decodedTeam = json.decode(teamStatsRaw);
-//    List<dynamic> rowsTeam = decodedTeam['Rows'];
-//    var _columnNamesTeam = (decodedTeam['ColumnNames'] as String).split(',');
-//    Map<String, dynamic> teamStatsMap;
-//
-//    rowsTeam.forEach((dynamic d) {
-//      dynamic values = d['Values'];
-//
-//      teamStatsMap = Map<String, dynamic>();
-//      teamStatsMap['TimeAvailable'] = values[_columnNamesTeam.indexOf("AvgTimeAvailable")];
-//      teamStatsMap['TasksPerHour'] = values[_columnNamesTeam.indexOf("AvgTasksPerHour")];
-//      teamStatsMap['AvgResponseTime'] = values[_columnNamesTeam.indexOf("AvgResponseTime")];
-//      teamStatsMap['AvgCompletionTime'] = values[_columnNamesTeam.indexOf("AvgCompletionTime")];
-//      teamStatsMap['TasksEscalated'] = values[_columnNamesTeam.indexOf("AvgTasksEscalated")];
-//      teamStatsMap['PercentEscalated'] = values[_columnNamesTeam.indexOf("AvgPercentEscalated")];
-//    });
-//
-//    Map<String,dynamic> decodedTeamTasks = json.decode(teamTeamTasksRaw);
-//    List<dynamic> rowsTeamTasks = decodedTeamTasks['Rows'];
-//    var _columnNamesTeamTasks = (decodedTeamTasks['ColumnNames'] as String).split(',');
-//    List<dynamic> teamTasksMapAll = new List<dynamic>();
-//
-//    rowsTeamTasks.forEach((dynamic d) {
-//      dynamic values = d['Values'];
-//
-//      Map<String, dynamic> teamTasksMap = Map<String, dynamic>();
-//      teamTasksMap['SiteID'] = values[_columnNamesTeamTasks.indexOf("SiteID")];
-//      teamTasksMap['TaskTypeID'] = values[_columnNamesTeamTasks.indexOf("TaskTypeID")];
-//      teamTasksMap['TaskDescription'] = values[_columnNamesTeamTasks.indexOf("TaskDescription")];
-//      teamTasksMap['AvgTasksCompleted'] = values[_columnNamesTeamTasks.indexOf("AvgTasksCompleted")];
-//
-//      teamTasksMapAll.add(teamTasksMap);
-//    });
-//
-//    userStatsMap['TasksCompletedByType'] = teamTasksMapAll;
-
-
   }
 
 
