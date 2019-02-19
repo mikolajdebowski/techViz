@@ -65,8 +65,8 @@ class StatsPresenter {
   }
 
 
-  String parseName(String columnName) {
-    columnName = columnName.split(RegExp("(?=[A-Z])")).join(" ");
-    return columnName;
-  }
+//  String parseName(String columnName) {
+//    columnName = columnName.split(RegExp("(?=[A-Z])")).join(" ");
+//    return columnName;
+//  }
 }

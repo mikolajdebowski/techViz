@@ -95,17 +95,20 @@ class StatsState extends State<Stats> implements IStatsPresenter {
 
 
     Widget _innerWidget = Container();
+    Column chartContainer;
     if(_isLoading){
       _innerWidget = CircularProgressIndicator();
+      chartContainer = Column(
+        children: <Widget>[header, subHeader, _innerWidget, _stepsRow],
+      );
     }
     else if(_charts!=null && _charts.length>0 && _idxToLoad!=null)
     {
       _innerWidget = Row(children: _charts[_idxToLoad]);
-    }
-
-    var chartContainer = Column(
+      chartContainer = Column(
         children: <Widget>[header, subHeader, Expanded(child: _innerWidget), _stepsRow],
       );
+    }
 
     return Padding(
       padding: const EdgeInsets.all(10.0),
