@@ -31,7 +31,7 @@ class ProcessorSlotMachineRepository extends ProcessorLiveTable<SlotMachine> imp
 
         listToReturn.add(SlotMachine(
             _standID,
-            _machineTypeName,
+            machineTypeName: _machineTypeName,
             machineStatusID:_machineStatusID,
             machineStatusDescription: _machineStatusDescription,
             denom: _denom));

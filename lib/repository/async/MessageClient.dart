@@ -184,7 +184,7 @@ class MessageClient {
     return _completer.future;
   }
 
-  StreamController ListenQueue(String routingKeyPattern, Function onData, {Function onError, bool timeOutEnabled = true}) {
+  StreamController ListenQueue(String routingKeyPattern, Function onData, {Function onError, bool timeOutEnabled = true, Function parser}) {
     String routingKey = '${routingKeyPattern}.${_deviceID}';
 
     void onCancel(){
@@ -193,7 +193,7 @@ class MessageClient {
 
     StreamController<AmqpMessage> sc = StreamController<AmqpMessage>(onCancel: onCancel);
     sc.stream.listen((AmqpMessage message){
-      onData(message.payloadAsJson);
+      onData(parser!=null ? parser(message.payloadAsJson): message.payloadAsJson);
     });
     _addRoutingKeyListener(routingKey, sc);
     return sc;
