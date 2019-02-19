@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'package:techviz/repository/async/IRouting.dart';
 import 'package:techviz/repository/async/MessageClient.dart';
+import 'package:techviz/repository/async/OldRouting.dart';
 
-class DeviceRouting implements IRouting {
+class DeviceRouting implements OldRouting {
   String routingPattern = "mobile.device";
 
   @override
@@ -14,4 +14,5 @@ class DeviceRouting implements IRouting {
   Future PublishMessage(dynamic message) {
     return MessageClient().PublishMessage(message, routingPattern);
   }
+
 }

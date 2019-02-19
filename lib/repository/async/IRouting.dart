@@ -1,5 +1,6 @@
+import 'dart:async';
 
-abstract class IRouting{
-  Future PublishMessage(dynamic object);
-  void ListenQueue(Function callback, {Function callbackError});
+abstract class IRouting<T>{
+  StreamController<T> Listen();
+  Future PublishMessage(dynamic message);
 }

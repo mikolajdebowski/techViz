@@ -1,19 +1,24 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:techviz/model/slotMachine.dart';
+import 'package:techviz/repository/async/IRouting.dart';
 import 'package:techviz/repository/async/MessageClient.dart';
 
-class SlotMachineRouting {
+class SlotMachineRouting implements IRouting<SlotMachine> {
 
   StreamController<SlotMachine> Listen() {
     StreamController<SlotMachine> _controller = StreamController<SlotMachine>();
 
-    final StreamController<dynamic> _queueController = MessageClient().ListenQueue("mobile.machineStatus", (SlotMachine sm){
-      _controller.add(sm);
-    });
+    final StreamController<dynamic> _queueController = MessageClient().ListenQueue("mobile.machineStatus", (dynamic sm){
+      (jsonDecode(sm.toString()) as List<dynamic>).forEach((dynamic entry){
+        _controller.add(parser(entry));
+      });
+    },  appendDeviceID: false );
 
     _controller.onCancel = (){
       _queueController.close();
     };
+
     return _controller;
   }
 
@@ -23,7 +28,7 @@ class SlotMachineRouting {
 
   SlotMachine parser(dynamic json){
     return SlotMachine(
-      json['standID'].toString(),
+      json['standId'].toString(),
       machineStatusID:  json['statusId'].toString(),
       machineStatusDescription: json['statusDescription'].toString()
     );

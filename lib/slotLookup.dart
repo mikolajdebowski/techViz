@@ -9,7 +9,7 @@ import 'package:techviz/components/vizElevated.dart';
 import 'package:techviz/model/slotMachine.dart';
 import 'package:techviz/presenter/slotMachinePresenter.dart';
 import 'package:techviz/repository/SlotMachineRepository.dart';
-import 'package:techviz/repository/processor/processorSlotMachineRepository.dart';
+import 'package:techviz/repository/repository.dart';
 
 class SlotLookup extends StatefulWidget {
   @override
@@ -33,7 +33,7 @@ class SlotLookupState extends State<SlotLookup> implements ISlotMachinePresenter
 
 
     _txtSearchController.addListener(_searchDispatch);
-    _repository = SlotMachineRepository(remoteRepository: ProcessorSlotMachineRepository());
+    _repository = Repository().slotMachineRepository;
     _repository.fetch().then((dynamic fool){
       setState(() {
         loading = false;
@@ -59,6 +59,25 @@ class SlotLookupState extends State<SlotLookup> implements ISlotMachinePresenter
     setState(() {
       _searchKey = _txtSearchController.text;
     });
+  }
+
+  Image getIconForMachineStatus(String statusID){
+    String iconName;
+    switch(statusID){
+      case "1":
+        iconName = 'reserved';
+        break;
+      case "2":
+        iconName = 'inuse';
+        break;
+      case "3":
+        iconName = 'available';
+        break;
+      default:
+        iconName = 'offline';
+        break;
+    }
+    return Image.asset("assets/images/ic_machine_${iconName}.png", width: 100, height: 100);
   }
 
   @override
@@ -106,33 +125,10 @@ class SlotLookupState extends State<SlotLookup> implements ISlotMachinePresenter
 
     //GRID STUFF
     var txtStyle = TextStyle(color: Colors.black54);
-
     var decorationEven = BoxDecoration(border: borderColor, color: Color(0xFFfafafa));
     var decorationOdd = BoxDecoration(border: borderColor, color: Color(0xFFeef5f5));
 
     final formatCurrency = NumberFormat.simpleCurrency();
-
-    var data = _repository.filter(_searchKey);
-
-
-    Image getIconForMachineStatus(String statusID){
-      String iconName;
-      switch(statusID){
-        case "1":
-          iconName = 'reserved';
-          break;
-        case "2":
-          iconName = 'inuse';
-          break;
-        case "3":
-          iconName = 'available';
-          break;
-        default:
-          iconName = 'offline';
-          break;
-      }
-      return Image.asset("assets/images/ic_machine_${iconName}.png", width: 100, height: 100);
-    }
 
     var builder = StreamBuilder<List<SlotMachine>>(
       stream: _repository.stream,
@@ -143,7 +139,7 @@ class SlotLookupState extends State<SlotLookup> implements ISlotMachinePresenter
         var data = snapshot.data;
 
         if(_searchKey!=null && _searchKey.length>0){
-          data = data.where((SlotMachine sm) => sm.standID.contains(_searchKey)).toList();
+          data = data.where((SlotMachine sm) => sm.standID.contains(_searchKey) || sm.machineTypeName.toLowerCase().contains(_searchKey.toLowerCase())).toList();
         }
 
         return ListView.builder(

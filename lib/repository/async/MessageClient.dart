@@ -67,7 +67,7 @@ class MessageClient {
         _consumer = consumer;
         _consumer.listen((AmqpMessage message){
           print('RoutingKey: ${message.routingKey}');
-          print('Payload: ${message.payloadAsJson}');
+          print('Payload: ${message.payloadAsString}');
           var mapEntry = _mapStreamControllers[message.routingKey];
           if(mapEntry!=null){
             mapEntry.forEach((StreamController ss){
@@ -184,8 +184,11 @@ class MessageClient {
     return _completer.future;
   }
 
-  StreamController ListenQueue(String routingKeyPattern, Function onData, {Function onError, bool timeOutEnabled = true, Function parser}) {
-    String routingKey = '${routingKeyPattern}.${_deviceID}';
+  StreamController ListenQueue(String routingKeyPattern, Function onData, {Function onError, bool timeOutEnabled = true, Function parser, bool appendDeviceID : true}) {
+    String routingKey = '${routingKeyPattern}';
+    if(appendDeviceID!=null && appendDeviceID){
+      routingKey += '.${_deviceID}';
+    }
 
     void onCancel(){
       _removeRoutingKeyListener(routingKey);
@@ -193,7 +196,7 @@ class MessageClient {
 
     StreamController<AmqpMessage> sc = StreamController<AmqpMessage>(onCancel: onCancel);
     sc.stream.listen((AmqpMessage message){
-      onData(parser!=null ? parser(message.payloadAsJson): message.payloadAsJson);
+      onData(parser!=null ? parser(message.payloadAsString): message.payloadAsString);
     });
     _addRoutingKeyListener(routingKey, sc);
     return sc;
