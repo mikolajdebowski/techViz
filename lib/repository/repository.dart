@@ -1,6 +1,9 @@
 import 'dart:async';
 
+import 'package:techviz/repository/SlotMachineRepository.dart';
+import 'package:techviz/repository/async/mock/MockSlotMachineRouting.dart';
 import 'package:techviz/repository/local/localRepository.dart';
+import 'package:techviz/repository/mock/mockSlotMachineRepository.dart';
 import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
 import 'package:techviz/repository/processor/processorRoleRepository.dart';
 import 'package:techviz/repository/processor/processorSectionRepository.dart';
@@ -146,9 +149,13 @@ class Repository{
 
   TaskRepository get taskRepository {
     switch(_flavor) {
-//      case Flavor.PROCESSOR: return ProcessorTaskRepository();
-//      default:return MockTaskRepository();
       default:return TaskRepository(remoteRepository: ProcessorTaskRepository());
+    }
+  }
+
+  SlotMachineRepository get slotMachineRepository {
+    switch(_flavor) {
+      default:return SlotMachineRepository(remoteRepository: MockSlotMachineRepository(), remoteRouting: MockSlotMachineRouting());
     }
   }
 

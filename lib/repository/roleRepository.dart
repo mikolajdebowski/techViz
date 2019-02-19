@@ -31,12 +31,6 @@ class RoleRepository implements IRepository<Role>{
   }
 
   @override
-  Future listen(Function callback, Function callbackError) {
-    throw UnimplementedError();
-  }
-
-
-  @override
   Future fetch() {
     assert(this.remoteRepository!=null);
     return this.remoteRepository.fetch();

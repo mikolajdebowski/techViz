@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:techviz/model/user.dart';
-import 'package:techviz/repository/async/MessageClient.dart';
 import 'package:techviz/repository/async/UserRouting.dart';
 import 'package:techviz/repository/local/userTable.dart';
 import 'package:observable/observable.dart';

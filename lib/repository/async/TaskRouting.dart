@@ -22,7 +22,7 @@ class TaskRouting {
       location:  json['location'] as String,
       taskAssigned: json['taskAssigned'] as DateTime,
       taskCreated: json['taskAssigned'] as DateTime,
-      taskUrgencyID: 2,
+      taskUrgencyID: int.parse(json['taskUrgencyID'] as String),
       taskStatusID : int.parse(json['taskStatusID'] as String),
       taskTypeID : int.parse(json['taskTypeID'] as String)
     );

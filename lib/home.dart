@@ -1,6 +1,4 @@
 import 'dart:async';
-
-import 'package:dart_amqp/dart_amqp.dart';
 import 'package:flutter/material.dart';
 import 'package:observable/observable.dart';
 import 'package:techviz/attendant.home.dart';

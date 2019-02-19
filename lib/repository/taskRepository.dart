@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:dart_amqp/dart_amqp.dart';
 import 'package:techviz/model/task.dart';
 import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/model/taskType.dart';
@@ -18,7 +17,6 @@ class TaskRepository implements IRepository<Task>{
   TaskRepository({this.remoteRepository});
 
   Future<List<Task>> getOpenTasks(String userID) async {
-    //print('getOpenTasks called');
 
     LocalRepository localRepo = LocalRepository();
     if(!localRepo.db.isOpen)
@@ -101,11 +99,6 @@ class TaskRepository implements IRepository<Task>{
     return _completer.future;
   }
 
-  @override
-  Future listen(Function onData, Function onError) async {
-
-  }
-
   StreamController listenQueue(Function onData, Function onError)  {
 
     return TaskRouting().ListenQueue((dynamic task) async{
@@ -119,7 +112,7 @@ class TaskRepository implements IRepository<Task>{
       taskMapped['TASKSTATUSID'] = task['taskStatusID'];
       taskMapped['TASKTYPEID'] = task['taskTypeID'];
       taskMapped['MACHINEID'] = task['machineID'];
-      taskMapped['TASKURGENCYID'] = 2;
+      taskMapped['TASKURGENCYID'] = task['taskUrgencyID'];
 
       taskMapped['TASKCREATED'] = task['taskCreated'];
       taskMapped['TASKASSIGNED'] = task['taskAssigned'];

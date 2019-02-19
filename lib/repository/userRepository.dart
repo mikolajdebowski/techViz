@@ -13,9 +13,4 @@ class UserRepository implements IRepository<User>{
     assert(this.remoteRepository!=null);
     return this.remoteRepository.fetch();
   }
-
-  @override
-  Future listen(Function callback, Function callbackError){
-    throw new UnimplementedError('Unimplemented method');
-  }
 }

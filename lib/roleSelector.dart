@@ -37,11 +37,10 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
     if(selectedRoleID == null)
       return;
 
-    Session session = Session();
-    var toSend = {'userRoleID': selectedRoleID, 'userID': session.user.UserID};
-
-//    UserMessage().publishMessage(toSend);
-
+    //Session session = Session();
+    //var toSend = {'userRoleID': selectedRoleID, 'userID': session.user.UserID};
+    //UserMessage().publishMessage(toSend);
+    //TODO: FIX THIS!
     Navigator.pushReplacement(context, MaterialPageRoute<Home>(builder: (BuildContext context) => Home()));
   }
 
