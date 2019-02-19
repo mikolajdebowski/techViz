@@ -34,24 +34,3 @@ class SlotMachineRouting implements IRouting<SlotMachine> {
     );
   }
 }
-
-
-//    final timer = Timer.periodic(Duration(milliseconds: 100), (Timer t){
-//      int min = 1;
-//      int max = 10;
-//      Random rnd = new Random();
-//      num selection = min + rnd.nextInt(max - min);
-//
-//      String standID = '2412${selection.toString().padLeft(2, '0')}';
-//
-//      int minStatus = 0;
-//      int maxStatus = 3;
-//      Random rndStatus = new Random();
-//      num selectionStatus = minStatus + rndStatus.nextInt(maxStatus - minStatus);
-//
-//      _controller.add(SlotMachine(standID, 'GAME', machineStatusID: selectionStatus.toString()));
-//    });
-//
-//    _controller.onCancel = (){
-//      timer.cancel();
-//    };

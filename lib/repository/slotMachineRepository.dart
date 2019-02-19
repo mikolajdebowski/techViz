@@ -67,10 +67,4 @@ class SlotMachineRepository implements IRepository<SlotMachine>{
     }
     return [];
   }
-
-  //TODO: IT WILL BE REMOVED
-  @override
-  Future listen(Function callback, Function callbackError) {
-    throw UnimplementedError();
-  }
 }

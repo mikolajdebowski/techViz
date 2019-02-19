@@ -96,7 +96,7 @@ class _ActionBarState extends State<ActionBar> {
     var boxDecoration = BoxDecoration(
         gradient: gradient);
 
-    var topMargin = Platform.isIOS? 0.0: 21.0;
+    //var topMargin = Platform.isIOS? 0.0: 21.0;
 
     const paddingIOS = EdgeInsets.only(left: 2.0, bottom: 2.0, right: 2.0);
     const paddingAndroid = EdgeInsets.only(left: 2.0, bottom: 2.0, right: 2.0);

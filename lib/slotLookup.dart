@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
@@ -7,7 +5,6 @@ import 'package:techviz/components/VizAlert.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizElevated.dart';
 import 'package:techviz/model/slotMachine.dart';
-import 'package:techviz/presenter/slotMachinePresenter.dart';
 import 'package:techviz/repository/SlotMachineRepository.dart';
 import 'package:techviz/repository/repository.dart';
 
@@ -16,8 +13,7 @@ class SlotLookup extends StatefulWidget {
   State<StatefulWidget> createState() => SlotLookupState();
 }
 
-class SlotLookupState extends State<SlotLookup> implements ISlotMachinePresenter<SlotMachine> {
-  SlotMachinePresenter slotMachinePresenter;
+class SlotLookupState extends State<SlotLookup> {
   bool loading = true;
 
   final FocusNode _txtSearchFocusNode = FocusNode();
@@ -215,29 +211,4 @@ class SlotLookupState extends State<SlotLookup> implements ISlotMachinePresenter
       ),
     );
   }
-
-
-  @override
-  void onLoadError(Error error) {
-    print(error);
-    Scaffold.of(context).showSnackBar( SnackBar(
-      content: Text(error.toString()),
-    ));
-  }
-
-  @override
-  void onSlotMachinesLoaded(List<SlotMachine> result) {
-
-//    if(slotsList==null && result!=null && result.length>0){
-//      FocusScope.of(context).requestFocus(txtSearchFocusNode);
-//    }
-
-//    setState(() {
-//      slotsList = result;
-//      loading = false;
-//    });
-  }
-
-
-
 }

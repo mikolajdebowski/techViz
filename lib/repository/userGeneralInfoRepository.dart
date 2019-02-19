@@ -12,9 +12,4 @@ class UserGeneralInfoRepository implements IRepository<dynamic> {
     assert(this.remoteRepository != null);
     return this.remoteRepository.fetch();
   }
-
-  @override
-  Future listen(Function callback, Function callbackError) {
-    throw UnimplementedError();
-  }
 }
