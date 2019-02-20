@@ -82,14 +82,14 @@ class SlotLookupState extends State<SlotLookup> {
         child: VizElevated(
           customWidget: Row(
             children: <Widget>[
-                Padding(padding: EdgeInsets.only(left: 10.0),child: ImageIcon(AssetImage("assets/images/ic_search.png"), size: 25.0)),
+                Padding(padding: EdgeInsets.only(left: 5.0),child: ImageIcon(AssetImage("assets/images/ic_search.png"), size: 25.0)),
                 Expanded(
                   child: Container(
                       decoration: BoxDecoration(
                         borderRadius:BorderRadius.circular(5.0),
                         color: Colors.black
                       ),
-                      margin: EdgeInsets.only(left: 10.0),
+                      margin: EdgeInsets.only(left: 5.0, right: 5.0),
                       padding: EdgeInsets.only(left: 10.0),
                       child:
                       TextField(
@@ -97,7 +97,7 @@ class SlotLookupState extends State<SlotLookup> {
                       controller: _txtSearchController,
                       focusNode: _txtSearchFocusNode,
                       style: TextStyle(color: Colors.white),
-                      decoration: InputDecoration(border: InputBorder.none, isDense: true, hintText: 'Search for slots...', hintStyle: TextStyle(color: Colors.white70))))
+                      decoration: InputDecoration(border: InputBorder.none, isDense: true, hintText: 'Search for standID or theme/game', hintStyle: TextStyle(color: Colors.white70))))
                 )
             ],
           )
