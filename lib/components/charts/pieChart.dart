@@ -1,13 +1,13 @@
 /// Simple pie chart example.
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/material.dart';
+import 'package:techviz/components/charts/IVizChart.dart';
 
-class SimplePieChart extends StatelessWidget {
+class SimplePieChart extends StatelessWidget implements IVizChart{
   final List<charts.Series> seriesList;
   final bool animate;
 
   SimplePieChart(this.seriesList, {this.animate});
-
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +19,11 @@ class SimplePieChart extends StatelessWidget {
           insideLabelStyleSpec: new charts.TextStyleSpec(fontSize: 12, // size in Pts.
               color: charts.MaterialPalette.black),
         )]));
+  }
+
+  @override
+  void load() {
+    // TODO: implement load
   }
 
 }
