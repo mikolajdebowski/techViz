@@ -19,7 +19,7 @@ class SlotLookupState extends State<SlotLookup> {
   final FocusNode _txtSearchFocusNode = FocusNode();
   final TextEditingController _txtSearchController = TextEditingController();
 
-  SlotMachineRepository _repository;
+  SlotMachineRepository _repository = Repository().slotMachineRepository;
   String _searchKey = null;
 
   @override
@@ -27,9 +27,7 @@ class SlotLookupState extends State<SlotLookup> {
     // TODO: implement initState
     super.initState();
 
-
     _txtSearchController.addListener(_searchDispatch);
-    _repository = Repository().slotMachineRepository;
     _repository.fetch().then((dynamic fool){
       setState(() {
         loading = false;
