@@ -2,11 +2,15 @@ import 'dart:async';
 
 import 'package:techviz/repository/SlotMachineRepository.dart';
 import 'package:techviz/repository/async/mock/MockSlotMachineRouting.dart';
+import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/local/localRepository.dart';
 import 'package:techviz/repository/mock/mockSlotMachineRepository.dart';
 import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
 import 'package:techviz/repository/processor/processorRoleRepository.dart';
 import 'package:techviz/repository/processor/processorSectionRepository.dart';
+import 'package:techviz/repository/processor/processorStatsMonthRepository.dart';
+import 'package:techviz/repository/processor/processorStatsTodayRepository.dart';
+import 'package:techviz/repository/processor/processorStatsWeekRepository.dart';
 import 'package:techviz/repository/processor/processorTaskRepository.dart';
 import 'package:techviz/repository/processor/processorTaskStatusRepository.dart';
 import 'package:techviz/repository/processor/processorTaskTypeRepository.dart';
@@ -17,6 +21,9 @@ import 'package:techviz/repository/processor/processorUserSectionRepository.dart
 import 'package:techviz/repository/processor/processorUserStatusRepository.dart';
 import 'package:techviz/repository/roleRepository.dart';
 import 'package:techviz/repository/sectionRepository.dart';
+import 'package:techviz/repository/statsMonthRepository.dart';
+import 'package:techviz/repository/statsTodayRepository.dart';
+import 'package:techviz/repository/statsWeekRepository.dart';
 import 'package:techviz/repository/taskRepository.dart';
 import 'package:techviz/repository/taskStatusRepository.dart';
 import 'package:techviz/repository/taskTypeRepository.dart';
@@ -153,9 +160,31 @@ class Repository{
     }
   }
 
+
+  //SLOTMACHINE
   SlotMachineRepository get slotMachineRepository {
     switch(_flavor) {
       default:return SlotMachineRepository(remoteRepository: MockSlotMachineRepository(), remoteRouting: MockSlotMachineRouting());
+    }
+  }
+
+
+  //STATS
+  StatsTodayRepository get statsTodayRepository {
+    switch(_flavor) {
+      default:return StatsTodayRepository(remoteRepository: ProcessorStatsTodayRepository());
+    }
+  }
+
+  StatsWeekRepository get statsWeekRepository {
+    switch(_flavor) {
+      default:return StatsWeekRepository(remoteRepository: ProcessorStatsWeekRepository());
+    }
+  }
+
+  StatsMonthRepository get statsMonthRepository {
+    switch(_flavor) {
+      default:return StatsMonthRepository(remoteRepository: ProcessoStatsMonthRepository());
     }
   }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:techviz/components/VizAlert.dart';
 import 'package:techviz/components/charts/vizChart.dart';
 import 'package:techviz/components/stepper/VizStepperButton.dart';
 import 'package:techviz/presenter/statsPresenter.dart';
@@ -138,6 +139,11 @@ class StatsState extends State<Stats> implements IStatsPresenter {
 
       _idxToLoad = i;
     });
+  }
+
+  @override
+  void onError(dynamic error) {
+    VizAlert.Show(context, error.toString());
   }
 
 }
