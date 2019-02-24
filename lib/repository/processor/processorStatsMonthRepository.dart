@@ -12,25 +12,33 @@ class ProcessoStatsMonthRepository extends IRemoteRepository<dynamic>{
   String personalAxisName = 'Personal';
   String teamAxisName = 'Team Avg';
 
+  ChartData extractDataFromValues(List<String> columnNames, String columnName, dynamic values, String label){
+    if(values[columnNames.indexOf(columnName)] != ''){
+      return ChartData(columnName, num.parse(values[columnNames.indexOf(columnName)] as String), label);
+    }
+    else{
+      return ChartData(columnName, 0, label);
+    }
+  }
+
   @override
   Future fetch() async {
     print('Fetching '+this.toString());
-
-    ChartData extractDataFromValues(List<String> columnNames, String columnName, dynamic values, String label){
-      return ChartData(columnName, num.parse(values[columnNames.indexOf(columnName)] as String), label);
-    }
 
     Completer<Map<int,List<ChartData>>> _completer = Completer<Map<int,List<ChartData>>>();
 
     var futureUser = rootBundle.loadString('assets/json/UserStatsCurrentMonth.json');
     var futureTeam = rootBundle.loadString('assets/json/TeamStatsCurrentMonth.json');
+    var futureTasks = rootBundle.loadString('assets/json/TeamTasksCompletedCurrentMonth.json');
 
-    Future.wait([futureUser, futureTeam]).then((List<String> json){
+    Future.wait([futureUser, futureTeam, futureTasks]).then((List<String> json){
       var jsonUser = json[0];
       var jsonTeam = json[1];
+      var jsonTasks = json[2];
 
       Map<String,dynamic> decodedUser = jsonDecode(jsonUser);
       Map<String,dynamic> decodedTeam = jsonDecode(jsonTeam);
+      Map<String,dynamic> decodedTasksByType = jsonDecode(jsonTasks);
 
       List<dynamic> rowsUser = decodedUser['Rows'];
       List<String> columnNamesUser = (decodedUser['ColumnNames'] as String).split(',');
@@ -68,6 +76,19 @@ class ProcessoStatsMonthRepository extends IRemoteRepository<dynamic>{
       percentTasksEscalated.add(extractDataFromValues(columnNamesUser, 'PercentEscalated', rowsUser[0]['Values'], personalAxisName));
       percentTasksEscalated.add(extractDataFromValues(columnNamesTeam, 'AvgPercentEscalated', rowsTeam[0]['Values'], teamAxisName));
 
+      // Tasks By Type ... TaskDescription, AvgTasksCompleted
+      List<dynamic> rowsTasksByType = decodedTasksByType['Rows'];
+      List<String> columnNamesTasksByType = (decodedTasksByType['ColumnNames'] as String).split(',');
+      List<ChartData> chartTasksByType = [];
+
+      rowsTasksByType.forEach((dynamic d) {
+        dynamic values = d['Values'];
+        String label = values[columnNamesTasksByType.indexOf("TaskDescription")];
+        num value = num.parse(values[columnNamesTasksByType.indexOf("AvgTasksCompleted")].toString());
+        ChartData chart = ChartData('', value, label);
+        chartTasksByType.add(chart);
+      });
+
 
       Map<int,List<ChartData>> mapToReturn = Map<int,List<ChartData>>();
       mapToReturn[0] = chartTimeAvailable;
@@ -76,6 +97,7 @@ class ProcessoStatsMonthRepository extends IRemoteRepository<dynamic>{
       mapToReturn[3] = completionTimes;
       mapToReturn[4] = tasksEscalated;
       mapToReturn[5] = percentTasksEscalated;
+      mapToReturn[6] = chartTasksByType;
 
       _completer.complete(mapToReturn);
     });

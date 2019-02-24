@@ -87,11 +87,13 @@ flutter:
     #TODO just temporairly
     - assets/json/TeamStatsCurrentDay.json
     - assets/json/UserStatsCurrentDay.json
-    - assets/json/TeamTasksCompletedCurrentDay.json
     - assets/json/TeamStatsCurrentWeek.json
     - assets/json/UserStatsCurrentWeek.json
     - assets/json/TeamStatsCurrentMonth.json
     - assets/json/UserStatsCurrentMonth.json
+    - assets/json/TeamTasksCompletedCurrentDay.json
+    - assets/json/TeamTasksCompletedCurrentWeek.json
+    - assets/json/TeamTasksCompletedCurrentMonth.json
 
 #    - images/a_dot_ham.jpeg
 

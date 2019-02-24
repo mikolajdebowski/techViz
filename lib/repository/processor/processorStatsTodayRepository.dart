@@ -23,6 +23,7 @@ class ProcessorStatsTodayRepository extends ProcessorLiveTable<dynamic> implemen
     List<String> columnNamesUser = futureUserToday[0] as List<String>;
     List<dynamic> rowsUser = futureUserToday[1] as List<dynamic>;
 
+    //TODO: once team stats is faster uncomment
 //    tableID = LiveTableType.TECHVIZ_MOBILE_TEAM_TODAY_STATS.toString();
 //    List<dynamic> futureTeamToday = await super.fetch();
 //    List<String> columnNamesTeam =  futureTeamToday[0] as List<String>;
@@ -56,7 +57,9 @@ class ProcessorStatsTodayRepository extends ProcessorLiveTable<dynamic> implemen
       percentTasksEscalated.add(extractDataFromValues(columnNamesUser, 'PctEscalated', rowsUser[0]['Values'], personalAxisName));
     }
 
+
     // col names for TEAM: AvgCompletionTime, AvgResponseTime, AvgEscalatedCount, AvgPctEscalated, AvgTasksPerHour, AvgTimeAvailableHr
+    //TODO: once team stats is faster uncomment
 //    if(rowsTeam[0]['Values'].length as int > 0){
 //      chartTimeAvailable.add(extractDataFromValues(columnNamesTeam, 'AvgTimeAvailableHr', rowsTeam[0]['Values'], teamAxisName));
 //      tasksPerHourAvailable.add(extractDataFromValues(columnNamesTeam, 'AvgTasksPerHour', rowsTeam[0]['Values'], teamAxisName));

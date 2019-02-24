@@ -82,7 +82,7 @@ class StatsState extends State<Stats> implements IStatsPresenter {
 
 
     List<Widget> stepsToAdd = [];
-    for(int i = 0; i<=5; i++){
+    for(int i = 0; i<=6; i++){
       var btnToAdd = Padding(
           padding: EdgeInsets.all(5),
           child: VizStepperButton(

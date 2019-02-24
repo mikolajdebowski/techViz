@@ -35,7 +35,7 @@ class StatsPresenter {
       Map<int, List<ChartData>> data = dataReturned as Map<int, List<ChartData>>;
 
       String convertToHours(num original) {
-        Duration timeAvailable = new Duration(seconds: int.parse(original.toString()));
+        Duration timeAvailable = new Duration(seconds: int.parse(original.round().toString()));
         return '${timeAvailable.inHours} hr ${timeAvailable.inMinutes % 60} min';
       }
 
@@ -54,6 +54,17 @@ class StatsPresenter {
       } else if(data[5].length == 2){
         mapToReturn[5] = [VizChart(GlobalKey(), [data[5][0]], ChartType.Pie, 'Percent of Tasks Escalated'),
         VizChart(GlobalKey(), [data[5][1]], ChartType.Pie, 'Percent of Tasks Escalated')];
+      }
+
+
+      if(data[6] != null && data[6].length > 0){
+
+        mapToReturn[6] =[];
+        data[6].forEach((ChartData chartData) {
+          var chart = VizChart(GlobalKey(), [chartData], ChartType.VerticalBar, 'Tasks Completed by Type');
+          mapToReturn[6].add(chart);
+        });
+
       }
 
       _view.onLoaded(mapToReturn);

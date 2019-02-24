@@ -1,0 +1,80 @@
+{
+  "ID": {
+    "idStr": "0-0"
+  },
+  "LastModified": 1541455098290,
+  "StartRow": 0,
+  "ColumnNames": "SiteID,TaskTypeID,TaskDescription,AvgTasksCompleted",
+  "ColumnConfigIds": "5f3805661a7-166602c1bef,5f380563d95-16660256416,5f3805668f1-166602dd6c2,abc805668f1-166602dd6c2",
+  "QueryPlan": "SELECT 1 FROM ExampleQueryPlan",
+  "queryStartDate": "19700101000000000",
+  "queryEndDate": "19700101000000000",
+  "Rows": [
+    {
+      "hasScdHistoryOnly": false,
+      "History": [],
+      "I": 0,
+      "Values": [
+        "1",
+        "1",
+        "Change Light",
+        "2.72"
+      ]
+    },
+    {
+      "hasScdHistoryOnly": false,
+      "History": [],
+      "I": 0,
+      "Values": [
+        "1",
+        "2",
+        "Jackpot",
+        "1.2"
+      ]
+    },
+    {
+      "hasScdHistoryOnly": false,
+      "History": [],
+      "I": 0,
+      "Values": [
+        "1",
+        "3",
+        "VIP Greet",
+        "9.8"
+      ]
+    },
+    {
+      "hasScdHistoryOnly": false,
+      "History": [],
+      "I": 0,
+      "Values": [
+        "1",
+        "1",
+        "New Player",
+        "2.4"
+      ]
+    },
+    {
+      "hasScdHistoryOnly": false,
+      "History": [],
+      "I": 0,
+      "Values": [
+        "1",
+        "2",
+        "Drink Request",
+        "1.2"
+      ]
+    },
+    {
+      "hasScdHistoryOnly": false,
+      "History": [],
+      "I": 0,
+      "Values": [
+        "1",
+        "3",
+        "Tilt",
+        "1.8"
+      ]
+    }
+  ]
+}

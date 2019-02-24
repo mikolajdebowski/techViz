@@ -40,12 +40,12 @@ class VizChartState extends State<VizChart> {
     return Expanded(child:returnWidget);
   }
 
-  // vertical bar isFirst
+  // vertical bar
   Widget buildBarChart(List<ChartData> data) {
     var seriesToBuild = [
       Series<ChartData, String>(
           id: 'id',
-          domainFn: (ChartData stats, _) => stats.name,
+          domainFn: (ChartData stats, _) => stats.label,
           measureFn: (ChartData stats, _) => stats.value,
           data: data,
           labelAccessorFn: (ChartData stats, _) {
