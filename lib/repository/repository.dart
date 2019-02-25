@@ -1,16 +1,15 @@
 import 'dart:async';
 
 import 'package:techviz/repository/SlotMachineRepository.dart';
-import 'package:techviz/repository/async/mock/MockSlotMachineRouting.dart';
-import 'package:techviz/repository/common/IRepository.dart';
+import 'package:techviz/repository/async/SlotMachineRouting.dart';
 import 'package:techviz/repository/local/localRepository.dart';
-import 'package:techviz/repository/mock/mockSlotMachineRepository.dart';
 import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
 import 'package:techviz/repository/processor/processorRoleRepository.dart';
 import 'package:techviz/repository/processor/processorSectionRepository.dart';
 import 'package:techviz/repository/processor/processorStatsMonthRepository.dart';
 import 'package:techviz/repository/processor/processorStatsTodayRepository.dart';
 import 'package:techviz/repository/processor/processorStatsWeekRepository.dart';
+import 'package:techviz/repository/processor/processorSlotMachineRepository.dart';
 import 'package:techviz/repository/processor/processorTaskRepository.dart';
 import 'package:techviz/repository/processor/processorTaskStatusRepository.dart';
 import 'package:techviz/repository/processor/processorTaskTypeRepository.dart';
@@ -164,7 +163,7 @@ class Repository{
   //SLOTMACHINE
   SlotMachineRepository get slotMachineRepository {
     switch(_flavor) {
-      default:return SlotMachineRepository(remoteRepository: MockSlotMachineRepository(), remoteRouting: MockSlotMachineRouting());
+      default:return SlotMachineRepository(remoteRepository: ProcessorSlotMachineRepository(), remoteRouting: SlotMachineRouting());
     }
   }
 

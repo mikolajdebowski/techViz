@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:logging/logging.dart';
 import 'package:techviz/config.dart';
 import 'package:techviz/home.dart';
+import 'package:techviz/logging.dart';
 import 'package:techviz/login.dart';
 import 'package:techviz/menu.dart';
 import 'package:techviz/profile.dart';
 import 'package:techviz/repository/async/MessageClient.dart';
 import 'package:techviz/splash.dart';
+import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 void main() {
   SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight])
       .then((_) {
+
     runApp(TechVizApp());
   });
 }
@@ -27,13 +31,17 @@ class TechVizAppState extends State<TechVizApp> with WidgetsBindingObserver {
   void initState() {
     super.initState();
 
+    Logger.root.level = Level.ALL;
+    Logger.root.onRecord.listen((LogRecord rec) {
+      Utils.saveLog('${rec.level.name}: ${rec.time}: ${rec.message}');
+    });
+
     WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    //connectionSubscription.cancel();
     super.dispose();
   }
 
@@ -62,7 +70,8 @@ class TechVizAppState extends State<TechVizApp> with WidgetsBindingObserver {
         '/menu': (BuildContext context) => Menu(),
         '/login': (BuildContext context) => Login(),
         '/config': (BuildContext context) => Config(),
-        '/profile': (BuildContext context) => Profile()
+        '/profile': (BuildContext context) => Profile(),
+        '/logging': (BuildContext context) => Logging()
       },
     );
   }

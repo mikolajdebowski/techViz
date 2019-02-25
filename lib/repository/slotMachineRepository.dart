@@ -32,9 +32,11 @@ class SlotMachineRepository implements IRepository<SlotMachine>{
 
   @override
   Future fetch() {
+    print('fetch');
     assert(this.remoteRepository!=null);
     Completer _completer = Completer<void>();
     this.remoteRepository.fetch().then((dynamic data){
+      print('remoteRepository fetched');
       cache = (data as List<SlotMachine>).toList();
       _remoteSlotMachineController.add(cache);
       _completer.complete();
@@ -45,6 +47,7 @@ class SlotMachineRepository implements IRepository<SlotMachine>{
   void listenAsync() {
     _slotMachineController = remoteRouting.Listen();
     _slotMachineController.stream.listen((SlotMachine sm){
+      print('listenAsync received ${sm.standID}');
       int idx = cache.indexWhere((SlotMachine _sm) => _sm.standID == sm.standID);
       if(idx>=0){
         cache[idx].machineStatusID = sm.machineStatusID;

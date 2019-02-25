@@ -19,7 +19,7 @@ class SlotLookupState extends State<SlotLookup> {
   final FocusNode _txtSearchFocusNode = FocusNode();
   final TextEditingController _txtSearchController = TextEditingController();
 
-  SlotMachineRepository _repository;
+  SlotMachineRepository _repository = Repository().slotMachineRepository;
   String _searchKey = null;
 
   @override
@@ -27,9 +27,7 @@ class SlotLookupState extends State<SlotLookup> {
     // TODO: implement initState
     super.initState();
 
-
     _txtSearchController.addListener(_searchDispatch);
-    _repository = Repository().slotMachineRepository;
     _repository.fetch().then((dynamic fool){
       setState(() {
         loading = false;
@@ -82,14 +80,14 @@ class SlotLookupState extends State<SlotLookup> {
         child: VizElevated(
           customWidget: Row(
             children: <Widget>[
-                Padding(padding: EdgeInsets.only(left: 10.0),child: ImageIcon(AssetImage("assets/images/ic_search.png"), size: 25.0)),
+                Padding(padding: EdgeInsets.only(left: 5.0),child: ImageIcon(AssetImage("assets/images/ic_search.png"), size: 25.0)),
                 Expanded(
                   child: Container(
                       decoration: BoxDecoration(
                         borderRadius:BorderRadius.circular(5.0),
                         color: Colors.black
                       ),
-                      margin: EdgeInsets.only(left: 10.0),
+                      margin: EdgeInsets.only(left: 5.0, right: 5.0),
                       padding: EdgeInsets.only(left: 10.0),
                       child:
                       TextField(
@@ -97,7 +95,7 @@ class SlotLookupState extends State<SlotLookup> {
                       controller: _txtSearchController,
                       focusNode: _txtSearchFocusNode,
                       style: TextStyle(color: Colors.white),
-                      decoration: InputDecoration(border: InputBorder.none, isDense: true, hintText: 'Search for slots...', hintStyle: TextStyle(color: Colors.white70))))
+                      decoration: InputDecoration(border: InputBorder.none, isDense: true, hintText: 'Search for standID or theme/game', hintStyle: TextStyle(color: Colors.white70))))
                 )
             ],
           )

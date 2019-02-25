@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,6 +16,7 @@ import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:techviz/roleSelector.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
+import 'package:logging/logging.dart';
 
 class Login extends StatefulWidget {
 
@@ -163,7 +163,10 @@ class LoginState extends State<Login> {
       Future.delayed( Duration(milliseconds:  200), () {
         Navigator.pushReplacement(context, MaterialPageRoute<RoleSelector>(builder: (BuildContext context) => RoleSelector()));
       });
-    }).catchError((Object error) {
+    }).catchError((dynamic error) {
+      final Logger log = new Logger(this.toStringShort());
+      log.info(error.toString());
+
       setState(() {
         _isLoading = false;
       });
@@ -291,21 +294,29 @@ class LoginState extends State<Login> {
     );
 
 
+    var configBtn = IconButton(
+      icon: Icon(Icons.settings),
+      onPressed: () {
+        Navigator.pushReplacementNamed(context, '/config');
+      },
+    );
+
+    var loggingBtn = IconButton(
+      icon: Icon(Icons.list),
+      onPressed: () {
+        Navigator.pushNamed(context, '/logging');
+      },
+    );
+
+    var topActions = Row(mainAxisAlignment: MainAxisAlignment.end,children: <Widget>[
+          loggingBtn, configBtn,
+          ]);
+
     var container = Container(
         decoration: backgroundDecoration,
         child: Stack(
           children: <Widget>[
-            Padding(
-                padding: EdgeInsets.only(top:20.0),
-                child: Align(
-                  alignment: Alignment.topRight,
-                  child: IconButton(
-                    icon: Icon(Icons.settings),
-                    onPressed: () {
-                      Navigator.pushReplacementNamed(context, '/config');
-                    },
-                  ),
-                )),
+            topActions,
             Align(alignment: Alignment.center, child: loginForm),
             Align(alignment: Alignment.bottomCenter, child: VizRainbow()),
             VizLoadingIndicator(message: _loadingMessage, isLoading: _isLoading)
