@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:techviz/components/VizAlert.dart';
 import 'package:techviz/components/charts/vizChart.dart';
 import 'package:techviz/components/stepper/VizStepperButton.dart';
+import 'package:techviz/components/vizLegend.dart';
 import 'package:techviz/presenter/statsPresenter.dart';
 
 class Stats extends StatefulWidget {
@@ -96,6 +97,13 @@ class StatsState extends State<Stats> implements IStatsPresenter {
 
 
     Widget _innerWidget = Container();
+    Row _legend = Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: <Widget>[
+        VizLegend()
+      ],
+    );
+
     Column chartContainer;
     if(_isLoading){
       _innerWidget = CircularProgressIndicator();
@@ -106,9 +114,15 @@ class StatsState extends State<Stats> implements IStatsPresenter {
     else if(_charts!=null && _charts.length>0 && _idxToLoad!=null)
     {
       _innerWidget = Row(children: _charts[_idxToLoad]);
-      chartContainer = Column(
-        children: <Widget>[header, subHeader, Expanded(child: _innerWidget), _stepsRow],
-      );
+      if(_idxToLoad == 6){
+        chartContainer = Column(
+          children: <Widget>[header, subHeader, _legend, Expanded(child: _innerWidget), _stepsRow],
+        );
+      } else {
+        chartContainer = Column(
+          children: <Widget>[header, subHeader, Expanded(child: _innerWidget), _stepsRow],
+        );
+      }
     }
 
     return Padding(

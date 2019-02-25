@@ -1,5 +1,6 @@
 
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:techviz/components/charts/vizChart.dart';
@@ -61,7 +62,13 @@ class StatsPresenter {
 
         mapToReturn[6] =[];
         data[6].forEach((ChartData chartData) {
-          var chart = VizChart(GlobalKey(), [chartData], ChartType.VerticalBar, 'Tasks Completed by Type');
+
+          chartData.isGreen = true;
+
+          var rng = new Random();
+          var fakeData = [chartData, ChartData('', rng.nextInt(6) + 1, '', isGreen: false)];
+          var chart = VizChart(GlobalKey(), fakeData, ChartType.VerticalBar, 'Tasks Completed by Type');
+
           mapToReturn[6].add(chart);
         });
 
