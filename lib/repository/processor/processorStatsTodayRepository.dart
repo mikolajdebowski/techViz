@@ -29,13 +29,13 @@ class ProcessoStatsTodayRepository extends IRemoteRepository<dynamic>{
       var jsonUser = json[0];
       var jsonTeam = json[1];
 
-      Map<String,dynamic> decodedUser = jsonDecode(jsonUser);
-      Map<String,dynamic> decodedTeam = jsonDecode(jsonTeam);
+      Map<String,dynamic> decodedUser = jsonDecode(jsonUser) as Map<String,dynamic>;
+      Map<String,dynamic> decodedTeam = jsonDecode(jsonTeam) as Map<String,dynamic>;
 
-      List<dynamic> rowsUser = decodedUser['Rows'];
+      List<dynamic> rowsUser = decodedUser['Rows'] as  List<dynamic>;
       List<String> columnNamesUser = (decodedUser['ColumnNames'] as String).split(',');
 
-      List<dynamic> rowsTeam = decodedTeam['Rows'];
+      List<dynamic> rowsTeam = decodedTeam['Rows'] as List<dynamic>;
       List<String> columnNamesTeam = (decodedTeam['ColumnNames'] as String).split(',');
 
       // Graph 1 time available for tasks... TimeAvailable and AvgTimeAvailable

@@ -7,6 +7,7 @@ import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/local/localRepository.dart';
 import 'package:techviz/repository/local/taskTable.dart';
 import 'package:techviz/repository/remoteRepository.dart';
+import 'dart:convert';
 
 typedef TaskUpdateCallBack = void Function(String taskID);
 typedef TaskSubmitallBack = void Function(String taskID);
@@ -101,7 +102,9 @@ class TaskRepository implements IRepository<Task>{
 
   StreamController listenQueue(Function onData, Function onError)  {
 
-    return TaskRouting().ListenQueue((dynamic task) async{
+    return TaskRouting().ListenQueue((dynamic receivedTask) async{
+
+      dynamic task = jsonDecode(receivedTask.toString());
 
       Map<String,dynamic> taskMapped = Map<String,dynamic>();
       taskMapped['_ID'] = task['_ID'];

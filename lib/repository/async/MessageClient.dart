@@ -66,8 +66,8 @@ class MessageClient {
       }).then((Consumer consumer){
         _consumer = consumer;
         _consumer.listen((AmqpMessage message){
-          print('RoutingKey: ${message.routingKey}');
-          print('Payload: ${message.payloadAsString}');
+          //print('RoutingKey: ${message.routingKey}');
+          //print('Payload: ${message.payloadAsString}');
           var mapEntry = _mapStreamControllers[message.routingKey];
           if(mapEntry!=null){
             mapEntry.forEach((StreamController ss){

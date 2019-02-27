@@ -2,9 +2,8 @@ import 'dart:async';
 
 import 'package:techviz/repository/SlotMachineRepository.dart';
 import 'package:techviz/repository/async/SlotMachineRouting.dart';
-import 'package:techviz/repository/async/mock/MockSlotMachineRouting.dart';
 import 'package:techviz/repository/local/localRepository.dart';
-import 'package:techviz/repository/mock/mockSlotMachineRepository.dart';
+import 'package:techviz/repository/processor/ProcessorReservationTimeRepository.dart';
 import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
 import 'package:techviz/repository/processor/processorRoleRepository.dart';
 import 'package:techviz/repository/processor/processorSectionRepository.dart';
@@ -17,6 +16,7 @@ import 'package:techviz/repository/processor/processorUserRepository.dart';
 import 'package:techviz/repository/processor/processorUserRoleRepository.dart';
 import 'package:techviz/repository/processor/processorUserSectionRepository.dart';
 import 'package:techviz/repository/processor/processorUserStatusRepository.dart';
+import 'package:techviz/repository/reservationTimeRepository.dart';
 import 'package:techviz/repository/roleRepository.dart';
 import 'package:techviz/repository/sectionRepository.dart';
 import 'package:techviz/repository/taskRepository.dart';
@@ -161,5 +161,9 @@ class Repository{
     }
   }
 
-
+  ReservationTimeRepository get reservationTimeRepository {
+    switch(_flavor) {
+      default:return ReservationTimeRepository(remoteRepository: ProcessorReservationTimeRepository());
+    }
+  }
 }

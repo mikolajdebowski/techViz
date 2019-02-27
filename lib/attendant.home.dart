@@ -70,7 +70,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
   }
 
   @override
-  void onLoadError(Error error) {
+  void onLoadError(dynamic error) {
     // TODO: implement onLoadError
   }
 

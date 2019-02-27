@@ -23,7 +23,7 @@ class SlotMachineRouting implements IRouting<SlotMachine> {
   }
 
   Future PublishMessage(dynamic message) {
-    return MessageClient().PublishMessage(message, "????", parser: parser, wait: true);
+    return MessageClient().PublishMessage(message, "mobile.reservation", wait: true);
   }
 
   SlotMachine parser(dynamic json){

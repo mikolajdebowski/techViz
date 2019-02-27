@@ -4,9 +4,9 @@ import 'package:techviz/model/slotMachine.dart';
 import 'package:techviz/repository/async/IRouting.dart';
 import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/remoteRepository.dart';
+import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
-class SlotMachineRepository implements IRepository<SlotMachine>{
-
+class SlotMachineRepository implements IRepository<SlotMachine> {
   IRemoteRepository remoteRepository;
   IRouting<SlotMachine> remoteRouting;
 
@@ -15,17 +15,16 @@ class SlotMachineRepository implements IRepository<SlotMachine>{
   Stream<List<SlotMachine>> _stream;
   List<SlotMachine> cache = [];
 
-
-  Stream<List<SlotMachine>> get stream{
-    if(_stream==null){
+  Stream<List<SlotMachine>> get stream {
+    if (_stream == null) {
       _stream = _remoteSlotMachineController.stream.asBroadcastStream();
     }
     return _stream;
   }
 
-  SlotMachineRepository({this.remoteRepository, this.remoteRouting}){
-    assert(this.remoteRepository!=null);
-    assert(this.remoteRouting!=null);
+  SlotMachineRepository({this.remoteRepository, this.remoteRouting}) {
+    assert(this.remoteRepository != null);
+    assert(this.remoteRouting != null);
 
     _remoteSlotMachineController = StreamController<List<SlotMachine>>();
   }
@@ -33,9 +32,9 @@ class SlotMachineRepository implements IRepository<SlotMachine>{
   @override
   Future fetch() {
     print('fetch');
-    assert(this.remoteRepository!=null);
+    assert(this.remoteRepository != null);
     Completer _completer = Completer<void>();
-    this.remoteRepository.fetch().then((dynamic data){
+    this.remoteRepository.fetch().then((dynamic data) {
       print('remoteRepository fetched');
       cache = (data as List<SlotMachine>).toList();
       _remoteSlotMachineController.add(cache);
@@ -46,28 +45,59 @@ class SlotMachineRepository implements IRepository<SlotMachine>{
 
   void listenAsync() {
     _slotMachineController = remoteRouting.Listen();
-    _slotMachineController.stream.listen((SlotMachine sm){
-      print('listenAsync received ${sm.standID}');
+    _slotMachineController.stream.listen((SlotMachine sm) {
+      //print('listenAsync received ${sm.standID}');
       int idx = cache.indexWhere((SlotMachine _sm) => _sm.standID == sm.standID);
-      if(idx>=0){
+      if (idx >= 0) {
         cache[idx].machineStatusID = sm.machineStatusID;
       }
       _remoteSlotMachineController.add(cache);
     });
   }
 
-  void cancelAsync(){
+  void cancelAsync() {
     _slotMachineController.close();
   }
 
-  List<SlotMachine> filter(String key){
-    if(key==null || key.length==0)
-      return cache;
+  List<SlotMachine> filter(String key) {
+    if (key == null || key.length == 0) return cache;
 
-    Iterable<SlotMachine> it = cache.where((SlotMachine sm)=> sm.standID.contains(key));
-    if(it!=null){
+    Iterable<SlotMachine> it = cache.where((SlotMachine sm) => sm.standID.contains(key));
+    if (it != null) {
       return it.toList();
     }
     return [];
+  }
+
+  Future setReservation(String userID, String standId, String playerID, String time) async {
+    Completer _completer = Completer<void>();
+
+    DeviceInfo info = await Utils.deviceInfo;
+
+    var message = {'deviceId': '${info.DeviceID}', 'userId': '${userID}', 'standId': '${standId}', 'playerId': '${playerID}', 'reservationTimeId': int.parse(time), 'reservationStatusId': 0, 'siteId': 1};
+
+    remoteRouting.PublishMessage(message).then((dynamic result) {
+      _completer.complete();
+    }).catchError((dynamic error){
+      _completer.completeError(error);
+    });
+
+    return _completer.future;
+  }
+
+  Future cancelReservation(String standId) async {
+    Completer _completer = Completer<void>();
+
+    DeviceInfo info = await Utils.deviceInfo;
+
+    var message = {'deviceId': '${info.DeviceID}', 'standId': '${standId}', 'reservationStatusId': 1, 'siteId': 1};
+
+    remoteRouting.PublishMessage(message).then((dynamic result) {
+      _completer.complete();
+    }).catchError((dynamic error){
+      _completer.completeError(error);
+    });
+
+    return _completer.future;
   }
 }

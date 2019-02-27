@@ -54,10 +54,11 @@ class ProcessorRepositoryConfig {
 
     List<LiveTableType> laterSyncTablesTags = List<LiveTableType>();
     laterSyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_SLOTS);
+    laterSyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_RESERVATION_TIME);
 
 
     LiveTables = List<LiveTable>();
-    for(Map<String,dynamic> liveTable in liveTableslist){
+    for(dynamic liveTable in liveTableslist){
       String liveTableTag = liveTable['tags'] as String;
       if(liveTableTag.length==0)
         continue;
@@ -206,6 +207,7 @@ enum LiveTableType{
   TECHVIZ_MOBILE_USER_ROLE,
   TECHVIZ_MOBILE_USER,
   TECHVIZ_MOBILE_USER_STATUS,
+  TECHVIZ_MOBILE_RESERVATION_TIME,
   TECHVIZ_MOBILE_SECTION,
   TECHVIZ_MOBILE_USER_SECTION,
   TECHVIZ_MOBILE_SLOTS,
