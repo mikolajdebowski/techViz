@@ -100,12 +100,12 @@ class LoginState extends State<Login> {
     Completer<void> _completer = Completer<void>();
     DeviceInfo deviceInfo = await Utils.deviceInfo;
 
-    Session session = Session();
-    await MessageClient().Init();
-
     setState(() {
       _loadingMessage = 'Updating user and device info...';
     });
+
+    Session session = Session();
+    await MessageClient().Init();
 
     var toSendUserStatus = {'userStatusID': 10, 'userID': userID, 'deviceID': deviceInfo.DeviceID }; //FORCE OFF-SHIFT REMOTE
     var toSendDeviceDetails = {'userID': userID, 'deviceID': deviceInfo.DeviceID, 'model': deviceInfo.Model, 'OSName': deviceInfo.OSName, 'OSVersion': deviceInfo.OSVersion };
