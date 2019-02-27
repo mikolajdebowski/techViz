@@ -63,7 +63,7 @@ class ProfileState extends State<Profile>
 
     Map<String, String> usrMap = {
       'UserID': session.user.UserID,
-      'UserName': session.user.UserName,
+      'UserName': (session.user.UserName != null) ? session.user.UserName: "",
       'UserRoleID': session.user.UserRoleID.toString(),
       'UserStatusID': session.user.UserStatusID.toString(),
     };

@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:techviz/components/charts/groupedBarChart.dart';
 import 'package:techviz/components/charts/pieChart.dart';
 import 'package:techviz/components/charts/stackedHorizontalBarChart.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 
 class VizChart extends StatefulWidget {
   final List<ChartData> chartData;
@@ -18,6 +19,9 @@ class VizChart extends StatefulWidget {
 }
 
 class VizChartState extends State<VizChart> {
+
+
+
   @override
   void initState() {
     super.initState();
@@ -25,6 +29,7 @@ class VizChartState extends State<VizChart> {
 
   @override
   Widget build(BuildContext context) {
+
     Widget returnWidget;
 
     if (widget.chartType == ChartType.Pie) {
@@ -40,13 +45,20 @@ class VizChartState extends State<VizChart> {
     return Expanded(child:returnWidget);
   }
 
-  // vertical bar isFirst
+  // vertical bar
   Widget buildBarChart(List<ChartData> data) {
     var seriesToBuild = [
       Series<ChartData, String>(
           id: 'id',
-          domainFn: (ChartData stats, _) => stats.name,
+          domainFn: (ChartData stats, _) => stats.label,
           measureFn: (ChartData stats, _) => stats.value,
+          fillColorFn: (ChartData stats, _) {
+            if(stats.isGreen ){
+              return charts.MaterialPalette.green.shadeDefault.lighter;
+            } else {
+              return charts.MaterialPalette.blue.shadeDefault.darker;
+            }
+          },
           data: data,
           labelAccessorFn: (ChartData stats, _) {
             return '${stats.value.toString()}';
@@ -110,6 +122,7 @@ class ChartData {
   final String name;
   final num value;
   final String label;
+  bool isGreen;
 
-  ChartData(this.name, this.value, this.label);
+  ChartData(this.name, this.value, this.label, {this.isGreen});
 }

@@ -14,7 +14,7 @@ class VizLegend extends StatelessWidget {
             Container(
               width: 10,
               height: 10,
-              decoration: BoxDecoration(color: Color.fromRGBO(31, 128, 240, 1)),
+              decoration: BoxDecoration(color: Color.fromRGBO(150, 207, 150, 1)),
             ),
             Padding(
               padding: EdgeInsets.only(right:15.0),
@@ -33,12 +33,12 @@ class VizLegend extends StatelessWidget {
             Container(
               width: 10,
               height: 10,
-              decoration: BoxDecoration(color: Color.fromRGBO(128, 191, 248, 1)),
+              decoration: BoxDecoration(color: Color.fromRGBO(23, 95, 199, 1)),
             ),
             Padding(
               padding: EdgeInsets.only(right:15.0),
               child: Padding(
-                padding: EdgeInsets.only(left:9.0),
+                padding: EdgeInsets.only(left:11.0),
                 child: Text("Team Avg"),
               ),
 
