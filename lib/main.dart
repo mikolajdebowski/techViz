@@ -57,7 +57,6 @@ class TechVizAppState extends State<TechVizApp> with WidgetsBindingObserver {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);

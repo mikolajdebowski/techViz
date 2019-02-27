@@ -106,8 +106,8 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
   }
 
   @override
-  void onLoadError(Error error) {
-    // TODO: implement onLoadError
+  void onLoadError(dynamic error) {
+    print(error);
   }
 
   @override
@@ -117,7 +117,8 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
       if (widget.preSelectedID == null) {
         selectedStatus = statusList.where((UserStatus us) => us.isOnline == false).first;
       } else {
-        selectedStatus = statusList.where((UserStatus us) => us.id == widget.preSelectedID.toString()).first;
+        var where = statusList.where((UserStatus us) => us.id == widget.preSelectedID.toString());
+        selectedStatus = where.first;
       }
     });
   }

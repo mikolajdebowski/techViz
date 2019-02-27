@@ -181,7 +181,7 @@ class ProfileState extends State<Profile>
   }
 
   @override
-  void onLoadError(Error error) {
+  void onLoadError(dynamic error) {
     // TODO: implement onLoadError
   }
 

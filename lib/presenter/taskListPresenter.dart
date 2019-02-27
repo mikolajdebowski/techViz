@@ -4,7 +4,7 @@ import 'package:techviz/repository/repository.dart';
 
 abstract class ITaskListPresenter<Task> {
   void onTaskListLoaded(List<Task> result);
-  void onLoadError(Error error);
+  void onLoadError(dynamic error);
 }
 
 class TaskListPresenter{
@@ -21,7 +21,7 @@ class TaskListPresenter{
     _repository.getOpenTasks(userID).then((List<Task> list) {
       _view.onTaskListLoaded(list);
 
-    }).catchError((Error onError) {
+    }).catchError((dynamic onError) {
       print(onError);
       _view.onLoadError(onError);
     });

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:techviz/repository/SlotMachineRepository.dart';
 import 'package:techviz/repository/async/SlotMachineRouting.dart';
 import 'package:techviz/repository/local/localRepository.dart';
+import 'package:techviz/repository/processor/ProcessorReservationTimeRepository.dart';
 import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
 import 'package:techviz/repository/processor/processorRoleRepository.dart';
 import 'package:techviz/repository/processor/processorSectionRepository.dart';
@@ -18,6 +19,7 @@ import 'package:techviz/repository/processor/processorUserRepository.dart';
 import 'package:techviz/repository/processor/processorUserRoleRepository.dart';
 import 'package:techviz/repository/processor/processorUserSectionRepository.dart';
 import 'package:techviz/repository/processor/processorUserStatusRepository.dart';
+import 'package:techviz/repository/reservationTimeRepository.dart';
 import 'package:techviz/repository/roleRepository.dart';
 import 'package:techviz/repository/sectionRepository.dart';
 import 'package:techviz/repository/statsMonthRepository.dart';
@@ -159,7 +161,6 @@ class Repository{
     }
   }
 
-
   //SLOTMACHINE
   SlotMachineRepository get slotMachineRepository {
     switch(_flavor) {
@@ -167,8 +168,12 @@ class Repository{
     }
   }
 
+  ReservationTimeRepository get reservationTimeRepository {
+    switch(_flavor) {
+      default:return ReservationTimeRepository(remoteRepository: ProcessorReservationTimeRepository());
+    }
+  }
 
-  //STATS
   StatsTodayRepository get statsTodayRepository {
     switch(_flavor) {
       default:return StatsTodayRepository(remoteRepository: ProcessorStatsTodayRepository());
@@ -186,6 +191,4 @@ class Repository{
       default:return StatsMonthRepository(remoteRepository: ProcessoStatsMonthRepository());
     }
   }
-
-
 }

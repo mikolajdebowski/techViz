@@ -4,7 +4,7 @@ import 'package:techviz/repository/userStatusRepository.dart';
 
 abstract class IStatusListPresenter<UserStatus> {
   void onStatusListLoaded(List<UserStatus> result);
-  void onLoadError(Error error);
+  void onLoadError(dynamic error);
 }
 
 class StatusListPresenter{
@@ -19,7 +19,7 @@ class StatusListPresenter{
     assert(_view != null);
     _repository.getStatuses().then((List<UserStatus> list) {
       _view.onStatusListLoaded(list);
-    }).catchError((Error onError) {
+    }).catchError((dynamic onError) {
       print(onError);
       _view.onLoadError(onError);
     });
