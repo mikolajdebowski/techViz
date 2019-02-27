@@ -47,6 +47,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 //      print('changes from Session[0]: ${changes[0]}');
 //      print('length ${changes.length}');
     });
+
+    bindTaskListener();
   }
 
   @override
@@ -113,11 +115,11 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     if (userStatusSelected.isOnline) {
       Session().UpdateConnectionStatus(ConnectionStatus.Online);
 
-      bindTaskListener();
+      //bindTaskListener();
     } else {
-      TaskTable.invalidateTasks();
+      //TaskTable.invalidateTasks();
       Session().UpdateConnectionStatus(ConnectionStatus.Offline);
-      unTaskBindListener();
+      //unTaskBindListener();
     }
 
     _userStatusText = userStatusSelected.description;
