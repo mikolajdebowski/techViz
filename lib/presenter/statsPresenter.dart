@@ -46,8 +46,8 @@ class StatsPresenter {
       ];
 
       mapToReturn[1] = [VizChart(GlobalKey(), data[1], ChartType.HorizontalBar, 'Tasks per Logged in Hour')];
-      mapToReturn[2] = [VizChart(GlobalKey(), data[2], ChartType.HorizontalBar, 'Avg Response')];
-      mapToReturn[3] = [VizChart(GlobalKey(), data[3], ChartType.HorizontalBar, 'Completion Times')];
+      mapToReturn[2] = [VizChart(GlobalKey(), data[2], ChartType.HorizontalBar, 'Avg Response', parser: convertToHours)];
+      mapToReturn[3] = [VizChart(GlobalKey(), data[3], ChartType.HorizontalBar, 'Avg Completion Times', parser: convertToHours)];
       mapToReturn[4] = [VizChart(GlobalKey(), data[4], ChartType.HorizontalBar, 'Tasks Escalated')];
 
       if(data[5].length == 1){

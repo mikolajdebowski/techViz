@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 
 class VizLegend extends StatelessWidget {
 
+  final Color firstColor;
+  final Color secondColor;
+
+  VizLegend(this.firstColor, this.secondColor);
+
   @override
   Widget build(BuildContext context) {
 
@@ -14,7 +19,7 @@ class VizLegend extends StatelessWidget {
             Container(
               width: 10,
               height: 10,
-              decoration: BoxDecoration(color: Color.fromRGBO(150, 207, 150, 1)),
+              decoration: BoxDecoration(color: firstColor),
             ),
             Padding(
               padding: EdgeInsets.only(right:15.0),
@@ -33,7 +38,7 @@ class VizLegend extends StatelessWidget {
             Container(
               width: 10,
               height: 10,
-              decoration: BoxDecoration(color: Color.fromRGBO(23, 95, 199, 1)),
+              decoration: BoxDecoration(color: secondColor),
             ),
             Padding(
               padding: EdgeInsets.only(right:15.0),

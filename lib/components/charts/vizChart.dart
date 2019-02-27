@@ -102,7 +102,10 @@ class VizChartState extends State<VizChart> {
           measureFn: (ChartData stats, _) => stats.value,
           data: data,
           labelAccessorFn: (ChartData stats, _) {
-            return '${stats.value.round()}%';
+            if(stats.name.length == 0)
+              return '${stats.value.round()}%';
+            else
+              return '';
           })
     ];
 

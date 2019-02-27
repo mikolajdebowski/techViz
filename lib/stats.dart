@@ -77,7 +77,7 @@ class StatsState extends State<Stats> implements IStatsPresenter {
     });
 
     var header = Row(children: <Widget>[backBtn, Padding(
-      padding: const EdgeInsets.only(left: 40.0),
+      padding: const EdgeInsets.only(left: 80.0),
       child: titleWidget,
     )]);
 
@@ -100,7 +100,7 @@ class StatsState extends State<Stats> implements IStatsPresenter {
     Row _legend = Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
-        VizLegend()
+        VizLegend(Color.fromRGBO(150, 207, 150, 1), Color.fromRGBO(23, 95, 199, 1))
       ],
     );
 
@@ -114,6 +114,8 @@ class StatsState extends State<Stats> implements IStatsPresenter {
     else if(_charts!=null && _charts.length>0 && _idxToLoad!=null)
     {
       _innerWidget = Row(children: _charts[_idxToLoad]);
+
+      // for pie chart and tasks completed by day, week, month show legend
       if(_idxToLoad == 6){
         chartContainer = Column(
           children: <Widget>[header, subHeader, _legend, Expanded(child: _innerWidget), _stepsRow],

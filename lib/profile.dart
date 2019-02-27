@@ -160,7 +160,7 @@ class ProfileState extends State<Profile>
   @override
   Widget build(BuildContext context) {
     var leftPanel = Expanded(flex: 1, child: _buildProfileList());
-    var rightPanel = Expanded(flex: 3, child: Stats());
+    var rightPanel = Expanded(flex: 2, child: Stats());
 
     Container container = Container(
       child: Padding(
