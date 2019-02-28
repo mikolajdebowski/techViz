@@ -1,19 +1,15 @@
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:techviz/components/VizAlert.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizDialog.dart';
 import 'package:techviz/components/vizElevated.dart';
-import 'package:techviz/model/reservationTime.dart';
+import 'package:techviz/machineReservation.dart';
 import 'package:techviz/model/slotMachine.dart';
 import 'package:techviz/repository/SlotMachineRepository.dart';
 import 'package:techviz/repository/repository.dart';
-import 'package:techviz/repository/reservationTimeRepository.dart';
-import 'package:techviz/repository/session.dart';
-
 class SlotLookup extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => SlotLookupState();
@@ -101,139 +97,6 @@ class SlotLookupState extends State<SlotLookup> {
         ],
       );
     });
-  }
-
-  void _showReservationPanel(final BuildContext ctx, SlotMachine slotMachine) async {
-    ReservationTimeRepository _repo = Repository().reservationTimeRepository;
-    List<ReservationTime> times = await _repo.getAll();
-
-    bool _isOnlineForReservation = slotMachine.machineStatusID != '3';
-    if (_isOnlineForReservation) return;
-
-    final _formKey = GlobalKey<FormState>();
-    bool _btnEnabled = true;
-
-    final _txtControllerPlayerID = TextEditingController();
-    String _ddbTimeReservation = times[0].key.toString();
-
-    Widget _btnCreateReservation = OutlineButton(
-        child: Text('Reserve'),
-        onPressed: () {
-          if(!_btnEnabled) return;
-
-          if (_formKey.currentState.validate()) {
-
-            _btnEnabled = false;
-            final Flushbar _loadingBar = VizDialog.LoadingBar(message: 'Creating reservation...');
-            _loadingBar.show(ctx);
-
-            Session session = Session();
-            _repository.setReservation(session.user.UserID, slotMachine.standID, _txtControllerPlayerID.text, _ddbTimeReservation).then((dynamic result){
-              _loadingBar.dismiss();
-              Navigator.of(ctx).pop();
-
-            }).whenComplete((){
-              _btnEnabled = true;
-            });
-          }
-        });
-
-    Widget _header = Container(
-      height: 30.0,
-      color: Colors.blue,
-      child: Stack(
-        children: <Widget>[Center(child: Text('Reservation'))],
-      ),
-    );
-
-    Widget _innerForm = Expanded(
-        child: Stack(
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.all(5.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: <Widget>[
-                InputDecorator(
-                  decoration: InputDecoration(
-                    icon: Icon(Icons.location_on),
-                    labelText: 'Stand ID',
-                  ),
-                  child: Padding(padding: EdgeInsets.only(top: 5.0), child: Text('${slotMachine.standID}')),
-                ),
-                FormField<String>(builder: (FormFieldState<String> state) {
-                  return TextFormField(
-                      controller: _txtControllerPlayerID,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: <TextInputFormatter> [
-                        WhitelistingTextInputFormatter.digitsOnly,
-                      ],
-                      validator: (value) {
-                        if (value.isEmpty) return 'Please enter Player ID';
-                      },
-                      decoration: const InputDecoration(
-                        icon: Icon(Icons.person),
-                        labelText: 'Player ID',
-                      ));
-                }),
-                FormField<String>(
-                  initialValue: _ddbTimeReservation,
-                  validator: (String value) {
-                    if (value == null) return 'Select the time of reservation';
-                  },
-                  builder: (FormFieldState<String> state) {
-                    return InputDecorator(
-                        decoration: InputDecoration(
-                          icon: Icon(Icons.timer),
-                          labelText: 'Time of reservation',
-                        ),
-                        isEmpty: _ddbTimeReservation == null,
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            value: _ddbTimeReservation,
-                            isDense: true,
-                            elevation: 2,
-                            onChanged: (String newValue) {
-                              setState(() {
-                                _ddbTimeReservation = newValue;
-                                state.didChange(newValue);
-                              });
-                            },
-                            items: times.map((ReservationTime value) {
-                              return DropdownMenuItem<String>(
-                                value: value.key.toString(),
-                                child: Text(value.value),
-                              );
-                            }).toList(),
-                          ),
-                        ));
-                  },
-                )
-              ],
-            ),
-          ),
-        ),
-        Align(
-          alignment: Alignment.bottomRight,
-          child: Padding(
-            padding: EdgeInsets.all(5.0),
-            child: _btnCreateReservation,
-          ),
-        )
-      ],
-    ));
-
-    showBottomSheet<void>(
-        context: ctx,
-        builder: (BuilderContext) {
-          return Container(
-            color: Color(0xAAeef5f5),
-            child: Column(
-              children: <Widget>[_header, _innerForm],
-            ),
-          );
-        });
   }
 
   Image getIconForMachineStatus(String statusID) {
@@ -345,7 +208,7 @@ class SlotLookupState extends State<SlotLookup> {
                       child: GestureDetector(
                         onTap: () {
                           if(slot.machineStatusID == '3')
-                            _showReservationPanel(context, slot);
+                            Navigator.push(context, MaterialPageRoute<MachineReservation>(builder: (BuildContext context) => MachineReservation(slotMachine: slot)));
                           else if(slot.machineStatusID == '1')
                           _showReservationCancelDialog(context, slot);
                         },
