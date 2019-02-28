@@ -53,7 +53,7 @@ class VizChartState extends State<VizChart> {
           domainFn: (ChartData stats, _) => stats.label,
           measureFn: (ChartData stats, _) => stats.value,
           fillColorFn: (ChartData stats, _) {
-            if(stats.isGreen ){
+            if(stats.isPersonal ){
               return charts.MaterialPalette.green.shadeDefault.lighter;
             } else {
               return charts.MaterialPalette.blue.shadeDefault.darker;
@@ -81,7 +81,14 @@ class VizChartState extends State<VizChart> {
               return widget.parser(stats.value) as String;
             }
             return '${stats.value.toString()}';
-          })
+          },
+        fillColorFn: (ChartData stats, _) {
+          if(stats.isPersonal ){
+            return charts.MaterialPalette.green.shadeDefault.lighter;
+          } else {
+            return charts.MaterialPalette.blue.shadeDefault.darker;
+          }
+        }),
     ];
 
     return StackedHorizontalBarChart(seriesToBuild);
@@ -106,6 +113,15 @@ class VizChartState extends State<VizChart> {
               return '${stats.value.round()}%';
             else
               return '';
+          },
+          colorFn: (ChartData stats, _) {
+            if(stats.isPersonal == null){
+              return charts.MaterialPalette.blue.shadeDefault.lighter;
+            } else if(stats.isPersonal ){
+              return charts.MaterialPalette.green.shadeDefault.lighter;
+            } else {
+              return charts.MaterialPalette.blue.shadeDefault.darker;
+            }
           })
     ];
 
@@ -125,7 +141,7 @@ class ChartData {
   final String name;
   final num value;
   final String label;
-  bool isGreen;
+  bool isPersonal = false;
 
-  ChartData(this.name, this.value, this.label, {this.isGreen});
+  ChartData(this.name, this.value, this.label, {this.isPersonal});
 }

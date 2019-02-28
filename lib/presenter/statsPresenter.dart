@@ -63,10 +63,10 @@ class StatsPresenter {
         mapToReturn[6] =[];
         data[6].forEach((ChartData chartData) {
 
-          chartData.isGreen = true;
+          chartData.isPersonal = true;
 
           var rng = new Random();
-          var fakeData = [chartData, ChartData('', rng.nextInt(6) + 1, '', isGreen: false)];
+          var fakeData = [chartData, ChartData('', rng.nextInt(6) + 1, '', isPersonal: false)];
           var chart = VizChart(GlobalKey(), fakeData, ChartType.VerticalBar, 'Tasks Completed by Type');
 
           mapToReturn[6].add(chart);

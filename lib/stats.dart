@@ -77,6 +77,7 @@ class StatsState extends State<Stats> implements IStatsPresenter {
         child: Text('Back'),
         onPressed: () {
           setState(() {
+            _idxToLoad = 0;
             _selectedViewType = null;
           });
         });
