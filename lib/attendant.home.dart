@@ -43,6 +43,10 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
 
     loadingBar = VizDialog.LoadingBar(message: 'Sending request...');
 
+    Future.delayed(Duration(seconds: 1), (){
+      loadTasks();
+    });
+
     super.initState();
   }
 
@@ -513,16 +517,10 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
       _isLoadingTasks = Session().connectionStatus == ConnectionStatus.Online;
     });
 
-    if(Session().connectionStatus == ConnectionStatus.Online){
-      Session session = Session();
-      Repository().taskRepository.fetch().then((dynamic b){
-        _taskPresenter.loadTaskList(session.user.UserID);
-      });
-    }
-    else{
-      _taskList = List<Task>();
-      _selectedTask = null;
-    }
+    Session session = Session();
+    Repository().taskRepository.fetch().then((dynamic b){
+      _taskPresenter.loadTaskList(session.user.UserID);
+    });
   }
 
   @override
