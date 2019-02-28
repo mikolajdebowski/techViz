@@ -50,7 +50,7 @@ class VizChartState extends State<VizChart> {
     var seriesToBuild = [
       Series<ChartData, String>(
           id: 'id',
-          domainFn: (ChartData stats, _) => stats.label,
+          domainFn: (ChartData stats, _) => stats.value.toString(),
           measureFn: (ChartData stats, _) => stats.value,
           fillColorFn: (ChartData stats, _) {
             if(stats.isPersonal ){
@@ -65,7 +65,15 @@ class VizChartState extends State<VizChart> {
           })
     ];
 
-    return GroupedBarChart(seriesToBuild);
+//    return GroupedBarChart(seriesToBuild);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Expanded(child: GroupedBarChart(seriesToBuild)),
+        Text(data[0].label)
+      ],
+    );
   }
 
   // horizontal bar
