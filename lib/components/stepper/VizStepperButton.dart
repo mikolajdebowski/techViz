@@ -2,22 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class VizStepperButton extends StatelessWidget {
+
   final GestureTapCallback onTap;
   final String title;
+  final bool isActive;
 
-  const VizStepperButton({Key key, this.onTap, this.title}) : super(key: key);
+  VizStepperButton({Key key, this.onTap, this.title, this.isActive}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     double size = 30.0;
 
-    return InkResponse(
+    return GestureDetector(
       onTap: onTap,
       child:  Container(
         width: size,
         height: size,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isActive ? Colors.white : Colors.white70,
           shape: BoxShape.circle,
         ),
         child: Center(child: Text(title)),

@@ -46,7 +46,7 @@ class StatsPresenter {
       ];
 
       mapToReturn[1] = [VizChart(GlobalKey(), data[1], ChartType.HorizontalBar, 'Tasks per Logged in Hour')];
-      mapToReturn[2] = [VizChart(GlobalKey(), data[2], ChartType.HorizontalBar, 'Avg Response', parser: convertToHours)];
+      mapToReturn[2] = [VizChart(GlobalKey(), data[2], ChartType.HorizontalBar, 'Avg Time Response', parser: convertToHours)];
       mapToReturn[3] = [VizChart(GlobalKey(), data[3], ChartType.HorizontalBar, 'Avg Completion Times', parser: convertToHours)];
       mapToReturn[4] = [VizChart(GlobalKey(), data[4], ChartType.HorizontalBar, 'Tasks Escalated')];
 
@@ -63,10 +63,10 @@ class StatsPresenter {
         mapToReturn[6] =[];
         data[6].forEach((ChartData chartData) {
 
-          chartData.isGreen = true;
+          chartData.isPersonal = true;
 
           var rng = new Random();
-          var fakeData = [chartData, ChartData('', rng.nextInt(6) + 1, '', isGreen: false)];
+          var fakeData = [chartData, ChartData('', rng.nextInt(6) + 1, '', isPersonal: false)];
           var chart = VizChart(GlobalKey(), fakeData, ChartType.VerticalBar, 'Tasks Completed by Type');
 
           mapToReturn[6].add(chart);

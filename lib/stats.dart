@@ -24,6 +24,7 @@ class StatsState extends State<Stats> implements IStatsPresenter {
   bool _isLoading = false;
   int _idxToLoad;
   String subTitle = '';
+  List<Widget> stepsToAdd;
 
   @override
   void initState() {
@@ -44,7 +45,7 @@ class StatsState extends State<Stats> implements IStatsPresenter {
     if (_selectedViewType == null) {
       return Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           RaisedButton(
               child: Text('Today'),
@@ -65,29 +66,37 @@ class StatsState extends State<Stats> implements IStatsPresenter {
       ));
     }
 
-    var title = _selectedViewType == StatsView.Today ? "Todays's Stats": (_selectedViewType == StatsView.Week ? "Week's Stats" : "Month's Stats");
+    var title = _selectedViewType == StatsView.Today
+        ? "Todays's Stats"
+        : (_selectedViewType == StatsView.Week ? "Week's Stats" : "Month's Stats");
 
     var subHeader = Text(subTitle, textAlign: TextAlign.center, style: TextStyle(fontSize: 14.0));
     var titleWidget = Text(title, textAlign: TextAlign.center, style: TextStyle(fontSize: 22.0));
 
-    var backBtn = RaisedButton(child: Text('Back'), onPressed: (){
-      setState(() {
-        _selectedViewType = null;
-      });
-    });
+    var backBtn = RaisedButton(
+        child: Text('Back'),
+        onPressed: () {
+          setState(() {
+            _idxToLoad = 0;
+            _selectedViewType = null;
+          });
+        });
 
-    var header = Row(children: <Widget>[backBtn, Padding(
-      padding: const EdgeInsets.only(left: 80.0),
-      child: titleWidget,
-    )]);
+    var header = Row(children: <Widget>[
+      backBtn,
+      Padding(
+        padding: const EdgeInsets.only(left: 80.0),
+        child: titleWidget,
+      )
+    ]);
 
-
-    List<Widget> stepsToAdd = [];
-    for(int i = 0; i<=6; i++){
+    stepsToAdd = [];
+    for (int i = 0; i <= 6; i++) {
       var btnToAdd = Padding(
           padding: EdgeInsets.all(5),
           child: VizStepperButton(
-              title: (i+1).toString(),
+              isActive: _idxToLoad == i,
+              title: (i + 1).toString(),
               onTap: () {
                 _stepsRowTap(i);
               }));
@@ -95,28 +104,23 @@ class StatsState extends State<Stats> implements IStatsPresenter {
     }
     var _stepsRow = Row(children: stepsToAdd, mainAxisAlignment: MainAxisAlignment.center);
 
-
     Widget _innerWidget = Container();
     Row _legend = Row(
       mainAxisAlignment: MainAxisAlignment.end,
-      children: <Widget>[
-        VizLegend(Color.fromRGBO(150, 207, 150, 1), Color.fromRGBO(23, 95, 199, 1))
-      ],
+      children: <Widget>[VizLegend(Color.fromRGBO(150, 207, 150, 1), Color.fromRGBO(23, 95, 199, 1))],
     );
 
     Column chartContainer;
-    if(_isLoading){
+    if (_isLoading) {
       _innerWidget = CircularProgressIndicator();
       chartContainer = Column(
         children: <Widget>[header, subHeader, _innerWidget, _stepsRow],
       );
-    }
-    else if(_charts!=null && _charts.length>0 && _idxToLoad!=null)
-    {
+    } else if (_charts != null && _charts.length > 0 && _idxToLoad != null) {
       _innerWidget = Row(children: _charts[_idxToLoad]);
 
       // for pie chart and tasks completed by day, week, month show legend
-      if(_idxToLoad == 6){
+      if (_idxToLoad == 6) {
         chartContainer = Column(
           children: <Widget>[header, subHeader, _legend, Expanded(child: _innerWidget), _stepsRow],
         );
@@ -133,7 +137,6 @@ class StatsState extends State<Stats> implements IStatsPresenter {
     );
   }
 
-
   @override
   void onLoaded(Map<int, List<Widget>> charts) {
     setState(() {
@@ -141,15 +144,15 @@ class StatsState extends State<Stats> implements IStatsPresenter {
 //      _isLoading = false;
     });
 
-    Future.delayed(Duration(seconds: 1), (){
+    Future.delayed(Duration(seconds: 1), () {
       _isLoading = false;
       _stepsRowTap(0);
     });
   }
-  
+
   void _stepsRowTap(int i) {
     setState(() {
-      if(_charts!=null && _charts.length>0){
+      if (_charts != null && _charts.length > 0) {
         subTitle = (_charts[i][0] as VizChart).title.toString();
       }
 
@@ -161,5 +164,4 @@ class StatsState extends State<Stats> implements IStatsPresenter {
   void onError(dynamic error) {
     VizAlert.Show(context, error.toString());
   }
-
 }
