@@ -86,6 +86,14 @@ class SlotLookupState extends State<SlotLookup> {
               _loadingBar.show(ctx);
               btnEnabled = false;
               _repository.cancelReservation(slotMachine.standID).then((dynamic result){
+
+                var reservationStatusId = result['reservationStatusId'].toString();
+                var copy = slotMachine;
+                copy.machineStatusID = reservationStatusId=='0'?'1':'3';
+
+                _repository.pushToController(copy);
+
+
                 _loadingBar.dismiss();
                 Navigator.of(context).pop();
               }).whenComplete((){
@@ -116,6 +124,11 @@ class SlotLookupState extends State<SlotLookup> {
         break;
     }
     return Image.asset("assets/images/ic_machine_${iconName}.png", width: 100, height: 100);
+  }
+
+
+  void updateMachineCallback(SlotMachine sm){
+
   }
 
   @override
@@ -163,7 +176,7 @@ class SlotLookupState extends State<SlotLookup> {
     var builder = StreamBuilder<List<SlotMachine>>(
         stream: _repository.stream,
         builder: (BuildContext context, AsyncSnapshot<List<SlotMachine>> snapshot) {
-          if (!snapshot.hasData) return CircularProgressIndicator();
+          if (!snapshot.hasData) return Center(child: CircularProgressIndicator());
 
           var data = snapshot.data;
 
@@ -237,10 +250,9 @@ class SlotLookupState extends State<SlotLookup> {
         });
 
     var body = Container(
-      color: Colors.white,
-      //decoration: BoxDecoration(gradient: LinearGradient(colors: [Color(0xFF586676), Color(0xFF8B9EA7)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
+      decoration: BoxDecoration(gradient: LinearGradient(colors: [Color(0xFF586676), Color(0xFF8B9EA7)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
       child: Column(
-        children: <Widget>[header, Expanded(child: loading ? loadindIndicator : builder)],
+        children: <Widget>[header, Expanded(child: loading ? loadindIndicator : Container(child: builder, color: Colors.white))],
       ),
     );
 

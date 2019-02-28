@@ -1,5 +1,6 @@
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizDialog.dart';
 import 'package:techviz/model/reservationTime.dart';
@@ -9,10 +10,14 @@ import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/reservationTimeRepository.dart';
 import 'package:techviz/repository/session.dart';
 
+
+typedef MachineReservationCallback = Function(SlotMachine slot);
+
 class MachineReservation extends StatefulWidget {
   final SlotMachine slotMachine;
+  final MachineReservationCallback callback;
 
-  const MachineReservation({Key key, this.slotMachine}) : super(key: key);
+  const MachineReservation({Key key, this.slotMachine, this.callback}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => MachineReservationState();
@@ -56,6 +61,13 @@ class MachineReservationState extends State<MachineReservation> {
             Session session = Session();
             _slotMachineRepositoryRepo.setReservation(session.user.UserID, widget.slotMachine.standID, _txtControllerPlayerID.text, _ddbTimeReservation).then((dynamic result) {
               _loadingBar.dismiss();
+
+              var reservationStatusId = result['reservationStatusId'].toString();
+              var copy = widget.slotMachine;
+              copy.machineStatusID = reservationStatusId=='0'?'1':'3';
+
+              _slotMachineRepositoryRepo.pushToController(copy);
+
               Navigator.of(context).pop();
             }).whenComplete(() {
               _btnEnabled = true;
@@ -75,7 +87,7 @@ class MachineReservationState extends State<MachineReservation> {
                 InputDecorator(
                   decoration: InputDecoration(
                     icon: Icon(Icons.location_on),
-                    labelText: 'Stand ID',
+                    labelText: 'StandID',
                   ),
                   child: Padding(padding: EdgeInsets.only(top: 5.0), child: Text('${widget.slotMachine.standID}')),
                 ),
@@ -85,6 +97,9 @@ class MachineReservationState extends State<MachineReservation> {
                       validator: (value) {
                         if (value.isEmpty) return 'Please enter Player ID';
                       },
+                      inputFormatters: <TextInputFormatter>[
+                        WhitelistingTextInputFormatter.digitsOnly
+                      ],
                       decoration: const InputDecoration(
                         icon: Icon(Icons.person),
                         labelText: 'Player ID',
@@ -135,6 +150,6 @@ class MachineReservationState extends State<MachineReservation> {
             )
     )));
 
-    return Scaffold(resizeToAvoidBottomPadding: false, backgroundColor: Colors.black, appBar: ActionBar(title: 'Reservation for ${widget.slotMachine.standID}'), body: SafeArea(child: body));
+    return Scaffold(resizeToAvoidBottomPadding: false, backgroundColor: Colors.black, appBar: ActionBar(title: 'Reservation for StandID ${widget.slotMachine.standID}'), body: SafeArea(child: body));
   }
 }

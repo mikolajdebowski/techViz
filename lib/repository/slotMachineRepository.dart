@@ -22,6 +22,18 @@ class SlotMachineRepository implements IRepository<SlotMachine> {
     return _stream;
   }
 
+  StreamController<List<SlotMachine>> get remoteSlotMachineController{
+    return _remoteSlotMachineController;
+  }
+
+  void pushToController(SlotMachine slot){
+    int idx = cache.indexWhere((SlotMachine _sm) => _sm.standID == slot.standID);
+    if (idx >= 0) {
+      cache[idx].machineStatusID = slot.machineStatusID;
+    }
+    _remoteSlotMachineController.add(cache);
+  }
+
   SlotMachineRepository({this.remoteRepository, this.remoteRouting}) {
     assert(this.remoteRepository != null);
     assert(this.remoteRouting != null);
@@ -46,12 +58,7 @@ class SlotMachineRepository implements IRepository<SlotMachine> {
   void listenAsync() {
     _slotMachineController = remoteRouting.Listen();
     _slotMachineController.stream.listen((SlotMachine sm) {
-      //print('listenAsync received ${sm.standID}');
-      int idx = cache.indexWhere((SlotMachine _sm) => _sm.standID == sm.standID);
-      if (idx >= 0) {
-        cache[idx].machineStatusID = sm.machineStatusID;
-      }
-      _remoteSlotMachineController.add(cache);
+      pushToController(sm);
     });
   }
 
@@ -77,7 +84,7 @@ class SlotMachineRepository implements IRepository<SlotMachine> {
     var message = {'deviceId': '${info.DeviceID}', 'userId': '${userID}', 'standId': '${standId}', 'playerId': '${playerID}', 'reservationTimeId': int.parse(time), 'reservationStatusId': 0, 'siteId': 1};
 
     remoteRouting.PublishMessage(message).then((dynamic result) {
-      _completer.complete();
+      _completer.complete(result);
     }).catchError((dynamic error){
       _completer.completeError(error);
     });
@@ -93,7 +100,7 @@ class SlotMachineRepository implements IRepository<SlotMachine> {
     var message = {'deviceId': '${info.DeviceID}', 'standId': '${standId}', 'reservationStatusId': 1, 'siteId': 1};
 
     remoteRouting.PublishMessage(message).then((dynamic result) {
-      _completer.complete();
+      _completer.complete(result);
     }).catchError((dynamic error){
       _completer.completeError(error);
     });
