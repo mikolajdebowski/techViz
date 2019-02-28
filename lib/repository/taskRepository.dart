@@ -104,8 +104,6 @@ class TaskRepository implements IRepository<Task>{
 
     return TaskRouting().ListenQueue((dynamic receivedTask) async{
 
-      print(receivedTask);
-
       dynamic task = jsonDecode(receivedTask.toString());
 
       Map<String,dynamic> taskMapped = Map<String,dynamic>();
