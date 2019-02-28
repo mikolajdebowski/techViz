@@ -177,12 +177,29 @@ class SlotLookupState extends State<SlotLookup> {
                 var slot = data[index];
                 var even = index % 2 == 0;
 
+                Color customColor;
+                if(slot.machineStatusID == '0')
+                  customColor = Color(0x88DCDCDC);
+                else if(slot.machineStatusID == '1')
+                  customColor = Color(0x88FFFF00);
+                else if(slot.machineStatusID == '2')
+                  customColor = Color(0x88008000);
+
+
+                BoxDecoration decorationCustom;
+                if(customColor!=null){
+                  decorationCustom = BoxDecoration(border: borderColor, color: customColor);
+                }
+                else{
+                  decorationCustom = even ? decorationEven : decorationOdd;
+                }
+
                 return Row(children: <Widget>[
                   Expanded(
                     flex: 1,
                     child: Container(
                       padding: EdgeInsets.only(top: 10.0),
-                      decoration: even ? decorationEven : decorationOdd,
+                      decoration: decorationCustom,
                       height: rowHeight,
                       child: Text(slot.standID, style: txtStyle, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center),
                     ),
@@ -192,7 +209,7 @@ class SlotLookupState extends State<SlotLookup> {
                       child: Container(
                         padding: EdgeInsets.only(left: 5.0, top: 10.0),
                         height: rowHeight,
-                        decoration: even ? decorationEven : decorationOdd,
+                        decoration: decorationCustom,
                         child: Text(slot.machineTypeName, style: txtStyle, overflow: TextOverflow.ellipsis),
                       )),
                   Expanded(
@@ -200,7 +217,7 @@ class SlotLookupState extends State<SlotLookup> {
                       child: Container(
                         height: rowHeight,
                         padding: EdgeInsets.only(top: 10.0),
-                        decoration: even ? decorationEven : decorationOdd,
+                        decoration: decorationCustom,
                         child: Text(formatCurrency.format(slot.denom), style: txtStyle, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center),
                       )),
                   Expanded(
@@ -213,14 +230,15 @@ class SlotLookupState extends State<SlotLookup> {
                           _showReservationCancelDialog(context, slot);
                         },
                         child:
-                            Container(height: rowHeight, padding: EdgeInsets.only(top: 5.0), decoration: even ? decorationEven : decorationOdd, child: getIconForMachineStatus(slot.machineStatusID)),
+                            Container(height: rowHeight, padding: EdgeInsets.only(top: 5.0), decoration: decorationCustom, child: getIconForMachineStatus(slot.machineStatusID)),
                       )),
                 ]);
               });
         });
 
     var body = Container(
-      decoration: BoxDecoration(gradient: LinearGradient(colors: [Color(0xFF586676), Color(0xFF8B9EA7)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
+      color: Colors.white,
+      //decoration: BoxDecoration(gradient: LinearGradient(colors: [Color(0xFF586676), Color(0xFF8B9EA7)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
       child: Column(
         children: <Widget>[header, Expanded(child: loading ? loadindIndicator : builder)],
       ),
