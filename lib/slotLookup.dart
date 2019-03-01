@@ -192,7 +192,7 @@ class SlotLookupState extends State<SlotLookup> {
 
                 Color customColor;
                 if(slot.machineStatusID == '0')
-                  customColor = Color(0x88DCDCDC);
+                  customColor = Color(0x99FF0000);
                 else if(slot.machineStatusID == '1')
                   customColor = Color(0x88FFFF00);
                 else if(slot.machineStatusID == '2')

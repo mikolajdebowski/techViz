@@ -136,7 +136,12 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
                     ),
                   ),
                   Text('0 Pending', style: TextStyle(color: Colors.orange)),
-                  Text('Priority', style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic)),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                    Text('Priority', style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic)),
+                    ImageIcon(AssetImage("assets/images/ic_arrow_up.png"), size: 20.0, color: Colors.grey)
+                  ],),
                 ],
               ),
             ),

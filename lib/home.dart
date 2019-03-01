@@ -215,7 +215,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       ],
     );
 
-    var notificationWidgetBtn = VizButton(customWidget: notificationInnerWidget, flex: 3);
+    //var notificationWidgetBtn = VizButton(customWidget: notificationInnerWidget, flex: 3);
+    var notificationWidgetBtn = Spacer(flex: 3);
 
     //SEARCH
     var searchIconWidget = VizButton(customWidget: ImageIcon(AssetImage("assets/images/ic_search.png"), size: 30.0), onTap: goToSearchSelector, flex: 1);
