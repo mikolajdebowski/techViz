@@ -83,28 +83,38 @@ class ProfileState extends State<Profile>
 
     Widget subItem;
     if(_userInfo[index].columnName == 'UserStatusID'){
-      subItem = DropdownButton(
-        value: _currentStatus,
-        items: userStatusList.map((UserStatus status){
-          return DropdownMenuItem(
-            value: '${status.description}',
-            child: Text('${status.description}'),
-          );
-        }).toList(),
-        onChanged: changedStatusDropDownItem,
-      );
+//      subItem = DropdownButton(
+//        value: _currentStatus,
+//        items: userStatusList.map((UserStatus status){
+//          return DropdownMenuItem(
+//            value: '${status.description}',
+//            child: Text('${status.description}'),
+//          );
+//        }).toList(),
+//        onChanged: changedStatusDropDownItem,
+//      );
+
+      if(_currentStatus != null)
+        subItem = Text(_currentStatus);
+      else
+        subItem = Text("");
 
     }else if(_userInfo[index].columnName == 'UserRoleID'){
-      subItem = DropdownButton(
-        value: _currentRole,
-        items: rolesList.map((Role val){
-          return DropdownMenuItem(
-            value: '${val.description}',
-            child: Text('${val.description}'),
-          );
-        }).toList(),
-        onChanged: changedRoleDropDownItem,
-      );
+//      subItem = DropdownButton(
+//        value: _currentRole,
+//        items: rolesList.map((Role val){
+//          return DropdownMenuItem(
+//            value: '${val.description}',
+//            child: Text('${val.description}'),
+//          );
+//        }).toList(),
+//        onChanged: changedRoleDropDownItem,
+//      );
+
+      if(_currentRole != null)
+        subItem = Text(_currentRole);
+      else
+        subItem = Text("");
     }
     else{
       subItem = Text(_userInfo[index].value);

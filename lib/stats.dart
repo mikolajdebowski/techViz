@@ -5,6 +5,7 @@ import 'package:techviz/components/charts/vizChart.dart';
 import 'package:techviz/components/stepper/VizStepperButton.dart';
 import 'package:techviz/components/vizLegend.dart';
 import 'package:techviz/presenter/statsPresenter.dart';
+import 'package:swipedetector/swipedetector.dart';
 
 class Stats extends StatefulWidget {
   Stats();
@@ -132,8 +133,37 @@ class StatsState extends State<Stats> implements IStatsPresenter {
     }
 
     return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: chartContainer,
+      padding: EdgeInsets.all(10.0),
+      child: Container(
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              child: SwipeDetector(
+                child: chartContainer,
+                onSwipeLeft: () {
+                  if(_idxToLoad >= stepsToAdd.length-1)
+                    _idxToLoad = -1;
+                  _idxToLoad++;
+                  _stepsRowTap(_idxToLoad);
+                },
+                onSwipeRight: () {
+                  if(_idxToLoad <= 0)
+                    _idxToLoad = stepsToAdd.length;
+                  _idxToLoad--;
+                  _stepsRowTap(_idxToLoad);
+                },
+                swipeConfiguration: SwipeConfiguration(
+                    verticalSwipeMinVelocity: 100.0,
+                    verticalSwipeMinDisplacement: 50.0,
+                    verticalSwipeMaxWidthThreshold: 100.0,
+                    horizontalSwipeMaxHeightThreshold: 50.0,
+                    horizontalSwipeMinDisplacement: 50.0,
+                    horizontalSwipeMinVelocity: 200.0),
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 
@@ -151,6 +181,7 @@ class StatsState extends State<Stats> implements IStatsPresenter {
   }
 
   void _stepsRowTap(int i) {
+//    print("_stepsRowTap ${i}");
     setState(() {
       if (_charts != null && _charts.length > 0) {
         subTitle = (_charts[i][0] as VizChart).title.toString();
