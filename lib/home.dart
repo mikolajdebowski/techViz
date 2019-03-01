@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:observable/observable.dart';
 import 'package:techviz/attendant.home.dart';
 import 'package:techviz/common/slideRightRoute.dart';
 import 'package:techviz/components/VizButton.dart';
@@ -10,7 +9,6 @@ import 'package:techviz/menu.dart';
 import 'package:techviz/model/task.dart';
 import 'package:techviz/model/userSection.dart';
 import 'package:techviz/model/userStatus.dart';
-import 'package:techviz/repository/local/taskTable.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:techviz/repository/taskRepository.dart';
 import 'package:techviz/repository/userSectionRepository.dart';
@@ -37,17 +35,28 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   bool _isOnline = false;
   StreamController streamController;
 
+  String get getSectionsText {
+    String sections = "";
+    if (currentSections.length == 0) {
+      sections = "-";
+    }
+
+    if (currentSections.length > 4) {
+      sections = "4+";
+    } else {
+      currentSections.forEach((UserSection section) {
+        sections += section.SectionID + " ";
+      });
+      sections = sections.trim();
+    }
+    return sections;
+  }
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     loadDefaultSections();
-
-    Session().changes.listen((List<ChangeRecord> changes) {
-//      print('changes from Session[0]: ${changes[0]}');
-//      print('length ${changes.length}');
-    });
-
     bindTaskListener();
   }
 
@@ -75,14 +84,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   }
 
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    setState(() {
-      keyAttendant.currentState.didChangeAppLifecycleState(state);
-    });
+    keyAttendant.currentState.didChangeAppLifecycleState(state);
 
-    if (Session().connectionStatus == ConnectionStatus.Online) {
-      if (state == AppLifecycleState.resumed) {
-        bindTaskListener();
-      }
+    if (state == AppLifecycleState.resumed) {
+      bindTaskListener();
     }
   }
 
@@ -94,32 +99,13 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     keyAttendant.currentState.onUserSectionsChanged(currentSections);
   }
 
-  String get getSectionsText {
-    String sections = "";
-    if (currentSections.length == 0) {
-      sections = "-";
-    }
 
-    if (currentSections.length > 4) {
-      sections = "4+";
-    } else {
-      currentSections.forEach((UserSection section) {
-        sections += section.SectionID + " ";
-      });
-      sections = sections.trim();
-    }
-    return sections;
-  }
 
   void onMyStatusSelectorCallbackOK(UserStatus userStatusSelected) {
     if (userStatusSelected.isOnline) {
       Session().UpdateConnectionStatus(ConnectionStatus.Online);
-
-      //bindTaskListener();
     } else {
-      //TaskTable.invalidateTasks();
       Session().UpdateConnectionStatus(ConnectionStatus.Offline);
-      //unTaskBindListener();
     }
 
     _userStatusText = userStatusSelected.description;

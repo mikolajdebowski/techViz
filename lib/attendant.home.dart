@@ -393,17 +393,12 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
                   ? taskBody
                   : Center(
                       child: Text(
-                      _taskList.length==0? '': 'Select a Task',
+                        (_isLoadingTasks || _taskList.length==0)? '': 'Select a Task',
                       style: TextStyle(color: Colors.white, fontStyle: FontStyle.italic),
                     )))
         ],
       ),
     );
-
-
-    if(_selectedTask!=null){
-      //print('task ${_selectedTask.location} time =====> ${ _selectedTask.taskCreated}');
-    }
 
     //RIGHT PANEL WIDGETS
     var timerWidget = Padding(
@@ -497,29 +492,18 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
 
   @override
   void onUserStatusChanged(UserStatus us) {
-    setState(() {
-      _isLoadingTasks = false; //TODO: REVIEW
-      if(us.isOnline){
-        Session().connectionStatus = ConnectionStatus.Online;
-      }
-      else{
-
-      }
-    });
-
     loadTasks();
   }
 
   @override
   void onUserSectionsChanged(Object obj) {
-    if(Session().connectionStatus == ConnectionStatus.Online){
-      loadTasks();
-    }
+    loadTasks();
   }
 
   void loadTasks(){
     setState(() {
-      _isLoadingTasks = Session().connectionStatus == ConnectionStatus.Online;
+      _isLoadingTasks = true;
+      _selectedTask = null;
     });
 
     Session session = Session();
@@ -566,7 +550,9 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // TODO: implement didChangeAppLifecycleState
+    if (state == AppLifecycleState.resumed) {
+      loadTasks();
+    }
   }
 
 }
