@@ -90,10 +90,8 @@ class TaskRepository implements IRepository<Task>{
 
     Completer _completer = Completer<bool>();
     this.remoteRepository.fetch().then((Object result) async{
-
-      //await TaskTable.cleanUp();
+      await TaskTable.cleanUp();
       await TaskTable.insertOrUpdate(result);
-
       _completer.complete(true);
     });
 
