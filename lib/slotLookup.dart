@@ -131,11 +131,6 @@ class SlotLookupState extends State<SlotLookup> {
     return Image.asset("assets/images/ic_machine_${iconName}.png", color: color);
   }
 
-
-  void updateMachineCallback(SlotMachine sm){
-
-  }
-
   @override
   Widget build(BuildContext context) {
     var searchComponent = Expanded(
