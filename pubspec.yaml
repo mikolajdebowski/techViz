@@ -23,6 +23,7 @@ dependencies:
   package_info: ^0.4.0
   fluttertoast: ^3.0.1
   swipedetector: ^1.2.0
+  synchronized: ^2.1.0
 
   #vizexplorer_mobile_common:
   #git: http://git.colo.bis2.net/Mobile/Plugins/common.git

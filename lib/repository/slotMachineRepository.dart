@@ -1,7 +1,7 @@
 import 'dart:async';
-
 import 'package:techviz/model/slotMachine.dart';
 import 'package:techviz/repository/async/IRouting.dart';
+import 'package:techviz/repository/cache/slotMachineCache.dart';
 import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/remoteRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
@@ -12,26 +12,15 @@ class SlotMachineRepository implements IRepository<SlotMachine> {
 
   StreamController<SlotMachine> _slotMachineController;
   StreamController<List<SlotMachine>> _remoteSlotMachineController;
-  Stream<List<SlotMachine>> _stream;
-  List<SlotMachine> cache = [];
-
-  Stream<List<SlotMachine>> get stream {
-    if (_stream == null) {
-      _stream = _remoteSlotMachineController.stream.asBroadcastStream();
-    }
-    return _stream;
-  }
+  SlotMachineCache _cache = SlotMachineCache();
 
   StreamController<List<SlotMachine>> get remoteSlotMachineController{
     return _remoteSlotMachineController;
   }
 
-  void pushToController(SlotMachine slot){
-    int idx = cache.indexWhere((SlotMachine _sm) => _sm.standID == slot.standID);
-    if (idx >= 0) {
-      cache[idx].machineStatusID = slot.machineStatusID;
-    }
-    _remoteSlotMachineController.add(cache);
+  void pushToController(SlotMachine received, String from) async {
+    await _cache.updateEntry(received, from);
+    _remoteSlotMachineController.add(_cache.data);
   }
 
   SlotMachineRepository({this.remoteRepository, this.remoteRouting}) {
@@ -48,8 +37,8 @@ class SlotMachineRepository implements IRepository<SlotMachine> {
     Completer _completer = Completer<void>();
     this.remoteRepository.fetch().then((dynamic data) {
       print('remoteRepository fetched');
-      cache = (data as List<SlotMachine>).toList();
-      _remoteSlotMachineController.add(cache);
+      _cache.data = (data as List<SlotMachine>).toList();
+      _remoteSlotMachineController.add(_cache.data);
       _completer.complete();
     });
     return _completer.future;
@@ -58,7 +47,7 @@ class SlotMachineRepository implements IRepository<SlotMachine> {
   void listenAsync() {
     _slotMachineController = remoteRouting.Listen();
     _slotMachineController.stream.listen((SlotMachine sm) {
-      pushToController(sm);
+      pushToController(sm, 'EVENT');
     });
   }
 
@@ -67,9 +56,9 @@ class SlotMachineRepository implements IRepository<SlotMachine> {
   }
 
   List<SlotMachine> filter(String key) {
-    if (key == null || key.length == 0) return cache;
+    if (key == null || key.length == 0) return _cache.data;
 
-    Iterable<SlotMachine> it = cache.where((SlotMachine sm) => sm.standID.contains(key));
+    Iterable<SlotMachine> it = _cache.data.where((SlotMachine sm) => sm.standID.contains(key));
     if (it != null) {
       return it.toList();
     }

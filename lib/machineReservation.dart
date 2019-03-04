@@ -1,6 +1,7 @@
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:techviz/components/VizAlert.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizDialog.dart';
 import 'package:techviz/model/reservationTime.dart';
@@ -10,14 +11,10 @@ import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/reservationTimeRepository.dart';
 import 'package:techviz/repository/session.dart';
 
-
-typedef MachineReservationCallback = Function(SlotMachine slot);
-
 class MachineReservation extends StatefulWidget {
   final SlotMachine slotMachine;
-  final MachineReservationCallback callback;
 
-  const MachineReservation({Key key, this.slotMachine, this.callback}) : super(key: key);
+  const MachineReservation({Key key, this.slotMachine}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => MachineReservationState();
@@ -62,11 +59,15 @@ class MachineReservationState extends State<MachineReservation> {
               var reservationStatusId = result['reservationStatusId'].toString();
               var copy = widget.slotMachine;
               copy.machineStatusID = reservationStatusId=='0'?'1':'3';
+              copy.updatedAt = DateTime.parse(result['sentAt'].toString());
 
-              _slotMachineRepositoryRepo.pushToController(copy);
+              _slotMachineRepositoryRepo.pushToController(copy, 'RESERVATION');
 
               Navigator.of(context).pop();
+            }).catchError((dynamic error){
+              VizAlert.Show(context, error.toString());
             }).whenComplete(() {
+              _loadingBar.dismiss();
               _btnEnabled = true;
             });
           }
