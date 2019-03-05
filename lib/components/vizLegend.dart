@@ -1,60 +1,40 @@
 import 'package:flutter/material.dart';
 
 class VizLegend extends StatelessWidget {
+  final List<VizLegendModel> items;
 
-  final Color firstColor;
-  final Color secondColor;
-
-  VizLegend(this.firstColor, this.secondColor);
+  VizLegend(this.items);
 
   @override
   Widget build(BuildContext context) {
-
-    var legend = Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+    List<Widget> children = [];
+    if (items != null && items.length > 0) {
+      items.forEach((VizLegendModel legend) {
+        children.add(Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Container(
               width: 10,
               height: 10,
-              decoration: BoxDecoration(color: firstColor),
+              decoration: BoxDecoration(color: legend.color),
             ),
             Padding(
-              padding: EdgeInsets.only(right:15.0),
-              child: Padding(
-                padding: EdgeInsets.only(left:18.0),
-                child: Text("Personal"),
-              ),
-
-            ),
-
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
-            Container(
-              width: 10,
-              height: 10,
-              decoration: BoxDecoration(color: secondColor),
-            ),
-            Padding(
-              padding: EdgeInsets.only(right:15.0),
-              child: Padding(
-                padding: EdgeInsets.only(left:11.0),
-                child: Text("Team Avg"),
-              ),
-
+              padding: EdgeInsets.only(left: 5.0),
+              child: Text(legend.title),
             ),
           ],
-        )
-      ],
-    );
+        ));
+      });
+    }
 
-    return legend;
-
+    Column column = Column(crossAxisAlignment: CrossAxisAlignment.start, children: children);
+    return column;
   }
 }
 
+class VizLegendModel {
+  final Color color;
+  final String title;
+
+  VizLegendModel(this.color, this.title);
+}

@@ -19,10 +19,10 @@ class VizStepperButton extends StatelessWidget {
         width: size,
         height: size,
         decoration: BoxDecoration(
-          color: isActive ? Colors.white : Colors.white70,
-          shape: BoxShape.circle,
+          color: isActive ? Colors.blueAccent : Colors.white70,
+          shape: BoxShape.circle
         ),
-        child: Center(child: Text(title)),
+        child: Center(child: Text(title, style: TextStyle(color: isActive ? Colors.white : Colors.black),)),
       ),
     );
   }

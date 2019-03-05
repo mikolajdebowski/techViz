@@ -1,14 +1,14 @@
-
 import 'dart:async';
 import 'dart:math';
 
+import 'package:charts_common/common.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:techviz/components/charts/vizChart.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/stats.dart';
 
-abstract class IStatsPresenter{
-  void onLoaded(Map<int, List<Widget>> widget);
+abstract class IStatsPresenter {
+  void onLoaded(Map<int, ChartDataGroup> widget);
   void onError(dynamic error);
 }
 
@@ -24,11 +24,9 @@ class StatsPresenter {
 
     if (view == StatsView.Today) {
       futureToCall = Repository().statsTodayRepository.fetch();
-    }
-    else if (view == StatsView.Week) {
+    } else if (view == StatsView.Week) {
       futureToCall = Repository().statsWeekRepository.fetch();
-    }
-    else if (view == StatsView.Month) {
+    } else if (view == StatsView.Month) {
       futureToCall = Repository().statsMonthRepository.fetch();
     }
 
@@ -40,38 +38,37 @@ class StatsPresenter {
         return '${timeAvailable.inHours} hr ${timeAvailable.inMinutes % 60} min';
       }
 
-      Map<int, List<Widget>> mapToReturn = Map<int, List<Widget>>();
-      mapToReturn[0] = [VizChart(
-          GlobalKey(), data[0], ChartType.HorizontalBar, 'Time Available for Tasks', parser: convertToHours)
-      ];
+      Map<int, ChartDataGroup> mapToReturn = Map<int, ChartDataGroup>();
+      mapToReturn[0] = ChartDataGroup(Row(children: [VizChart(GlobalKey(), data[0], ChartType.HorizontalBar, parser: convertToHours)]), 'Time Available for Tasks');
+      mapToReturn[1] = ChartDataGroup(Row(children: [VizChart(GlobalKey(), data[1], ChartType.HorizontalBar )]), 'Tasks per Logged in Hour');
+      mapToReturn[2] = ChartDataGroup(Row(children: [VizChart(GlobalKey(), data[2], ChartType.HorizontalBar, parser: convertToHours)]), 'Avg Response Time');
+      mapToReturn[3] = ChartDataGroup(Row(children: [VizChart(GlobalKey(), data[3], ChartType.HorizontalBar, parser: convertToHours)]), 'Avg Completion Times');
+      mapToReturn[4] = ChartDataGroup(Row(children: [VizChart(GlobalKey(), data[4], ChartType.HorizontalBar, )]), 'Tasks Escalated');
 
-      mapToReturn[1] = [VizChart(GlobalKey(), data[1], ChartType.HorizontalBar, 'Tasks per Logged in Hour')];
-      mapToReturn[2] = [VizChart(GlobalKey(), data[2], ChartType.HorizontalBar, 'Avg Response Time', parser: convertToHours)];
-      mapToReturn[3] = [VizChart(GlobalKey(), data[3], ChartType.HorizontalBar, 'Avg Completion Times', parser: convertToHours)];
-      mapToReturn[4] = [VizChart(GlobalKey(), data[4], ChartType.HorizontalBar, 'Tasks Escalated')];
+      if (data[5].length == 1) {
+        mapToReturn[5] = ChartDataGroup(Row(children: [VizChart(GlobalKey(), [data[5][0]], ChartType.Pie)]), 'Percent of Tasks Escalated');
 
-      if(data[5].length == 1){
-        mapToReturn[5] = [VizChart(GlobalKey(), [data[5][0]], ChartType.Pie, 'Percent of Tasks Escalated')];
-      } else if(data[5].length == 2){
-        mapToReturn[5] = [VizChart(GlobalKey(), [data[5][0]], ChartType.Pie, 'Percent of Tasks Escalated'),
-        VizChart(GlobalKey(), [data[5][1]], ChartType.Pie, 'Percent of Tasks Escalated')];
+      } else if (data[5].length == 2) {
+        mapToReturn[5] = ChartDataGroup(Row(children: [
+          VizChart(GlobalKey(), [data[5][0]], ChartType.Pie),
+          VizChart(GlobalKey(), [data[5][1]], ChartType.Pie)
+        ]), 'Percent of Tasks Escalated');
       }
 
-
-      if(data[6] != null && data[6].length > 0){
-
-        mapToReturn[6] =[];
+      if (data[6] != null && data[6].length > 0) {
+        List<Widget> _children = [];
         data[6].forEach((ChartData chartData) {
-
-          chartData.isPersonal = true;
-
           var rng = new Random();
-          var fakeData = [chartData, ChartData('', rng.nextInt(6) + 1, '', isPersonal: false)];
-          var chart = VizChart(GlobalKey(), fakeData, ChartType.VerticalBar, 'Tasks Completed by Type');
+          var fakeData = [chartData, ChartData('', rng.nextInt(6) + 1, '', color: MaterialPalette.blue.shadeDefault.darker)];
 
-          mapToReturn[6].add(chart);
+          var chart = VizChart(GlobalKey(), fakeData, ChartType.VerticalBar);
+
+          _children.add(chart);
         });
 
+        //var gvCharts = GridView.count(crossAxisCount: 3, children:_children, shrinkWrap: true, physics: BouncingScrollPhysics());
+        var gvCharts = Row(children: _children);
+        mapToReturn[6] = ChartDataGroup(gvCharts, 'Tasks Completed by Type');
       }
 
       _view.onLoaded(mapToReturn);

@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:core';
+import 'dart:ui';
 
+import 'package:charts_common/common.dart';
 import 'package:flutter/services.dart';
 import 'package:techviz/components/charts/vizChart.dart';
 import 'package:techviz/repository/remoteRepository.dart';
@@ -13,11 +15,19 @@ class ProcessoStatsMonthRepository extends IRemoteRepository<dynamic>{
   String teamAxisName = 'Team Avg';
 
   ChartData extractDataFromValues(List<String> columnNames, String columnName, dynamic values, String label, bool isPersonal){
+    Color _color = MaterialPalette.blue.shadeDefault.lighter;
+    if(isPersonal ){
+      _color = MaterialPalette.green.shadeDefault.lighter;
+    } else {
+      _color = MaterialPalette.blue.shadeDefault.darker;
+    }
+
+
     if(values[columnNames.indexOf(columnName)] != ''){
-      return ChartData(columnName, num.parse(values[columnNames.indexOf(columnName)] as String), label, isPersonal:isPersonal);
+      return ChartData(columnName, num.parse(values[columnNames.indexOf(columnName)] as String), label, color: _color);
     }
     else{
-      return ChartData(columnName, 0, label, isPersonal:isPersonal);
+      return ChartData(columnName, 0, label, color: _color);
     }
   }
 
@@ -71,7 +81,7 @@ class ProcessoStatsMonthRepository extends IRemoteRepository<dynamic>{
       tasksEscalated.add(extractDataFromValues(columnNamesUser, 'TasksEscalated', rowsUser[0]['Values'], personalAxisName, true));
       tasksEscalated.add(extractDataFromValues(columnNamesTeam, 'AvgTasksEscalated', rowsTeam[0]['Values'], teamAxisName, false));
 
-      // percent of tasks escalated... PercentEscalated and AvgPercentEscalated
+      //percent of tasks escalated... PercentEscalated and AvgPercentEscalated
       List<ChartData> percentTasksEscalated = [];
       percentTasksEscalated.add(extractDataFromValues(columnNamesUser, 'PercentEscalated', rowsUser[0]['Values'], personalAxisName, true));
       percentTasksEscalated.add(extractDataFromValues(columnNamesTeam, 'AvgPercentEscalated', rowsTeam[0]['Values'], teamAxisName, false));
@@ -85,7 +95,7 @@ class ProcessoStatsMonthRepository extends IRemoteRepository<dynamic>{
         dynamic values = d['Values'];
         String label = values[columnNamesTasksByType.indexOf("TaskDescription")] as String;
         num value = num.parse(values[columnNamesTasksByType.indexOf("AvgTasksCompleted")].toString());
-        ChartData chart = ChartData('', value, label);
+        ChartData chart = ChartData('', value, label, color:  MaterialPalette.blue.shadeDefault.lighter);
         chartTasksByType.add(chart);
       });
 

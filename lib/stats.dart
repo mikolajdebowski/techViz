@@ -21,7 +21,7 @@ enum StatsType { User, Team }
 class StatsState extends State<Stats> implements IStatsPresenter {
   StatsView _selectedViewType;
   StatsPresenter _statsPresenter;
-  Map<int, List<Widget>> _charts;
+  Map<int, ChartDataGroup> _charts;
   bool _isLoading = false;
   int _idxToLoad;
   String subTitle = '';
@@ -35,13 +35,6 @@ class StatsState extends State<Stats> implements IStatsPresenter {
 
   @override
   Widget build(BuildContext context) {
-    void _onStatTypeTap(StatsView selected) {
-      setState(() {
-        _selectedViewType = selected;
-        _isLoading = true;
-      });
-      _statsPresenter.load(_selectedViewType);
-    }
 
     if (_selectedViewType == null) {
       return Center(
@@ -66,6 +59,7 @@ class StatsState extends State<Stats> implements IStatsPresenter {
         ],
       ));
     }
+
 
     var title = _selectedViewType == StatsView.Today
         ? "Todays's Stats"
@@ -103,12 +97,17 @@ class StatsState extends State<Stats> implements IStatsPresenter {
               }));
       stepsToAdd.add(btnToAdd);
     }
-    var _stepsRow = Row(children: stepsToAdd, mainAxisAlignment: MainAxisAlignment.center);
+    var _stepsRow = Row(children: stepsToAdd, mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center,);
+    
+    var legendModel = [
+      VizLegendModel(Color(0xFF96CF96), 'Personal'),
+      VizLegendModel(Color(0xFF175FC7), 'Team Avg'),
+    ];
 
     Widget _innerWidget = Container();
     Row _legend = Row(
       mainAxisAlignment: MainAxisAlignment.end,
-      children: <Widget>[VizLegend(Color.fromRGBO(150, 207, 150, 1), Color.fromRGBO(23, 95, 199, 1))],
+      children: <Widget>[VizLegend(legendModel)],
     );
 
     Column chartContainer;
@@ -118,7 +117,7 @@ class StatsState extends State<Stats> implements IStatsPresenter {
         children: <Widget>[header, subHeader, _innerWidget, _stepsRow],
       );
     } else if (_charts != null && _charts.length > 0 && _idxToLoad != null) {
-      _innerWidget = Row(children: _charts[_idxToLoad]);
+      _innerWidget = _charts[_idxToLoad].charts;
 
       // for pie chart and tasks completed by day, week, month show legend
       if (_idxToLoad == 6) {
@@ -167,11 +166,20 @@ class StatsState extends State<Stats> implements IStatsPresenter {
     );
   }
 
+  void _onStatTypeTap(StatsView selected) {
+    setState(() {
+      _selectedViewType = selected;
+      _isLoading = true;
+    });
+    _statsPresenter.load(_selectedViewType);
+  }
+
+
+
   @override
-  void onLoaded(Map<int, List<Widget>> charts) {
+  void onLoaded(Map<int, ChartDataGroup> charts) {
     setState(() {
       _charts = charts;
-//      _isLoading = false;
     });
 
     Future.delayed(Duration(seconds: 1), () {
@@ -181,12 +189,10 @@ class StatsState extends State<Stats> implements IStatsPresenter {
   }
 
   void _stepsRowTap(int i) {
-//    print("_stepsRowTap ${i}");
     setState(() {
       if (_charts != null && _charts.length > 0) {
-        subTitle = (_charts[i][0] as VizChart).title.toString();
+        subTitle = _charts[i].title;
       }
-
       _idxToLoad = i;
     });
   }
