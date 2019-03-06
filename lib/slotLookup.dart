@@ -109,21 +109,26 @@ class SlotLookupState extends State<SlotLookup> {
 
   Image getIconForMachineStatus(String statusID) {
     String iconName;
+    Color color;
     switch (statusID) {
       case "1":
         iconName = 'reserved';
+        color = Colors.orange;
         break;
       case "2":
         iconName = 'inuse';
+        color = null;
         break;
       case "3":
         iconName = 'available';
+        color = Colors.green;
         break;
       default:
         iconName = 'offline';
+        color = Colors.red;
         break;
     }
-    return Image.asset("assets/images/ic_machine_${iconName}.png", width: 100, height: 100);
+    return Image.asset("assets/images/ic_machine_${iconName}.png", color: color);
   }
 
 
@@ -192,12 +197,11 @@ class SlotLookupState extends State<SlotLookup> {
 
                 Color customColor;
                 if(slot.machineStatusID == '0')
-                  customColor = Color(0x88DCDCDC);
+                  customColor = Color(0x44FF0000);
                 else if(slot.machineStatusID == '1')
                   customColor = Color(0x88FFFF00);
                 else if(slot.machineStatusID == '2')
-                  customColor = Color(0x88008000);
-
+                  customColor = Color(0x8887CEEB);
 
                 BoxDecoration decorationCustom;
                 if(customColor!=null){
@@ -243,7 +247,7 @@ class SlotLookupState extends State<SlotLookup> {
                           _showReservationCancelDialog(context, slot);
                         },
                         child:
-                            Container(height: rowHeight, padding: EdgeInsets.only(top: 5.0), decoration: decorationCustom, child: getIconForMachineStatus(slot.machineStatusID)),
+                            Container(height: rowHeight, padding: EdgeInsets.all(5.0), decoration: decorationCustom, child: getIconForMachineStatus(slot.machineStatusID)),
                       )),
                 ]);
               });

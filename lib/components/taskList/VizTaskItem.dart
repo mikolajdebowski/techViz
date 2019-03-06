@@ -36,7 +36,7 @@ class VizTaskItem extends StatelessWidget{
             Expanded(
               flex: 1,
               child: Container(
-                height: 60.0,
+                height: 55.0,
                 decoration: BoxDecoration(
                     gradient: LinearGradient(
                         colors: [urgencyColorStart,urgencyColorEnd],
@@ -49,7 +49,7 @@ class VizTaskItem extends StatelessWidget{
             Expanded(
               flex: 4,
               child: Container(
-                height: 60.0,
+                height: 55.0,
                 decoration:
                 BoxDecoration(gradient: LinearGradient(colors: mainBackgroundColor, begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
                 child: Center(
