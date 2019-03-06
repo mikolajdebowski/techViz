@@ -9,8 +9,10 @@ import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/roleListPresenter.dart';
 import 'package:techviz/presenter/statusListPresenter.dart';
 import 'package:techviz/repository/processor/processorUserGeneralInfoRepository.dart';
+import 'package:techviz/repository/processor/processorUserSkillsRepository.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:techviz/repository/userGeneralInfoRepository.dart';
+import 'package:techviz/repository/userSkillsRepository.dart';
 import 'package:techviz/stats.dart';
 /// Bar chart example
 
@@ -74,6 +76,9 @@ class ProfileState extends State<Profile>
         _userInfo.add(item);
       });
     });
+
+
+    fetchUserInfo();
 
     super.initState();
   }
@@ -148,20 +153,22 @@ class ProfileState extends State<Profile>
   }
 
 
-
-
-
   void fetchUserInfo() async{
     print('fetchUserInfo');
     await loadInitialData();
+
 
   }
 
   Future<void> loadInitialData() async{
     await userGeneralInfoRepository.fetch();
+    await userSkillsRepository.fetch();
   }
 
 
+  UserSkillsRepository get userSkillsRepository {
+    return UserSkillsRepository(remoteRepository: ProcessorUserSkillsRepository());
+  }
 
   UserGeneralInfoRepository get userGeneralInfoRepository {
     return UserGeneralInfoRepository(remoteRepository: ProcessorUserGeneralInfoRepository());
@@ -197,7 +204,7 @@ class ProfileState extends State<Profile>
 
   @override
   void onRoleListLoaded(List<Role> result) {
-    if (result.length == 1) {
+    if (result.length == 0) {
       return;
     }
 
@@ -216,7 +223,7 @@ class ProfileState extends State<Profile>
 
   @override
   void onStatusListLoaded(List<UserStatus> result) {
-    if (result.length == 1) {
+    if (result.length == 0) {
       return;
     }
 

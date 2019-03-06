@@ -37,7 +37,7 @@ class StatsPresenter {
 
       String convertToHours(num original) {
         Duration timeAvailable = new Duration(seconds: int.parse(original.round().toString()));
-        return '${timeAvailable.inHours} hr ${timeAvailable.inMinutes % 60} min';
+        return '${timeAvailable.inHours} hr ${timeAvailable.inMinutes % 60} min ${timeAvailable.inSeconds % 60} sec';
       }
 
       Map<int, List<Widget>> mapToReturn = Map<int, List<Widget>>();
