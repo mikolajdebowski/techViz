@@ -1,5 +1,5 @@
-/// Simple pie chart example.
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:charts_flutter/flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:techviz/components/charts/IVizChart.dart';
 
@@ -11,14 +11,23 @@ class SimplePieChart extends StatelessWidget implements IVizChart{
 
   @override
   Widget build(BuildContext context) {
-    return new charts.PieChart<dynamic>(
+
+    final _defaultLayoutConfig = LayoutConfig(
+      topMarginSpec: MarginSpec.fromPixel(minPixel: 10),
+      bottomMarginSpec: MarginSpec.fromPixel(minPixel: 10),
+      leftMarginSpec: MarginSpec.fromPixel(minPixel: 10),
+      rightMarginSpec: MarginSpec.fromPixel(minPixel: 10),
+    );
+
+    return charts.PieChart<dynamic>(
         seriesList,
         animate: animate,
-        defaultRenderer: new charts.ArcRendererConfig<dynamic>(
-        arcRendererDecorators: [new charts.ArcLabelDecorator<dynamic>(
-          insideLabelStyleSpec: new charts.TextStyleSpec(fontSize: 12, // size in Pts.
-              color: charts.MaterialPalette.black),
-        )]));
+        defaultRenderer: charts.ArcRendererConfig<dynamic>(
+        arcRendererDecorators: [ charts.ArcLabelDecorator<dynamic>(
+          insideLabelStyleSpec:  charts.TextStyleSpec(fontSize: 12, color: charts.MaterialPalette.black),
+        )]),
+        layoutConfig: _defaultLayoutConfig,
+      );
   }
 
   @override

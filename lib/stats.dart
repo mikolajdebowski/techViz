@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:techviz/components/VizAlert.dart';
-import 'package:techviz/components/charts/vizChart.dart';
+import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/stepper/VizStepperButton.dart';
-import 'package:techviz/components/vizLegend.dart';
 import 'package:techviz/presenter/statsPresenter.dart';
 import 'package:swipedetector/swipedetector.dart';
 
@@ -21,10 +20,9 @@ enum StatsType { User, Team }
 class StatsState extends State<Stats> implements IStatsPresenter {
   StatsView _selectedViewType;
   StatsPresenter _statsPresenter;
-  Map<int, ChartDataGroup> _charts;
+  Map<int, Widget> _charts;
   bool _isLoading = false;
   int _idxToLoad;
-  String subTitle = '';
   List<Widget> stepsToAdd;
 
   @override
@@ -35,54 +33,49 @@ class StatsState extends State<Stats> implements IStatsPresenter {
 
   @override
   Widget build(BuildContext context) {
-
     if (_selectedViewType == null) {
-      return Center(
-          child: Column(
+      var column = Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          RaisedButton(
-              child: Text('Today'),
-              onPressed: () {
+          VizButton(
+              title: "Today's Stats",
+              onTap: () {
                 _onStatTypeTap(StatsView.Today);
               }),
-          RaisedButton(
-              child: Text('Week'),
-              onPressed: () {
+          VizButton(
+              title: "This Week's Stats",
+              onTap: () {
                 _onStatTypeTap(StatsView.Week);
               }),
-          RaisedButton(
-              child: Text('Month'),
-              onPressed: () {
+          VizButton(
+              title: "This Month's Stats",
+              onTap: () {
                 _onStatTypeTap(StatsView.Month);
               })
         ],
-      ));
+      );
+
+      var padding = Padding(child: column, padding: EdgeInsets.all(20));
+
+      return Center(child: padding);
     }
 
+    var title = _selectedViewType == StatsView.Today ? "Todays's Stats" : (_selectedViewType == StatsView.Week ? "Week's Stats" : "Month's Stats");
 
-    var title = _selectedViewType == StatsView.Today
-        ? "Todays's Stats"
-        : (_selectedViewType == StatsView.Week ? "Week's Stats" : "Month's Stats");
 
-    var subHeader = Text(subTitle, textAlign: TextAlign.center, style: TextStyle(fontSize: 14.0));
     var titleWidget = Text(title, textAlign: TextAlign.center, style: TextStyle(fontSize: 22.0));
+    var backBtn = IconButton(icon: Icon(Icons.backspace), color: Colors.grey, iconSize: 30.0, onPressed: () {
+      setState(() {
+        _idxToLoad = 0;
+        _selectedViewType = null;
+      });
+    });
 
-    var backBtn = RaisedButton(
-        child: Text('Back'),
-        onPressed: () {
-          setState(() {
-            _idxToLoad = 0;
-            _selectedViewType = null;
-          });
-        });
 
-    var header = Row(children: <Widget>[
-      backBtn,
-      Padding(
-        padding: const EdgeInsets.only(left: 80.0),
-        child: titleWidget,
-      )
+    var header = Stack(children: <Widget>[
+      Align(child: backBtn, alignment: Alignment.centerLeft),
+      Align(child: titleWidget, alignment: Alignment.center),
     ]);
 
     stepsToAdd = [];
@@ -97,42 +90,28 @@ class StatsState extends State<Stats> implements IStatsPresenter {
               }));
       stepsToAdd.add(btnToAdd);
     }
-    var _stepsRow = Row(children: stepsToAdd, mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center,);
-    
-    var legendModel = [
-      VizLegendModel(Color(0xFF96CF96), 'Personal'),
-      VizLegendModel(Color(0xFF175FC7), 'Team Avg'),
-    ];
 
-    Widget _innerWidget = Container();
-    Row _legend = Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: <Widget>[VizLegend(legendModel)],
+    var _stepsRow = Row(
+      children: stepsToAdd,
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
     );
 
     Column chartContainer;
     if (_isLoading) {
-      _innerWidget = CircularProgressIndicator();
+      var loadindWidget = Padding(child: CircularProgressIndicator(), padding: EdgeInsets.only(top: 15.0));
       chartContainer = Column(
-        children: <Widget>[header, subHeader, _innerWidget, _stepsRow],
+        children: <Widget>[header, loadindWidget],
       );
-    } else if (_charts != null && _charts.length > 0 && _idxToLoad != null) {
-      _innerWidget = _charts[_idxToLoad].charts;
-
-      // for pie chart and tasks completed by day, week, month show legend
-      if (_idxToLoad == 6) {
-        chartContainer = Column(
-          children: <Widget>[header, subHeader, _legend, Expanded(child: _innerWidget), _stepsRow],
-        );
-      } else {
-        chartContainer = Column(
-          children: <Widget>[header, subHeader, Expanded(child: _innerWidget), _stepsRow],
-        );
-      }
+    }
+    else{
+      chartContainer = Column(
+        children: <Widget>[header, Expanded(child: _charts[_idxToLoad]), _stepsRow],
+      );
     }
 
     return Padding(
-      padding: EdgeInsets.all(10.0),
+      padding: EdgeInsets.all(5.0),
       child: Container(
         child: Row(
           children: <Widget>[
@@ -140,14 +119,12 @@ class StatsState extends State<Stats> implements IStatsPresenter {
               child: SwipeDetector(
                 child: chartContainer,
                 onSwipeLeft: () {
-                  if(_idxToLoad >= stepsToAdd.length-1)
-                    _idxToLoad = -1;
+                  if (_idxToLoad >= stepsToAdd.length - 1) _idxToLoad = -1;
                   _idxToLoad++;
                   _stepsRowTap(_idxToLoad);
                 },
                 onSwipeRight: () {
-                  if(_idxToLoad <= 0)
-                    _idxToLoad = stepsToAdd.length;
+                  if (_idxToLoad <= 0) _idxToLoad = stepsToAdd.length;
                   _idxToLoad--;
                   _stepsRowTap(_idxToLoad);
                 },
@@ -174,10 +151,8 @@ class StatsState extends State<Stats> implements IStatsPresenter {
     _statsPresenter.load(_selectedViewType);
   }
 
-
-
   @override
-  void onLoaded(Map<int, ChartDataGroup> charts) {
+  void onLoaded(Map<int, Widget> charts) {
     setState(() {
       _charts = charts;
     });
@@ -190,9 +165,6 @@ class StatsState extends State<Stats> implements IStatsPresenter {
 
   void _stepsRowTap(int i) {
     setState(() {
-      if (_charts != null && _charts.length > 0) {
-        subTitle = _charts[i].title;
-      }
       _idxToLoad = i;
     });
   }

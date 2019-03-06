@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+
+
+import 'package:flutter/widgets.dart';
 
 class VizLegend extends StatelessWidget {
   final List<VizLegendModel> items;
@@ -11,23 +13,24 @@ class VizLegend extends StatelessWidget {
     if (items != null && items.length > 0) {
       items.forEach((VizLegendModel legend) {
         children.add(Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(right: 5.0),
+              child: Text(legend.title),
+            ),
             Container(
+              padding: EdgeInsets.only(left: 5.0),
               width: 10,
               height: 10,
               decoration: BoxDecoration(color: legend.color),
-            ),
-            Padding(
-              padding: EdgeInsets.only(left: 5.0),
-              child: Text(legend.title),
             ),
           ],
         ));
       });
     }
 
-    Column column = Column(crossAxisAlignment: CrossAxisAlignment.start, children: children);
+    Column column = Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: children);
     return column;
   }
 }

@@ -15,13 +15,6 @@ class ChartData {
   ChartData(this.name, this.value, this.label, {this.color});
 }
 
-class ChartDataGroup {
-  final Widget charts;
-  final String title;
-
-  ChartDataGroup(this.charts, this.title);
-}
-
 class VizChart extends StatelessWidget {
   final List<ChartData> chartData;
   final ChartType chartType;
@@ -43,7 +36,7 @@ class VizChart extends StatelessWidget {
     } else {
       returnWidget = Text('not implemented');
     }
-    return Expanded(child: returnWidget);
+    return returnWidget;
   }
 
   // vertical bar
@@ -120,7 +113,6 @@ class VizChart extends StatelessWidget {
             return stats.color as Color;
           })
     ];
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
