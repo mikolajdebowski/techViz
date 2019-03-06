@@ -5,6 +5,7 @@ class SlotMachine{
   String machineTypeName;
   String machineStatusID;
   String machineStatusDescription;
+  DateTime updatedAt;
 
-  SlotMachine(this.standID, {this.machineTypeName, this.machineStatusID, this.machineStatusDescription, this.denom : 0.0, });
+  SlotMachine(this.standID, {this.machineTypeName, this.machineStatusID, this.machineStatusDescription, this.denom : 0.0, this.updatedAt});
 }

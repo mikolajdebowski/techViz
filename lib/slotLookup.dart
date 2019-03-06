@@ -10,12 +10,13 @@ import 'package:techviz/machineReservation.dart';
 import 'package:techviz/model/slotMachine.dart';
 import 'package:techviz/repository/SlotMachineRepository.dart';
 import 'package:techviz/repository/repository.dart';
+
 class SlotLookup extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => SlotLookupState();
 }
 
-class SlotLookupState extends State<SlotLookup> {
+class SlotLookupState extends State<SlotLookup> with WidgetsBindingObserver {
   bool loading = true;
 
   final FocusNode _txtSearchFocusNode = FocusNode();
@@ -25,24 +26,43 @@ class SlotLookupState extends State<SlotLookup> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
 
     _txtSearchController.addListener(_searchDispatch);
+
+    fetctData();
+  }
+
+  void fetctData(){
+    setState(() {
+      loading = true;
+    });
+
     _repository.fetch().then((dynamic fool) {
       setState(() {
         loading = false;
-        _repository.listenAsync();
       });
+      _repository.listenAsync();
+
     }).catchError((dynamic error) {
       loading = false;
       VizAlert.Show(context, error.toString());
     });
+  }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    setState(() {
+      if(state == AppLifecycleState.paused){
+
+      }
+    });
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _txtSearchController.removeListener(_searchDispatch);
     _txtSearchController.dispose();
 
@@ -55,6 +75,10 @@ class SlotLookupState extends State<SlotLookup> {
     setState(() {
       _searchKey = _txtSearchController.text;
     });
+  }
+
+  void _showReservationView(SlotMachine slot) {
+    Navigator.push(context, MaterialPageRoute<MachineReservation>(builder: (BuildContext context) => MachineReservation(slotMachine: slot)));
   }
 
 
@@ -90,15 +114,15 @@ class SlotLookupState extends State<SlotLookup> {
                 var reservationStatusId = result['reservationStatusId'].toString();
                 var copy = slotMachine;
                 copy.machineStatusID = reservationStatusId=='0'?'1':'3';
+                copy.updatedAt = DateTime.parse(result['sentAt'].toString());
 
-                _repository.pushToController(copy);
-
+                _repository.pushToController(copy, 'CANCEL');
 
                 _loadingBar.dismiss();
-                Navigator.of(context).pop();
-              }).whenComplete((){
+                Navigator.of(ctx).pop();
+
+              }).catchError((dynamic error){
                 _loadingBar.dismiss();
-                btnEnabled = true;
               });
             },
           )
@@ -129,11 +153,6 @@ class SlotLookupState extends State<SlotLookup> {
         break;
     }
     return Image.asset("assets/images/ic_machine_${iconName}.png", color: color);
-  }
-
-
-  void updateMachineCallback(SlotMachine sm){
-
   }
 
   @override
@@ -179,7 +198,7 @@ class SlotLookupState extends State<SlotLookup> {
     final formatCurrency = NumberFormat.simpleCurrency();
 
     var builder = StreamBuilder<List<SlotMachine>>(
-        stream: _repository.stream,
+        stream: _repository.remoteSlotMachineController.stream,
         builder: (BuildContext context, AsyncSnapshot<List<SlotMachine>> snapshot) {
           if (!snapshot.hasData) return Center(child: CircularProgressIndicator());
 
@@ -242,7 +261,7 @@ class SlotLookupState extends State<SlotLookup> {
                       child: GestureDetector(
                         onTap: () {
                           if(slot.machineStatusID == '3')
-                            Navigator.push(context, MaterialPageRoute<MachineReservation>(builder: (BuildContext context) => MachineReservation(slotMachine: slot)));
+                            _showReservationView(slot);
                           else if(slot.machineStatusID == '1')
                           _showReservationCancelDialog(context, slot);
                         },
@@ -278,4 +297,6 @@ class SlotLookupState extends State<SlotLookup> {
       ),
     );
   }
+
+
 }

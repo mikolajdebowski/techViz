@@ -28,13 +28,15 @@ class ProcessorSlotMachineRepository extends ProcessorLiveTable<SlotMachine> imp
         var _machineStatusID = values[_columnNames.indexOf("StatusID")] as String;
         var _machineStatusDescription = values[_columnNames.indexOf("StatusDescription")] as String;
         var _denom = double.parse(values[_columnNames.indexOf("Denom")].toString());
+        var _updatedAt = DateTime.now().toUtc();
 
         listToReturn.add(SlotMachine(
             _standID,
             machineTypeName: _machineTypeName,
             machineStatusID:_machineStatusID,
             machineStatusDescription: _machineStatusDescription,
-            denom: _denom));
+            denom: _denom,
+            updatedAt: _updatedAt));
       });
 
       _completer.complete(listToReturn);

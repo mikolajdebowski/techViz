@@ -8,9 +8,12 @@ class SlotMachineRouting implements IRouting<SlotMachine> {
 
   StreamController<SlotMachine> Listen() {
     StreamController<SlotMachine> _controller = StreamController<SlotMachine>();
-
     final StreamController<dynamic> _queueController = MessageClient().ListenQueue("mobile.machineStatus", (dynamic sm){
-      (jsonDecode(sm.toString()) as List<dynamic>).forEach((dynamic entry){
+      dynamic decoded = jsonDecode(sm.toString());
+      dynamic startedAt = decoded['startedAt'];
+
+      (decoded['data'] as List<dynamic>).forEach((dynamic entry){
+        entry['startedAt'] = startedAt;
         _controller.add(parser(entry));
       });
     },  appendDeviceID: false );
@@ -30,7 +33,8 @@ class SlotMachineRouting implements IRouting<SlotMachine> {
     return SlotMachine(
       json['standId'].toString(),
       machineStatusID:  json['statusId'].toString(),
-      machineStatusDescription: json['statusDescription'].toString()
+      machineStatusDescription: json['statusDescription'].toString(),
+      updatedAt: DateTime.parse(json['startedAt'].toString())
     );
   }
 }

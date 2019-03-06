@@ -1,48 +1,42 @@
 import 'package:charts_flutter/flutter.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:techviz/components/charts/groupedBarChart.dart';
 import 'package:techviz/components/charts/pieChart.dart';
 import 'package:techviz/components/charts/stackedHorizontalBarChart.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
 
-class VizChart extends StatefulWidget {
+enum ChartType { Pie, VerticalBar, HorizontalBar }
+
+class ChartData {
+  final String name;
+  final num value;
+  final String label;
+  final Color color;
+
+  ChartData(this.name, this.value, this.label, {this.color});
+}
+
+class VizChart extends StatelessWidget {
   final List<ChartData> chartData;
   final ChartType chartType;
   final Function parser;
-  final String title;
 
-  VizChart(Key key, this.chartData, this.chartType, this.title, {this.parser}) : super(key: key);
-
-  @override
-  State<StatefulWidget> createState() => VizChartState();
-}
-
-class VizChartState extends State<VizChart> {
-
-
-
-  @override
-  void initState() {
-    super.initState();
-  }
+  VizChart(Key key, this.chartData, this.chartType, {this.parser}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
 
     Widget returnWidget;
 
-    if (widget.chartType == ChartType.Pie) {
-      returnWidget = buildPieChart(widget.chartData);
-    } else if (widget.chartType == ChartType.VerticalBar) {
-      returnWidget = buildBarChart(widget.chartData);
-    } else if (widget.chartType == ChartType.HorizontalBar) {
-      returnWidget = buildStackedHorizontalBarChart(widget.chartData);
+    if (chartType == ChartType.Pie) {
+      returnWidget = buildPieChart(chartData);
+    } else if (chartType == ChartType.VerticalBar) {
+      returnWidget = buildBarChart(chartData);
+    } else if (chartType == ChartType.HorizontalBar) {
+      returnWidget = buildStackedHorizontalBarChart(chartData);
     } else {
       returnWidget = Text('not implemented');
     }
-
-    return Expanded(child:returnWidget);
+    return returnWidget;
   }
 
   // vertical bar
@@ -53,10 +47,8 @@ class VizChartState extends State<VizChart> {
           domainFn: (ChartData stats, _) => stats.value.toString(),
           measureFn: (ChartData stats, _) => stats.value,
           fillColorFn: (ChartData stats, _) {
-            if(stats.isPersonal ){
-              return charts.MaterialPalette.green.shadeDefault.lighter;
-            } else {
-              return charts.MaterialPalette.blue.shadeDefault.darker;
+            if(stats.color!=null){
+              return stats.color as Color;
             }
           },
           data: data,
@@ -64,8 +56,6 @@ class VizChartState extends State<VizChart> {
             return '${stats.value.toString()}';
           })
     ];
-
-//    return GroupedBarChart(seriesToBuild);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -85,20 +75,17 @@ class VizChartState extends State<VizChart> {
           measureFn: (ChartData stats, _) => stats.value,
           data: data,
           labelAccessorFn: (ChartData stats, _) {
-            if (widget.parser != null) {
-              return widget.parser(stats.value) as String;
+            if (parser != null) {
+              return parser(stats.value) as String;
             }
             return '${stats.value.toString()}';
           },
         fillColorFn: (ChartData stats, _) {
-          if(stats.isPersonal ){
-            return charts.MaterialPalette.green.shadeDefault.lighter;
-          } else {
-            return charts.MaterialPalette.blue.shadeDefault.darker;
+          if(stats.color!=null){
+            return stats.color as Color;
           }
         }),
     ];
-
     return StackedHorizontalBarChart(seriesToBuild);
   }
 
@@ -106,7 +93,7 @@ class VizChartState extends State<VizChart> {
   Widget buildPieChart(List<ChartData> data) {
 
     if(data.length == 1){
-      var chartData = new ChartData('', 100 - num.parse(data[0].value.toString()), '');
+      var chartData = new ChartData('', 100 - num.parse(data[0].value.toString()), '', color: MaterialPalette.green.shadeDefault.darker);
       data.add(chartData);
     }
 
@@ -123,16 +110,9 @@ class VizChartState extends State<VizChart> {
               return '';
           },
           colorFn: (ChartData stats, _) {
-            if(stats.isPersonal == null){
-              return charts.MaterialPalette.blue.shadeDefault.lighter;
-            } else if(stats.isPersonal ){
-              return charts.MaterialPalette.green.shadeDefault.lighter;
-            } else {
-              return charts.MaterialPalette.blue.shadeDefault.darker;
-            }
+            return stats.color as Color;
           })
     ];
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
@@ -143,13 +123,3 @@ class VizChartState extends State<VizChart> {
   }
 }
 
-enum ChartType { Pie, VerticalBar, HorizontalBar }
-
-class ChartData {
-  final String name;
-  final num value;
-  final String label;
-  bool isPersonal = false;
-
-  ChartData(this.name, this.value, this.label, {this.isPersonal});
-}
