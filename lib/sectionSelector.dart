@@ -48,17 +48,17 @@ class SectionSelectorState extends State<SectionSelector>
     List<String> sections = sectionList.where((SectionModelPresenter s) => s.selected).map((SectionModelPresenter s)=>s.sectionID).toList();
 
     DeviceInfo info = await Utils.deviceInfo;
-    var toSubmit = {'userID': session.user.UserID, 'sections': sections, 'deviceID': info.DeviceID};
+    var toSubmit = {'userID': session.user.userID, 'sections': sections, 'deviceID': info.DeviceID};
 
     SectionRouting().PublishMessage(toSubmit).then<List<Section>>((dynamic list) async{
       _loadingBar.dismiss();
 
       var toUpdateLocally = (list as List<Section>);
 
-      await UserSectionRepository().update(session.user.UserID, toUpdateLocally.map((Section s) => s.SectionID).toList());
+      await UserSectionRepository().update(session.user.userID, toUpdateLocally.map((Section s) => s.sectionID).toList());
 
       print('');
-      UserSectionRepository().getUserSection(session.user.UserID).then((List<UserSection> sectionToMain){
+      UserSectionRepository().getUserSection(session.user.userID).then((List<UserSection> sectionToMain){
         backToMain(sectionToMain);
       });
 
@@ -154,19 +154,18 @@ class SectionSelectorState extends State<SectionSelector>
     });
   }
 
+  @override
   void onUserSectionListLoaded(List<UserSection> userList) {
     setState(() {
       sectionList.forEach((SectionModelPresenter s) {
         userList.forEach((UserSection u){
-          if(s.sectionID == u.SectionID){
+          if(s.sectionID == u.sectionID){
             s.selected = true;
           }
         });
       });
     });
   }
-
-
 
   @override
   void onLoadError(Error error) {
@@ -180,7 +179,6 @@ class SectionSelectorState extends State<SectionSelector>
     });
 
     Session session = Session();
-    sectionPresenter.loadUserSections(session.user.UserID);
-
+    sectionPresenter.loadUserSections(session.user.userID);
   }
 }

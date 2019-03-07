@@ -9,7 +9,7 @@ import 'package:flutter/services.dart' show rootBundle;
 class MessageClient {
   static final MessageClient _instance = MessageClient._internal();
   Client _rabbitmqClient;
-  String _exchangeName = null;
+  String _exchangeName;
   Duration _timeoutDuration = Duration(seconds: 10);
   Consumer _consumer;
   Exchange _exchange;

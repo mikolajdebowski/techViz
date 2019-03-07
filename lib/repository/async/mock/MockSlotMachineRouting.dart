@@ -6,6 +6,7 @@ import 'package:techviz/repository/async/IRouting.dart';
 
 class MockSlotMachineRouting implements IRouting<SlotMachine> {
 
+  @override
   StreamController<SlotMachine> Listen() {
     StreamController<SlotMachine> _controller = StreamController<SlotMachine>();
 
@@ -33,6 +34,7 @@ class MockSlotMachineRouting implements IRouting<SlotMachine> {
     return _controller;
   }
 
+  @override
   Future PublishMessage(dynamic message) {
     throw UnimplementedError();
   }

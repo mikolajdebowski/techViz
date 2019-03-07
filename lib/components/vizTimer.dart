@@ -12,7 +12,7 @@ class VizTimer extends StatefulWidget {
 }
 
 class VizTimerState extends State<VizTimer> {
-  Timer _peridic = null;
+  Timer _peridic;
   String _timerStr = '00:00';
   int _currentHash = 0;
   bool _containsHours = false;

@@ -54,7 +54,7 @@ class MachineReservationState extends State<MachineReservation> {
             _loadingBar.show(context);
 
             Session session = Session();
-            _slotMachineRepositoryRepo.setReservation(session.user.UserID, widget.slotMachine.standID, _txtControllerPlayerID.text, _ddbTimeReservation).then((dynamic result) {
+            _slotMachineRepositoryRepo.setReservation(session.user.userID, widget.slotMachine.standID, _txtControllerPlayerID.text, _ddbTimeReservation).then((dynamic result) {
               _loadingBar.dismiss();
 
               var reservationStatusId = result['reservationStatusId'].toString();

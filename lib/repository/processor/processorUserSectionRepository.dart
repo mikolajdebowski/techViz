@@ -16,7 +16,7 @@ class ProcessorUserSectionRepository implements IRemoteRepository<UserSection> {
     SessionClient client = SessionClient.getInstance();
 
     var config = ProcessorRepositoryConfig();
-    String liveTableID = config.GetLiveTable(LiveTableType.TECHVIZ_MOBILE_USER_SECTION.toString()).ID;
+    String liveTableID = config.GetLiveTable(LiveTableType.TECHVIZ_MOBILE_USER_SECTION.toString()).id;
     String url = 'live/${config.DocumentID}/${liveTableID}/select.json';
 
     client.get(url).then((String rawResult) async {

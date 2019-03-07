@@ -6,6 +6,7 @@ import 'package:techviz/repository/async/MessageClient.dart';
 
 class SlotMachineRouting implements IRouting<SlotMachine> {
 
+  @override
   StreamController<SlotMachine> Listen() {
     StreamController<SlotMachine> _controller = StreamController<SlotMachine>();
     final StreamController<dynamic> _queueController = MessageClient().ListenQueue("mobile.machineStatus", (dynamic sm){
@@ -25,6 +26,7 @@ class SlotMachineRouting implements IRouting<SlotMachine> {
     return _controller;
   }
 
+  @override
   Future PublishMessage(dynamic message) {
     return MessageClient().PublishMessage(message, "mobile.reservation", wait: true);
   }

@@ -29,7 +29,7 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
 
     Session session = Session();
     roleListPresenter = new RoleListPresenter(this);
-    roleListPresenter.loadUserRoles(session.user.UserID);
+    roleListPresenter.loadUserRoles(session.user.userID);
 
   }
 
@@ -107,7 +107,7 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
     setState(() {
       roleList = result;
 
-      var defaultUserRoleID = Session().user.UserRoleID;
+      var defaultUserRoleID = Session().user.userRoleID;
       if(defaultUserRoleID!=null){
         var defaultRole = roleList.where((Role r) => r.id == defaultUserRoleID);
         if(defaultRole!=null){

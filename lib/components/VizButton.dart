@@ -29,7 +29,7 @@ class VizButton extends StatelessWidget {
     var txtDefaultColor = Color(0xFF636f7e);
     var txtHighlightColor = Colors.white;
 
-    Widget innerWidget = null;
+    Widget innerWidget;
     if(customWidget != null){
       innerWidget = customWidget;
     }

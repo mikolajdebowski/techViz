@@ -38,7 +38,7 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
 
     Session session = Session();
     roleListPresenter = StatusListPresenter(this);
-    roleListPresenter.loadUserRoles(session.user.UserID);
+    roleListPresenter.loadUserRoles(session.user.userID);
 
     _loadingBar = VizDialog.LoadingBar(message: 'Sending request...');
   }
@@ -51,13 +51,13 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
     _loadingBar.show(context);
 
     DeviceInfo deviceInfo = await Utils.deviceInfo;
-    var toSend = {'userStatusID': selectedStatus.id, 'userID': Session().user.UserID, 'deviceID': deviceInfo.DeviceID};
+    var toSend = {'userStatusID': selectedStatus.id, 'userID': Session().user.userID, 'deviceID': deviceInfo.DeviceID};
 
     UserRouting().PublishMessage(toSend).then((dynamic result){
       _loadingBar.dismiss();
 
       User returnedUser = result as User;
-      UserTable.updateStatusID(returnedUser.UserID, returnedUser.UserStatusID.toString()).then((User user) {
+      UserTable.updateStatusID(returnedUser.userID, returnedUser.userStatusID.toString()).then((User user) {
         Session().user = user;
         widget.onTapOK(selectedStatus);
         Navigator.of(context).pop();

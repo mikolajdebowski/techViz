@@ -27,7 +27,7 @@ class VizOptionButton extends StatelessWidget {
 
     Text innerText = Text(title, style: selected ? HighlightedTextStyle: DefaultTextStyle, textAlign: TextAlign.center);
 
-    Widget innerWidget = null;
+    Widget innerWidget;
     if(iconName==null){
       innerWidget = innerText;
     }

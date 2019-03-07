@@ -25,16 +25,16 @@ class ProfileState extends State<Profile> implements IRoleListPresenter<Role>, I
 
     Session session = Session();
     roleListPresenter = RoleListPresenter(this);
-    roleListPresenter.loadUserRoles(session.user.UserID);
+    roleListPresenter.loadUserRoles(session.user.userID);
 
     statusListPresenter = StatusListPresenter(this);
-    statusListPresenter.loadUserRoles(session.user.UserID);
+    statusListPresenter.loadUserRoles(session.user.userID);
 
-    _userInfo.add(ProfileItem(columnName: 'UserID', value: session.user.UserID));
-    _userInfo.add(ProfileItem(columnName: 'UserName', value: session.user.UserName));
-    _userInfo.add(ProfileItem(columnName: 'UserRoleID', value: session.user.UserRoleID.toString()));
-    _userInfo.add(ProfileItem(columnName: 'UserStatusID', value: session.user.UserStatusID.toString()));
-    _userInfo.add(ProfileItem(columnName: 'StaffID', value: session.user.StaffID));
+    _userInfo.add(ProfileItem(columnName: 'UserID', value: session.user.userID));
+    _userInfo.add(ProfileItem(columnName: 'UserName', value: session.user.userName));
+    _userInfo.add(ProfileItem(columnName: 'UserRoleID', value: null));
+    _userInfo.add(ProfileItem(columnName: 'UserStatusID', value: null));
+    _userInfo.add(ProfileItem(columnName: 'StaffID', value: session.user.staffID));
   }
 
 
@@ -46,8 +46,8 @@ class ProfileState extends State<Profile> implements IRoleListPresenter<Role>, I
         subItem = Text(_currentStatus);
       else
         subItem = Center(child: CircularProgressIndicator());
-
-    }else if(_userInfo[index].columnName == 'UserRoleID'){
+    }
+    else if(_userInfo[index].columnName == 'UserRoleID'){
       if(_currentRole != null)
         subItem = Text(_currentRole);
       else
@@ -114,32 +114,23 @@ class ProfileState extends State<Profile> implements IRoleListPresenter<Role>, I
 
   @override
   void onRoleListLoaded(List<Role> result) {
-    if (result.length == 0) {
+    if (result.length == 0)
       return;
-    }
 
-    result.forEach((Role role) {
-      if(role.id.toString() == Session().user.UserStatusID.toString()){
-        setState(() {
-          _currentRole = role.description;
-        });
-      }
+    String current = result.where((Role role)=> role.id.toString() == Session().user.userRoleID.toString()).first.description;
+    setState(() {
+      _currentRole = current;
     });
   }
 
   @override
   void onStatusListLoaded(List<UserStatus> result) {
-    if (result.length == 0) {
+    if (result.length == 0)
       return;
-    }
 
-    result.forEach((UserStatus status) {
-      if(status.id.toString() == Session().user.UserStatusID.toString()){
-        setState(() {
-          _currentStatus = status.description;
-        });
-        return;
-      }
+    String current = result.where((UserStatus us)=> us.id == Session().user.userStatusID.toString()).first.description;
+    setState(() {
+      _currentStatus = current;
     });
   }
 }

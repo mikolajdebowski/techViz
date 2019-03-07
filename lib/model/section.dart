@@ -1,5 +1,5 @@
 class Section {
-  final String SectionID;
+  final String sectionID;
 
-  Section(this.SectionID);
+  Section(this.sectionID);
 }

@@ -45,7 +45,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       sections = "4+";
     } else {
       currentSections.forEach((UserSection section) {
-        sections += section.SectionID + " ";
+        sections += section.sectionID + " ";
       });
       sections = sections.trim();
     }
@@ -76,13 +76,14 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   void loadDefaultSections() {
     UserSectionRepository userSectionRepo = UserSectionRepository();
     Session session = Session();
-    userSectionRepo.getUserSection(session.user.UserID).then((List<UserSection> list) {
+    userSectionRepo.getUserSection(session.user.userID).then((List<UserSection> list) {
       setState(() {
         currentSections = list;
       });
     });
   }
 
+  @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     keyAttendant.currentState.didChangeAppLifecycleState(state);
 
@@ -139,7 +140,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   }
 
   void goToStatusSelector() {
-    var selector = StatusSelector(onTapOK: onMyStatusSelectorCallbackOK, preSelectedID: Session().user.UserStatusID);
+    var selector = StatusSelector(onTapOK: onMyStatusSelectorCallbackOK, preSelectedID: Session().user.userStatusID);
     Navigator.push<VizSelector>(
       context,
       MaterialPageRoute(builder: (context) => selector),

@@ -28,7 +28,7 @@ class SectionListPresenter {
     List<Section> sectionList = await _sectionRepository.getAll();
     List<SectionModelPresenter> list = List<SectionModelPresenter>();
     sectionList.forEach((Section section) {
-      list.add(SectionModelPresenter(section.SectionID));
+      list.add(SectionModelPresenter(section.sectionID));
     });
 
     _view.onSectionListLoaded(list);

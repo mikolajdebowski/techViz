@@ -22,7 +22,7 @@ class SlotLookupState extends State<SlotLookup> with WidgetsBindingObserver {
   final FocusNode _txtSearchFocusNode = FocusNode();
   final TextEditingController _txtSearchController = TextEditingController();
   SlotMachineRepository _repository = Repository().slotMachineRepository;
-  String _searchKey = null;
+  String _searchKey;
 
   @override
   void initState() {

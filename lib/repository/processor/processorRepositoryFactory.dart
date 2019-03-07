@@ -18,7 +18,7 @@ class ProcessorRepositoryConfig {
   Future<void> Setup(SessionClient client) async{
     String documentListStr = await client.post("visualDocIndex/advancedSearch.json", advancedSearchXML);
     dynamic documentList = json.decode(documentListStr);
-    Map<String,dynamic> documentMobile = null;
+    Map<String,dynamic> documentMobile;
 
     for(Map<String,dynamic> doc  in documentList){
       String tag = doc['Tag'] as String;
@@ -87,7 +87,7 @@ class ProcessorRepositoryConfig {
     assert(DocumentID!=null);
     assert(LiveTables!=null);
 
-    LiveTable lt = LiveTables.firstWhere((LiveTable lt) => lt.Tags == Tag, orElse: () => null);
+    LiveTable lt = LiveTables.firstWhere((LiveTable lt) => lt.tags == Tag, orElse: () => null);
     if(lt==null){
       throw Exception('No livetable for ${Tag}');
     }
@@ -221,10 +221,10 @@ enum LiveTableType{
 }
 
 class LiveTable{
-  final String ID;
-  final String Tags;
-  final List<String> Columns;
+  final String id;
+  final String tags;
+  final List<String> columns;
   final bool initialSync;
 
-  LiveTable(this.ID, this.Tags, this.Columns, {this.initialSync = true});
+  LiveTable(this.id, this.tags, this.columns, {this.initialSync = true});
 }

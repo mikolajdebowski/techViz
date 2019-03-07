@@ -20,7 +20,7 @@ class StatsPresenter {
   }
 
   void load(StatsView view) {
-    Future futureToCall = null;
+    Future futureToCall;
 
     if (view == StatsView.Today) {
       futureToCall = Repository().statsTodayRepository.fetch();

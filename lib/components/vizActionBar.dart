@@ -22,6 +22,7 @@ class ActionBar extends StatefulWidget implements PreferredSizeWidget {
   final String title;
   final Color titleColor;
 
+  @override
   _ActionBarState createState() => _ActionBarState();
 
   // TODO: implement preferredSize

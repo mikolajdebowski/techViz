@@ -40,7 +40,7 @@ class Session extends PropertyChangeNotifier {
 
     Session session = Session();
 
-    var toSend = {'userStatusID': '10', 'userID': session.user.UserID, 'deviceID': info.DeviceID};
+    var toSend = {'userStatusID': '10', 'userID': session.user.userID, 'deviceID': info.DeviceID};
     await UserRouting().PublishMessage(toSend);
   }
 

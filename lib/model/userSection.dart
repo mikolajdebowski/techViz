@@ -1,6 +1,6 @@
 class UserSection {
-  final String SectionID;
-  final String UserID;
+  final String sectionID;
+  final String userID;
 
-  UserSection(this.SectionID, this.UserID);
+  UserSection(this.sectionID, this.userID);
 }

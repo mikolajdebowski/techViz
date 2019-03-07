@@ -26,7 +26,7 @@ class AttendantHome extends StatefulWidget {
 class AttendantHomeState extends State<AttendantHome> implements ITaskListPresenter<Task>, HomeEvents {
   bool _isLoadingTasks = false;
   TaskListPresenter _taskPresenter;
-  Task _selectedTask = null;
+  Task _selectedTask;
   List<Task> _taskList;
   var _taskListStatusIcon = "assets/images/ic_processing.png";
   Flushbar loadingBar;
@@ -203,7 +203,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
     void taskUpdateCallback(String taskID) {
       //print('taskUpdateCallback called');
       loadingBar.dismiss();
-      _taskPresenter.loadTaskList(Session().user.UserID);
+      _taskPresenter.loadTaskList(Session().user.userID);
     }
 
     void updateTaskStatus(String statusID){
@@ -303,7 +303,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
         if (_selectedTask.playerID != null && _selectedTask.playerID.length > 0) {
           String playerName = '${_selectedTask.playerFirstName} ${_selectedTask.playerLastName}';
 
-          BoxDecoration boxDecoForTierWidget = null;
+          BoxDecoration boxDecoForTierWidget;
           String tier = _selectedTask.playerTier;
           String tierColorHexStr = _selectedTask.playerTierColorHEX;
           if (tier != null && tierColorHexStr !=null) {
@@ -500,7 +500,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
 
     Session session = Session();
     Repository().taskRepository.fetch().then((dynamic b){
-      _taskPresenter.loadTaskList(session.user.UserID);
+      _taskPresenter.loadTaskList(session.user.userID);
     });
   }
 
@@ -519,7 +519,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
 
     setState(() {
 
-      if([1,2,3].toList().contains(task.taskStatus.id) && task.userID ==  session.user.UserID){ //update the view
+      if([1,2,3].toList().contains(task.taskStatus.id) && task.userID ==  session.user.userID){ //update the view
         //print(task.id + ' add/update the view ' +task.taskStatus.id.toString());
 
         if(_selectedTask!=null && _selectedTask.id == task.id){
@@ -527,7 +527,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
           //print(task.id + ' updated selected with StatusID ' +task.taskStatus.id.toString());
         }
 
-        _taskPresenter.loadTaskList(session.user.UserID);
+        _taskPresenter.loadTaskList(session.user.userID);
       }
       else{ //remove from the view
         if(_selectedTask!=null && _selectedTask.id == task.id){
@@ -535,7 +535,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
           //print(task.id + ' removed from selected because StatusID is ' +task.taskStatus.id.toString());
         }
 
-        _taskPresenter.loadTaskList(session.user.UserID);
+        _taskPresenter.loadTaskList(session.user.userID);
       }
     });
   }

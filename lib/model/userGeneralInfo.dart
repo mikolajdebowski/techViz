@@ -1,15 +1,15 @@
 class UserGeneralInfo{
-  String Name;
-  String UserName;
-  int StaffID;
-  int UserRoleID;
+  String name;
+  String userName;
+  int staffID;
+  int userRoleID;
 
-  UserGeneralInfo({this.Name, this.StaffID, this.UserRoleID});
+  UserGeneralInfo({this.name, this.staffID, this.userRoleID});
 
   UserGeneralInfo.fromMap(Map map){
-    Name = map['Name'] as String;
-    UserName = map['UserName'] as String;
-    StaffID = int.parse(map['StaffID'].toString());
-    UserRoleID = int.parse(map['UserRoleID'].toString());
+    name = map['Name'] as String;
+    userName = map['UserName'] as String;
+    staffID = int.parse(map['StaffID'].toString());
+    userRoleID = int.parse(map['UserRoleID'].toString());
   }
 }
