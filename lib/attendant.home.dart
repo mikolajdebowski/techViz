@@ -16,8 +16,7 @@ import 'package:techviz/repository/session.dart';
 import 'package:techviz/repository/taskRepository.dart';
 
 class AttendantHome extends StatefulWidget {
-
-  AttendantHome(Key key): super(key:key);
+  AttendantHome(Key key) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => AttendantHomeState();
@@ -43,7 +42,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
 
     loadingBar = VizDialog.LoadingBar(message: 'Sending request...');
 
-    Future.delayed(Duration(seconds: 1), (){
+    Future.delayed(Duration(seconds: 1), () {
       loadTasks();
     });
 
@@ -60,7 +59,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
       _isLoadingTasks = false;
     });
 
-    if(_selectedTask!=null){
+    if (_selectedTask != null) {
       onTaskItemTapCallback(_selectedTask.id);
     }
   }
@@ -70,7 +69,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
     // TODO: implement onLoadError
   }
 
-  void onTaskItemTapCallback(String taskID){
+  void onTaskItemTapCallback(String taskID) {
     //print('onTaskItemTapCallback called');
     setState(() {
       _selectedTask = _taskList.where((Task task) => task.id == taskID).first;
@@ -88,17 +87,16 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
     for (var i = 1; i <= _taskList.length; i++) {
       Task task = _taskList[i - 1];
 
-      var taskItem = VizTaskItem(task.id, task.location, i, onTaskItemTapCallback, _selectedTask!=null && _selectedTask.id == task.id, task.urgencyHEXColor);
+      var taskItem = VizTaskItem(task.id, task.location, i, onTaskItemTapCallback, _selectedTask != null && _selectedTask.id == task.id, task.urgencyHEXColor);
       listTasks.add(taskItem);
     }
 
     var taskTextStr = listTasks.length == 0 ? 'No tasks' : (listTasks.length == 1 ? '1 Task' : '${listTasks.length} Tasks');
 
     Widget listContainer = Center(child: null);
-    if(_isLoadingTasks){
+    if (_isLoadingTasks) {
       listContainer = Center(child: CircularProgressIndicator());
-    }
-    else if (listTasks != null && listTasks.length > 0) {
+    } else if (listTasks != null && listTasks.length > 0) {
       //list container
       listContainer = ListView(
         children: listTasks,
@@ -106,44 +104,44 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
     }
 
     var leftPanel = Flexible(
-        flex: 1,
-        child: Column(
-          children: <Widget>[
-            Container(
-              constraints: BoxConstraints.expand(height: 70.0),
-              decoration: defaultHeaderDecoration,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  Flexible(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(taskTextStr, style: TextStyle(color: Colors.white)),
-                        Padding(
-                          padding: EdgeInsets.only(left: 10.0),
-                          child: _taskListStatusIcon != null ? ImageIcon(AssetImage(_taskListStatusIcon), size: 15.0, color: Colors.blueGrey) : null,
-                        )
-                      ],
-                    ),
-                  ),
-                  Text('0 Pending', style: TextStyle(color: Colors.orange)),
-                  Row(
+      flex: 1,
+      child: Column(
+        children: <Widget>[
+          Container(
+            constraints: BoxConstraints.expand(height: 70.0),
+            decoration: defaultHeaderDecoration,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Flexible(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
+                      Text(taskTextStr, style: TextStyle(color: Colors.white)),
+                      Padding(
+                        padding: EdgeInsets.only(left: 10.0),
+                        child: _taskListStatusIcon != null ? ImageIcon(AssetImage(_taskListStatusIcon), size: 15.0, color: Colors.blueGrey) : null,
+                      )
+                    ],
+                  ),
+                ),
+                Text('0 Pending', style: TextStyle(color: Colors.orange)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
                     Text('Priority', style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic)),
                     ImageIcon(AssetImage("assets/images/ic_arrow_up.png"), size: 20.0, color: Colors.grey)
-                  ],),
-                ],
-              ),
+                  ],
+                ),
+              ],
             ),
-            Expanded(
-              child: listContainer,
-            )
-          ],
-        ),
-      );
-
+          ),
+          Expanded(
+            child: listContainer,
+          )
+        ],
+      ),
+    );
 
     //CENTER PANEL WIDGETS
     var rowCenterHeader = Padding(
@@ -173,7 +171,10 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Text('Task Type', style: TextStyle(color: Color(0xFF9aa8b0), fontSize: 12.0)),
-                  Padding(padding: EdgeInsets.only(top: 5.0), child: Text(_selectedTask!= null ? _selectedTask.taskType.description : '', maxLines: 2, overflow:TextOverflow.ellipsis, textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontSize: 16.0), softWrap: false))
+                  Padding(
+                      padding: EdgeInsets.only(top: 5.0),
+                      child: Text(_selectedTask != null ? _selectedTask.taskType.description : '',
+                          maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontSize: 16.0), softWrap: false))
                 ],
               ),
             ),
@@ -185,7 +186,8 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
                   Text('Task Status', style: TextStyle(color: Color(0xFF9aa8b0), fontSize: 12.0)),
                   Padding(
                       padding: EdgeInsets.only(top: 5.0),
-                      child: Text(_selectedTask!=null ? _selectedTask.taskStatus.description : '', textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontSize: 16.0, fontWeight: FontWeight.bold)))
+                      child: Text(_selectedTask != null ? _selectedTask.taskStatus.description : '',
+                          textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontSize: 16.0, fontWeight: FontWeight.bold)))
                 ],
               ),
             ),
@@ -199,54 +201,93 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
 
     Widget taskBody;
 
-
     void taskUpdateCallback(String taskID) {
-      //print('taskUpdateCallback called');
       loadingBar.dismiss();
       _taskPresenter.loadTaskList(Session().user.userID);
     }
 
-    void updateTaskStatus(String statusID){
-      //print('updateTaskStatus called');
+    void updateTaskStatus(String statusID) {
       loadingBar.show(context);
       TaskRepository().update(_selectedTask.id, taskStatusID: statusID, callBack: taskUpdateCallback);
     }
 
+    void _showCancellationDialog() {
+      showDialog<bool>(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+
+              title: Text('Cancel task'),
+              contentPadding: const EdgeInsets.all(10.0),
+              content: Form(
+                child: Expanded(
+                    child: TextFormField(
+                      textInputAction: TextInputAction.done,
+                      maxLength: 4000,
+                      maxLines: 3,
+                      validator: (String input){
+                        if(input.isEmpty)
+                          return 'Mandatory';
+                      },
+                      decoration: InputDecoration(labelText: 'Cancellation reason', border: UnderlineInputBorder()),
+                    ),
+                  )
+                ,
+              ),
+              actions: <Widget>[
+                 FlatButton(
+                    child: const Text('Save'),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    })
+              ],
+            );
+          }).then((bool result) {
+
+
+            print(result);
+      });
+
+//
+//      _showConfirmationDialogWithOptions('Cancel a task').then((bool choice){
+//        if(choice){
+//          updateTaskStatus("12");
+//        }
+//      });
+    }
+
     if (_selectedTask != null) {
+      String mainActionImageSource;
+      String mainActionTextSource;
+      VoidCallback actionCallBack;
 
-        String mainActionImageSource;
-        String mainActionTextSource;
-        VoidCallback actionCallBack;
+      bool btnEnabled = _selectedTask.dirty == false;
 
-        bool btnEnabled = _selectedTask.dirty == false;
+      if (_selectedTask.taskStatus.id == 1) {
+        mainActionImageSource = "assets/images/ic_acknowledge.png";
+        mainActionTextSource = 'Acknowledge';
+        actionCallBack = () {
+          if (btnEnabled) updateTaskStatus("2");
+        };
+      } else if (_selectedTask.taskStatus.id == 2) {
+        mainActionImageSource = "assets/images/ic_cardin.png";
+        mainActionTextSource = 'Card in';
+        actionCallBack = () {
+          if (btnEnabled) updateTaskStatus("3");
+        };
+      } else if (_selectedTask.taskStatus.id == 3) {
+        mainActionImageSource = "assets/images/ic_complete.png";
+        mainActionTextSource = 'Complete';
+        actionCallBack = () {
+          if (btnEnabled) updateTaskStatus("13");
+        };
+      }
 
-        if (_selectedTask.taskStatus.id == 1) {
-          mainActionImageSource = "assets/images/ic_acknowledge.png";
-          mainActionTextSource = 'Acknowledge';
-          actionCallBack = (){
-            if(btnEnabled)
-              updateTaskStatus("2");
-          };
-        } else if (_selectedTask.taskStatus.id == 2) {
-          mainActionImageSource = "assets/images/ic_cardin.png";
-          mainActionTextSource = 'Card in';
-          actionCallBack = (){
-            if(btnEnabled)
-              updateTaskStatus("3");
-          };
-        } else if (_selectedTask.taskStatus.id == 3) {
-          mainActionImageSource = "assets/images/ic_complete.png";
-          mainActionTextSource = 'Complete';
-          actionCallBack = (){
-            if(btnEnabled)
-              updateTaskStatus("13");
-          };
-        }
+      ImageIcon mainActionIcon = ImageIcon(AssetImage(mainActionImageSource), size: 60.0, color: btnEnabled ? Colors.white : Colors.white30);
+      Center mainActionText =
+          Center(child: Text(mainActionTextSource, style: TextStyle(color: btnEnabled ? Colors.white : Colors.white30, fontStyle: FontStyle.italic, fontSize: 20.0, fontWeight: FontWeight.bold)));
 
-        ImageIcon mainActionIcon = ImageIcon(AssetImage(mainActionImageSource), size: 60.0, color: btnEnabled? Colors.white: Colors.white30);
-        Center mainActionText = Center(child: Text(mainActionTextSource, style: TextStyle(color: btnEnabled? Colors.white: Colors.white30, fontStyle: FontStyle.italic, fontSize: 20.0, fontWeight: FontWeight.bold)));
-
-        var requiredAction = Padding(
+      var requiredAction = Padding(
           padding: EdgeInsets.all(2.0),
           child: GestureDetector(
             onTap: actionCallBack,
@@ -255,12 +296,9 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    mainActionIcon,mainActionText
-                  ],
+                  children: <Widget>[mainActionIcon, mainActionText],
                 )),
-          )
-      );
+          ));
 
       String taskInfoDescription = '';
       if (_selectedTask != null) {
@@ -289,10 +327,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
                               ))),
                       Padding(
                           padding: EdgeInsets.only(top: 5.0, left: 4.0),
-                          child: Text(taskInfoDescription,
-                              overflow: TextOverflow.fade,
-                              softWrap: false,
-                              style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 14.0, fontWeight: FontWeight.bold)))
+                          child: Text(taskInfoDescription, overflow: TextOverflow.fade, softWrap: false, style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 14.0, fontWeight: FontWeight.bold)))
                     ],
                   ))));
 
@@ -306,7 +341,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
           BoxDecoration boxDecoForTierWidget;
           String tier = _selectedTask.playerTier;
           String tierColorHexStr = _selectedTask.playerTierColorHEX;
-          if (tier != null && tierColorHexStr !=null) {
+          if (tier != null && tierColorHexStr != null) {
             tierColorHexStr = tierColorHexStr.replaceAll('#', '');
             var hexColor = Color(int.parse('0xFF${tierColorHexStr}'));
             boxDecoForTierWidget = BoxDecoration(borderRadius: BorderRadius.circular(6.0), color: hexColor);
@@ -325,34 +360,38 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
             ),
           );
 
-
           var playerDetailsWidget = Align(
               alignment: Alignment.center,
               child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Padding(
-                    padding: EdgeInsets.only(top: 5.0),
-                    child: Text('Customer',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Color(0xFF444444),
-                          fontSize: 14.0,
-                        ))),
-                Padding(padding: EdgeInsets.only(top: 3.0), child: Text(playerName, maxLines: 2, textAlign: TextAlign.center, overflow:TextOverflow.ellipsis, style: TextStyle(color: Color(0xFFFFFFFF), fontSize: (playerName.length > 20 ? 12.0 : 14.0), fontWeight: FontWeight.bold)))
-              ],
-            )
-          );
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Padding(
+                      padding: EdgeInsets.only(top: 5.0),
+                      child: Text('Customer',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Color(0xFF444444),
+                            fontSize: 14.0,
+                          ))),
+                  Padding(
+                      padding: EdgeInsets.only(top: 3.0),
+                      child: Text(playerName,
+                          maxLines: 2,
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(color: Color(0xFFFFFFFF), fontSize: (playerName.length > 20 ? 12.0 : 14.0), fontWeight: FontWeight.bold)))
+                ],
+              ));
 
           var taskCustomer = Expanded(
               flex: 3,
               child: Container(
-                      margin: EdgeInsets.only(left: 2.0),
-                      constraints: BoxConstraints.tightFor(height: 60.0),
-                      decoration: actionBoxDecoration,
-                      child: Stack(
-                        children: <Widget>[playerDetailsWidget, playerTierWidget],
-                      )));
+                  margin: EdgeInsets.only(left: 2.0),
+                  constraints: BoxConstraints.tightFor(height: 60.0),
+                  decoration: actionBoxDecoration,
+                  child: Stack(
+                    children: <Widget>[playerDetailsWidget, playerTierWidget],
+                  )));
 
           taskDetailsHeader.add(taskCustomer);
         }
@@ -385,7 +424,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
                   ? taskBody
                   : Center(
                       child: Text(
-                        (_isLoadingTasks || _taskList.length==0)? '': 'Select a Task',
+                      (_isLoadingTasks || _taskList.length == 0) ? '' : 'Select a Task',
                       style: TextStyle(color: Colors.white, fontStyle: FontStyle.italic),
                     )))
         ],
@@ -402,30 +441,32 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
       ),
     );
 
-    Future<bool> _showConfirmationDialogWithOptions(String title){
+    Future<bool> _showConfirmationDialogWithOptions(String title) {
       Completer<bool> _completer = Completer<bool>();
-      showDialog<bool>(context: context, builder: (BuildContext context) {
-        // return object of type Dialog
-        return AlertDialog(
-          title: Text(title),
-          content: Text("Are you sure?"),
-          actions: <Widget>[
-            FlatButton(
-              child: Text("Cancel"),
-              onPressed: () {
-                _completer.complete(false);
-                Navigator.of(context).pop();
-              },
-            ),
-            FlatButton(
-              child: Text("Yes"),
-              onPressed: () {
-                _completer.complete(true);
-                Navigator.of(context).pop();
-              },
-            )
-          ],
-        );
+      showDialog<bool>(
+          context: context,
+          builder: (BuildContext context) {
+            // return object of type Dialog
+            return AlertDialog(
+              title: Text(title),
+              content: Text("Are you sure?"),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text("Cancel"),
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+                  },
+                ),
+                FlatButton(
+                  child: Text("Yes"),
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                  },
+                )
+              ],
+            );
+          }).then((bool choice) {
+        _completer.complete(choice);
       });
 
       return _completer.future;
@@ -433,22 +474,17 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
 
     List<VizTaskActionButton> rightActionWidgets = List<VizTaskActionButton>();
     if (_selectedTask != null) {
-
       bool enableButtons = _selectedTask.dirty == false;
       if (_selectedTask.taskStatus.id == 2 || _selectedTask.taskStatus.id == 3) {
         rightActionWidgets.add(VizTaskActionButton('Cancel', [Color(0xFF433177), Color(0xFFF2003C)], enabled: enableButtons, onTapCallback: () {
-          _showConfirmationDialogWithOptions('Cancel a task').then((bool choice){
-            if(choice){
-              updateTaskStatus("12");
-            }
-          });
+          _showCancellationDialog();
         }));
       }
 
       if (_selectedTask.taskStatus.id == 3) {
         rightActionWidgets.add(VizTaskActionButton('Escalate', [Color(0xFF1356ab), Color(0xFF23ABE7)], enabled: enableButtons, onTapCallback: () {
-          _showConfirmationDialogWithOptions('Escalate a task').then((bool choice){
-            if(choice){
+          _showConfirmationDialogWithOptions('Escalate a task').then((bool choice) {
+            if (choice) {
               updateTaskStatus("5");
             }
           });
@@ -481,7 +517,6 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
         ));
   }
 
-
   @override
   void onUserStatusChanged(UserStatus us) {
     loadTasks();
@@ -492,45 +527,43 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
     loadTasks();
   }
 
-  void loadTasks(){
+  void loadTasks() {
     setState(() {
       _isLoadingTasks = true;
       _selectedTask = null;
     });
 
     Session session = Session();
-    Repository().taskRepository.fetch().then((dynamic b){
+    Repository().taskRepository.fetch().then((dynamic b) {
       _taskPresenter.loadTaskList(session.user.userID);
     });
   }
 
   @override
   void onTaskReceived(Task task) {
-
-    if(task == null){
+    if (task == null) {
       return;
     }
 
     //print('onTaskReceived => ${task.id} ${task.taskStatus.id}');
 
     Session session = Session();
-    if(session.user==null)
-      return;
+    if (session.user == null) return;
 
     setState(() {
-
-      if([1,2,3].toList().contains(task.taskStatus.id) && task.userID ==  session.user.userID){ //update the view
+      if ([1, 2, 3].toList().contains(task.taskStatus.id) && task.userID == session.user.userID) {
+        //update the view
         //print(task.id + ' add/update the view ' +task.taskStatus.id.toString());
 
-        if(_selectedTask!=null && _selectedTask.id == task.id){
+        if (_selectedTask != null && _selectedTask.id == task.id) {
           _selectedTask = task;
           //print(task.id + ' updated selected with StatusID ' +task.taskStatus.id.toString());
         }
 
         _taskPresenter.loadTaskList(session.user.userID);
-      }
-      else{ //remove from the view
-        if(_selectedTask!=null && _selectedTask.id == task.id){
+      } else {
+        //remove from the view
+        if (_selectedTask != null && _selectedTask.id == task.id) {
           _selectedTask = null;
           //print(task.id + ' removed from selected because StatusID is ' +task.taskStatus.id.toString());
         }
@@ -546,5 +579,4 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
       loadTasks();
     }
   }
-
 }
