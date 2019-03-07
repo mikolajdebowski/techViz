@@ -1,60 +1,27 @@
-import 'dart:async' show Future;
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/model/role.dart';
-import 'package:techviz/model/user.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/roleListPresenter.dart';
 import 'package:techviz/presenter/statusListPresenter.dart';
-import 'package:techviz/repository/processor/processorUserGeneralInfoRepository.dart';
-import 'package:techviz/repository/processor/processorUserSkillsRepository.dart';
 import 'package:techviz/repository/session.dart';
-import 'package:techviz/repository/userGeneralInfoRepository.dart';
-import 'package:techviz/repository/userSkillsRepository.dart';
 import 'package:techviz/stats.dart';
-/// Bar chart example
-
-/// Bar chart example
-
 
 class Profile extends StatefulWidget {
-  Profile() {}
-
   @override
-  State<StatefulWidget> createState() {
-    return ProfileState();
-  }
+  State<StatefulWidget> createState() => ProfileState();
 }
 
-class ProfileState extends State<Profile>
-    implements IRoleListPresenter<Role>, IStatusListPresenter<UserStatus> {
+class ProfileState extends State<Profile> implements IRoleListPresenter<Role>, IStatusListPresenter<UserStatus> {
   List<ProfileItem> _userInfo = [];
   RoleListPresenter roleListPresenter;
   StatusListPresenter statusListPresenter;
-  List<Role> rolesList = List<Role>();
-  List<UserStatus> userStatusList = List<UserStatus>();
   String _currentRole;
   String _currentStatus;
 
-  void changedStatusDropDownItem(String selectedStatus) {
-    setState(() {
-      _currentStatus = selectedStatus;
-    });
-  }
-
-  void changedRoleDropDownItem(String selectedRole) {
-    setState(() {
-      _currentRole = selectedRole;
-    });
-  }
-
   @override
   void initState(){
-
-    rolesList.add(Role());
-    userStatusList.add(UserStatus());
+    super.initState();
 
     Session session = Session();
     roleListPresenter = RoleListPresenter(this);
@@ -63,24 +30,11 @@ class ProfileState extends State<Profile>
     statusListPresenter = StatusListPresenter(this);
     statusListPresenter.loadUserRoles(session.user.UserID);
 
-    Map<String, String> usrMap = {
-      'UserID': session.user.UserID,
-      'UserName': (session.user.UserName != null) ? session.user.UserName: "",
-      'UserRoleID': session.user.UserRoleID.toString(),
-      'UserStatusID': session.user.UserStatusID.toString(),
-    };
-
-    setState(() {
-      usrMap.forEach((k, v) {
-        var item = ProfileItem(columnName: '${k}', value: '${v}');
-        _userInfo.add(item);
-      });
-    });
-
-
-    fetchUserInfo();
-
-    super.initState();
+    _userInfo.add(ProfileItem(columnName: 'UserID', value: session.user.UserID));
+    _userInfo.add(ProfileItem(columnName: 'UserName', value: session.user.UserName));
+    _userInfo.add(ProfileItem(columnName: 'UserRoleID', value: session.user.UserRoleID.toString()));
+    _userInfo.add(ProfileItem(columnName: 'UserStatusID', value: session.user.UserStatusID.toString()));
+    _userInfo.add(ProfileItem(columnName: 'StaffID', value: session.user.StaffID));
   }
 
 
@@ -88,50 +42,26 @@ class ProfileState extends State<Profile>
 
     Widget subItem;
     if(_userInfo[index].columnName == 'UserStatusID'){
-//      subItem = DropdownButton(
-//        value: _currentStatus,
-//        items: userStatusList.map((UserStatus status){
-//          return DropdownMenuItem(
-//            value: '${status.description}',
-//            child: Text('${status.description}'),
-//          );
-//        }).toList(),
-//        onChanged: changedStatusDropDownItem,
-//      );
-
       if(_currentStatus != null)
         subItem = Text(_currentStatus);
       else
-        subItem = Text("");
+        subItem = Center(child: CircularProgressIndicator());
 
     }else if(_userInfo[index].columnName == 'UserRoleID'){
-//      subItem = DropdownButton(
-//        value: _currentRole,
-//        items: rolesList.map((Role val){
-//          return DropdownMenuItem(
-//            value: '${val.description}',
-//            child: Text('${val.description}'),
-//          );
-//        }).toList(),
-//        onChanged: changedRoleDropDownItem,
-//      );
-
       if(_currentRole != null)
         subItem = Text(_currentRole);
       else
-        subItem = Text("");
+        subItem = Center(child: CircularProgressIndicator());
     }
     else{
       subItem = Text(_userInfo[index].value);
     }
 
     return Container(
-      height: 70.0,
-      margin: EdgeInsets.only(top: 0.0, bottom: 0.0, left: 0.0, right: 0.0),
       color: (index % 2 == 0 ? Color(0xFFeff4f5) : Color(0xFFffffff)),
       child: ListTile(
         title: Text(_userInfo[index].columnName),
-        subtitle: subItem,
+        subtitle: Padding(padding: EdgeInsets.only(left: 10.0, top: 5.0), child: subItem),
       ),
     );
   }
@@ -152,26 +82,8 @@ class ProfileState extends State<Profile>
     return list;
   }
 
-
   void fetchUserInfo() async{
-    print('fetchUserInfo');
-    await loadInitialData();
-
-
-  }
-
-  Future<void> loadInitialData() async{
-    await userGeneralInfoRepository.fetch();
-    await userSkillsRepository.fetch();
-  }
-
-
-  UserSkillsRepository get userSkillsRepository {
-    return UserSkillsRepository(remoteRepository: ProcessorUserSkillsRepository());
-  }
-
-  UserGeneralInfoRepository get userGeneralInfoRepository {
-    return UserGeneralInfoRepository(remoteRepository: ProcessorUserGeneralInfoRepository());
+    //await Repository().userSkillsRepository.fetch();
   }
 
   @override
@@ -180,11 +92,9 @@ class ProfileState extends State<Profile>
     var rightPanel = Expanded(flex: 2, child: Stats());
 
     Container container = Container(
-      child: Padding(
-          padding: EdgeInsets.all(0.0),
-          child: Row(
-            children: <Widget>[leftPanel, rightPanel],
-          )),
+      child: Row(
+        children: <Widget>[leftPanel, rightPanel],
+      ),
       decoration: BoxDecoration(
           gradient: LinearGradient(
               colors: [Color(0xFF586676), Color(0xFF8B9EA7)],
@@ -208,16 +118,12 @@ class ProfileState extends State<Profile>
       return;
     }
 
-    setState(() {
-      rolesList = result;
-
-      Session session = Session();
-      User user = session.user;
-      rolesList.forEach((Role role) {
-        if(role.id.toString() == user.UserStatusID.toString()){
+    result.forEach((Role role) {
+      if(role.id.toString() == Session().user.UserStatusID.toString()){
+        setState(() {
           _currentRole = role.description;
-        }
-      });
+        });
+      }
     });
   }
 
@@ -227,26 +133,19 @@ class ProfileState extends State<Profile>
       return;
     }
 
-    setState(() {
-      userStatusList = result;
-
-      Session session = Session();
-      User user = session.user;
-      userStatusList.forEach((UserStatus status) {
-        if(status.id.toString() == user.UserStatusID.toString()){
+    result.forEach((UserStatus status) {
+      if(status.id.toString() == Session().user.UserStatusID.toString()){
+        setState(() {
           _currentStatus = status.description;
-        }
-      });
-
+        });
+        return;
+      }
     });
-
-//    print('done');
   }
 }
 
 abstract class ListItem {}
 
-// A ListItem that contains data to display a message
 class ProfileItem implements ListItem {
   final String columnName;
   final String value;

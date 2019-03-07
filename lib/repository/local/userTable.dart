@@ -11,7 +11,8 @@ class UserTable{
                 UserID TEXT NOT NULL PRIMARY KEY,
                 UserName TEXT NOT NULL,
                 UserRoleID TEXT NOT NULL,
-                UserStatusID TEXT NOT NULL
+                UserStatusID TEXT NOT NULL,
+                StaffID TEXT NOT NULL
                 )
             ''');
   }
@@ -27,7 +28,7 @@ class UserTable{
   static Future<User> getUser(String userID) async {
     LocalRepository localRepo = LocalRepository();
 
-    String sql = "SELECT UserID, UserRoleID, UserStatusID FROM User WHERE UserID = ?";
+    String sql = "SELECT UserID, UserName, UserRoleID, UserStatusID, StaffID FROM User WHERE UserID = ?";
     List<Map<String, dynamic>> queryResult = await localRepo.db.rawQuery(sql, [userID].toList());
 
     if(queryResult.length>0){

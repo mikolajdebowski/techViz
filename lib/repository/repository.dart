@@ -18,6 +18,7 @@ import 'package:techviz/repository/processor/processorTaskUrgencyRepository.dart
 import 'package:techviz/repository/processor/processorUserRepository.dart';
 import 'package:techviz/repository/processor/processorUserRoleRepository.dart';
 import 'package:techviz/repository/processor/processorUserSectionRepository.dart';
+import 'package:techviz/repository/processor/processorUserSkillsRepository.dart';
 import 'package:techviz/repository/processor/processorUserStatusRepository.dart';
 import 'package:techviz/repository/reservationTimeRepository.dart';
 import 'package:techviz/repository/roleRepository.dart';
@@ -32,6 +33,7 @@ import 'package:techviz/repository/taskUrgencyRepository.dart';
 import 'package:techviz/repository/userRepository.dart';
 import 'package:techviz/repository/userRoleRepository.dart';
 import 'package:techviz/repository/userSectionRepository.dart';
+import 'package:techviz/repository/userSkillsRepository.dart';
 import 'package:techviz/repository/userStatusRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
@@ -77,7 +79,7 @@ class Repository{
     LocalRepository localRepo = LocalRepository();
     await localRepo.open();
 
-    onMessage('Fetching User Data...');
+    onMessage('Fetching User Info...');
     await userRepository.fetch();
 
     onMessage('Fetching Roles...');
@@ -190,5 +192,9 @@ class Repository{
     switch(_flavor) {
       default:return StatsMonthRepository(remoteRepository: ProcessoStatsMonthRepository());
     }
+  }
+
+  UserSkillsRepository get userSkillsRepository {
+    return UserSkillsRepository(remoteRepository: ProcessorUserSkillsRepository());
   }
 }
