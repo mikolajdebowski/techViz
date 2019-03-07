@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -52,15 +54,6 @@ class SlotLookupState extends State<SlotLookup> with WidgetsBindingObserver {
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    setState(() {
-      if(state == AppLifecycleState.paused){
-
-      }
-    });
-  }
-
-  @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _txtSearchController.removeListener(_searchDispatch);
@@ -82,14 +75,12 @@ class SlotLookupState extends State<SlotLookup> with WidgetsBindingObserver {
   }
 
 
-  void _showReservationCancelDialog(final BuildContext ctx, SlotMachine slotMachine){
+  void _showReservationCancelDialog(SlotMachine slotMachine){
     bool _isReserved = slotMachine.machineStatusID != '1';
     if (_isReserved)
       return;
 
-    bool btnEnabled = true;
-
-    showDialog<bool>(context: ctx, builder: (BuildContext context) {
+    showDialog<bool>(context: context, builder: (BuildContext context) {
       // return object of type Dialog
       return AlertDialog(
         title: Text('Cancel reservation'),
@@ -98,39 +89,40 @@ class SlotLookupState extends State<SlotLookup> with WidgetsBindingObserver {
           FlatButton(
             child: Text("Cancel"),
             onPressed: () {
-              if(!btnEnabled)
-                return;
-              Navigator.of(context).pop();
+              Navigator.of(context).pop(false);
             },
           ),
           FlatButton(
             child: Text("Yes"),
             onPressed: () {
-              if(!btnEnabled)
-                return;
 
-              final Flushbar _loadingBar = VizDialog.LoadingBar(message: 'Cancelling...');
-              _loadingBar.show(ctx);
-              btnEnabled = false;
-              _repository.cancelReservation(slotMachine.standID).then((dynamic result){
-
-                var reservationStatusId = result['reservationStatusId'].toString();
-                var copy = slotMachine;
-                copy.machineStatusID = reservationStatusId=='0'?'1':'3';
-                copy.updatedAt = DateTime.parse(result['sentAt'].toString());
-
-                _repository.pushToController(copy, 'CANCEL');
-
-                _loadingBar.dismiss();
-                Navigator.of(ctx).pop();
-
-              }).catchError((dynamic error){
-                _loadingBar.dismiss();
-              });
+              Navigator.of(context).pop(true);
             },
           )
         ],
       );
+    }).then((bool cancel){
+      if(cancel){
+        cancelReservation(slotMachine);
+      }
+    });
+  }
+
+  void cancelReservation(SlotMachine slotMachine){
+    final Flushbar _loadingBar = VizDialog.LoadingBar(message: 'Cancelling reservation...');
+    _loadingBar.show(context);
+
+    _repository.cancelReservation(slotMachine.standID).then((dynamic result) {
+      var reservationStatusId = result['reservationStatusId'].toString();
+      var copy = slotMachine;
+      copy.machineStatusID = reservationStatusId == '0' ? '1' : '3';
+      copy.updatedAt = DateTime.parse(result['sentAt'].toString());
+
+      _repository.pushToController(copy, 'CANCEL');
+
+      _loadingBar.dismiss();
+    }).catchError((dynamic error){
+      _loadingBar.dismiss();
     });
   }
 
@@ -267,7 +259,7 @@ class SlotLookupState extends State<SlotLookup> with WidgetsBindingObserver {
                           if(slot.machineStatusID == '3')
                             _showReservationView(slot);
                           else if(slot.machineStatusID == '1')
-                          _showReservationCancelDialog(context, slot);
+                          _showReservationCancelDialog(slot);
                         },
                         child:
                             Container(height: rowHeight, padding: EdgeInsets.all(5.0), decoration: decorationCustom, child: getIconForMachineStatus(slot.machineStatusID)),
