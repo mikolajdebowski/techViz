@@ -12,9 +12,9 @@
       <module fileurl="file://$USER_HOME$/development/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider-0.5.0+1/android/path_provider.iml" filepath="$USER_HOME$/development/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider-0.5.0+1/android/path_provider.iml" />
       <module fileurl="file://$USER_HOME$/development/flutter/.pub-cache/hosted/pub.dartlang.org/shared_preferences-0.4.3/android/shared_preferences.iml" filepath="$USER_HOME$/development/flutter/.pub-cache/hosted/pub.dartlang.org/shared_preferences-0.4.3/android/shared_preferences.iml" />
       <module fileurl="file://$USER_HOME$/development/flutter/.pub-cache/hosted/pub.dartlang.org/shared_preferences-0.4.2/android/shared_preferences.iml" filepath="$USER_HOME$/development/flutter/.pub-cache/hosted/pub.dartlang.org/shared_preferences-0.4.2/android/shared_preferences.iml" />
-      <module fileurl="file://$USER_HOME$/development/flutter/.pub-cache/hosted/pub.dartlang.org/sqflite-0.13.0+1/android/sqflite.iml" filepath="$USER_HOME$/development/flutter/.pub-cache/hosted/pub.dartlang.org/sqflite-0.13.0+1/android/sqflite.iml" />
+      <module fileurl="file://$USER_HOME$/development/flutter/.pub-cache/hosted/pub.dartlang.org/sqflite-1.1.1/android/sqflite.iml" filepath="$USER_HOME$/development/flutter/.pub-cache/hosted/pub.dartlang.org/sqflite-1.1.1/android/sqflite.iml" />
       <module fileurl="file://$USER_HOME$/development/flutter/.pub-cache/hosted/pub.dartlang.org/sqflite-0.11.0+5/android/sqflite.iml" filepath="$USER_HOME$/development/flutter/.pub-cache/hosted/pub.dartlang.org/sqflite-0.11.0+5/android/sqflite.iml" />
-      <module fileurl="file://$USER_HOME$/development/flutter/.pub-cache/hosted/pub.dartlang.org/sqflite-1.1.0/android/sqflite-1.1.0-sqflite.iml" filepath="$USER_HOME$/development/flutter/.pub-cache/hosted/pub.dartlang.org/sqflite-1.1.0/android/sqflite-1.1.0-sqflite.iml" />
+      <module fileurl="file://$USER_HOME$/development/flutter/.pub-cache/hosted/pub.dartlang.org/sqflite-0.13.0+1/android/sqflite.iml" filepath="$USER_HOME$/development/flutter/.pub-cache/hosted/pub.dartlang.org/sqflite-0.13.0+1/android/sqflite.iml" />
     </modules>
   </component>
 </project>

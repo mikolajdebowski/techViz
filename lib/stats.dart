@@ -61,7 +61,7 @@ class StatsState extends State<Stats> implements IStatsPresenter {
       return Center(child: padding);
     }
 
-    var title = _selectedViewType == StatsView.Today ? "Todays's Stats" : (_selectedViewType == StatsView.Week ? "Week's Stats" : "Month's Stats");
+    var title = _selectedViewType == StatsView.Today ? "Today's Stats" : (_selectedViewType == StatsView.Week ? "Week's Stats" : "Month's Stats");
 
 
     var titleWidget = Text(title, textAlign: TextAlign.center, style: TextStyle(fontSize: 22.0));
