@@ -119,7 +119,7 @@ class LoginState extends State<Login> {
 
     var deviceUpdateFuture = DeviceRouting().PublishMessage(toSendDeviceDetails);
 
-    Future.wait<dynamic>([userUpdateFuture, deviceUpdateFuture]).then((List<dynamic> l){
+    Future.wait<void>([userUpdateFuture, deviceUpdateFuture]).then((List<dynamic> l){
       _completer.complete();
     }).catchError((dynamic error){
       _completer.completeError(error);
