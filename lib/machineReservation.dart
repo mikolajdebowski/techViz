@@ -94,13 +94,14 @@ class MachineReservationState extends State<MachineReservation> {
                   ),
                   FormField<String>(builder: (FormFieldState<String> state) {
                     return TextFormField(
+                        maxLength: 25,
                         controller: _txtControllerPlayerID,
                         validator: (value) {
                           if (value.isEmpty)
                             return 'Please enter Player ID';
                         },
                         inputFormatters: <TextInputFormatter>[
-                          WhitelistingTextInputFormatter.digitsOnly
+                          WhitelistingTextInputFormatter(RegExp('[a-zA-Z0-9]'))
                         ],
                         decoration: const InputDecoration(
                           icon: Icon(Icons.person),
