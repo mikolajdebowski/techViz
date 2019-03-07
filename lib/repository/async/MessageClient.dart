@@ -96,10 +96,9 @@ class MessageClient {
     _exchange = await _getExchange(channel);
   }
 
-  void _bindQueue(String routingKey) async{
-
+  Future _bindQueue(String routingKey) async{
     try{
-      await _consumer.queue.bind(_exchange, routingKey);
+      return _consumer.queue.bind(_exchange, routingKey);
     }
     catch(e){
       if(e.runtimeType == StateError){

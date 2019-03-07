@@ -25,7 +25,7 @@ class Session extends PropertyChangeNotifier {
     //print('Session instance');
   }
 
-  void init(String userID) async {
+  Future init(String userID) async {
     user = await UserTable.getUser(userID);
     user.changes.listen((List<ChangeRecord> changes) {
       print('changes from User: ');

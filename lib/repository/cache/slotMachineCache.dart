@@ -11,7 +11,7 @@ class SlotMachineCache extends CacheData<SlotMachine>{
 
   SlotMachineCache._internal();
 
-  void updateEntry(SlotMachine received, String from){
+  Future<void> updateEntry(SlotMachine received, String from){
     var lock = Lock();
     lock.synchronized((){
       int idx = data.indexWhere((SlotMachine _sm) => _sm.standID == received.standID);
@@ -25,6 +25,7 @@ class SlotMachineCache extends CacheData<SlotMachine>{
         data.add(received);
       }
     });
+    return Future<void>.value();
   }
 }
 

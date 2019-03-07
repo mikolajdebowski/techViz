@@ -18,6 +18,15 @@ class VizTimerState extends State<VizTimer> {
   bool _containsHours = false;
 
   @override
+  void dispose() {
+    if(_peridic!=null)
+      _peridic.cancel();
+
+    super.dispose();
+  }
+
+
+  @override
   Widget build(BuildContext context) {
     if(widget.timeStarted != null){
       if(_currentHash != widget.hashCode) {
@@ -55,12 +64,21 @@ class VizTimerState extends State<VizTimer> {
             timeStr = '${hours}:${mins}:${secs}';
           }
 
-          DateTime dt = DateFormat(format).parse(timeStr);
-          dt = dt.add(Duration(seconds: 1));
-          setState(() {
-            _containsHours = hours>0;
-            _timerStr = DateFormat(format).format(dt);
-          });
+          try{
+            DateTime dt = DateFormat(format).parse(timeStr);
+            dt = dt.add(Duration(seconds: 1));
+            setState(() {
+              _containsHours = hours>0;
+              _timerStr = DateFormat(format).format(dt);
+            });
+          }
+          catch (error){
+            print(error.toString());
+            setState(() {
+              _timerStr = '00:00';
+            });
+          }
+
         });
       }
     }
