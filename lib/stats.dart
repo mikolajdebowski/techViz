@@ -119,12 +119,14 @@ class StatsState extends State<Stats> implements IStatsPresenter {
               child: SwipeDetector(
                 child: chartContainer,
                 onSwipeLeft: () {
-                  if (_idxToLoad >= stepsToAdd.length - 1) _idxToLoad = -1;
+                  if (_idxToLoad >= stepsToAdd.length - 1)
+                    _idxToLoad = -1;
                   _idxToLoad++;
                   _stepsRowTap(_idxToLoad);
                 },
                 onSwipeRight: () {
-                  if (_idxToLoad <= 0) _idxToLoad = stepsToAdd.length;
+                  if (_idxToLoad <= 0)
+                    _idxToLoad = stepsToAdd.length;
                   _idxToLoad--;
                   _stepsRowTap(_idxToLoad);
                 },

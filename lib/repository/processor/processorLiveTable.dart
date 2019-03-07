@@ -38,7 +38,8 @@ class ProcessorLiveTable<T> implements IRemoteRepository<T>{
       if(onError.runtimeType == FormatException){
         _completer.completeError(ProcessorResponseParseError());
       }
-      else _completer.completeError(onError);
+      else
+        _completer.completeError(onError);
     });
 
     return _completer.future;

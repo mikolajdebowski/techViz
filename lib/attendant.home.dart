@@ -32,7 +32,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
   Flushbar loadingBar;
 
   @override
-  initState() {
+  void initState() {
     _taskList = List<Task>();
     _taskPresenter = TaskListPresenter(this);
     _taskListStatusIcon = "assets/images/ic_processing.png";
@@ -48,14 +48,6 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
     });
 
     super.initState();
-  }
-
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-    //print('dispose attendant called');
   }
 
   @override

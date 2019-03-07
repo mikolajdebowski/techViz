@@ -40,7 +40,8 @@ class TaskTable {
     Completer<int> _completer = Completer<int>();
 
     LocalRepository localRepo = LocalRepository();
-    if (!localRepo.db.isOpen) await localRepo.open();
+    if (!localRepo.db.isOpen)
+      await localRepo.open();
 
     int insertedRows = 0;
     int updatedRows = 0;
@@ -77,7 +78,8 @@ class TaskTable {
   static Future<int> invalidateTasks() async
   {
     LocalRepository localRepo = LocalRepository();
-    if (!localRepo.db.isOpen) await localRepo.open();
+    if (!localRepo.db.isOpen)
+      await localRepo.open();
 
     String sqlUpdate = "UPDATE TASK SET TASKSTATUSID = 7 WHERE TASKSTATUSID IN (1,2,3);";
     int updatedRows = await localRepo.db.rawUpdate(sqlUpdate);
@@ -112,7 +114,8 @@ class TaskTable {
 
   static Future<int> cleanUp() async {
     LocalRepository localRepo = LocalRepository();
-    if (!localRepo.db.isOpen) await localRepo.open();
+    if (!localRepo.db.isOpen)
+      await localRepo.open();
 
     int deletedRows = await localRepo.db.delete('Task');
 

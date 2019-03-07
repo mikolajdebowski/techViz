@@ -46,7 +46,8 @@ class MachineReservationState extends State<MachineReservation> {
         child: Text('Reserve'),
         onPressed: () {
 
-          if (!_btnEnabled) return;
+          if (!_btnEnabled)
+            return;
           if (_formKey.currentState.validate()) {
             _btnEnabled = false;
             final Flushbar _loadingBar = VizDialog.LoadingBar(message: 'Creating reservation...');
@@ -95,7 +96,8 @@ class MachineReservationState extends State<MachineReservation> {
                     return TextFormField(
                         controller: _txtControllerPlayerID,
                         validator: (value) {
-                          if (value.isEmpty) return 'Please enter Player ID';
+                          if (value.isEmpty)
+                            return 'Please enter Player ID';
                         },
                         inputFormatters: <TextInputFormatter>[
                           WhitelistingTextInputFormatter.digitsOnly
@@ -108,7 +110,8 @@ class MachineReservationState extends State<MachineReservation> {
                   FormField<String>(
                     initialValue: _ddbTimeReservation,
                     validator: (String value) {
-                      if (value == null) return 'Select the time of reservation';
+                      if (value == null)
+                        return 'Select the time of reservation';
                     },
                     builder: (FormFieldState<String> state) {
                       return InputDecorator(

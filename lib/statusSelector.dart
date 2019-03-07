@@ -12,7 +12,7 @@ import 'package:techviz/repository/session.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 import 'package:flushbar/flushbar.dart';
 
-typedef fncOnTapOK(UserStatus selected);
+typedef void fncOnTapOK(UserStatus selected);
 
 class StatusSelector extends StatefulWidget {
   StatusSelector({Key key, @required this.onTapOK, this.preSelectedID}) : super(key: key) {
@@ -45,7 +45,8 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
 
   void validate(BuildContext context) async {
     print(_loadingBar.isShowing());
-    if (_loadingBar.isShowing()) return;
+    if (_loadingBar.isShowing())
+      return;
 
     _loadingBar.show(context);
 

@@ -84,7 +84,8 @@ class SlotLookupState extends State<SlotLookup> with WidgetsBindingObserver {
 
   void _showReservationCancelDialog(final BuildContext ctx, SlotMachine slotMachine){
     bool _isReserved = slotMachine.machineStatusID != '1';
-    if (_isReserved) return;
+    if (_isReserved)
+      return;
 
     bool btnEnabled = true;
 
@@ -97,14 +98,16 @@ class SlotLookupState extends State<SlotLookup> with WidgetsBindingObserver {
           FlatButton(
             child: Text("Cancel"),
             onPressed: () {
-              if(!btnEnabled) return;
+              if(!btnEnabled)
+                return;
               Navigator.of(context).pop();
             },
           ),
           FlatButton(
             child: Text("Yes"),
             onPressed: () {
-              if(!btnEnabled) return;
+              if(!btnEnabled)
+                return;
 
               final Flushbar _loadingBar = VizDialog.LoadingBar(message: 'Cancelling...');
               _loadingBar.show(ctx);
@@ -200,7 +203,8 @@ class SlotLookupState extends State<SlotLookup> with WidgetsBindingObserver {
     var builder = StreamBuilder<List<SlotMachine>>(
         stream: _repository.remoteSlotMachineController.stream,
         builder: (BuildContext context, AsyncSnapshot<List<SlotMachine>> snapshot) {
-          if (!snapshot.hasData) return Center(child: CircularProgressIndicator());
+          if (!snapshot.hasData)
+            return Center(child: CircularProgressIndicator());
 
           var data = snapshot.data;
 

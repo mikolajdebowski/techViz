@@ -12,7 +12,7 @@ import 'package:techviz/repository/session.dart';
 import 'package:techviz/repository/userSectionRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
-typedef fncOnUserSectionsChanged(List<UserSection> sections);
+typedef void fncOnUserSectionsChanged(List<UserSection> sections);
 
 class SectionSelector extends StatefulWidget {
   SectionSelector({Key key, @required this.onUserSectionsChanged}) : super(key: key);
@@ -39,7 +39,8 @@ class SectionSelectorState extends State<SectionSelector>
   }
 
   void onTap(BuildContext context) async {
-    if (_loadingBar.isShowing()) return;
+    if (_loadingBar.isShowing())
+      return;
 
     _loadingBar.show(context);
 

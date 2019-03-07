@@ -106,7 +106,8 @@ class MessageClient {
         await Init();
         return await _bindQueue(routingKey);
       }
-      else throw e;
+      else
+        throw e;
     }
   }
 
