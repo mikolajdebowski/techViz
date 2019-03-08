@@ -211,7 +211,14 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
       TaskRepository().update(_selectedTask.id, taskStatusID: statusID, callBack: taskUpdateCallback);
     }
 
+    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
     void _showCancellationDialog() {
+
+      final TextEditingController _cancellationController = TextEditingController();
+
+
+      bool btnEnbled = false;
       double _width = MediaQuery.of(context).size.width / 100 * 80;
 
       Container container = Container(
@@ -219,6 +226,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
         decoration: BoxDecoration(shape: BoxShape.rectangle),
         child: SingleChildScrollView(
           child: Form(
+            key: _formKey,
             child: Column(
               children: <Widget>[
                 Padding(
@@ -234,12 +242,18 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
                 Padding(
                   padding: EdgeInsets.only(left: 20.0, right: 20.0),
                   child: TextFormField(
+                    controller: _cancellationController,
+                    maxLength: 4000,
                     textInputAction: TextInputAction.done,
                     decoration: InputDecoration(
                       hintText: "Cancellation reason",
                       border: InputBorder.none,
                     ),
                     maxLines: 8,
+                    validator: (String value){
+                      if(value.isEmpty)
+                        return 'Please inform the cancellation reason';
+                    },
                   ),
                 ),
                 Divider(
@@ -251,7 +265,23 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
                   children: <Widget>[
                     FlatButton(
                       onPressed: () {
-                        Navigator.of(context).pop(true);
+                        if(!btnEnbled)
+                          return;
+
+                        if (!_formKey.currentState.validate()) {
+                          return;
+                        }
+
+                        btnEnbled = false;
+
+                        _formKey.currentState.save();
+
+
+                        loadingBar.show(context);
+                        TaskRepository().cancel(_selectedTask.id, _cancellationController.text, callBack: (String result){
+                          loadingBar.dismiss();
+                          Navigator.of(context).pop(true);
+                        });
                       },
                       child: Text(
                         "Cancel",
@@ -272,13 +302,9 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
           builder: (BuildContext context) {
             return Dialog(
               child: container,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16.0))),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10.0))),
             );
-          }).then((bool choice) {
-        if(choice!=null && choice){
-          updateTaskStatus("12");
-        }
-      });
+          });
     }
 
 

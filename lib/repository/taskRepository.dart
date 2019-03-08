@@ -155,4 +155,27 @@ class TaskRepository implements IRepository<Task>{
 
     return _completer.future;
   }
+
+
+  Future cancel(String taskID, String cancellationReason, { TaskUpdateCallBack callBack} ) async {
+    print(cancellationReason);
+    Completer<dynamic> _completer = Completer<dynamic>();
+    //print('updating local...');
+    LocalRepository localRepo = LocalRepository();
+    if(!localRepo.db.isOpen)
+      await localRepo.open();
+
+    await Future<void>.delayed(Duration(seconds: 5));
+
+    await  LocalRepository().db.rawUpdate('UPDATE TASK SET _DIRTY = 1 WHERE _ID = ?', [taskID].toList());
+
+    var message = {'taskID': taskID, 'taskStatusID': '12'};
+
+    TaskRouting().PublishMessage(message).then((dynamic d){
+      callBack(taskID);
+      _completer.complete(d);
+    });
+
+    return _completer.future;
+  }
 }
