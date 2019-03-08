@@ -215,6 +215,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     var view = AttendantHome(keyAttendant);
 
     return Scaffold(
+      resizeToAvoidBottomPadding: false,
       backgroundColor: Colors.black,
       appBar: ActionBar(title: 'TechViz', leadingWidget: leadingMenuButton, centralWidgets: actionBarCentralWidgets, isRoot: true),
       body: SafeArea(child: view), // This trailing comma makes auto-formatting nicer for build methods.

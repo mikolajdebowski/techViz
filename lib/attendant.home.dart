@@ -212,49 +212,77 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
     }
 
     void _showCancellationDialog() {
+      double _width = MediaQuery.of(context).size.width / 100 * 80;
+
+      Container container = Container(
+        width: _width,
+        decoration: BoxDecoration(shape: BoxShape.rectangle),
+        child: SingleChildScrollView(
+          child: Form(
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                  child: Text('Cancel Task'),
+
+                ),
+
+                Divider(
+                  color: Colors.grey,
+                  height: 4.0,
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 20.0, right: 20.0),
+                  child: TextFormField(
+                    textInputAction: TextInputAction.done,
+                    decoration: InputDecoration(
+                      hintText: "Cancellation reason",
+                      border: InputBorder.none,
+                    ),
+                    maxLines: 8,
+                  ),
+                ),
+                Divider(
+                  color: Colors.grey,
+                  height: 4.0,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    FlatButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(true);
+                      },
+                      child: Text(
+                        "Cancel",
+                        style: TextStyle(color: Colors.redAccent),
+                      ),
+                    )
+                  ],
+                )
+              ],
+            ),
+          ),
+        ),
+      );
+
+
       showDialog<bool>(
           context: context,
           builder: (BuildContext context) {
-            return AlertDialog(
-
-              title: Text('Cancel task'),
-              contentPadding: const EdgeInsets.all(10.0),
-              content: Form(
-                child: Expanded(
-                    child: TextFormField(
-                      textInputAction: TextInputAction.done,
-                      maxLength: 4000,
-                      maxLines: 3,
-                      validator: (String input){
-                        if(input.isEmpty)
-                          return 'Mandatory';
-                      },
-                      decoration: InputDecoration(labelText: 'Cancellation reason', border: UnderlineInputBorder()),
-                    ),
-                  )
-                ,
-              ),
-              actions: <Widget>[
-                 FlatButton(
-                    child: const Text('Save'),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    })
-              ],
+            return Dialog(
+              child: container,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16.0))),
             );
-          }).then((bool result) {
-
-
-            print(result);
+          }).then((bool choice) {
+        if(choice!=null && choice){
+          updateTaskStatus("12");
+        }
       });
-
-//
-//      _showConfirmationDialogWithOptions('Cancel a task').then((bool choice){
-//        if(choice){
-//          updateTaskStatus("12");
-//        }
-//      });
     }
+
+
+
 
     if (_selectedTask != null) {
       String mainActionImageSource;
@@ -267,19 +295,22 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
         mainActionImageSource = "assets/images/ic_acknowledge.png";
         mainActionTextSource = 'Acknowledge';
         actionCallBack = () {
-          if (btnEnabled) updateTaskStatus("2");
+          if (btnEnabled)
+            updateTaskStatus("2");
         };
       } else if (_selectedTask.taskStatus.id == 2) {
         mainActionImageSource = "assets/images/ic_cardin.png";
         mainActionTextSource = 'Card in';
         actionCallBack = () {
-          if (btnEnabled) updateTaskStatus("3");
+          if (btnEnabled)
+            updateTaskStatus("3");
         };
       } else if (_selectedTask.taskStatus.id == 3) {
         mainActionImageSource = "assets/images/ic_complete.png";
         mainActionTextSource = 'Complete';
         actionCallBack = () {
-          if (btnEnabled) updateTaskStatus("13");
+          if (btnEnabled)
+            updateTaskStatus("13");
         };
       }
 
@@ -510,11 +541,14 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
       ),
     );
 
-    return Container(
-        decoration: BoxDecoration(gradient: LinearGradient(colors: [Color(0xFF586676), Color(0xFF8B9EA7)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
-        child: Row(
-          children: <Widget>[leftPanel, centerPanel, rightPanel],
-        ));
+    return Scaffold(
+      resizeToAvoidBottomPadding: false,
+      body: Container(
+          decoration: BoxDecoration(gradient: LinearGradient(colors: [Color(0xFF586676), Color(0xFF8B9EA7)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
+          child: Row(
+            children: <Widget>[leftPanel, centerPanel, rightPanel],
+          )),
+    );
   }
 
   @override
