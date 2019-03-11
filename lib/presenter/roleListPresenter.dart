@@ -6,7 +6,7 @@ import 'package:techviz/repository/repository.dart';
 
 abstract class IRoleListPresenter<Role> {
   void onRoleListLoaded(List<Role> result);
-  void onLoadError(Error error);
+  void onLoadError(dynamic error);
 }
 
 class RoleListPresenter{

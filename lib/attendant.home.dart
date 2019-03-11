@@ -36,14 +36,10 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
     _taskPresenter = TaskListPresenter(this);
     _taskListStatusIcon = "assets/images/ic_processing.png";
 
-    Session().changes.listen((List<ChangeRecord> changes) {
-      loadTasks();
-    });
-
     loadingBar = VizDialog.LoadingBar(message: 'Sending request...');
 
     Future.delayed(Duration(seconds: 1), () {
-      loadTasks();
+      reloadTasks();
     });
 
     super.initState();
@@ -211,14 +207,16 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
       TaskRepository().update(_selectedTask.id, taskStatusID: statusID, callBack: taskUpdateCallback);
     }
 
-    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+
+
+    final GlobalKey<FormState> _cancellationFormKey = GlobalKey<FormState>();
     void _showCancellationDialog() {
 
       final TextEditingController _cancellationController = TextEditingController();
 
 
-      bool btnEnbled = false;
+      bool btnEnbled = true;
       double _width = MediaQuery.of(context).size.width / 100 * 80;
 
       Container container = Container(
@@ -226,7 +224,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
         decoration: BoxDecoration(shape: BoxShape.rectangle),
         child: SingleChildScrollView(
           child: Form(
-            key: _formKey,
+            key: _cancellationFormKey,
             child: Column(
               children: <Widget>[
                 Padding(
@@ -260,34 +258,64 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
                   color: Colors.grey,
                   height: 4.0,
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                Stack(
                   children: <Widget>[
-                    FlatButton(
+                    Align(alignment: Alignment.centerLeft ,child: FlatButton(
                       onPressed: () {
+                        Navigator.of(context).pop(false);
+                      },
+                      child: Text(
+                        "Dismiss",
+                      ),
+                    )),
+                    Align(alignment: Alignment.centerRight ,child: FlatButton(
+                      onPressed: () {
+                        if(_selectedTask==null){
+                          showDialog<bool>(
+                              context: context,
+                              builder: (BuildContext context2) {
+                                return AlertDialog(
+                                  content: Text('This task is not available anymore.'),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10.0))),
+                                  actions: <Widget>[
+                                    FlatButton(
+                                      child: Text('OK'),
+                                      onPressed: (){
+                                        Navigator.of(context2).pop(true);
+
+                                      },
+                                    )
+                                  ],
+                                );
+                              }).then((bool okResult){
+                                Navigator.of(context).pop();
+                          });
+
+                        }
+
+
                         if(!btnEnbled)
                           return;
 
-                        if (!_formKey.currentState.validate()) {
+                        if (!_cancellationFormKey.currentState.validate()) {
                           return;
                         }
 
                         btnEnbled = false;
 
-                        _formKey.currentState.save();
-
-
                         loadingBar.show(context);
-                        TaskRepository().cancel(_selectedTask.id, _cancellationController.text, callBack: (String result){
+                        TaskRepository().update(_selectedTask.id, taskStatusID: '12', cancellationReason: _cancellationController.text, callBack: (String result){
                           loadingBar.dismiss();
                           Navigator.of(context).pop(true);
+                        }).catchError((dynamic error){
+                          btnEnbled = true;
                         });
                       },
                       child: Text(
-                        "Cancel",
+                        "Cancel this task",
                         style: TextStyle(color: Colors.redAccent),
                       ),
-                    )
+                    ))
                   ],
                 )
               ],
@@ -304,11 +332,11 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
               child: container,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10.0))),
             );
-          });
+          }).then((bool canceled){
+            if(canceled)
+              reloadTasks();
+      });
     }
-
-
-
 
     if (_selectedTask != null) {
       String mainActionImageSource;
@@ -579,15 +607,15 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
 
   @override
   void onUserStatusChanged(UserStatus us) {
-    loadTasks();
+    reloadTasks();
   }
 
   @override
   void onUserSectionsChanged(Object obj) {
-    loadTasks();
+    reloadTasks();
   }
 
-  void loadTasks() {
+  void reloadTasks() {
     setState(() {
       _isLoadingTasks = true;
       _selectedTask = null;
@@ -636,7 +664,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      loadTasks();
+      reloadTasks();
     }
   }
 }

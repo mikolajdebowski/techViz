@@ -52,7 +52,9 @@ class SlotMachineRepository implements IRepository<SlotMachine> {
   }
 
   void cancelAsync() {
-    _slotMachineController.close();
+    if(_slotMachineController!=null && _slotMachineController.isClosed==false){
+      _slotMachineController.close();
+    }
   }
 
   List<SlotMachine> filter(String key) {

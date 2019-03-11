@@ -8,7 +8,7 @@ abstract class ISectionListPresenter<SectionModelPresenter> {
   void onSectionListLoaded(List<SectionModelPresenter> result);
   void onUserSectionListLoaded(List<UserSection> result);
 
-  void onLoadError(Error error);
+  void onLoadError(dynamic error);
 }
 
 

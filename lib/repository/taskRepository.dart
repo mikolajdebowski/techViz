@@ -133,11 +133,11 @@ class TaskRepository implements IRepository<Task>{
       onData(taskUpdate);
 
     }, onError: onError, onCancel: (){
-      //print('onCancel called');
+      print('onCancel called');
     });
   }
 
-  Future update(String taskID, {String taskStatusID, TaskUpdateCallBack callBack} ) async {
+  Future update(String taskID, {String taskStatusID, String cancellationReason, TaskUpdateCallBack callBack} ) async {
     Completer<dynamic> _completer = Completer<dynamic>();
     //print('updating local...');
     LocalRepository localRepo = LocalRepository();
@@ -146,7 +146,14 @@ class TaskRepository implements IRepository<Task>{
 
     await  LocalRepository().db.rawUpdate('UPDATE TASK SET _DIRTY = 1 WHERE _ID = ?', [taskID].toList());
 
-    var message = {'taskID': taskID, 'taskStatusID': taskStatusID};
+    dynamic message;
+
+    if(taskStatusID=='12'){
+      message = {'taskID': taskID, 'taskStatusID': taskStatusID, 'tasknote': cancellationReason};
+    }
+    else{
+      message = {'taskID': taskID, 'taskStatusID': taskStatusID};
+    }
 
     TaskRouting().PublishMessage(message).then((dynamic d){
       callBack(taskID);
@@ -157,25 +164,5 @@ class TaskRepository implements IRepository<Task>{
   }
 
 
-  Future cancel(String taskID, String cancellationReason, { TaskUpdateCallBack callBack} ) async {
-    print(cancellationReason);
-    Completer<dynamic> _completer = Completer<dynamic>();
-    //print('updating local...');
-    LocalRepository localRepo = LocalRepository();
-    if(!localRepo.db.isOpen)
-      await localRepo.open();
 
-    await Future<void>.delayed(Duration(seconds: 5));
-
-    await  LocalRepository().db.rawUpdate('UPDATE TASK SET _DIRTY = 1 WHERE _ID = ?', [taskID].toList());
-
-    var message = {'taskID': taskID, 'taskStatusID': '12'};
-
-    TaskRouting().PublishMessage(message).then((dynamic d){
-      callBack(taskID);
-      _completer.complete(d);
-    });
-
-    return _completer.future;
-  }
 }

@@ -168,8 +168,8 @@ class SectionSelectorState extends State<SectionSelector>
   }
 
   @override
-  void onLoadError(Error error) {
-    // TODO: implement onLoadError
+  void onLoadError(dynamic error) {
+    print(error);
   }
 
   @override

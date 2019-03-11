@@ -46,30 +46,25 @@ class TaskTable {
     int insertedRows = 0;
     int updatedRows = 0;
 
-
-    var processed = 0;
-
     Future.forEach<Map<String, dynamic>>(toInsertList, (Map<String, dynamic> entry) async{
       localRepo.db.transaction((txn) async {
         var batch = txn.batch();
 
         List<Map<String,dynamic>> exists = await txn.rawQuery("SELECT _ID FROM TASK WHERE _ID = '${entry['_ID'].toString()}';");
         if(exists!=null && exists.length>0){
+          print('task ${entry['LOCATION'].toString()} EXISTS! UPDATING WITH STATUSID ${entry['TASKSTATUSID'].toString()}');
           String sqlUpdate = buildUpdateSQL(entry);
           updatedRows = await txn.rawUpdate(sqlUpdate);
         }
         else{
+          print('task ${entry['LOCATION'].toString()} DOES NOT exist! INSERTING WITH STATUSID ${entry['TASKSTATUSID'].toString()}');
           insertedRows += await txn.insert('Task', entry, conflictAlgorithm: ConflictAlgorithm.replace);
         }
 
         await batch.commit();
-
-        processed++;
-
-        if(processed == toInsertList.length){
-          _completer.complete(insertedRows+updatedRows);
-        }
       });
+    }).then((dynamic end){
+      _completer.complete(insertedRows+updatedRows);
     });
 
     return _completer.future;

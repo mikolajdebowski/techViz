@@ -94,8 +94,8 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
   }
 
   @override
-  void onLoadError(Error error) {
-    // TODO: implement onLoadError
+  void onLoadError(dynamic error) {
+    print(error);
   }
 
   @override
