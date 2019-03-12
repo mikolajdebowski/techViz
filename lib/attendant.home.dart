@@ -88,6 +88,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
 
     bool btnEnbled = true;
     double _width = MediaQuery.of(context).size.width / 100 * 80;
+    String location =_selectedTask.location.toString();
 
     Container container = Container(
       width: _width,
@@ -99,7 +100,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
             children: <Widget>[
               Padding(
                 padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                child: Text('Cancel Task'),
+                child: Text('Cancel Task ${location}'),
               ),
               Divider(
                 color: Colors.grey,
