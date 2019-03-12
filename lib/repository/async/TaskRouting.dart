@@ -9,7 +9,7 @@ class TaskRouting {
     return MessageClient().ListenQueue(routingPattern, onData, onError: onError, timeOutEnabled: false);
   }
 
-  Future PublishMessage(dynamic message) {
+  Future PublishMessage(dynamic message, {String customRoutingPattern}) {
     return MessageClient().PublishMessage(message, routingPattern, wait: false);
   }
 

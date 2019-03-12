@@ -161,9 +161,8 @@ class MessageClient {
       _completer.completeError(TimeoutException('Max connect timeout reached after ${_timeoutDuration.inSeconds} seconds.'));
     });
 
-    String routingKey = '${routingKeyPattern}.${_deviceID}';
-
     if(wait!=null && wait){
+      String routingKey = '${routingKeyPattern}.update.${_deviceID}';
       StreamController<AmqpMessage> sc = StreamController<AmqpMessage>();
       sc.stream.listen((AmqpMessage message){
         _removeRoutingKeyListener(routingKey);
@@ -189,8 +188,6 @@ class MessageClient {
     if(appendDeviceID!=null && appendDeviceID){
       routingKey += '.${_deviceID}';
     }
-
-
 
     void onCancel(){
       _removeRoutingKeyListener(routingKey);

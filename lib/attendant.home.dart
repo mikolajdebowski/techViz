@@ -7,6 +7,7 @@ import 'package:techviz/components/taskList/VizTaskItem.dart';
 import 'package:techviz/components/vizDialog.dart';
 import 'package:techviz/components/vizTaskActionButton.dart';
 import 'package:techviz/components/vizTimer.dart';
+import 'package:techviz/escalation.dart';
 import 'package:techviz/home.dart';
 import 'package:techviz/model/task.dart';
 import 'package:techviz/model/userStatus.dart';
@@ -71,6 +72,142 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
       _selectedTask = _taskList.where((Task task) => task.id == taskID).first;
     });
   }
+
+
+  void _showEscalationDialog() {
+    Escalation.show(context).then((bool resultOK){
+      print(resultOK);
+    });
+  }
+
+  final GlobalKey<FormState> _cancellationFormKey = GlobalKey<FormState>();
+  void _showCancellationDialog() {
+
+    final TextEditingController _cancellationController = TextEditingController();
+
+
+    bool btnEnbled = true;
+    double _width = MediaQuery.of(context).size.width / 100 * 80;
+
+    Container container = Container(
+      width: _width,
+      decoration: BoxDecoration(shape: BoxShape.rectangle),
+      child: SingleChildScrollView(
+        child: Form(
+          key: _cancellationFormKey,
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                child: Text('Cancel Task'),
+              ),
+              Divider(
+                color: Colors.grey,
+                height: 4.0,
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 20.0, right: 20.0),
+                child: TextFormField(
+                  controller: _cancellationController,
+                  maxLength: 4000,
+                  textInputAction: TextInputAction.done,
+                  decoration: InputDecoration(
+                    hintText: "Cancellation reason",
+                    border: InputBorder.none,
+                  ),
+                  maxLines: 8,
+                  validator: (String value){
+                    if(value.isEmpty)
+                      return 'Please inform the cancellation reason';
+                  },
+                ),
+              ),
+              Divider(
+                color: Colors.grey,
+                height: 4.0,
+              ),
+              Stack(
+                children: <Widget>[
+                  Align(alignment: Alignment.centerLeft ,child: FlatButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(false);
+                    },
+                    child: Text(
+                      "Dismiss",
+                    ),
+                  )),
+                  Align(alignment: Alignment.centerRight ,child: FlatButton(
+                    onPressed: () {
+                      if(_selectedTask==null){
+                        showDialog<bool>(
+                            context: context,
+                            builder: (BuildContext context2) {
+                              return AlertDialog(
+                                content: Text('This task is not available anymore.'),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10.0))),
+                                actions: <Widget>[
+                                  FlatButton(
+                                    child: Text('OK'),
+                                    onPressed: (){
+                                      Navigator.of(context2).pop(true);
+
+                                    },
+                                  )
+                                ],
+                              );
+                            }).then((bool okResult){
+                          Navigator.of(context).pop();
+                        });
+
+                      }
+
+
+                      if(!btnEnbled)
+                        return;
+
+                      if (!_cancellationFormKey.currentState.validate()) {
+                        return;
+                      }
+
+                      btnEnbled = false;
+
+                      loadingBar.show(context);
+                      TaskRepository().update(_selectedTask.id, taskStatusID: '12', cancellationReason: _cancellationController.text, callBack: (String result){
+                        loadingBar.dismiss();
+                        Navigator.of(context).pop(true);
+                      }).catchError((dynamic error){
+                        btnEnbled = true;
+                      });
+                    },
+                    child: Text(
+                      "Cancel this task",
+                      style: TextStyle(color: Colors.redAccent),
+                    ),
+                  ))
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+
+
+    showDialog<bool>(
+      barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            child: container,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10.0))),
+          );
+        }).then((bool canceled){
+      if(canceled)
+        reloadTasks();
+    });
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -210,133 +347,12 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
 
 
 
-    final GlobalKey<FormState> _cancellationFormKey = GlobalKey<FormState>();
-    void _showCancellationDialog() {
-
-      final TextEditingController _cancellationController = TextEditingController();
 
 
-      bool btnEnbled = true;
-      double _width = MediaQuery.of(context).size.width / 100 * 80;
-
-      Container container = Container(
-        width: _width,
-        decoration: BoxDecoration(shape: BoxShape.rectangle),
-        child: SingleChildScrollView(
-          child: Form(
-            key: _cancellationFormKey,
-            child: Column(
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                  child: Text('Cancel Task'),
-
-                ),
-
-                Divider(
-                  color: Colors.grey,
-                  height: 4.0,
-                ),
-                Padding(
-                  padding: EdgeInsets.only(left: 20.0, right: 20.0),
-                  child: TextFormField(
-                    controller: _cancellationController,
-                    maxLength: 4000,
-                    textInputAction: TextInputAction.done,
-                    decoration: InputDecoration(
-                      hintText: "Cancellation reason",
-                      border: InputBorder.none,
-                    ),
-                    maxLines: 8,
-                    validator: (String value){
-                      if(value.isEmpty)
-                        return 'Please inform the cancellation reason';
-                    },
-                  ),
-                ),
-                Divider(
-                  color: Colors.grey,
-                  height: 4.0,
-                ),
-                Stack(
-                  children: <Widget>[
-                    Align(alignment: Alignment.centerLeft ,child: FlatButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(false);
-                      },
-                      child: Text(
-                        "Dismiss",
-                      ),
-                    )),
-                    Align(alignment: Alignment.centerRight ,child: FlatButton(
-                      onPressed: () {
-                        if(_selectedTask==null){
-                          showDialog<bool>(
-                              context: context,
-                              builder: (BuildContext context2) {
-                                return AlertDialog(
-                                  content: Text('This task is not available anymore.'),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10.0))),
-                                  actions: <Widget>[
-                                    FlatButton(
-                                      child: Text('OK'),
-                                      onPressed: (){
-                                        Navigator.of(context2).pop(true);
-
-                                      },
-                                    )
-                                  ],
-                                );
-                              }).then((bool okResult){
-                                Navigator.of(context).pop();
-                          });
-
-                        }
 
 
-                        if(!btnEnbled)
-                          return;
-
-                        if (!_cancellationFormKey.currentState.validate()) {
-                          return;
-                        }
-
-                        btnEnbled = false;
-
-                        loadingBar.show(context);
-                        TaskRepository().update(_selectedTask.id, taskStatusID: '12', cancellationReason: _cancellationController.text, callBack: (String result){
-                          loadingBar.dismiss();
-                          Navigator.of(context).pop(true);
-                        }).catchError((dynamic error){
-                          btnEnbled = true;
-                        });
-                      },
-                      child: Text(
-                        "Cancel this task",
-                        style: TextStyle(color: Colors.redAccent),
-                      ),
-                    ))
-                  ],
-                )
-              ],
-            ),
-          ),
-        ),
-      );
 
 
-      showDialog<bool>(
-          context: context,
-          builder: (BuildContext context) {
-            return Dialog(
-              child: container,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10.0))),
-            );
-          }).then((bool canceled){
-            if(canceled)
-              reloadTasks();
-      });
-    }
 
     if (_selectedTask != null) {
       String mainActionImageSource;
@@ -568,11 +584,13 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
 
       if (_selectedTask.taskStatus.id == 3) {
         rightActionWidgets.add(VizTaskActionButton('Escalate', [Color(0xFF1356ab), Color(0xFF23ABE7)], enabled: enableButtons, onTapCallback: () {
-          _showConfirmationDialogWithOptions('Escalate a task').then((bool choice) {
-            if (choice) {
-              updateTaskStatus("5");
-            }
-          });
+//          _showConfirmationDialogWithOptions('Escalate a task').then((bool choice) {
+//            if (choice) {
+//              updateTaskStatus("5");
+//            }
+//          });
+
+          _showEscalationDialog();
         }));
       }
     }
