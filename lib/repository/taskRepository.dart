@@ -54,6 +54,7 @@ class TaskRepository implements IRepository<Task>{
         "t.* "
         ",ts.TaskStatusDescription "
         ",tt.TaskTypeDescription "
+        ",tt.LookupName as TaskTypeLookupName "
         "FROM TASK t INNER JOIN TaskStatus ts on t.TASKSTATUSID == ts.TaskStatusID INNER JOIN TaskType tt on t.TASKTYPEID == tt.TaskTypeID WHERE t._ID == '${taskID}';";
 
     List<Map<String, dynamic>> queryResult = await LocalRepository().db.rawQuery(sql);
@@ -76,7 +77,7 @@ class TaskRepository implements IRepository<Task>{
         playerLastName: task['PLAYERLASTNAME']!=null ? task['PLAYERLASTNAME'] as String : '',
         playerTier: task['PLAYERTIER']!=null ? task['PlayerTier'] as String : null,
         playerTierColorHEX: task['PLAYERTIERCOLORHEX']!=null ? task['PLAYERTIERCOLORHEX'] as String : null,
-        taskType: TaskType(id: task['TASKTYPEID'] as int, description: task['TaskTypeDescription'] as String),
+        taskType: TaskType(taskTypeId: task['TASKTYPEID'] as int, description: task['TaskTypeDescription'].toString(), lookupName: task['TaskTypeLookupName'].toString()),
         taskStatus: TaskStatus(id: task['TASKSTATUSID'] as int, description: task['TaskStatusDescription'] as String),
         urgencyHEXColor: task['ColorHex'] as String
     );

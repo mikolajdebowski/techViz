@@ -36,6 +36,7 @@ class ProcessorTaskTypeRepository implements IRemoteRepository<TaskType>{
         Map<String, dynamic> map = Map<String, dynamic>();
         map['TaskTypeID'] = values[_columnNames.indexOf("TaskTypeID")];
         map['TaskTypeDescription'] = values[_columnNames.indexOf("TaskTypeDescription")];
+        map['LookupName'] = values[_columnNames.indexOf("LookupName")];
         localRepo.insert('TaskType', map);
       });
       _completer.complete();

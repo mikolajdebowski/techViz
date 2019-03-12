@@ -1,6 +1,7 @@
 class TaskType{
-  final int id;
+  final int taskTypeId;
   final String description;
+  final String lookupName;
 
-  const TaskType({this.id, this.description});
+  const TaskType({this.taskTypeId, this.description, this.lookupName});
 }

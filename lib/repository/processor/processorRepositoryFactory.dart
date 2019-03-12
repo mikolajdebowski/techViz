@@ -47,6 +47,7 @@ class ProcessorRepositoryConfig {
     mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_USER);
     mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_USER_STATUS);
     mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_SECTION);
+    mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_ESCALATION_PATH);
     mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_USER_SECTION);
     mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_TASK_URGENCY);
     mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_USER_GENERAL_INFO);
@@ -213,6 +214,8 @@ enum LiveTableType{
   TECHVIZ_MOBILE_USER_SECTION,
   TECHVIZ_MOBILE_SLOTS,
   TECHVIZ_MOBILE_USER_GENERAL_INFO,
+  TECHVIZ_MOBILE_ESCALATION_PATH
+  ,
 
 
   TECHVIZ_MOBILE_USER_TODAY_STATS,

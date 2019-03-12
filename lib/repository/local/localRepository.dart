@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:techviz/model/escalationPath.dart';
+import 'package:techviz/repository/local/escalationPathTable.dart';
 import 'package:techviz/repository/local/taskTable.dart';
+import 'package:techviz/repository/local/taskTypeTable.dart';
 import 'package:techviz/repository/local/taskUrgencyTable.dart';
 import 'package:techviz/repository/local/userTable.dart';
 
@@ -35,18 +38,14 @@ class LocalRepository {
 
           UserTable.create(db);
 
+          EscalationPathTable().create();
+
+          TaskTypeTable().create();
+
           await db.execute('''
             create table TaskStatus ( 
                 TaskStatusID INT PRIMARY KEY,
                 TaskStatusDescription TEXT NOT NULL
-                )
-            ''');
-
-          await db.execute('''
-            create table TaskType ( 
-                TaskTypeID INT PRIMARY KEY,
-                TaskTypeDescription TEXT NOT NULL,
-                RoleID NUMERIC
                 )
             ''');
 

@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:techviz/repository/SlotMachineRepository.dart';
 import 'package:techviz/repository/async/SlotMachineRouting.dart';
+import 'package:techviz/repository/escalationPathRepository.dart';
 import 'package:techviz/repository/local/localRepository.dart';
 import 'package:techviz/repository/processor/ProcessorReservationTimeRepository.dart';
+import 'package:techviz/repository/processor/processorEscalationPathRepository.dart';
 import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
 import 'package:techviz/repository/processor/processorRoleRepository.dart';
 import 'package:techviz/repository/processor/processorSectionRepository.dart';
@@ -98,6 +100,9 @@ class Repository{
     onMessage('Fetching Task Urgency...');
     await taskUrgencyRepository.fetch();
 
+    onMessage('Fetching Escalation Path...');
+    await escalationPathRepository.fetch();
+
     onMessage('Fetching Sections...');
     await sectionRepository.fetch();
     await userSectionRepository.fetch();
@@ -191,6 +196,12 @@ class Repository{
   StatsMonthRepository get statsMonthRepository {
     switch(_flavor) {
       default:return StatsMonthRepository(remoteRepository: ProcessoStatsMonthRepository());
+    }
+  }
+
+  EscalationPathRepository get escalationPathRepository {
+    switch(_flavor) {
+      default:return EscalationPathRepository(remoteRepository: ProcessorEscalationPathRepository());
     }
   }
 
