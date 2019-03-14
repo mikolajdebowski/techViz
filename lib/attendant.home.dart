@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
-import 'package:observable/observable.dart';
 import 'package:techviz/components/taskList/VizTaskItem.dart';
 import 'package:techviz/components/vizDialog.dart';
 import 'package:techviz/components/vizTaskActionButton.dart';
@@ -74,10 +73,21 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
   }
 
 
-  void _showEscalationDialog() {
-    Escalation.show(context).then((bool resultOK){
-      print(resultOK);
+  void _goToEscalationPathView() {
+
+    if(_selectedTask==null)
+      return;
+
+    String id = _selectedTask.id;
+    String location = _selectedTask.location;
+
+    EscalationForm escalationForm = EscalationForm(id, location, (bool result){
+      if(result)
+        reloadTasks();
     });
+
+    MaterialPageRoute<bool> mpr = MaterialPageRoute<bool>(builder: (BuildContext context)=> escalationForm);
+    Navigator.of(context).push(mpr);
   }
 
   final GlobalKey<FormState> _cancellationFormKey = GlobalKey<FormState>();
@@ -543,37 +553,6 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
       ),
     );
 
-    Future<bool> _showConfirmationDialogWithOptions(String title) {
-      Completer<bool> _completer = Completer<bool>();
-      showDialog<bool>(
-          context: context,
-          builder: (BuildContext context) {
-            // return object of type Dialog
-            return AlertDialog(
-              title: Text(title),
-              content: Text("Are you sure?"),
-              actions: <Widget>[
-                FlatButton(
-                  child: Text("Cancel"),
-                  onPressed: () {
-                    Navigator.of(context).pop(false);
-                  },
-                ),
-                FlatButton(
-                  child: Text("Yes"),
-                  onPressed: () {
-                    Navigator.of(context).pop(true);
-                  },
-                )
-              ],
-            );
-          }).then((bool choice) {
-        _completer.complete(choice);
-      });
-
-      return _completer.future;
-    }
-
     List<VizTaskActionButton> rightActionWidgets = List<VizTaskActionButton>();
     if (_selectedTask != null) {
       bool enableButtons = _selectedTask.dirty == false;
@@ -591,7 +570,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
 //            }
 //          });
 
-          _showEscalationDialog();
+          _goToEscalationPathView();
         }));
       }
     }
@@ -655,7 +634,8 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
     //print('onTaskReceived => ${task.id} ${task.taskStatus.id}');
 
     Session session = Session();
-    if (session.user == null) return;
+    if (session.user == null)
+      return;
 
     setState(() {
       if ([1, 2, 3].toList().contains(task.taskStatus.id) && task.userID == session.user.userID) {

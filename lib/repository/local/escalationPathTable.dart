@@ -1,8 +1,8 @@
+import 'package:techviz/model/escalationPath.dart';
 import 'package:techviz/repository/local/localTable.dart';
 
-class EscalationPathTable extends LocalTable{
-
-  EscalationPathTable(){
+class EscalationPathTable extends LocalTable {
+  EscalationPathTable() {
     this.tableName = 'EscalationPath';
     this.createSQL = '''
               CREATE TABLE $tableName ( 
@@ -10,5 +10,13 @@ class EscalationPathTable extends LocalTable{
                   Description TEXT NOT NULL,
                   LookupName TEXT NOT NULL)
               ''';
+  }
+
+  Future<List<EscalationPath>> getAll() async {
+    return super.defaultGetAll<EscalationPath>(parserFnc);
+  }
+
+  EscalationPath parserFnc(Map<String, dynamic> entry){
+    return EscalationPath(entry['EscalationPathId'] as int, entry['Description'] as String, entry['LookupName'] as String);
   }
 }

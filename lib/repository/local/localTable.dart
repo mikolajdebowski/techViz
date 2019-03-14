@@ -33,4 +33,20 @@ class LocalTable{
 
     return _completer.future;
   }
+
+  Future<List<T>> defaultGetAll<T>(Function parser) async {
+    LocalRepository localRepo = LocalRepository();
+    if (localRepo.db.isOpen == false)
+      await localRepo.open();
+
+    List<Map<String, dynamic>> queryResult = await localRepo.db.rawQuery('SELECT * FROM $tableName');
+
+    List<T> toReturn = List<T>();
+
+    queryResult.forEach((Map<String, dynamic> ep) {
+      toReturn.add(parser(ep));
+    });
+
+    return Future.value(toReturn);
+  }
 }

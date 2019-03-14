@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:techviz/model/escalationPath.dart';
 import 'package:techviz/repository/local/escalationPathTable.dart';
 import 'package:techviz/repository/local/taskTable.dart';
 import 'package:techviz/repository/local/taskTypeTable.dart';

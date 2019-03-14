@@ -1,6 +1,4 @@
 import 'dart:async';
-
-import 'package:techviz/model/escalationPath.dart';
 import 'package:techviz/repository/local/escalationPathTable.dart';
 import 'package:techviz/repository/processor/processorLiveTable.dart';
 import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
