@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
@@ -28,7 +29,7 @@ class EscalationFormState extends State<EscalationForm> implements IEscalationPa
   EscalationPathPresenter _presenter;
   ScrollController _scrollController;
   TextEditingController _notesController;
-  FocusNode _notesFocusNode;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -38,7 +39,6 @@ class EscalationFormState extends State<EscalationForm> implements IEscalationPa
 
     _scrollController = ScrollController();
     _notesController = TextEditingController();
-    _notesFocusNode = FocusNode();
 
     super.initState();
   }
@@ -65,7 +65,7 @@ class EscalationFormState extends State<EscalationForm> implements IEscalationPa
   }
 
   //VIEW
-  bool get shouldShowTaskTypeDropDown {
+  bool get taskTypeRequired {
     return _escalationPathSelected != null && (_escalationPathSelected.id == 2 || _escalationPathSelected.id == 3);
   }
 
@@ -79,17 +79,17 @@ class EscalationFormState extends State<EscalationForm> implements IEscalationPa
         child: SingleChildScrollView(
             controller: _scrollController,
             child: Form(
-                child: Column(children: <Widget>[
-              formWidget,
-              Divider(
-                color: Colors.grey,
-                height: 4.0,
-              )
-            ]))));
+
+                key: _formKey,
+                child: formWidget())));
 
     VizButton okBtn = VizButton(title: 'OK', highlighted: true, onTap: () {
-      widget.onEscalationResult(false);
-      Navigator.of(context).pop();
+
+      if(_formKey.currentState.validate()) {
+        widget.onEscalationResult(false);
+        Navigator.of(context).pop();
+      }
+
     });
     ActionBar ab = ActionBar(title: 'Escalate task ${widget._taskLocation}', tailWidget: okBtn, onCustomBackButtonActionTapped: (){
       widget.onEscalationResult(true);
@@ -97,7 +97,7 @@ class EscalationFormState extends State<EscalationForm> implements IEscalationPa
     return Scaffold(backgroundColor: Colors.black, appBar: ab, body: SafeArea(child: container),);
   }
 
-  Widget get formWidget {
+  Widget formWidget() {
     if (_escalationPathList == null) {
       return Center(
         child: Padding(padding: EdgeInsets.all(20.0), child: CircularProgressIndicator()),
@@ -108,24 +108,32 @@ class EscalationFormState extends State<EscalationForm> implements IEscalationPa
 
     //ESCALATION PATH
     FormField escalationPathFormField = FormField<EscalationPath>(
-      initialValue: _escalationPathList.first,
-      validator: (EscalationPath value) {
+      validator: (value) {
         if (value == null)
           return 'Select Escalation Path';
       },
       builder: (FormFieldState<EscalationPath> state) {
         return InputDecorator(
+
             decoration: InputDecoration(
+              contentPadding: EdgeInsets.only(top: 10.0),
+              isDense: true,
               icon: Icon(Icons.trending_up),
               labelText: 'Escalation Path',
             ),
             isEmpty: _escalationPathSelected == null,
-            child: DropdownButtonHideUnderline(
-                child: DropdownButton<EscalationPath>(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                DropdownButtonHideUnderline(
+                    child: DropdownButton<EscalationPath>(
+                      isDense: true,
                       value: _escalationPathSelected,
-                      onChanged: (EscalationPath value) {
+                      onChanged: (EscalationPath newValue) {
+                        state.didChange(newValue);
                         setState(() {
-                          _escalationPathSelected = value;
+                          _escalationPathSelected = newValue;
                         });
                       },
                       items: _escalationPathList.map((EscalationPath ep) {
@@ -134,58 +142,88 @@ class EscalationFormState extends State<EscalationForm> implements IEscalationPa
                           child: Text(ep.description),
                         );
                       }).toList(),
-                    )));
+                    )),
+                Text(
+                  state.hasError ? state.errorText : '',
+                  style:
+                  TextStyle(color: Colors.redAccent.shade700, fontSize: 12.0),
+                )
+              ],
+            ),
+            );
       },
     );
 
     items.add(Padding(padding: EdgeInsets.only(left: 10, right: 10), child: escalationPathFormField));
 
     //TASKTYPE
-    if (shouldShowTaskTypeDropDown) {
+    if (taskTypeRequired) {
 
       FormField taskTypeFormField = FormField<TaskType>(
-        initialValue: _taskTypeList.first,
-        validator: (TaskType value) {
-          if (value == null)
+
+        validator: (value) {
+          if (taskTypeRequired && value == null)
             return 'Select Task Type';
         },
         builder: (FormFieldState<TaskType> state) {
           return InputDecorator(
               decoration: InputDecoration(
+                contentPadding: EdgeInsets.only(top: 10.0),
                 icon: Icon(Icons.sort),
                 labelText: 'Task Type',
+
               ),
               isEmpty: _taskTypeSelected == null,
-              child: DropdownButtonHideUnderline(
-                  child: DropdownButton<TaskType>(
-                    value: _taskTypeSelected,
-                    onChanged: (TaskType value) {
-                      setState(() {
-                        _taskTypeSelected = value;
-                      });
-                    },
-                    items: _taskTypeList.map((TaskType tt) {
-                      return DropdownMenuItem<TaskType>(
-                        value: tt,
-                        child: Text(tt.description),
-                      );
-                    }).toList(),
-                  )));
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  DropdownButtonHideUnderline(
+                      child: DropdownButton<TaskType>(
+                        isDense: true,
+                        value: _taskTypeSelected,
+                        onChanged: (TaskType newValue) {
+                          state.didChange(newValue);
+                          setState(() {
+                            _taskTypeSelected = newValue;
+                          });
+                        },
+                        items: _taskTypeList.map((TaskType tt) {
+                          return DropdownMenuItem<TaskType>(
+                            value: tt,
+                            child: Text(tt.description),
+                          );
+                        }).toList(),
+                      )),
+                  Text(
+                    state.hasError ? state.errorText : '',
+                    style:
+                    TextStyle(color: Colors.redAccent.shade700, fontSize: 12.0),
+                  )
+                ],
+              ));
         },
       );
 
       items.add(Padding(padding: EdgeInsets.only(left: 10, right: 10), child: taskTypeFormField));
     }
 
-    TextFormField tffNotes = TextFormField(
-        focusNode: _notesFocusNode,
-        controller: _notesController,
-        maxLength: 4000,
-        textInputAction: TextInputAction.done,
-        decoration: InputDecoration(filled: true, fillColor: Colors.white, hintText: "Notes", enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey, width: 0.5))),
-        maxLines: 3);
+    FormField<String> notesFormField = FormField<String>(builder: (FormFieldState<String> state) {
+      return TextField(
+          maxLength: 4000,
+          maxLines: 3,
+          controller: _notesController,
+          textInputAction: TextInputAction.done,
+          inputFormatters: <TextInputFormatter>[
+            WhitelistingTextInputFormatter(RegExp('[a-zA-Z0-9]'))
+          ],
+          decoration: const InputDecoration(
+            isDense: true,
+            icon: Icon(Icons.note_add),
+            labelText: 'Notes',
+          ));
+    });
 
-    items.add(Padding(padding: EdgeInsets.only(left: 10, right: 10), child: tffNotes));
+    items.add(Padding(padding: EdgeInsets.only(left: 10, right: 10), child: notesFormField));
 
     return Column(
       children: items,

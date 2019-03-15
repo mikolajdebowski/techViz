@@ -174,7 +174,9 @@ class MessageClient {
     MessageProperties props = MessageProperties();
     props.persistent = true;
     props.contentType = 'application/json';
-    _exchange.publish(JsonEncoder().convert(object), "${routingKeyPattern}.update", properties: props);
+
+    String encoded = JsonEncoder().convert(object);
+    _exchange.publish(encoded, "${routingKeyPattern}.update", properties: props);
 
     if(!wait){
       _completer.complete();
