@@ -126,7 +126,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
                     hintText: "Cancellation reason",
                     border: InputBorder.none,
                   ),
-                  maxLines: 8,
+                  maxLines: 6,
                   validator: (String value){
                     if(value.isEmpty)
                       return 'Please inform the cancellation reason';
