@@ -29,6 +29,7 @@ class EscalationFormState extends State<EscalationForm> implements IEscalationPa
   EscalationPathPresenter _presenter;
   ScrollController _scrollController;
   TextEditingController _notesController;
+  bool _btnDisabled = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -60,8 +61,18 @@ class EscalationFormState extends State<EscalationForm> implements IEscalationPa
   }
 
   @override
+  void onEscalated() {
+    widget.onEscalationResult(true);
+    Navigator.of(context).pop();
+  }
+
+  @override
   void onLoadError(dynamic error) {
     print(error);
+
+    setState(() {
+      _btnDisabled = true;
+    });
   }
 
   //VIEW
@@ -71,7 +82,7 @@ class EscalationFormState extends State<EscalationForm> implements IEscalationPa
 
   @override
   Widget build(BuildContext context) {
-    bool _btnDisabled = true;
+
 
     Container container = Container(
         constraints: BoxConstraints.expand(),
@@ -85,11 +96,15 @@ class EscalationFormState extends State<EscalationForm> implements IEscalationPa
 
     VizButton okBtn = VizButton(title: 'OK', highlighted: true, onTap: () {
 
-      if(_formKey.currentState.validate()) {
-        widget.onEscalationResult(false);
-        Navigator.of(context).pop();
-      }
+      if(_btnDisabled)
+        return;
 
+      if(_formKey.currentState.validate()) {
+        setState(() {
+          _btnDisabled = true;
+        });
+        _presenter.escalateTask(widget._taskID, _escalationPathSelected, taskType: taskTypeRequired? _taskTypeSelected: null, notes: _notesController.text);
+      }
     });
     ActionBar ab = ActionBar(title: 'Escalate task ${widget._taskLocation}', tailWidget: okBtn, onCustomBackButtonActionTapped: (){
       widget.onEscalationResult(true);
@@ -114,7 +129,6 @@ class EscalationFormState extends State<EscalationForm> implements IEscalationPa
       },
       builder: (FormFieldState<EscalationPath> state) {
         return InputDecorator(
-
             decoration: InputDecoration(
               contentPadding: EdgeInsets.only(top: 10.0),
               isDense: true,
@@ -129,6 +143,7 @@ class EscalationFormState extends State<EscalationForm> implements IEscalationPa
                 DropdownButtonHideUnderline(
                     child: DropdownButton<EscalationPath>(
                       isDense: true,
+                      isExpanded: true,
                       value: _escalationPathSelected,
                       onChanged: (EscalationPath newValue) {
                         state.didChange(newValue);
@@ -168,18 +183,20 @@ class EscalationFormState extends State<EscalationForm> implements IEscalationPa
         builder: (FormFieldState<TaskType> state) {
           return InputDecorator(
               decoration: InputDecoration(
+                isDense: true,
                 contentPadding: EdgeInsets.only(top: 10.0),
                 icon: Icon(Icons.sort),
                 labelText: 'Task Type',
-
               ),
               isEmpty: _taskTypeSelected == null,
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   DropdownButtonHideUnderline(
                       child: DropdownButton<TaskType>(
                         isDense: true,
+                        isExpanded: true,
                         value: _taskTypeSelected,
                         onChanged: (TaskType newValue) {
                           state.didChange(newValue);
@@ -208,17 +225,17 @@ class EscalationFormState extends State<EscalationForm> implements IEscalationPa
     }
 
     FormField<String> notesFormField = FormField<String>(builder: (FormFieldState<String> state) {
-      return TextField(
+      return TextFormField(
           maxLength: 4000,
           maxLines: 3,
           controller: _notesController,
           textInputAction: TextInputAction.done,
-          inputFormatters: <TextInputFormatter>[
-            WhitelistingTextInputFormatter(RegExp('[a-zA-Z0-9]'))
-          ],
+          cursorColor: const Color(0xFF424242),
           decoration: const InputDecoration(
+            labelStyle: TextStyle(color: const Color(0xFF424242)),
             isDense: true,
-            icon: Icon(Icons.note_add),
+            focusedBorder: null,
+            icon: Icon(Icons.note_add, color: const Color(0xFF424242)),
             labelText: 'Notes',
           ));
     });
@@ -229,4 +246,6 @@ class EscalationFormState extends State<EscalationForm> implements IEscalationPa
       children: items,
     );
   }
+
+
 }

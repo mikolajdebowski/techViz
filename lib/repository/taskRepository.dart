@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:techviz/model/escalationPath.dart';
 import 'package:techviz/model/task.dart';
 import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/model/taskType.dart';
@@ -140,23 +141,23 @@ class TaskRepository implements IRepository<Task>{
 
   Future update(String taskID, {String taskStatusID, String cancellationReason, TaskUpdateCallBack callBack} ) async {
     Completer<dynamic> _completer = Completer<dynamic>();
-    //print('updating local...');
-    LocalRepository localRepo = LocalRepository();
-    if(!localRepo.db.isOpen)
-      await localRepo.open();
-
-    await  LocalRepository().db.rawUpdate('UPDATE TASK SET _DIRTY = 1 WHERE _ID = ?', [taskID].toList());
 
     dynamic message;
-
     if(taskStatusID=='12'){
-      message = {'taskID': taskID, 'taskStatusID': taskStatusID, 'tasknote': cancellationReason};
+      message = {'taskID': taskID, 'taskStatusID': taskStatusID, 'tasknote': base64.encode(utf8.encode(cancellationReason))};
     }
     else{
       message = {'taskID': taskID, 'taskStatusID': taskStatusID};
     }
 
-    TaskRouting().PublishMessage(message).then((dynamic d){
+    TaskRouting().PublishMessage(message).then((dynamic d) async{
+
+      LocalRepository localRepo = LocalRepository();
+      if(!localRepo.db.isOpen)
+        await localRepo.open();
+
+      await  LocalRepository().db.rawUpdate('UPDATE TASK SET _DIRTY = 1 WHERE _ID = ?', [taskID].toList());
+
       callBack(taskID);
       _completer.complete(d);
     });
@@ -164,6 +165,29 @@ class TaskRepository implements IRepository<Task>{
     return _completer.future;
   }
 
+  Future escalateTask(String taskID, EscalationPath escalationPath, {TaskType escalationTaskType, String notes}) {
+    Completer<dynamic> _completer = Completer<dynamic>();
 
+    dynamic message = {'taskID': taskID, 'TaskStatusID': '5', 'EscalationPath': escalationPath.id};
+    if(escalationTaskType!=null){
+      message['EscalationTypeID'] = escalationTaskType.taskTypeId;
+    }
+    if(notes!=null){
+      message['TaskNote'] = base64.encode(utf8.encode(notes));
+    }
 
+    TaskRouting().PublishMessage(message).then((dynamic d) async{
+
+      //ONLY UPDATE LOCALLY AFTER CALLBACK RETURNS
+      LocalRepository localRepo = LocalRepository();
+      if(!localRepo.db.isOpen)
+        await localRepo.open();
+
+      await  LocalRepository().db.rawUpdate('UPDATE TASK SET _DIRTY = 1 WHERE _ID = ?', [taskID].toList());
+
+      _completer.complete(d);
+    });
+
+    return _completer.future;
+  }
 }
