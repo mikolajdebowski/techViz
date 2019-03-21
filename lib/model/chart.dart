@@ -1,6 +1,6 @@
 
 import 'package:techviz/components/charts/vizChart.dart';
-import 'package:techviz/stats.dart';
+import 'package:techviz/ui/stats.dart';
 
 class Chart{
   final String title;

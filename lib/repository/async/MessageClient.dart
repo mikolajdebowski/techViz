@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:dart_amqp/dart_amqp.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:techviz/config.dart';
+import 'package:techviz/ui/config.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 import 'package:flutter/services.dart' show rootBundle;
 

@@ -1,7 +1,7 @@
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:charts_flutter/flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:techviz/components/charts/IVizChart.dart';
+import 'IVizChart.dart';
 
 class SimplePieChart extends StatelessWidget implements IVizChart{
   final List<charts.Series> seriesList;

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
-import 'package:techviz/config.dart';
-import 'package:techviz/home.dart';
-import 'package:techviz/logging.dart';
-import 'package:techviz/login.dart';
-import 'package:techviz/menu.dart';
-import 'package:techviz/profile.dart';
+import 'package:techviz/ui/config.dart';
+import 'package:techviz/ui/home.dart';
+import 'package:techviz/ui/logging.dart';
+import 'package:techviz/ui/login.dart';
+import 'package:techviz/ui/menu.dart';
+import 'package:techviz/ui/profile.dart';
 import 'package:techviz/repository/async/MessageClient.dart';
-import 'package:techviz/splash.dart';
+import 'package:techviz/ui/splash.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 void main() {

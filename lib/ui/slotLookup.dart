@@ -6,7 +6,7 @@ import 'package:techviz/components/VizAlert.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizDialog.dart';
 import 'package:techviz/components/vizElevated.dart';
-import 'package:techviz/machineReservation.dart';
+import 'package:techviz/ui/machineReservation.dart';
 import 'package:techviz/model/slotMachine.dart';
 import 'package:techviz/repository/SlotMachineRepository.dart';
 import 'package:techviz/repository/repository.dart';

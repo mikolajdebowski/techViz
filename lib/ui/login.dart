@@ -7,14 +7,14 @@ import 'package:techviz/components/VizAlert.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizLoadingIndicator.dart';
 import 'package:techviz/components/vizRainbow.dart';
-import 'package:techviz/config.dart';
+import 'package:techviz/ui/config.dart';
 import 'package:techviz/repository/async/DeviceRouting.dart';
 import 'package:techviz/repository/async/MessageClient.dart';
 import 'package:techviz/repository/async/UserRouting.dart';
 import 'package:techviz/repository/local/userTable.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/session.dart';
-import 'package:techviz/roleSelector.dart';
+import 'package:techviz/ui/roleSelector.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 import 'package:logging/logging.dart';
 

@@ -5,7 +5,7 @@ import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/roleListPresenter.dart';
 import 'package:techviz/presenter/statusListPresenter.dart';
 import 'package:techviz/repository/session.dart';
-import 'package:techviz/stats.dart';
+import 'package:techviz/ui/stats.dart';
 
 class Profile extends StatefulWidget {
   @override

@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:techviz/config.dart';
-import 'package:techviz/login.dart';
+import 'package:techviz/ui/config.dart';
+import 'package:techviz/ui/login.dart';
 
 class Splash extends StatefulWidget {
   @override

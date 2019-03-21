@@ -1,20 +1,20 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:techviz/attendant.home.dart';
+import 'package:techviz/ui/attendant.home.dart';
 import 'package:techviz/common/slideRightRoute.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizSelector.dart';
-import 'package:techviz/menu.dart';
+import 'package:techviz/ui/menu.dart';
 import 'package:techviz/model/task.dart';
 import 'package:techviz/model/userSection.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:techviz/repository/taskRepository.dart';
 import 'package:techviz/repository/userSectionRepository.dart';
-import 'package:techviz/sectionSelector.dart';
-import 'package:techviz/slotLookup.dart';
-import 'package:techviz/statusSelector.dart';
+import 'package:techviz/ui/sectionSelector.dart';
+import 'package:techviz/ui/slotLookup.dart';
+import 'package:techviz/ui/statusSelector.dart';
 
 
 class Home extends StatefulWidget {

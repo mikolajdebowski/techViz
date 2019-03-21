@@ -5,7 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:techviz/components/charts/vizChart.dart';
 import 'package:techviz/components/vizLegend.dart';
 import 'package:techviz/repository/repository.dart';
-import 'package:techviz/stats.dart';
+import 'package:techviz/ui/stats.dart';
 
 abstract class IStatsPresenter {
   void onLoaded(Map<int, Widget> widget);

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
-import 'package:techviz/home.dart';
+import 'package:techviz/ui/home.dart';
 import 'package:techviz/model/role.dart';
 import 'package:techviz/presenter/roleListPresenter.dart';
 //import 'package:techviz/repository/async/userMessage.dart';
