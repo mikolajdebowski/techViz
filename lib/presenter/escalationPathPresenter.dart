@@ -27,7 +27,7 @@ class EscalationPathPresenter{
   }
 
   void loadTaskType(){
-    _taskTypeRepository.getAll().then((List<TaskType> list){
+    _taskTypeRepository.getAll(TaskTypeLookup.escalationType).then((List<TaskType> list){
       _view.onTaskTypeLoaded(list);
     });
   }
