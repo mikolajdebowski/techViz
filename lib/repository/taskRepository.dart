@@ -172,7 +172,7 @@ class TaskRepository implements IRepository<Task>{
     if(escalationTaskType!=null){
       message['EscalationTypeID'] = escalationTaskType.taskTypeId;
     }
-    if(notes!=null){
+    if(notes!=null && notes.isNotEmpty){
       message['tasknote'] = base64.encode(utf8.encode(notes));
     }
 
