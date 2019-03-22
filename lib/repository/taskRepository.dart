@@ -173,7 +173,7 @@ class TaskRepository implements IRepository<Task>{
       message['EscalationTypeID'] = escalationTaskType.taskTypeId;
     }
     if(notes!=null){
-      message['TaskNote'] = base64.encode(utf8.encode(notes));
+      message['tasknote'] = base64.encode(utf8.encode(notes));
     }
 
     TaskRouting().PublishMessage(message).then((dynamic d) async{
