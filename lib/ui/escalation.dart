@@ -167,6 +167,7 @@ class EscalationFormState extends State<EscalationForm>
                       state.didChange(newValue);
                       setState(() {
                         _escalationPathSelected = newValue;
+                        _taskTypeSelected = null;
                       });
                     },
                     items: _escalationPathList.map((EscalationPath ep) {
