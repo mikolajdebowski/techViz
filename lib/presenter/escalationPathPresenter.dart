@@ -9,6 +9,7 @@ abstract class IEscalationPathPresenter {
   void onEscalationPathLoaded(List<EscalationPath> escalationPathList);
   void onTaskTypeLoaded(List<TaskType> taskTypeList);
   void onEscalated();
+  void onEscalationError(dynamic error);
   void onLoadError(dynamic error);
 }
 
@@ -35,6 +36,8 @@ class EscalationPathPresenter{
   void escalateTask(String taskID, EscalationPath escalationPath, {TaskType taskType, String notes} ){
     _taskRepository.escalateTask(taskID, escalationPath, escalationTaskType: taskType, notes: notes).then((dynamic d){
       _view.onEscalated();
+    }).catchError((dynamic error){
+      _view.onEscalationError(error);
     });
   }
 }

@@ -3,9 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
+import 'package:techviz/components/vizDialog.dart';
 import 'package:techviz/model/escalationPath.dart';
 import 'package:techviz/model/taskType.dart';
 import 'package:techviz/presenter/escalationPathPresenter.dart';
+import 'package:techviz/repository/taskRepository.dart';
 
 typedef OnEscalationResult = void Function(bool result);
 
@@ -271,5 +273,14 @@ class EscalationFormState extends State<EscalationForm>
     return Column(
       children: items,
     );
+  }
+
+  @override
+  void onEscalationError(dynamic error) {
+    if(error.runtimeType == TaskNotAvailableException){
+      VizDialog.Alert(context, "Error", error.toString()).then((bool returned){
+        Navigator.of(context).pop(false);
+      });
+    }
   }
 }

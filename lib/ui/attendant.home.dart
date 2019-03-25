@@ -91,7 +91,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
   }
 
   final GlobalKey<FormState> _cancellationFormKey = GlobalKey<FormState>();
-  void _showCancellationDialog() {
+  void _showCancellationDialog(final String taskID) {
 
     final TextEditingController _cancellationController = TextEditingController();
 
@@ -149,30 +149,6 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
                   )),
                   Align(alignment: Alignment.centerRight ,child: FlatButton(
                     onPressed: () {
-                      if(_selectedTask==null){
-                        showDialog<bool>(
-                            context: context,
-                            builder: (BuildContext context2) {
-                              return AlertDialog(
-                                content: Text('This task is not available anymore.'),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10.0))),
-                                actions: <Widget>[
-                                  FlatButton(
-                                    child: Text('OK'),
-                                    onPressed: (){
-                                      Navigator.of(context2).pop(true);
-
-                                    },
-                                  )
-                                ],
-                              );
-                            }).then((bool okResult){
-                          Navigator.of(context).pop();
-                        });
-
-                      }
-
-
                       if(!btnEnbled)
                         return;
 
@@ -183,10 +159,17 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
                       btnEnbled = false;
 
                       loadingBar.show(context);
-                      TaskRepository().update(_selectedTask.id, taskStatusID: '12', cancellationReason: _cancellationController.text, callBack: (String result){
+                      TaskRepository().update(taskID, taskStatusID: '12', cancellationReason: _cancellationController.text, callBack: (String result){
                         loadingBar.dismiss();
                         Navigator.of(context).pop(true);
                       }).catchError((dynamic error){
+                        loadingBar.dismiss();
+
+                        VizDialog.Alert(context, "Error", error.toString()).then((bool dialogResult){
+                          if(error.runtimeType == TaskNotAvailableException){
+                            Navigator.of(context).pop(false);
+                          }
+                        });
                         btnEnbled = true;
                       });
                     },
@@ -558,7 +541,7 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
       bool enableButtons = _selectedTask.dirty == false;
       if (_selectedTask.taskStatus.id == 2 || _selectedTask.taskStatus.id == 3) {
         rightActionWidgets.add(VizTaskActionButton('Cancel', [Color(0xFF433177), Color(0xFFF2003C)], enabled: enableButtons, onTapCallback: () {
-          _showCancellationDialog();
+          _showCancellationDialog(_selectedTask.id);
         }));
       }
 

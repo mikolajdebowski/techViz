@@ -4,8 +4,8 @@ import 'package:flutter/widgets.dart';
 
 class VizAlert{
 
-  static void Show(BuildContext ctx, String message){
-    showModalBottomSheet<String>(
+  static Future<bool> Show(BuildContext ctx, String message){
+    return showModalBottomSheet<bool>(
         context: ctx,
         builder: (BuildContext context) {
           return Center(
