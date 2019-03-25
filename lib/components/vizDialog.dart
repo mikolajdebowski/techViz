@@ -2,31 +2,32 @@ import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 
 class VizDialog {
-
-
   static Flushbar LoadingBar({String message = 'Wait...'}) {
-    Flushbar fb = Flushbar();
-    if (message != null && message.length > 0)
-      fb.message = message;
-    fb.showProgressIndicator = true;
-    fb.animationDuration = Duration(milliseconds: 500);
+    Flushbar fb = Flushbar(
+        message: message,
+        showProgressIndicator: true,
+        animationDuration: Duration(milliseconds: 500));
     return fb;
   }
 
-
-  static void Alert(BuildContext context, String title, String message) {
-    showDialog<void>(context: context, builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text(title),
-        content: Text(message),
-        actions: <Widget>[
-          FlatButton(child: Text('Close'), onPressed: () {
-            Navigator.of(context).pop();
-          })
-        ],
-      );
-    });
+  static Future<bool> Alert(
+      BuildContext context, String title, String message) {
+    return showDialog<bool>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10.0))),
+            title: Text(title),
+            content: Text(message),
+            actions: <Widget>[
+              FlatButton(
+                  child: Text('Close'),
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                  })
+            ],
+          );
+        });
   }
 }
-
-

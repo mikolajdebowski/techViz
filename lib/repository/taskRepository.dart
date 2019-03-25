@@ -140,6 +140,15 @@ class TaskRepository implements IRepository<Task>{
   }
 
   Future update(String taskID, {String taskStatusID, String cancellationReason, TaskUpdateCallBack callBack} ) async {
+    LocalRepository localRepo = LocalRepository();
+    if(!localRepo.db.isOpen)
+      await localRepo.open();
+
+    List<dynamic> taskStatusCheck = await LocalRepository().db.rawQuery("SELECT TASKSTATUSID FROM TASK WHERE _ID = '$taskID';");
+    if(taskStatusCheck.isEmpty || [1,2,3].contains(taskStatusCheck.first['TASKSTATUSID']) == false){
+      throw TaskNotAvailableException();
+    }
+
     Completer<dynamic> _completer = Completer<dynamic>();
 
     dynamic message;
@@ -165,8 +174,18 @@ class TaskRepository implements IRepository<Task>{
     return _completer.future;
   }
 
-  Future escalateTask(String taskID, EscalationPath escalationPath, {TaskType escalationTaskType, String notes}) {
+  Future escalateTask(String taskID, EscalationPath escalationPath, {TaskType escalationTaskType, String notes}) async {
     Completer<dynamic> _completer = Completer<dynamic>();
+
+
+    LocalRepository localRepo = LocalRepository();
+    if(!localRepo.db.isOpen)
+      await localRepo.open();
+
+    List<dynamic> taskStatusCheck = await LocalRepository().db.rawQuery("SELECT TASKSTATUSID FROM TASK WHERE _ID = '$taskID';");
+    if(taskStatusCheck.isEmpty || taskStatusCheck.first != 3){
+      throw TaskNotAvailableException();
+    }
 
     dynamic message = {'taskID': taskID, 'TaskStatusID': '5', 'EscalationPath': escalationPath.id};
     if(escalationTaskType!=null){
@@ -186,8 +205,20 @@ class TaskRepository implements IRepository<Task>{
       await  LocalRepository().db.rawUpdate('UPDATE TASK SET _DIRTY = 1 WHERE _ID = ?', [taskID].toList());
 
       _completer.complete(d);
+    }).catchError((dynamic error){
+      _completer.completeError(error);
     });
 
     return _completer.future;
+  }
+}
+
+class TaskNotAvailableException implements Exception{
+  String cause = 'This task is not available anymore';
+  TaskNotAvailableException();
+
+  @override
+  String toString() {
+    return cause.toString();
   }
 }
