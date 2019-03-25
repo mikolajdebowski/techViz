@@ -183,7 +183,7 @@ class TaskRepository implements IRepository<Task>{
       await localRepo.open();
 
     List<dynamic> taskStatusCheck = await LocalRepository().db.rawQuery("SELECT TASKSTATUSID FROM TASK WHERE _ID = '$taskID';");
-    if(taskStatusCheck.isEmpty || taskStatusCheck.first != 3){
+    if(taskStatusCheck.isEmpty || taskStatusCheck.first['TASKSTATUSID'] != 3){
       throw TaskNotAvailableException();
     }
 
