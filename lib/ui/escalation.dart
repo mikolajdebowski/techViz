@@ -34,6 +34,9 @@ class EscalationFormState extends State<EscalationForm>
   TextEditingController _notesController;
   bool _btnDisabled = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormFieldState> _formFieldTaskTypeKey = GlobalKey<FormFieldState>();
+
+
 
   @override
   void initState() {
@@ -138,7 +141,7 @@ class EscalationFormState extends State<EscalationForm>
     List<Widget> items = List<Widget>();
 
     //ESCALATION PATH
-    FormField escalationPathFormField = FormField<EscalationPath>(
+    FormField<EscalationPath> escalationPathFormField = FormField<EscalationPath>(
       validator: (value) {
         if (value == null)
           return 'Select Escalation Path';
@@ -170,6 +173,10 @@ class EscalationFormState extends State<EscalationForm>
                       setState(() {
                         _escalationPathSelected = newValue;
                         _taskTypeSelected = null;
+
+                        if(_formFieldTaskTypeKey.currentState!=null){
+                          _formFieldTaskTypeKey.currentState.reset();
+                        }
                       });
                     },
                     items: _escalationPathList.map((EscalationPath ep) {
@@ -196,9 +203,10 @@ class EscalationFormState extends State<EscalationForm>
 
     //TASKTYPE
     if (taskTypeRequired) {
-      FormField taskTypeFormField = FormField<TaskType>(
+      FormField<TaskType> taskTypeFormField = FormField<TaskType>(
+        key: _formFieldTaskTypeKey,
         validator: (value) {
-          if (taskTypeRequired && (value == null || _taskTypeSelected == null))
+          if (taskTypeRequired && value == null)
             return 'Select Task Type';
         },
         builder: (FormFieldState<TaskType> state) {
