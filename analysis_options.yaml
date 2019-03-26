@@ -25,7 +25,7 @@ linter:
     - cancel_subscriptions
     - close_sinks
     - always_declare_return_types
-    - always_put_control_body_on_new_line
+    # - always_put_control_body_on_new_line
     - annotate_overrides
     - avoid_init_to_null
     - avoid_null_checks_in_equality_operators
