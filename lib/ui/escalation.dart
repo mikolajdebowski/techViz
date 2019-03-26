@@ -198,7 +198,7 @@ class EscalationFormState extends State<EscalationForm>
     if (taskTypeRequired) {
       FormField taskTypeFormField = FormField<TaskType>(
         validator: (value) {
-          if (taskTypeRequired && value == null)
+          if (taskTypeRequired && (value == null || _taskTypeSelected == null))
             return 'Select Task Type';
         },
         builder: (FormFieldState<TaskType> state) {
