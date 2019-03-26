@@ -2,6 +2,7 @@ import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:techviz/components/VizAlert.dart';
+import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizDialog.dart';
 import 'package:techviz/model/reservationTime.dart';
@@ -10,6 +11,8 @@ import 'package:techviz/repository/SlotMachineRepository.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/reservationTimeRepository.dart';
 import 'package:techviz/repository/session.dart';
+
+typedef OnMachineReservationResult = void Function(bool result);
 
 class MachineReservation extends StatefulWidget {
   final SlotMachine slotMachine;
@@ -42,31 +45,110 @@ class MachineReservationState extends State<MachineReservation> {
 
   @override
   Widget build(BuildContext context) {
-    Widget _btnCreateReservation = OutlineButton(
-        child: Text('Reserve'),
-        onPressed: () {
+    SingleChildScrollView body = SingleChildScrollView(
+        padding: EdgeInsets.all(0),
+        child: Form(
+            key: _formKey,
+            child: Column(
+              children: <Widget>[
+                InputDecorator(
+                  decoration: InputDecoration(
+                    icon: Icon(Icons.location_on, color: Colors.white),
+                    labelText: 'StandID',
+                  ),
+                  child: Padding(
+                      padding: EdgeInsets.only(top: 5.0),
+                      child: Text(
+                        '${widget.slotMachine.standID}',
+                        style: TextStyle(color: Colors.white),
+                      )),
+                ),
+                FormField<String>(builder: (FormFieldState<String> state) {
+                  return TextFormField(
+                      maxLength: 25,
+                      controller: _txtControllerPlayerID,
+                      validator: (value) {
+                        if (value.isEmpty) return 'Please enter Player ID';
+                      },
+                      inputFormatters: <TextInputFormatter>[WhitelistingTextInputFormatter(RegExp('[a-zA-Z0-9]'))],
+                      decoration: const InputDecoration(
+                        icon: Icon(Icons.person, color: Colors.white),
+                        labelText: 'Player ID',
+                      ));
+                }),
+                FormField<String>(
+                  initialValue: _ddbTimeReservation,
+                  validator: (String value) {
+                    if (value == null) return 'Select the time of reservation';
+                  },
+                  builder: (FormFieldState<String> state) {
+                    return InputDecorator(
+                        decoration: InputDecoration(
+                          icon: Icon(Icons.timer, color: Colors.white),
+                          labelText: 'Time of reservation',
+                        ),
+                        isEmpty: _ddbTimeReservation == null,
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: _ddbTimeReservation,
+                            isDense: true,
+                            elevation: 2,
+                            onChanged: (String newValue) {
+                              setState(() {
+                                _ddbTimeReservation = newValue;
+                                state.didChange(newValue);
+                              });
+                            },
+                            items: times.map((ReservationTime value) {
+                              return DropdownMenuItem<String>(
+                                value: value.key.toString(),
+                                child: Text(value.value),
+                              );
+                            }).toList(),
+                          ),
+                        ));
+                  },
+                ),
+              ],
+            )));
 
-          if (!_btnEnabled)
-            return;
+    Container container = Container(
+        constraints: BoxConstraints.expand(),
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+                colors: [Color(0xFF586676), Color(0xFF8B9EA7)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
+        child: Padding(padding: EdgeInsets.all(5.0), child: body));
+
+    VizButton okBtn = VizButton(
+        title: 'OK',
+        highlighted: true,
+        onTap: () {
+          if (_btnEnabled) return;
+
           if (_formKey.currentState.validate()) {
-            _btnEnabled = false;
+            setState(() {
+              _btnEnabled = true;
+            });
+
             final Flushbar _loadingBar = VizDialog.LoadingBar(message: 'Creating reservation...');
             _loadingBar.show(context);
 
             Session session = Session();
-            _slotMachineRepositoryRepo.setReservation(session.user.userID, widget.slotMachine.standID, _txtControllerPlayerID.text, _ddbTimeReservation).then((dynamic result) {
+            _slotMachineRepositoryRepo
+                .setReservation(session.user.userID, widget.slotMachine.standID, _txtControllerPlayerID.text, _ddbTimeReservation)
+                .then((dynamic result) {
               _loadingBar.dismiss();
 
-              var reservationStatusId = result['reservationStatusId'].toString();
-              var copy = widget.slotMachine;
-              copy.machineStatusID = reservationStatusId=='0'?'1':'3';
+              String reservationStatusId = result['reservationStatusId'].toString();
+              SlotMachine copy = widget.slotMachine;
+              copy.machineStatusID = reservationStatusId == '0' ? '1' : '3';
               copy.updatedAt = DateTime.parse(result['sentAt'].toString());
 
               _slotMachineRepositoryRepo.pushToController(copy, 'RESERVATION');
 
               Navigator.of(context).pop();
-            }).catchError((dynamic error){
-              VizAlert.Show(context, error.toString());
+            }).catchError((dynamic error) {
+              VizDialog.Alert(context, 'Error', error.toString());
             }).whenComplete(() {
               _loadingBar.dismiss();
               _btnEnabled = true;
@@ -74,86 +156,26 @@ class MachineReservationState extends State<MachineReservation> {
           }
         });
 
-    var body = Container(
-      constraints: BoxConstraints.expand(),
-      decoration: BoxDecoration(gradient: LinearGradient(colors: [Color(0xFFeef5f5), Color(0xFFeef5f5)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
-      child: Padding(
-        padding: EdgeInsets.all(5.0),
-        child: SingleChildScrollView(
-          padding: EdgeInsets.all(0),
-          child: Form(
-              key: _formKey,
-              child: Column(
-                children: <Widget>[
-                  InputDecorator(
-                    decoration: InputDecoration(
-                      icon: Icon(Icons.location_on),
-                      labelText: 'StandID',
-                    ),
-                    child: Padding(padding: EdgeInsets.only(top: 5.0), child: Text('${widget.slotMachine.standID}')),
-                  ),
-                  FormField<String>(builder: (FormFieldState<String> state) {
-                    return TextFormField(
-                        maxLength: 25,
-                        controller: _txtControllerPlayerID,
-                        validator: (value) {
-                          if (value.isEmpty)
-                            return 'Please enter Player ID';
-                        },
-                        inputFormatters: <TextInputFormatter>[
-                          WhitelistingTextInputFormatter(RegExp('[a-zA-Z0-9]'))
-                        ],
-                        decoration: const InputDecoration(
-                          icon: Icon(Icons.person),
-                          labelText: 'Player ID',
-                        ));
-                  }),
-                  FormField<String>(
-                    initialValue: _ddbTimeReservation,
-                    validator: (String value) {
-                      if (value == null)
-                        return 'Select the time of reservation';
-                    },
-                    builder: (FormFieldState<String> state) {
-                      return InputDecorator(
-                          decoration: InputDecoration(
-                            icon: Icon(Icons.timer),
-                            labelText: 'Time of reservation',
-                          ),
-                          isEmpty: _ddbTimeReservation == null,
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                              value: _ddbTimeReservation,
-                              isDense: true,
-                              elevation: 2,
-                              onChanged: (String newValue) {
-                                setState(() {
-                                  _ddbTimeReservation = newValue;
-                                  state.didChange(newValue);
-                                });
-                              },
-                              items: times.map((ReservationTime value) {
-                                return DropdownMenuItem<String>(
-                                  value: value.key.toString(),
-                                  child: Text(value.value),
-                                );
-                              }).toList(),
-                            ),
-                          ));
-                    },
-                  ),
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: Padding(
-                      padding: EdgeInsets.all(5.0),
-                      child: _btnCreateReservation,
-                    ),
-                  ),
+    ActionBar actionBar = ActionBar(
+        title: 'Reservation for StandID ${widget.slotMachine.standID}',
+        tailWidget: okBtn,
+        onCustomBackButtonActionTapped: () {
+          //widget.onEscalationResult(false);
+        });
 
-                ],
-              )
-          ))));
+    Theme _theme = Theme(
+      data: Theme.of(context).copyWith(
+          canvasColor: Color(0xFF8B9EA7),
+          inputDecorationTheme:
+              InputDecorationTheme(
+                  labelStyle: TextStyle(color: Colors.white),
+                  focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.black))),
+          textTheme: TextTheme(
+            body1: TextStyle(color: Colors.white),
+          )),
+      child: container,
+    );
 
-    return Scaffold(backgroundColor: Colors.black, appBar: ActionBar(title: 'Reservation for StandID ${widget.slotMachine.standID}'), body: SafeArea(child: body));
+    return Scaffold(backgroundColor: Colors.black, appBar: actionBar, body: SafeArea(child: _theme));
   }
 }
