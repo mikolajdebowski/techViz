@@ -3,8 +3,6 @@
 # change Runner/Info.plist CFBundleVersion and CFBundleShortVersionString
 version = "v07b46"
 
-printf version
-
 flutter clean
 
 flutter analyze
