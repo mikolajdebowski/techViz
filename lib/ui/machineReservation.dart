@@ -123,11 +123,11 @@ class MachineReservationState extends State<MachineReservation> {
         title: 'OK',
         highlighted: true,
         onTap: () {
-          if (_btnEnabled) return;
+          if (!_btnEnabled) return;
 
           if (_formKey.currentState.validate()) {
             setState(() {
-              _btnEnabled = true;
+              _btnEnabled = false;
             });
 
             final Flushbar _loadingBar = VizDialog.LoadingBar(message: 'Creating reservation...');
