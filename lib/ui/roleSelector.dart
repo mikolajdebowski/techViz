@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
+import 'package:techviz/repository/roleRepository.dart';
 import 'package:techviz/ui/home.dart';
 import 'package:techviz/model/role.dart';
 import 'package:techviz/presenter/roleListPresenter.dart';
-//import 'package:techviz/repository/async/userMessage.dart';
 import 'package:techviz/repository/session.dart';
 
 class RoleSelector extends StatefulWidget {
@@ -21,7 +21,7 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
   RoleListPresenter roleListPresenter;
   String selectedRoleID;
 
-  List<int> availableViews = [10];
+  List<int> availableViews = [10, 20, 25]; //this is a temporary thing because the app doesnt support all kinds of roles
 
   @override
   void initState(){
@@ -40,7 +40,11 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
     //Session session = Session();
     //var toSend = {'userRoleID': selectedRoleID, 'userID': session.user.UserID};
     //UserMessage().publishMessage(toSend);
-    //TODO: FIX THIS!
+    
+    Session session = Session();
+    session.role = (await RoleRepository().getAll(ids: [selectedRoleID])).first;
+    
+    
     Navigator.pushReplacement(context, MaterialPageRoute<Home>(builder: (BuildContext context) => Home()));
   }
 

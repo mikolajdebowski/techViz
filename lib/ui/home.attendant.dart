@@ -15,23 +15,26 @@ import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:techviz/repository/taskRepository.dart';
 
-class AttendantHome extends StatefulWidget {
-  AttendantHome(Key key) : super(key: key);
+class HomeAttendant extends StatefulWidget {
+  HomeAttendant(Key key) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => AttendantHomeState();
+  State<StatefulWidget> createState() => HomeAttendantState();
 }
 
-class AttendantHomeState extends State<AttendantHome> implements ITaskListPresenter<Task>, HomeEvents {
+class HomeAttendantState extends State<HomeAttendant> with WidgetsBindingObserver implements ITaskListPresenter<Task>, TechVizHome {
   bool _isLoadingTasks = false;
   TaskListPresenter _taskPresenter;
   Task _selectedTask;
   List<Task> _taskList;
-  var _taskListStatusIcon = "assets/images/ic_processing.png";
+  String _taskListStatusIcon = "assets/images/ic_processing.png";
   Flushbar loadingBar;
+  StreamController streamController;
 
   @override
   void initState() {
+    super.initState();
+
     _taskList = List<Task>();
     _taskPresenter = TaskListPresenter(this);
     _taskListStatusIcon = "assets/images/ic_processing.png";
@@ -42,7 +45,47 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
       reloadTasks();
     });
 
-    super.initState();
+    bindTaskListener();
+  }
+
+  void bindTaskListener() async {
+    await unTaskBindListener();
+
+    streamController = TaskRepository().listenQueue((Task task){
+
+      if (task == null) {
+        return;
+      }
+
+      Session session = Session();
+      if (session.user == null)
+        return;
+
+      setState(() {
+        if ([1, 2, 3].toList().contains(task.taskStatus.id) && task.userID == session.user.userID) {
+          //update the view
+          if (_selectedTask != null && _selectedTask.id == task.id) {
+            _selectedTask = task;
+          }
+          _taskPresenter.loadTaskList(session.user.userID);
+        } else {
+          //remove from the view
+          if (_selectedTask != null && _selectedTask.id == task.id) {
+            _selectedTask = null;
+          }
+          _taskPresenter.loadTaskList(session.user.userID);
+        }
+      });
+    }, (dynamic error){
+      print(error);
+    });
+  }
+
+  Future unTaskBindListener() async {
+    if(streamController==null || !streamController.isClosed){
+      return;
+    }
+    await streamController.close();
   }
 
   @override
@@ -609,43 +652,9 @@ class AttendantHomeState extends State<AttendantHome> implements ITaskListPresen
   }
 
   @override
-  void onTaskReceived(Task task) {
-    if (task == null) {
-      return;
-    }
-
-    //print('onTaskReceived => ${task.id} ${task.taskStatus.id}');
-
-    Session session = Session();
-    if (session.user == null)
-      return;
-
-    setState(() {
-      if ([1, 2, 3].toList().contains(task.taskStatus.id) && task.userID == session.user.userID) {
-        //update the view
-        //print(task.id + ' add/update the view ' +task.taskStatus.id.toString());
-
-        if (_selectedTask != null && _selectedTask.id == task.id) {
-          _selectedTask = task;
-          //print(task.id + ' updated selected with StatusID ' +task.taskStatus.id.toString());
-        }
-
-        _taskPresenter.loadTaskList(session.user.userID);
-      } else {
-        //remove from the view
-        if (_selectedTask != null && _selectedTask.id == task.id) {
-          _selectedTask = null;
-          //print(task.id + ' removed from selected because StatusID is ' +task.taskStatus.id.toString());
-        }
-
-        _taskPresenter.loadTaskList(session.user.userID);
-      }
-    });
-  }
-
-  @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
+      bindTaskListener();
       reloadTasks();
     }
   }

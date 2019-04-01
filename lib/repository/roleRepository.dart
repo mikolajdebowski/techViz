@@ -11,7 +11,7 @@ class RoleRepository implements IRepository<Role>{
   Future<List<Role>> getAll({List<String> ids}) async {
     LocalRepository localRepo = LocalRepository();
 
-    String sqlQuery = "SELECT UserRoleID, UserRoleName FROM Role";
+    String sqlQuery = "SELECT * FROM Role";
     if(ids!=null || ids.length>0){
       sqlQuery += " WHERE UserRoleID IN (${ids.join(',')})";
     }
@@ -23,6 +23,12 @@ class RoleRepository implements IRepository<Role>{
       var t = Role(
         id: role['UserRoleID'] as int,
         description: role['UserRoleName'] as String,
+        isAttendant: role['IsAttendant'] == 1,
+        isManager: role['IsManager'] == 1,
+        isSupervisor: role['IsSupervisor']  == 1,
+        isTechManager: role['IsTechManager'] == 1,
+        isTechnician: role['IsTechnician'] == 1,
+        isTechSupervisor: role['IsTechSupervisor'] == 1,
       );
       toReturn.add(t);
     });

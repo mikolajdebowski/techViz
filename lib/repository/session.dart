@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:techviz/model/role.dart';
 import 'package:techviz/model/user.dart';
 import 'package:techviz/repository/async/UserRouting.dart';
 import 'package:techviz/repository/local/userTable.dart';
@@ -14,6 +15,7 @@ enum ConnectionStatus{
 
 class Session extends PropertyChangeNotifier {
   User user;
+  Role role;
   ConnectionStatus connectionStatus;
 
   static final Session _singleton = Session._internal();
@@ -21,12 +23,11 @@ class Session extends PropertyChangeNotifier {
     return _singleton;
   }
 
-  Session._internal() {
-    //print('Session instance');
-  }
+  Session._internal();
 
   Future init(String userID) async {
     user = await UserTable.getUser(userID);
+
     user.changes.listen((List<ChangeRecord> changes) {
       print('changes from User: ');
       print(changes[0]);
