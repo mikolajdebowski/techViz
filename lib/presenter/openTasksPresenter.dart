@@ -28,7 +28,5 @@ class OpenTasksPresenter{
       _view.onOpenTasksLoaded(header);
 
     });
-
-
   }
 }
