@@ -1,16 +1,14 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:techviz/ui/attendant.home.dart';
+import 'package:techviz/ui/home.attendant.dart';
 import 'package:techviz/common/slideRightRoute.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizSelector.dart';
+import 'package:techviz/ui/home.manager.dart';
 import 'package:techviz/ui/menu.dart';
-import 'package:techviz/model/task.dart';
 import 'package:techviz/model/userSection.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/repository/session.dart';
-import 'package:techviz/repository/taskRepository.dart';
 import 'package:techviz/repository/userSectionRepository.dart';
 import 'package:techviz/ui/sectionSelector.dart';
 import 'package:techviz/ui/slotLookup.dart';
@@ -25,7 +23,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> with WidgetsBindingObserver {
-  GlobalKey<AttendantHomeState> keyAttendant;
+  GlobalKey<dynamic> homeChildKey;
   bool initialLoading = false;
 
   List<UserSection> currentSections = List<UserSection>();
@@ -33,7 +31,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
   String _userStatusText;
   bool _isOnline = false;
-  StreamController streamController;
+
 
   String get getSectionsText {
     String sections = "";
@@ -57,7 +55,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     loadDefaultSections();
-    bindTaskListener();
   }
 
   @override
@@ -83,21 +80,12 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     });
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    keyAttendant.currentState.didChangeAppLifecycleState(state);
-
-    if (state == AppLifecycleState.resumed) {
-      bindTaskListener();
-    }
-  }
-
   void onUserSectionsChangedCallback(List<UserSection> sections) {
     print("onUserSectionsChangedCallback: ${sections.length.toString()}");
     setState(() {
       currentSections = sections;
     });
-    keyAttendant.currentState.onUserSectionsChanged(currentSections);
+    homeChildKey.currentState.onUserSectionsChanged(currentSections);
   }
 
   void onMyStatusSelectorCallbackOK(UserStatus userStatusSelected) {
@@ -110,24 +98,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     _userStatusText = userStatusSelected.description;
     _isOnline = userStatusSelected.isOnline;
 
-    keyAttendant.currentState.onUserStatusChanged(userStatusSelected); //TODO: NULL?
-  }
-
-  void bindTaskListener() async {
-    await unTaskBindListener();
-
-    streamController = TaskRepository().listenQueue((Task task){
-      keyAttendant.currentState.onTaskReceived(task);
-    }, (dynamic error){
-        print(error);
-    });
-  }
-
-  Future unTaskBindListener() async {
-    if(streamController==null || !streamController.isClosed){
-      return;
-    }
-    await streamController.close();
+    homeChildKey.currentState.onUserStatusChanged(userStatusSelected); //TODO: NULL?
   }
 
   void goToSectionSelector() {
@@ -156,12 +127,12 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    var leadingMenuButton = VizButton(title: 'Menu', onTap: goToMenu);
+    VizButton leadingMenuButton = VizButton(title: 'Menu', onTap: goToMenu);
 
-    var statusText = _userStatusText == null ? "OFF SHIFT" : _userStatusText;
-    var statusTextColor = _isOnline == false ? Colors.red : Colors.black;
+    String statusText = _userStatusText == null ? "OFF SHIFT" : _userStatusText;
+    Color statusTextColor = _isOnline == false ? Colors.red : Colors.black;
 
-    var statusInnerWidget = Column(
+    Column statusInnerWidget = Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -170,10 +141,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       ],
     );
 
-    var statusWidgetBtn = VizButton(customWidget: statusInnerWidget, flex: 3, onTap: goToStatusSelector);
+    VizButton statusWidgetBtn = VizButton(customWidget: statusInnerWidget, flex: 3, onTap: goToStatusSelector);
 
     //ZONES
-    var sectionsInnerWidget = Column(
+    Column sectionsInnerWidget = Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -182,7 +153,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       ],
     );
 
-    var sectionsWidgetBtn = VizButton(customWidget: sectionsInnerWidget, flex: 3, onTap: goToSectionSelector);
+    VizButton sectionsWidgetBtn = VizButton(customWidget: sectionsInnerWidget, flex: 3, onTap: goToSectionSelector);
 
     //NOTIFICATIONS
 //    var notificationInnerWidget = Column(
@@ -201,18 +172,25 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 //    );
 
     //var notificationWidgetBtn = VizButton(customWidget: notificationInnerWidget, flex: 3);
-    var notificationWidgetBtn = Spacer(flex: 3);
+    Spacer notificationWidgetBtn = Spacer(flex: 3);
 
     //SEARCH
-    var searchIconWidget = VizButton(customWidget: ImageIcon(AssetImage("assets/images/ic_search.png"), size: 30.0), onTap: goToSearchSelector, flex: 1);
+    VizButton searchIconWidget = VizButton(customWidget: ImageIcon(AssetImage("assets/images/ic_search.png"), size: 30.0), onTap: goToSearchSelector, flex: 1);
 
     //
-    var actionBarCentralWidgets = <Widget>[statusWidgetBtn, sectionsWidgetBtn, notificationWidgetBtn, searchIconWidget];
+    List<Widget> actionBarCentralWidgets = <Widget>[statusWidgetBtn, sectionsWidgetBtn, notificationWidgetBtn, searchIconWidget];
 
-    if (keyAttendant == null) {
-      keyAttendant = GlobalKey<AttendantHomeState>();
+    Widget view;
+
+    Session session = Session();
+    if(session.role.isManager || session.role.isSupervisor){
+      homeChildKey = GlobalKey<HomeManagerState>();
+      view = HomeManager(homeChildKey);
     }
-    var view = AttendantHome(keyAttendant);
+    else if(session.role.isAttendant){
+      homeChildKey = GlobalKey<HomeAttendantState>();
+      view = HomeAttendant(homeChildKey);
+    }
 
     return Scaffold(
       resizeToAvoidBottomPadding: false,
@@ -223,9 +201,9 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   }
 }
 
-abstract class HomeEvents {
+
+abstract class TechVizHome{
   void onUserStatusChanged(UserStatus us);
   void onUserSectionsChanged(Object obj);
-  void onTaskReceived(Task obj);
-  void didChangeAppLifecycleState(AppLifecycleState state);
 }
+
