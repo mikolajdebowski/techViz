@@ -46,9 +46,9 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
       children: <Widget>[
         Expanded(child: (Container(decoration: boxDecoration, child: Center(child: _openTasks != null ? _openTasks : CircularProgressIndicator())))),
         SizedBox(height: 5),
-        Expanded(child: (Container(decoration: boxDecoration, child: Center(child: _teamAvailability != null ? _teamAvailability : CircularProgressIndicator())))),
-        SizedBox(height: 5),
         Expanded(child: (Container(decoration: boxDecoration, child: Center(child: _slotFloor = _slotFloor!=null ? _slotFloor : CircularProgressIndicator())))),
+        SizedBox(height: 5),
+        Expanded(child: (Container(decoration: boxDecoration, child: Center(child: _teamAvailability != null ? _teamAvailability : CircularProgressIndicator())))),
       ],
     );
 
