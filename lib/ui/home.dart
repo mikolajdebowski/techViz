@@ -55,6 +55,16 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     loadDefaultSections();
+
+    Session session = Session();
+    if(session.role.isManager || session.role.isSupervisor){
+      homeChildKey = GlobalKey<HomeManagerState>();
+    }
+    else if(session.role.isAttendant){
+      homeChildKey = GlobalKey<HomeAttendantState>();
+    }
+
+
   }
 
   @override
@@ -184,11 +194,9 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
     Session session = Session();
     if(session.role.isManager || session.role.isSupervisor){
-      homeChildKey = GlobalKey<HomeManagerState>();
       view = HomeManager(homeChildKey);
     }
     else if(session.role.isAttendant){
-      homeChildKey = GlobalKey<HomeAttendantState>();
       view = HomeAttendant(homeChildKey);
     }
 

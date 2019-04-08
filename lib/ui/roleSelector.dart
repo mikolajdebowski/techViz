@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
+import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/roleRepository.dart';
+import 'package:techviz/repository/userRepository.dart';
 import 'package:techviz/ui/home.dart';
 import 'package:techviz/model/role.dart';
 import 'package:techviz/presenter/roleListPresenter.dart';
@@ -37,14 +39,14 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
     if(selectedRoleID == null)
       return;
 
-    //Session session = Session();
-    //var toSend = {'userRoleID': selectedRoleID, 'userID': session.user.UserID};
-    //UserMessage().publishMessage(toSend);
-    
     Session session = Session();
+    UserRepository userRepository = Repository().userRepository;
+
+    await userRepository.Update(session.user.userID, roleID: selectedRoleID);
+
     session.role = (await RoleRepository().getAll(ids: [selectedRoleID])).first;
-    
-    
+    session.user.userRoleID =  session.role.id;
+
     Navigator.pushReplacement(context, MaterialPageRoute<Home>(builder: (BuildContext context) => Home()));
   }
 

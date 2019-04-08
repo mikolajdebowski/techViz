@@ -166,16 +166,24 @@ class MessageClient {
       StreamController<AmqpMessage> sc = StreamController<AmqpMessage>();
       sc.stream.listen((AmqpMessage message){
         _removeRoutingKeyListener(routingKey);
-        _completer.complete(parser == null ? message.payloadAsJson : parser(message.payloadAsJson));
+        if(!_completer.isCompleted){
+          _completer.complete(parser == null ? message.payloadAsJson : parser(message.payloadAsJson));
+        }
+
       });
       _addRoutingKeyListener(routingKey, sc);
+    }
+    
+    Map<String,dynamic> mapObject = object as Map<String,dynamic>;
+    if(!mapObject.containsKey('deviceID')){
+      mapObject['deviceID'] = _deviceID;
     }
 
     MessageProperties props = MessageProperties();
     props.persistent = true;
     props.contentType = 'application/json';
 
-    String encoded = JsonEncoder().convert(object);
+    String encoded = JsonEncoder().convert(mapObject);
     _exchange.publish(encoded, "${routingKeyPattern}.update", properties: props);
 
     if(!wait){
