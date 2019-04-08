@@ -43,9 +43,10 @@ class HomeAttendantState extends State<HomeAttendant> with WidgetsBindingObserve
 
     Future.delayed(Duration(seconds: 1), () {
       reloadTasks();
+      bindTaskListener();
     });
 
-    bindTaskListener();
+
   }
 
   void bindTaskListener() async {
@@ -58,24 +59,25 @@ class HomeAttendantState extends State<HomeAttendant> with WidgetsBindingObserve
       }
 
       Session session = Session();
-      if (session.user == null)
-        return;
 
-      setState(() {
-        if ([1, 2, 3].toList().contains(task.taskStatus.id) && task.userID == session.user.userID) {
-          //update the view
-          if (_selectedTask != null && _selectedTask.id == task.id) {
+      if ([1, 2, 3].toList().contains(task.taskStatus.id) && task.userID == session.user.userID) {
+        //update the view
+        if (_selectedTask != null && _selectedTask.id == task.id) {
+          setState(() {
             _selectedTask = task;
-          }
-          _taskPresenter.loadTaskList(session.user.userID);
-        } else {
-          //remove from the view
-          if (_selectedTask != null && _selectedTask.id == task.id) {
-            _selectedTask = null;
-          }
-          _taskPresenter.loadTaskList(session.user.userID);
+          });
         }
-      });
+        _taskPresenter.loadTaskList(session.user.userID);
+      } else {
+        //remove from the view
+        if (_selectedTask != null && _selectedTask.id == task.id) {
+          setState(() {
+            _selectedTask = null;
+          });
+        }
+        _taskPresenter.loadTaskList(session.user.userID);
+      }
+
     }, (dynamic error){
       print(error);
     });
@@ -90,7 +92,7 @@ class HomeAttendantState extends State<HomeAttendant> with WidgetsBindingObserve
 
   @override
   void onTaskListLoaded(List<Task> result) {
-    //print('onTaskListLoaded called');
+    if(!mounted) return;
 
     setState(() {
       _taskList = result;
@@ -109,7 +111,8 @@ class HomeAttendantState extends State<HomeAttendant> with WidgetsBindingObserve
   }
 
   void onTaskItemTapCallback(String taskID) {
-    //print('onTaskItemTapCallback called');
+    if(!mounted) return;
+
     setState(() {
       _selectedTask = _taskList.where((Task task) => task.id == taskID).first;
     });
@@ -574,7 +577,7 @@ class HomeAttendantState extends State<HomeAttendant> with WidgetsBindingObserve
       padding: EdgeInsets.only(top: 7.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[Text('Time Taken', style: TextStyle(color: Colors.grey, fontSize: 12.0)), VizTimer(timeStarted: _selectedTask != null ? _selectedTask.taskCreated : null)],
+        children: <Widget>[Text('Time Taken', style: TextStyle(color: Colors.grey, fontSize: 12.0)), /*VizTimer(timeStarted: _selectedTask != null ? _selectedTask.taskCreated : null)*/],
         //children: <Widget>[Text('Time Taken', style: TextStyle(color: Colors.grey, fontSize: 12.0)), VizTimer(timeStarted: null)],
       ),
     );
@@ -640,13 +643,15 @@ class HomeAttendantState extends State<HomeAttendant> with WidgetsBindingObserve
   }
 
   void reloadTasks() {
+    if(!mounted) return;
+
     setState(() {
       _isLoadingTasks = true;
       _selectedTask = null;
     });
 
-    Session session = Session();
     Repository().taskRepository.fetch().then((dynamic b) {
+      Session session = Session();
       _taskPresenter.loadTaskList(session.user.userID);
     });
   }
