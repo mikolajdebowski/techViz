@@ -16,8 +16,9 @@ class ProfileState extends State<Profile> implements IRoleListPresenter<Role>, I
   List<ProfileItem> _userInfo = [];
   RoleListPresenter roleListPresenter;
   StatusListPresenter statusListPresenter;
-  String _currentRole;
-  String _currentStatus;
+
+  List<UserStatus> _statuses;
+  List<Role> _roles;
 
   @override
   void initState(){
@@ -32,8 +33,8 @@ class ProfileState extends State<Profile> implements IRoleListPresenter<Role>, I
 
     _userInfo.add(ProfileItem(columnName: 'UserID', value: session.user.userID));
     _userInfo.add(ProfileItem(columnName: 'UserName', value: session.user.userName));
-    _userInfo.add(ProfileItem(columnName: 'UserRoleID', value: null));
-    _userInfo.add(ProfileItem(columnName: 'UserStatusID', value: null));
+    _userInfo.add(ProfileItem(columnName: 'UserRoleID', value: session.user.userRoleID));
+    _userInfo.add(ProfileItem(columnName: 'UserStatusID', value: session.user.userStatusID));
     _userInfo.add(ProfileItem(columnName: 'StaffID', value: session.user.staffID));
   }
 
@@ -42,16 +43,24 @@ class ProfileState extends State<Profile> implements IRoleListPresenter<Role>, I
 
     Widget subItem;
     if(_userInfo[index].columnName == 'UserStatusID'){
-      if(_currentStatus != null)
-        subItem = Text(_currentStatus);
-      else
+      if(_statuses==null || _statuses.length==0){
         subItem = Center(child: CircularProgressIndicator());
+      }
+      else{
+        int id = _userInfo[index].value as int;
+        String statusDescription = _statuses.where((UserStatus status) => status.id == id.toString()).first.description;
+        subItem = Text(statusDescription);
+      }
     }
     else if(_userInfo[index].columnName == 'UserRoleID'){
-      if(_currentRole != null)
-        subItem = Text(_currentRole);
-      else
+      if(_roles==null || _roles.length==0){
         subItem = Center(child: CircularProgressIndicator());
+      }
+      else{
+        int id = _userInfo[index].value;
+        String roleDescription = _roles.where((Role role) => role.id == id).first.description;
+        subItem = Text(roleDescription);
+      }
     }
     else{
       subItem = Text(_userInfo[index].value);
@@ -114,23 +123,15 @@ class ProfileState extends State<Profile> implements IRoleListPresenter<Role>, I
 
   @override
   void onRoleListLoaded(List<Role> result) {
-    if (result.length == 0)
-      return;
-
-    String current = result.where((Role role)=> role.id.toString() == Session().user.userRoleID.toString()).first.description;
     setState(() {
-      _currentRole = current;
+      _roles = result;
     });
   }
 
   @override
   void onStatusListLoaded(List<UserStatus> result) {
-    if (result.length == 0)
-      return;
-
-    String current = result.where((UserStatus us)=> us.id == Session().user.userStatusID.toString()).first.description;
     setState(() {
-      _currentStatus = current;
+      _statuses = result;
     });
   }
 }
@@ -139,7 +140,7 @@ abstract class ListItem {}
 
 class ProfileItem implements ListItem {
   final String columnName;
-  final String value;
+  final dynamic value;
 
   ProfileItem({this.columnName, this.value});
 }
