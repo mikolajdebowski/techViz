@@ -14,10 +14,13 @@ class UserRouting {
   }
 
   User parser(dynamic json){
+    String userID = json["userID"];
+    int statusID = json["userStatusID"] != null?int.parse(json["userStatusID"].toString()):0;
+    int roleID = json["userRoleID"] != null?int.parse(json["userRoleID"].toString()):0;
+
     return User(
-        userID: json["userID"] as String,
-        userStatusID: int.parse(json["userStatusID"].toString()));
+        userID: userID,
+        userStatusID: statusID,
+        userRoleID: roleID);
   }
-
-
 }
