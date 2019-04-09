@@ -6,9 +6,9 @@ abstract class IManagerViewPresenter {
   void onTeamAvailabilityLoaded(VizSummaryHeader summaryHeader);
   void onSlotFloorSummaryLoaded(VizSummaryHeader summaryHeader);
 
-  void onOpenTasksExpanded(Widget listResult);
-  void onTeamAvailabilityExpanded(Widget listResult);
-  void onSlotFloorSummaryExpanded(Widget listResult);
+  void onOpenTasksExpanded(String selectedTag, Widget listResult);
+  void onTeamAvailabilityExpanded(String selectedTag, Widget listResult);
+  void onSlotFloorSummaryExpanded(String selectedTag, Widget listResult);
 
   void onLoadError(dynamic error);
 }
@@ -24,17 +24,17 @@ class ManagerViewPresenter{
     Future.delayed(Duration(seconds: 1), (){
       List<VizSummaryHeaderEntry> entries = [
         VizSummaryHeaderEntry('Assigned', 12, onEntryTapCallback: (){
-          _view.onOpenTasksExpanded(Text('Assigned'));
+          _view.onOpenTasksExpanded('Assigned', Text('Assigned'));
         }),
         VizSummaryHeaderEntry('Un-Assigned', 4, onEntryTapCallback: (){
-          _view.onOpenTasksExpanded(Text('Un-Assigned'));
+          _view.onOpenTasksExpanded('Un-Assigned', Text('Un-Assigned'));
         }),
         VizSummaryHeaderEntry('Overdue', 1, onEntryTapCallback: (){
-          _view.onOpenTasksExpanded(Text('Overdue'));
+          _view.onOpenTasksExpanded('Overdue', Text('Overdue'));
         }),
-//        VizSummaryHeaderEntry('Escalated', 2, onEntryTapCallback: (){
-//          _view.onOpenTasksExpanded(Text('Escalated'));
-//        })
+        VizSummaryHeaderEntry('Escalated', 2, onEntryTapCallback: (){
+          _view.onOpenTasksExpanded('Escalated', Text('Escalated'));
+        })
       ];
 
       VizSummaryHeader header = VizSummaryHeader(headerTitle: 'Tasks', entries: entries);

@@ -13,9 +13,9 @@ class HomeManager extends StatefulWidget {
 }
 
 class HomeManagerState extends State<HomeManager> implements TechVizHome, IManagerViewPresenter {
-  Widget _openTasksHeader;
-  Widget _teamAvailabilityHeader;
-  Widget _slotFloorHeader;
+  VizSummaryHeader _openTasksHeader;
+  VizSummaryHeader _teamAvailabilityHeader;
+  VizSummaryHeader _slotFloorHeader;
 
   Widget _openTasksList;
   Widget _teamAvailabilityList;
@@ -23,7 +23,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
 
   ManagerViewPresenter _presenter;
 
-  String selectedTag;
+  String _selectedTag;
 
   @override
   void initState() {
@@ -98,27 +98,30 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
 
 
   @override
-  void onOpenTasksExpanded(Widget listResult) {
+  void onOpenTasksExpanded(String selectedTag, Widget listResult) {
     if (this.mounted) {
       setState(() {
+        _selectedTag = selectedTag;
         _openTasksList = listResult;
       });
     }
   }
 
   @override
-  void onSlotFloorSummaryExpanded(Widget listResult) {
+  void onSlotFloorSummaryExpanded(String selectedTag, Widget listResult) {
     if (this.mounted) {
       setState(() {
+        _selectedTag = selectedTag;
         _slotFloorList = listResult;
       });
     }
   }
 
   @override
-  void onTeamAvailabilityExpanded(Widget listResult) {
+  void onTeamAvailabilityExpanded(String selectedTag, Widget listResult) {
     if (this.mounted) {
       setState(() {
+        _selectedTag = selectedTag;
         _teamAvailabilityList = listResult;
       });
     }

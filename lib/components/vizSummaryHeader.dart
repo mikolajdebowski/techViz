@@ -4,10 +4,10 @@ import 'package:flutter/widgets.dart';
 class VizSummaryHeader extends StatelessWidget {
   final double height = 90;
   final String headerTitle;
-  final String selectedTag;
+  final bool selected;
   final List<VizSummaryHeaderEntry> entries;
 
-  VizSummaryHeader({Key key, this.headerTitle, this.entries, this.selectedTag}) : super(key: key);
+  VizSummaryHeader({Key key, this.headerTitle, this.entries, this.selected}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class VizSummaryHeader extends StatelessWidget {
       Border borderHeader = Border(left: idx > 0 && idx <= lastIdx ? bs : BorderSide.none, top: bs);
       Border borderValue = Border(left: idx > 0 && idx <= lastIdx ? bs : BorderSide.none, top: bs, bottom: bs);
 
-      BoxDecoration decorationEntryHeader = BoxDecoration(border: borderHeader, color: entry.tag == selectedTag ? Color(0xFF888888) : Color(0xFFAAAAAA));
+      BoxDecoration decorationEntryHeader = BoxDecoration(border: borderHeader, color: selected ? Color(0xFF888888) : Color(0xFFAAAAAA));
       BoxDecoration decorationEntryValue = BoxDecoration(border: borderValue);
 
       Container containerHeader = Container(decoration: decorationEntryHeader, child: Center(child: Text(entry.entryName)));
@@ -76,10 +76,9 @@ class VizSummaryHeader extends StatelessWidget {
 }
 
 class VizSummaryHeaderEntry {
-  final String tag;
   final String entryName;
   final dynamic value;
   final Function onEntryTapCallback;
 
-  VizSummaryHeaderEntry(this.entryName, this.value, {this.tag, this.onEntryTapCallback});
+  VizSummaryHeaderEntry(this.entryName, this.value, {this.onEntryTapCallback});
 }

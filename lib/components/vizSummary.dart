@@ -4,8 +4,9 @@ import 'package:techviz/components/vizSummaryHeader.dart';
 class VizSummary extends StatefulWidget {
   final VizSummaryHeader header;
   final Widget list;
+  final String selectedTag;
 
-  const VizSummary({Key key, this.header, this.list}) : super(key: key);
+  VizSummary({Key key, this.header, this.list, this.selectedTag}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => VizSummaryState();
