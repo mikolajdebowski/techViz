@@ -1,76 +1,85 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-class VizSummaryHeader extends StatefulWidget {
+class VizSummaryHeader extends StatelessWidget {
+  final double height = 90;
   final String headerTitle;
-  final Color primaryColor;
-  final Color secondaryColor;
+  final String selectedTag;
   final List<VizSummaryHeaderEntry> entries;
 
-  VizSummaryHeader(this.headerTitle, this.entries, {this.primaryColor, this.secondaryColor}) {
-    assert(this.headerTitle != null);
-    assert(this.entries != null);
-    assert(this.entries.length > 0);
-  }
+  VizSummaryHeader({Key key, this.headerTitle, this.entries, this.selectedTag}) : super(key: key);
 
-  @override
-  State<StatefulWidget> createState() => VizSummaryHeaderState();
-}
-
-class VizSummaryHeaderState extends State<VizSummaryHeader> {
   @override
   Widget build(BuildContext context) {
     List<Widget> itensChildren = List<Widget>();
 
     Radius defaultRadius = Radius.circular(6.0);
 
-
-    int lastIdx = widget.entries.length-1;
-    widget.entries.asMap().forEach((int idx, VizSummaryHeaderEntry entry) {
+    int lastIdx = entries.length - 1;
+    entries.asMap().forEach((int idx, VizSummaryHeaderEntry entry) {
       BorderSide bs = BorderSide(color: Colors.white, width: 1.0);
 
-      Border border = Border(left: idx>0 && idx<=lastIdx? bs: BorderSide.none, top: bs);
-      BoxDecoration decorationEntryHeader = BoxDecoration(border: border, color: Color(0xFFAAAAAA));
-      BoxDecoration decorationEntryValue = BoxDecoration(border: border);
+      Border borderHeader = Border(left: idx > 0 && idx <= lastIdx ? bs : BorderSide.none, top: bs);
+      Border borderValue = Border(left: idx > 0 && idx <= lastIdx ? bs : BorderSide.none, top: bs, bottom: bs);
 
-      Flexible item = Flexible(
-        child: Column(children: <Widget>[
-          Flexible(
-            child: Container(decoration: decorationEntryHeader, child: Center(child: Text(entry.entryName))),
-          ),
-          Flexible(child: Container(decoration: decorationEntryValue, child: Center(child: Text(entry.value.toString())))),
-        ],),
+      BoxDecoration decorationEntryHeader = BoxDecoration(border: borderHeader, color: entry.tag == selectedTag ? Color(0xFF888888) : Color(0xFFAAAAAA));
+      BoxDecoration decorationEntryValue = BoxDecoration(border: borderValue);
+
+      Container containerHeader = Container(decoration: decorationEntryHeader, child: Center(child: Text(entry.entryName)));
+      Container containerValue = Container(decoration: decorationEntryValue, child: Center(child: Text(entry.value.toString())));
+
+      Column column = Column(
+        children: <Widget>[
+          Flexible(child: containerHeader),
+          Flexible(child: containerValue),
+        ],
       );
-      itensChildren.add(item);
+
+      Flexible flexible = Flexible(
+        child: Container(
+          child: GestureDetector(
+            child: column,
+            onTap: (){
+              if(entry.onEntryTapCallback!=null){
+                entry.onEntryTapCallback();
+              }
+            },
+          ),
+        ),
+      );
+
+      itensChildren.add(flexible);
     });
 
     BorderRadiusGeometry borderGeoHeader = BorderRadius.only(topLeft: defaultRadius, topRight: defaultRadius);
     Border borderColor = Border.all(color: Colors.grey, width: 0.5);
     BoxDecoration decorationHeader = BoxDecoration(border: borderColor, color: Color(0xFF505b6a), borderRadius: borderGeoHeader);
 
-    return Column(
-      children: <Widget>[
-        Flexible(
-          flex: 1,
-          child: Container(
+    return Container(
+      height: height,
+      child: Column(
+        children: <Widget>[
+          Container(
             decoration: decorationHeader,
             padding: EdgeInsets.all(5.0),
-            child: Align(child: Text(widget.headerTitle, style: TextStyle(color: Colors.white)), alignment: Alignment.centerLeft),
+            child: Align(child: Text(headerTitle, style: TextStyle(color: Colors.white)), alignment: Alignment.centerLeft),
           ),
-        ),
-        Flexible(
-          flex: 2,
+          Expanded(
             child: Row(
-          children: itensChildren,
-        )),
-      ],
+              children: itensChildren,
+            ),
+          )
+        ],
+      ),
     );
   }
 }
 
 class VizSummaryHeaderEntry {
+  final String tag;
   final String entryName;
   final dynamic value;
+  final Function onEntryTapCallback;
 
-  VizSummaryHeaderEntry(this.entryName, this.value);
+  VizSummaryHeaderEntry(this.entryName, this.value, {this.tag, this.onEntryTapCallback});
 }

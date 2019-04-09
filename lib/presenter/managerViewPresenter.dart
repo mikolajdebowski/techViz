@@ -1,9 +1,15 @@
+import 'package:flutter/material.dart';
 import 'package:techviz/components/vizSummaryHeader.dart';
 
 abstract class IManagerViewPresenter {
   void onOpenTasksLoaded(VizSummaryHeader summaryHeader);
   void onTeamAvailabilityLoaded(VizSummaryHeader summaryHeader);
   void onSlotFloorSummaryLoaded(VizSummaryHeader summaryHeader);
+
+  void onOpenTasksExpanded(Widget listResult);
+  void onTeamAvailabilityExpanded(Widget listResult);
+  void onSlotFloorSummaryExpanded(Widget listResult);
+
   void onLoadError(dynamic error);
 }
 
@@ -17,13 +23,21 @@ class ManagerViewPresenter{
   void loadOpenTasks(){
     Future.delayed(Duration(seconds: 1), (){
       List<VizSummaryHeaderEntry> entries = [
-        VizSummaryHeaderEntry('Assigned', 12),
-        VizSummaryHeaderEntry('Un-Assigned', 4),
-        VizSummaryHeaderEntry('Overdue', 1),
-        VizSummaryHeaderEntry('Escalated', 2)
+        VizSummaryHeaderEntry('Assigned', 12, onEntryTapCallback: (){
+          _view.onOpenTasksExpanded(Text('Assigned'));
+        }),
+        VizSummaryHeaderEntry('Un-Assigned', 4, onEntryTapCallback: (){
+          _view.onOpenTasksExpanded(Text('Un-Assigned'));
+        }),
+        VizSummaryHeaderEntry('Overdue', 1, onEntryTapCallback: (){
+          _view.onOpenTasksExpanded(Text('Overdue'));
+        }),
+//        VizSummaryHeaderEntry('Escalated', 2, onEntryTapCallback: (){
+//          _view.onOpenTasksExpanded(Text('Escalated'));
+//        })
       ];
 
-      VizSummaryHeader header = VizSummaryHeader('Tasks', entries);
+      VizSummaryHeader header = VizSummaryHeader(headerTitle: 'Tasks', entries: entries);
 
       _view.onOpenTasksLoaded(header);
 
@@ -39,7 +53,7 @@ class ManagerViewPresenter{
         VizSummaryHeaderEntry('Off Shift', 23)
       ];
 
-      VizSummaryHeader header = VizSummaryHeader('Team Availability', entries);
+      VizSummaryHeader header = VizSummaryHeader(headerTitle: 'Team Availability', entries: entries);
 
       _view.onTeamAvailabilityLoaded(header);
 
@@ -55,7 +69,7 @@ class ManagerViewPresenter{
         VizSummaryHeaderEntry('Out of Service', 2)
       ];
 
-      VizSummaryHeader header = VizSummaryHeader('Slot Floor', entries);
+      VizSummaryHeader header = VizSummaryHeader(headerTitle:'Slot Floor', entries: entries);
 
       _view.onSlotFloorSummaryLoaded(header);
 

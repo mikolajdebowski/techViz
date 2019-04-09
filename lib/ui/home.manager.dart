@@ -1,5 +1,5 @@
-
 import 'package:flutter/material.dart';
+import 'package:techviz/components/vizSummary.dart';
 import 'package:techviz/components/vizSummaryHeader.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/managerViewPresenter.dart';
@@ -13,12 +13,17 @@ class HomeManager extends StatefulWidget {
 }
 
 class HomeManagerState extends State<HomeManager> implements TechVizHome, IManagerViewPresenter {
+  Widget _openTasksHeader;
+  Widget _teamAvailabilityHeader;
+  Widget _slotFloorHeader;
 
-  Widget _openTasks;
-  Widget _teamAvailability;
-  Widget _slotFloor;
+  Widget _openTasksList;
+  Widget _teamAvailabilityList;
+  Widget _slotFloorList;
 
   ManagerViewPresenter _presenter;
+
+  String selectedTag;
 
   @override
   void initState() {
@@ -28,37 +33,24 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
     _presenter.loadOpenTasks();
     _presenter.loadTeamAvailability();
     _presenter.loadSlotFloorSummary();
-
   }
-
 
   @override
   Widget build(BuildContext context) {
-
-    BoxDecoration boxDecoration = BoxDecoration(
-        borderRadius: BorderRadius.circular(6.0),
-        border: Border.all(color: Color(0xFFFFFFFF)),
-        gradient: LinearGradient(colors: [Color(0xFF81919D), Color(0xFFAAB7BD)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated));
-
-
-    Column column = Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        Expanded(child: (Container(decoration: boxDecoration, child: Center(child: _openTasks != null ? _openTasks : CircularProgressIndicator())))),
-        SizedBox(height: 5),
-        Expanded(child: (Container(decoration: boxDecoration, child: Center(child: _slotFloor = _slotFloor!=null ? _slotFloor : CircularProgressIndicator())))),
-        SizedBox(height: 5),
-        Expanded(child: (Container(decoration: boxDecoration, child: Center(child: _teamAvailability != null ? _teamAvailability : CircularProgressIndicator())))),
-      ],
-    );
-
-    Container container = Container(
-      child: Padding(child: column, padding: EdgeInsets.all(5.0)),
+    return Container(
+      constraints: BoxConstraints.expand(),
       decoration: BoxDecoration(gradient: LinearGradient(colors: [Color(0xFF586676), Color(0xFF8B9EA7)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            VizSummary(header: _openTasksHeader, list: _openTasksList),
+            VizSummary(header: _teamAvailabilityHeader, list: _teamAvailabilityList),
+            VizSummary(header: _slotFloorHeader, list: _slotFloorList)
+          ],
+        ),
+      ),
     );
-
-    return container;
-
   }
 
   @override
@@ -80,7 +72,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
   void onOpenTasksLoaded(VizSummaryHeader summaryHeader) {
     if (this.mounted) {
       setState(() {
-        _openTasks = summaryHeader;
+        _openTasksHeader = summaryHeader;
       });
     }
   }
@@ -89,7 +81,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
   void onSlotFloorSummaryLoaded(VizSummaryHeader summaryHeader) {
     if (this.mounted) {
       setState(() {
-        _teamAvailability = summaryHeader;
+        _teamAvailabilityHeader = summaryHeader;
       });
     }
   }
@@ -98,9 +90,37 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
   void onTeamAvailabilityLoaded(VizSummaryHeader summaryHeader) {
     if (this.mounted) {
       setState(() {
-        _slotFloor = summaryHeader;
+        _slotFloorHeader = summaryHeader;
       });
     }
   }
 
+
+
+  @override
+  void onOpenTasksExpanded(Widget listResult) {
+    if (this.mounted) {
+      setState(() {
+        _openTasksList = listResult;
+      });
+    }
+  }
+
+  @override
+  void onSlotFloorSummaryExpanded(Widget listResult) {
+    if (this.mounted) {
+      setState(() {
+        _slotFloorList = listResult;
+      });
+    }
+  }
+
+  @override
+  void onTeamAvailabilityExpanded(Widget listResult) {
+    if (this.mounted) {
+      setState(() {
+        _teamAvailabilityList = listResult;
+      });
+    }
+  }
 }

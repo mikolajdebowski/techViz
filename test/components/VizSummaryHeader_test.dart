@@ -17,7 +17,7 @@ void main(){
       VizSummaryHeaderEntry entry1 = VizSummaryHeaderEntry('Entry 1', 1);
       VizSummaryHeaderEntry entry2 = VizSummaryHeaderEntry('Entry 2', 2);
 
-      VizSummaryHeader header = VizSummaryHeader('Header title', [entry1,entry2]);
+      VizSummaryHeader header = VizSummaryHeader(headerTitle: 'Header title', entries: [entry1,entry2]);
 
       await tester.pumpWidget( MaterialApp(home: header));
 
