@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+abstract class VizSummaryHeaderActions {
+  void onItemTap(String headerKey);
+}
+
 class VizSummaryHeader extends StatelessWidget {
   final double height = 90;
   final String headerTitle;
-  final bool selected;
-  final List<VizSummaryHeaderEntry> entries;
+  final String selectedEntryKey;
+  final Map<String, int> entries;
+  final VizSummaryHeaderActions actions;
 
-  VizSummaryHeader({Key key, this.headerTitle, this.entries, this.selected}) : super(key: key);
+  VizSummaryHeader({Key key, this.headerTitle, this.entries, this.selectedEntryKey, this.actions}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,18 +20,24 @@ class VizSummaryHeader extends StatelessWidget {
 
     Radius defaultRadius = Radius.circular(6.0);
 
-    int lastIdx = entries.length - 1;
-    entries.asMap().forEach((int idx, VizSummaryHeaderEntry entry) {
+    //int lastIdx = entries.length - 1;
+    entries.forEach((final String entryKey, int count) {
       BorderSide bs = BorderSide(color: Colors.white, width: 1.0);
 
-      Border borderHeader = Border(left: idx > 0 && idx <= lastIdx ? bs : BorderSide.none, top: bs);
-      Border borderValue = Border(left: idx > 0 && idx <= lastIdx ? bs : BorderSide.none, top: bs, bottom: bs);
+      //Border borderHeader = Border(left: idx > 0 && idx <= lastIdx ? bs : BorderSide.none, top: bs);
+      //Border borderValue = Border(left: idx > 0 && idx <= lastIdx ? bs : BorderSide.none, top: bs, bottom: bs);
 
-      BoxDecoration decorationEntryHeader = BoxDecoration(border: borderHeader, color: selected ? Color(0xFF888888) : Color(0xFFAAAAAA));
-      BoxDecoration decorationEntryValue = BoxDecoration(border: borderValue);
+      Border borderHeader = Border(left: bs, top: bs);
+      Border borderValue = Border(left: bs, top: bs, bottom: bs);
 
-      Container containerHeader = Container(decoration: decorationEntryHeader, child: Center(child: Text(entry.entryName)));
-      Container containerValue = Container(decoration: decorationEntryValue, child: Center(child: Text(entry.value.toString())));
+      bool isNotHighlighted = selectedEntryKey == null || selectedEntryKey != entryKey;
+
+      BoxDecoration decorationEntryHeader =
+          BoxDecoration(border: borderHeader, color: (isNotHighlighted ? Color(0xFFAAAAAA) : Color(0xFF999999)));
+      BoxDecoration decorationEntryValue = BoxDecoration(border: borderValue, color: (isNotHighlighted ? Colors.transparent : Color(0x22000000)));
+
+      Container containerHeader = Container(decoration: decorationEntryHeader, child: Center(child: Text(entryKey)));
+      Container containerValue = Container(decoration: decorationEntryValue, child: Center(child: Text(count.toString())));
 
       Column column = Column(
         children: <Widget>[
@@ -39,9 +50,9 @@ class VizSummaryHeader extends StatelessWidget {
         child: Container(
           child: GestureDetector(
             child: column,
-            onTap: (){
-              if(entry.onEntryTapCallback!=null){
-                entry.onEntryTapCallback();
+            onTap: () {
+              if (actions != null) {
+                actions.onItemTap(entryKey);
               }
             },
           ),
@@ -73,12 +84,4 @@ class VizSummaryHeader extends StatelessWidget {
       ),
     );
   }
-}
-
-class VizSummaryHeaderEntry {
-  final String entryName;
-  final dynamic value;
-  final Function onEntryTapCallback;
-
-  VizSummaryHeaderEntry(this.entryName, this.value, {this.onEntryTapCallback});
 }

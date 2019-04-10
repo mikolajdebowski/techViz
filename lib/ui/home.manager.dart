@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:techviz/components/vizSummary.dart';
-import 'package:techviz/components/vizSummaryHeader.dart';
+import 'package:techviz/model/summaryEntry.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/managerViewPresenter.dart';
 import 'package:techviz/ui/home.dart';
@@ -13,17 +13,11 @@ class HomeManager extends StatefulWidget {
 }
 
 class HomeManagerState extends State<HomeManager> implements TechVizHome, IManagerViewPresenter {
-  VizSummaryHeader _openTasksHeader;
-  VizSummaryHeader _teamAvailabilityHeader;
-  VizSummaryHeader _slotFloorHeader;
-
-  Widget _openTasksList;
-  Widget _teamAvailabilityList;
-  Widget _slotFloorList;
-
   ManagerViewPresenter _presenter;
 
-  String _selectedTag;
+  List<SummaryEntry> _openTasksList;
+  List<SummaryEntry> _teamAvailabilityList;
+  List<SummaryEntry> _slotFloorList;
 
   @override
   void initState() {
@@ -44,9 +38,9 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            VizSummary(header: _openTasksHeader, list: _openTasksList),
-            VizSummary(header: _teamAvailabilityHeader, list: _teamAvailabilityList),
-            VizSummary(header: _slotFloorHeader, list: _slotFloorList)
+            VizSummary('Open Tasks', _openTasksList, ['Status']),
+            VizSummary('Team Availability', _teamAvailabilityList, ['Status']),
+            VizSummary('Sloot floor', _slotFloorList, ['Status'])
           ],
         ),
       ),
@@ -69,60 +63,28 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
   }
 
   @override
-  void onOpenTasksLoaded(VizSummaryHeader summaryHeader) {
+  void onOpenTasksLoaded(List<SummaryEntry> summaryList) {
     if (this.mounted) {
       setState(() {
-        _openTasksHeader = summaryHeader;
+        _openTasksList = summaryList;
       });
     }
   }
 
   @override
-  void onSlotFloorSummaryLoaded(VizSummaryHeader summaryHeader) {
+  void onSlotFloorSummaryLoaded(List<SummaryEntry> summaryList) {
     if (this.mounted) {
       setState(() {
-        _teamAvailabilityHeader = summaryHeader;
+        _slotFloorList = summaryList;
       });
     }
   }
 
   @override
-  void onTeamAvailabilityLoaded(VizSummaryHeader summaryHeader) {
+  void onTeamAvailabilityLoaded(List<SummaryEntry> summaryList) {
     if (this.mounted) {
       setState(() {
-        _slotFloorHeader = summaryHeader;
-      });
-    }
-  }
-
-
-
-  @override
-  void onOpenTasksExpanded(String selectedTag, Widget listResult) {
-    if (this.mounted) {
-      setState(() {
-        _selectedTag = selectedTag;
-        _openTasksList = listResult;
-      });
-    }
-  }
-
-  @override
-  void onSlotFloorSummaryExpanded(String selectedTag, Widget listResult) {
-    if (this.mounted) {
-      setState(() {
-        _selectedTag = selectedTag;
-        _slotFloorList = listResult;
-      });
-    }
-  }
-
-  @override
-  void onTeamAvailabilityExpanded(String selectedTag, Widget listResult) {
-    if (this.mounted) {
-      setState(() {
-        _selectedTag = selectedTag;
-        _teamAvailabilityList = listResult;
+        _teamAvailabilityList = summaryList;
       });
     }
   }

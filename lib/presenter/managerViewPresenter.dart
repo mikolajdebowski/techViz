@@ -1,14 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:techviz/components/vizSummaryHeader.dart';
+import 'package:techviz/model/summaryEntry.dart';
 
 abstract class IManagerViewPresenter {
-  void onOpenTasksLoaded(VizSummaryHeader summaryHeader);
-  void onTeamAvailabilityLoaded(VizSummaryHeader summaryHeader);
-  void onSlotFloorSummaryLoaded(VizSummaryHeader summaryHeader);
-
-  void onOpenTasksExpanded(String selectedTag, Widget listResult);
-  void onTeamAvailabilityExpanded(String selectedTag, Widget listResult);
-  void onSlotFloorSummaryExpanded(String selectedTag, Widget listResult);
+  void onOpenTasksLoaded(List<SummaryEntry> summaryList);
+  void onTeamAvailabilityLoaded(List<SummaryEntry> summaryList);
+  void onSlotFloorSummaryLoaded(List<SummaryEntry> summaryList);
 
   void onLoadError(dynamic error);
 }
@@ -22,56 +17,57 @@ class ManagerViewPresenter{
 
   void loadOpenTasks(){
     Future.delayed(Duration(seconds: 1), (){
-      List<VizSummaryHeaderEntry> entries = [
-        VizSummaryHeaderEntry('Assigned', 12, onEntryTapCallback: (){
-          _view.onOpenTasksExpanded('Assigned', Text('Assigned'));
-        }),
-        VizSummaryHeaderEntry('Un-Assigned', 4, onEntryTapCallback: (){
-          _view.onOpenTasksExpanded('Un-Assigned', Text('Un-Assigned'));
-        }),
-        VizSummaryHeaderEntry('Overdue', 1, onEntryTapCallback: (){
-          _view.onOpenTasksExpanded('Overdue', Text('Overdue'));
-        }),
-        VizSummaryHeaderEntry('Escalated', 2, onEntryTapCallback: (){
-          _view.onOpenTasksExpanded('Escalated', Text('Escalated'));
-        })
-      ];
 
-      VizSummaryHeader header = VizSummaryHeader(headerTitle: 'Tasks', entries: entries);
+      List<SummaryEntry> list = List<SummaryEntry>();
 
-      _view.onOpenTasksLoaded(header);
+      for(int i =0; i<99; i++){
+
+        Map<String,dynamic> mapEntry = Map<String,dynamic>();
+        mapEntry['Location'] = i.toString()+i.toString()+i.toString();
+        mapEntry['Type'] = '1';
+        mapEntry['Status'] = i<20? 'Assigned' : ((i<40? 'UnAssigned' : i<60? 'Overdue' : 'Escalated'));
+        mapEntry['User'] = 'irina';
+        mapEntry['TimeTaken'] = i.toString();
+
+        list.add(SummaryEntry(mapEntry));
+      }
+      _view.onOpenTasksLoaded(list);
 
     });
   }
 
   void loadTeamAvailability(){
     Future.delayed(Duration(milliseconds: 500), (){
-      List<VizSummaryHeaderEntry> entries = [
-        VizSummaryHeaderEntry('On the Floor', 12),
-        VizSummaryHeaderEntry('On Break', 4),
-        VizSummaryHeaderEntry('Other', 1),
-        VizSummaryHeaderEntry('Off Shift', 23)
-      ];
+      List<SummaryEntry> list = List<SummaryEntry>();
 
-      VizSummaryHeader header = VizSummaryHeader(headerTitle: 'Team Availability', entries: entries);
+      for(int i =0; i<99; i++){
 
-      _view.onTeamAvailabilityLoaded(header);
+        Map<String,dynamic> mapEntry = Map<String,dynamic>();
+        mapEntry['Attendant'] = i.toString()+i.toString()+i.toString();
+        mapEntry['Status'] = i<10? 'Available' : ((i<80? 'On Break' : i<85? 'Other' : 'Off Shift'));
+
+        list.add(SummaryEntry(mapEntry));
+      }
+      _view.onTeamAvailabilityLoaded(list);
 
     });
   }
 
   void loadSlotFloorSummary(){
     Future.delayed(Duration(seconds: 2), (){
-      List<VizSummaryHeaderEntry> entries = [
-        VizSummaryHeaderEntry('Active Games', 1347),
-        VizSummaryHeaderEntry('Head Count', 223),
-        VizSummaryHeaderEntry('Reserved', 1),
-        VizSummaryHeaderEntry('Out of Service', 2)
-      ];
+      List<SummaryEntry> list = List<SummaryEntry>();
 
-      VizSummaryHeader header = VizSummaryHeader(headerTitle:'Slot Floor', entries: entries);
+      for(int i =0; i<99; i++){
 
-      _view.onSlotFloorSummaryLoaded(header);
+        Map<String,dynamic> mapEntry = Map<String,dynamic>();
+        mapEntry['Location/StandID'] = i.toString()+i.toString()+i.toString();
+        mapEntry['Game/Theme'] = '1';
+        mapEntry['Status'] = i<80? 'Active Games' : ((i<85? 'Head Count' : i<90? 'Reserved' : 'Out of Service'));
+        mapEntry['Denom'] = 0.01;
+
+        list.add(SummaryEntry(mapEntry));
+      }
+      _view.onSlotFloorSummaryLoaded(list);
 
     });
   }
