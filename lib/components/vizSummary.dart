@@ -38,8 +38,11 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
         gradient: LinearGradient(
             colors: [Color(0xFF81919D), Color(0xFFAAB7BD)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated));
 
+
+    Container container;
     if (widget.data == null) {
-      Container container = Container(
+      container = Container(
+        key: Key('container'),
         decoration: boxDecoration,
         child: Center(
             child: Padding(
@@ -47,35 +50,37 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
           padding: EdgeInsets.all(10.0),
         )),
       );
-      return container;
     }
+    else{
+      String keys = widget.groupByKeys[0];
 
-    String keys = widget.groupByKeys[0];
+      Map<String, dynamic> grouped = groupBy<SummaryEntry, String>(keySelector: (SummaryEntry entry) => entry.items[keys], list: widget.data);
+      Map<String, int> count = grouped.map<String, int>((String key, dynamic value) => MapEntry(key, (value as List).length));
 
-    Map<String, dynamic> grouped = groupBy<SummaryEntry, String>(keySelector: (SummaryEntry entry) => entry.items[keys], list: widget.data);
-    Map<String, int> count = grouped.map<String, int>((String key, dynamic value) => MapEntry(key, (value as List).length));
+      VizSummaryHeader header = VizSummaryHeader(headerTitle: widget.title, entries: count, actions: this, selectedEntryKey: _selectedEntryKey);
 
-    VizSummaryHeader header = VizSummaryHeader(headerTitle: widget.title, entries: count, actions: this, selectedEntryKey: _selectedEntryKey);
-    Container container;
-    if (!_expanded) {
-      container = Container(
-        decoration: boxDecoration,
-        child: header,
-      );
-    } else {
-      container = Container(
-        decoration: boxDecoration,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            header,
-            Container(
-              height: 100,
-              child: Text('list $_selectedEntryKey goes here '),
-            )
-          ],
-        ),
-      );
+      if (!_expanded) {
+        container = Container(
+          key: Key('container'),
+          decoration: boxDecoration,
+          child: header,
+        );
+      } else {
+        container = Container(
+          key: Key('container'),
+          decoration: boxDecoration,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              header,
+              Container(
+                height: 100,
+                child: Text('list $_selectedEntryKey goes here '),
+              )
+            ],
+          ),
+        );
+      }
     }
 
     return Padding(

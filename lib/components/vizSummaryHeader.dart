@@ -20,47 +20,47 @@ class VizSummaryHeader extends StatelessWidget {
 
     Radius defaultRadius = Radius.circular(6.0);
 
-    //int lastIdx = entries.length - 1;
-    entries.forEach((final String entryKey, int count) {
-      BorderSide bs = BorderSide(color: Colors.white, width: 1.0);
+    if(entries==null || entries.length==0){
+        itensChildren.add(CircularProgressIndicator());
+    }
+    else{
+      entries.forEach((final String entryKey, int count) {
+        BorderSide bs = BorderSide(color: Colors.white, width: 1.0);
+        Border borderHeader = Border(left: bs, top: bs);
+        Border borderValue = Border(left: bs, top: bs, bottom: bs);
 
-      //Border borderHeader = Border(left: idx > 0 && idx <= lastIdx ? bs : BorderSide.none, top: bs);
-      //Border borderValue = Border(left: idx > 0 && idx <= lastIdx ? bs : BorderSide.none, top: bs, bottom: bs);
+        bool isNotHighlighted = selectedEntryKey == null || selectedEntryKey != entryKey;
 
-      Border borderHeader = Border(left: bs, top: bs);
-      Border borderValue = Border(left: bs, top: bs, bottom: bs);
+        BoxDecoration decorationEntryHeader = BoxDecoration(border: borderHeader, color: (isNotHighlighted ? Color(0xFFAAAAAA) : Color(0xFF999999)));
+        BoxDecoration decorationEntryValue = BoxDecoration(border: borderValue, color: (isNotHighlighted ? Colors.transparent : Color(0x22000000)));
 
-      bool isNotHighlighted = selectedEntryKey == null || selectedEntryKey != entryKey;
+        Container containerHeader = Container(decoration: decorationEntryHeader, child: Center(child: Text(entryKey, key: Key('headerItemTitle'),)));
+        Container containerValue = Container(decoration: decorationEntryValue, child: Center(child: Text(count.toString(), key: Key('headerItemValue'))));
 
-      BoxDecoration decorationEntryHeader =
-          BoxDecoration(border: borderHeader, color: (isNotHighlighted ? Color(0xFFAAAAAA) : Color(0xFF999999)));
-      BoxDecoration decorationEntryValue = BoxDecoration(border: borderValue, color: (isNotHighlighted ? Colors.transparent : Color(0x22000000)));
+        Column column = Column(
+          children: <Widget>[
+            Flexible(child: containerHeader),
+            Flexible(child: containerValue),
+          ],
+        );
 
-      Container containerHeader = Container(decoration: decorationEntryHeader, child: Center(child: Text(entryKey)));
-      Container containerValue = Container(decoration: decorationEntryValue, child: Center(child: Text(count.toString())));
-
-      Column column = Column(
-        children: <Widget>[
-          Flexible(child: containerHeader),
-          Flexible(child: containerValue),
-        ],
-      );
-
-      Flexible flexible = Flexible(
-        child: Container(
-          child: GestureDetector(
-            child: column,
-            onTap: () {
-              if (actions != null) {
-                actions.onItemTap(entryKey);
-              }
-            },
+        Flexible flexible = Flexible(
+          child: Container(
+            child: GestureDetector(
+              child: column,
+              onTap: () {
+                if (actions != null) {
+                  actions.onItemTap(entryKey);
+                }
+              },
+            ),
           ),
-        ),
-      );
+        );
 
-      itensChildren.add(flexible);
-    });
+        itensChildren.add(flexible);
+      });
+    }
+
 
     BorderRadiusGeometry borderGeoHeader = BorderRadius.only(topLeft: defaultRadius, topRight: defaultRadius);
     Border borderColor = Border.all(color: Colors.grey, width: 0.5);
@@ -73,10 +73,11 @@ class VizSummaryHeader extends StatelessWidget {
           Container(
             decoration: decorationHeader,
             padding: EdgeInsets.all(5.0),
-            child: Align(child: Text(headerTitle, style: TextStyle(color: Colors.white)), alignment: Alignment.centerLeft),
+            child: Align(child: Text(headerTitle, key: Key('headerTitle'), style: TextStyle(color: Colors.white)), alignment: Alignment.centerLeft),
           ),
           Expanded(
             child: Row(
+              key: Key('rowContainer'),
               children: itensChildren,
             ),
           )
