@@ -577,8 +577,7 @@ class HomeAttendantState extends State<HomeAttendant> with WidgetsBindingObserve
       padding: EdgeInsets.only(top: 7.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[Text('Time Taken', style: TextStyle(color: Colors.grey, fontSize: 12.0)), /*VizTimer(timeStarted: _selectedTask != null ? _selectedTask.taskCreated : null)*/],
-        //children: <Widget>[Text('Time Taken', style: TextStyle(color: Colors.grey, fontSize: 12.0)), VizTimer(timeStarted: null)],
+        children: <Widget>[Text('Time Taken', style: TextStyle(color: Colors.grey, fontSize: 12.0)), VizTimer(timeStarted: _selectedTask != null ? _selectedTask.taskCreated : null)],
       ),
     );
 

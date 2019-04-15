@@ -1,6 +1,6 @@
-
 import 'package:flutter/material.dart';
-import 'package:techviz/components/vizSummaryHeader.dart';
+import 'package:techviz/components/vizSummary.dart';
+import 'package:techviz/model/summaryEntry.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/managerViewPresenter.dart';
 import 'package:techviz/ui/home.dart';
@@ -13,12 +13,11 @@ class HomeManager extends StatefulWidget {
 }
 
 class HomeManagerState extends State<HomeManager> implements TechVizHome, IManagerViewPresenter {
-
-  Widget _openTasks;
-  Widget _teamAvailability;
-  Widget _slotFloor;
-
   ManagerViewPresenter _presenter;
+
+  List<SummaryEntry> _openTasksList;
+  List<SummaryEntry> _teamAvailabilityList;
+  List<SummaryEntry> _slotFloorList;
 
   @override
   void initState() {
@@ -28,37 +27,24 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
     _presenter.loadOpenTasks();
     _presenter.loadTeamAvailability();
     _presenter.loadSlotFloorSummary();
-
   }
-
 
   @override
   Widget build(BuildContext context) {
-
-    BoxDecoration boxDecoration = BoxDecoration(
-        borderRadius: BorderRadius.circular(6.0),
-        border: Border.all(color: Color(0xFFFFFFFF)),
-        gradient: LinearGradient(colors: [Color(0xFF81919D), Color(0xFFAAB7BD)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated));
-
-
-    Column column = Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        Expanded(child: (Container(decoration: boxDecoration, child: Center(child: _openTasks != null ? _openTasks : CircularProgressIndicator())))),
-        SizedBox(height: 5),
-        Expanded(child: (Container(decoration: boxDecoration, child: Center(child: _slotFloor = _slotFloor!=null ? _slotFloor : CircularProgressIndicator())))),
-        SizedBox(height: 5),
-        Expanded(child: (Container(decoration: boxDecoration, child: Center(child: _teamAvailability != null ? _teamAvailability : CircularProgressIndicator())))),
-      ],
-    );
-
-    Container container = Container(
-      child: Padding(child: column, padding: EdgeInsets.all(5.0)),
+    return Container(
+      constraints: BoxConstraints.expand(),
       decoration: BoxDecoration(gradient: LinearGradient(colors: [Color(0xFF586676), Color(0xFF8B9EA7)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            VizSummary('Open Tasks', _openTasksList, ['Status']),
+            VizSummary('Team Availability', _teamAvailabilityList, ['Status']),
+            VizSummary('Slot floor', _slotFloorList, ['Status'])
+          ],
+        ),
+      ),
     );
-
-    return container;
-
   }
 
   @override
@@ -77,30 +63,29 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
   }
 
   @override
-  void onOpenTasksLoaded(VizSummaryHeader summaryHeader) {
+  void onOpenTasksLoaded(List<SummaryEntry> summaryList) {
     if (this.mounted) {
       setState(() {
-        _openTasks = summaryHeader;
+        _openTasksList = summaryList;
       });
     }
   }
 
   @override
-  void onSlotFloorSummaryLoaded(VizSummaryHeader summaryHeader) {
+  void onSlotFloorSummaryLoaded(List<SummaryEntry> summaryList) {
     if (this.mounted) {
       setState(() {
-        _teamAvailability = summaryHeader;
+        _slotFloorList = summaryList;
       });
     }
   }
 
   @override
-  void onTeamAvailabilityLoaded(VizSummaryHeader summaryHeader) {
+  void onTeamAvailabilityLoaded(List<SummaryEntry> summaryList) {
     if (this.mounted) {
       setState(() {
-        _slotFloor = summaryHeader;
+        _teamAvailabilityList = summaryList;
       });
     }
   }
-
 }

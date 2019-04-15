@@ -1,9 +1,10 @@
-import 'package:techviz/components/vizSummaryHeader.dart';
+import 'package:techviz/model/summaryEntry.dart';
 
 abstract class IManagerViewPresenter {
-  void onOpenTasksLoaded(VizSummaryHeader summaryHeader);
-  void onTeamAvailabilityLoaded(VizSummaryHeader summaryHeader);
-  void onSlotFloorSummaryLoaded(VizSummaryHeader summaryHeader);
+  void onOpenTasksLoaded(List<SummaryEntry> summaryList);
+  void onTeamAvailabilityLoaded(List<SummaryEntry> summaryList);
+  void onSlotFloorSummaryLoaded(List<SummaryEntry> summaryList);
+
   void onLoadError(dynamic error);
 }
 
@@ -16,48 +17,57 @@ class ManagerViewPresenter{
 
   void loadOpenTasks(){
     Future.delayed(Duration(seconds: 1), (){
-      List<VizSummaryHeaderEntry> entries = [
-        VizSummaryHeaderEntry('Assigned', 12),
-        VizSummaryHeaderEntry('Un-Assigned', 4),
-        VizSummaryHeaderEntry('Overdue', 1),
-        VizSummaryHeaderEntry('Escalated', 2)
-      ];
 
-      VizSummaryHeader header = VizSummaryHeader('Tasks', entries);
+      List<SummaryEntry> list = List<SummaryEntry>();
 
-      _view.onOpenTasksLoaded(header);
+      for(int i =0; i<99; i++){
+
+        Map<String,dynamic> mapEntry = Map<String,dynamic>();
+        mapEntry['Location'] = i.toString()+i.toString()+i.toString();
+        mapEntry['Type'] = '1';
+        mapEntry['Status'] = i<20? 'Assigned' : ((i<40? 'Unassigned' : i<60? 'Overdue' : 'Escalated'));
+        mapEntry['User'] = 'irina';
+        mapEntry['TimeTaken'] = i.toString();
+
+        list.add(SummaryEntry(mapEntry));
+      }
+      _view.onOpenTasksLoaded(list);
 
     });
   }
 
   void loadTeamAvailability(){
     Future.delayed(Duration(milliseconds: 500), (){
-      List<VizSummaryHeaderEntry> entries = [
-        VizSummaryHeaderEntry('On the Floor', 12),
-        VizSummaryHeaderEntry('On Break', 4),
-        VizSummaryHeaderEntry('Other', 1),
-        VizSummaryHeaderEntry('Off Shift', 23)
-      ];
+      List<SummaryEntry> list = List<SummaryEntry>();
 
-      VizSummaryHeader header = VizSummaryHeader('Team Availability', entries);
+      for(int i =0; i<99; i++){
 
-      _view.onTeamAvailabilityLoaded(header);
+        Map<String,dynamic> mapEntry = Map<String,dynamic>();
+        mapEntry['Attendant'] = i.toString()+i.toString()+i.toString();
+        mapEntry['Status'] = i<10? 'Available' : ((i<80? 'On Break' : i<85? 'Other' : 'Off Shift'));
+
+        list.add(SummaryEntry(mapEntry));
+      }
+      _view.onTeamAvailabilityLoaded(list);
 
     });
   }
 
   void loadSlotFloorSummary(){
     Future.delayed(Duration(seconds: 2), (){
-      List<VizSummaryHeaderEntry> entries = [
-        VizSummaryHeaderEntry('Active Games', 1347),
-        VizSummaryHeaderEntry('Head Count', 223),
-        VizSummaryHeaderEntry('Reserved', 1),
-        VizSummaryHeaderEntry('Out of Service', 2)
-      ];
+      List<SummaryEntry> list = List<SummaryEntry>();
 
-      VizSummaryHeader header = VizSummaryHeader('Slot Floor', entries);
+      for(int i =0; i<99; i++){
 
-      _view.onSlotFloorSummaryLoaded(header);
+        Map<String,dynamic> mapEntry = Map<String,dynamic>();
+        mapEntry['Location/StandID'] = i.toString()+i.toString()+i.toString();
+        mapEntry['Game/Theme'] = '1';
+        mapEntry['Status'] = i<80? 'Active Games' : ((i<85? 'Head Count' : i<90? 'Reserved' : 'Out of Service'));
+        mapEntry['Denom'] = 0.01;
+
+        list.add(SummaryEntry(mapEntry));
+      }
+      _view.onSlotFloorSummaryLoaded(list);
 
     });
   }
