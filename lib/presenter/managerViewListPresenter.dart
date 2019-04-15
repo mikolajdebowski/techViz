@@ -13,20 +13,18 @@ class ManagerViewListPresenter{
   }
 
   void loadRows(){
-    Future.delayed(Duration(seconds: 2), (){
-      List<VizSummaryHeaderEntry> entries = [
-        VizSummaryHeaderEntry('Active Games', 1347),
-        VizSummaryHeaderEntry('Head Count', 223),
-        VizSummaryHeaderEntry('Reserved', 1),
-        VizSummaryHeaderEntry('Out of Service', 2)
-      ];
-
-      VizSummaryHeader header = VizSummaryHeader('Slot Floor', entries);
-
-      _view.onRowsLoaded(header);
-
-    });
-
-
+//    Future.delayed(Duration(seconds: 2), (){
+//      List<VizSummaryHeaderEntry> entries = [
+//        VizSummaryHeaderEntry('Active Games', 1347),
+//        VizSummaryHeaderEntry('Head Count', 223),
+//        VizSummaryHeaderEntry('Reserved', 1),
+//        VizSummaryHeaderEntry('Out of Service', 2)
+//      ];
+//
+//      VizSummaryHeader header = VizSummaryHeader('Slot Floor', entries);
+//
+//      _view.onRowsLoaded(header);
+//
   }
+
 }

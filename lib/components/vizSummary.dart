@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:techviz/components/vizListView.dart';
 import 'package:techviz/components/vizSummaryHeader.dart';
 import 'package:techviz/model/summaryEntry.dart';
 
@@ -75,7 +76,7 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
               header,
               Container(
                 height: 100,
-                child: Text('list $_selectedEntryKey goes here '),
+                child: VizListView(),
               )
             ],
           ),
