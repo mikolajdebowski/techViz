@@ -40,7 +40,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
           children: <Widget>[
             VizSummary('Open Tasks', _openTasksList, ['Status']),
             VizSummary('Team Availability', _teamAvailabilityList, ['Status']),
-            VizSummary('Sloot floor', _slotFloorList, ['Status'])
+            VizSummary('Slot floor', _slotFloorList, ['Status'])
           ],
         ),
       ),

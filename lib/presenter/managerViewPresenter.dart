@@ -25,7 +25,7 @@ class ManagerViewPresenter{
         Map<String,dynamic> mapEntry = Map<String,dynamic>();
         mapEntry['Location'] = i.toString()+i.toString()+i.toString();
         mapEntry['Type'] = '1';
-        mapEntry['Status'] = i<20? 'Assigned' : ((i<40? 'UnAssigned' : i<60? 'Overdue' : 'Escalated'));
+        mapEntry['Status'] = i<20? 'Assigned' : ((i<40? 'Unassigned' : i<60? 'Overdue' : 'Escalated'));
         mapEntry['User'] = 'irina';
         mapEntry['TimeTaken'] = i.toString();
 
