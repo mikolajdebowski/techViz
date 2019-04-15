@@ -39,8 +39,8 @@ class _MenuState extends State<Menu> {
     //Navigator.pushReplacementNamed(context, '/help');
   }
 
-  void goToAbout(){
-    //Navigator.pushReplacementNamed(context, '/about');
+  void goToAbout(Object tag){
+    Navigator.pushReplacementNamed(context, '/about');
   }
 
   void onTapLogOut(Object tag){
@@ -62,7 +62,7 @@ class _MenuState extends State<Menu> {
     );
 
     Row rowHelpAbout = Row(
-      children: <Widget>[VizOptionButton('Help', iconName: 'ic_help.png',flexible: true), VizOptionButton('About', iconName: 'ic_about.png', flexible: true)],
+      children: <Widget>[VizOptionButton('Help', iconName: 'ic_help.png',flexible: true), VizOptionButton('About', iconName: 'ic_about.png', flexible: true, onTap: goToAbout)],
     );
 
 
