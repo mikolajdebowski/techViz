@@ -1,122 +1,85 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+
+typedef SwipeActionCallback = void Function(dynamic tag);
+
+class SwipeAction{
+  final String title;
+  final SwipeActionCallback callback;
+
+  SwipeAction(this.title, this.callback);
+}
 
 class VizListView extends StatefulWidget{
+  final List<RowObject> data;
+  final SwipeAction callbackLeft;
+  final SwipeAction callbackRight;
+
+  const VizListView({Key key, this.data, this.callbackLeft, this.callbackRight}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() => VizListViewState();
 }
 
 class VizListViewState extends State<VizListView>{
-  int _sortColumnIndex = 1;
-  bool _sortAscending = true;
-  ResultsDataSource _resultsDataSource = ResultsDataSource([]);
-
-  var data = <RowObject>[
-    RowObject(location: "01-01-01", type:"Printer", status: "Assigned", user: "Joe", time: "1:03"),
-    RowObject(location: "01-01-02", type:"Change", status: "Carded", user: "Amy", time: "2:32"),
-    RowObject(location: "02-01-04", type:"Tilt", status: "Acknowledged", user: "Bob", time: "0:45"),
-    RowObject(location: "03-08-12", type:"Jackpot", status: "Jackpot", user: "Susan", time: "12:18"),
-    RowObject(location: "G-01-05", type:"Verify", status: "Carded", user: "James", time: "3:15"),
-    RowObject(location: "D-04-08", type:"Change", status: "Acknowledged", user: "Michelle", time: "0:28"),
-    RowObject(location: "05-01-01", type:"Bill", status: "Carded", user: "Joe", time: "4:55"),
-    RowObject(location: "01-01-01", type:"Printer", status: "Assigned", user: "Joe", time: "1:03"),
-    RowObject(location: "01-01-02", type:"Change", status: "Carded", user: "Amy", time: "2:32"),
-    RowObject(location: "02-01-04", type:"Tilt", status: "Acknowledged", user: "Bob", time: "0:45"),
-    RowObject(location: "03-08-12", type:"Jackpot", status: "Jackpot", user: "Susan", time: "12:18"),
-    RowObject(location: "G-01-05", type:"Verify", status: "Carded", user: "James", time: "3:15"),
-    RowObject(location: "D-04-08", type:"Change", status: "Acknowledged", user: "Michelle", time: "0:28"),
-    RowObject(location: "05-01-01", type:"Bill", status: "Carded", user: "Joe", time: "4:55"),
-    RowObject(location: "01-01-01", type:"Printer", status: "Assigned", user: "Joe", time: "1:03"),
-    RowObject(location: "01-01-02", type:"Change", status: "Carded", user: "Amy", time: "2:32"),
-    RowObject(location: "02-01-04", type:"Tilt", status: "Acknowledged", user: "Bob", time: "0:45"),
-    RowObject(location: "03-08-12", type:"Jackpot", status: "Jackpot", user: "Susan", time: "12:18"),
-    RowObject(location: "G-01-05", type:"Verify", status: "Carded", user: "James", time: "3:15"),
-    RowObject(location: "D-04-08", type:"Change", status: "Acknowledged", user: "Michelle", time: "0:28"),
-    RowObject(location: "05-01-01", type:"Bill", status: "Carded", user: "Joe", time: "4:55"),
-    RowObject(location: "01-01-01", type:"Printer", status: "Assigned", user: "Joe", time: "1:03"),
-    RowObject(location: "01-01-02", type:"Change", status: "Carded", user: "Amy", time: "2:32"),
-    RowObject(location: "02-01-04", type:"Tilt", status: "Acknowledged", user: "Bob", time: "0:45"),
-    RowObject(location: "03-08-12", type:"Jackpot", status: "Jackpot", user: "Susan", time: "12:18"),
-    RowObject(location: "G-01-05", type:"Verify", status: "Carded", user: "James", time: "3:15"),
-    RowObject(location: "D-04-08", type:"Change", status: "Acknowledged", user: "Michelle", time: "0:28"),
-    RowObject(location: "05-01-01", type:"Bill", status: "Carded", user: "Joe", time: "4:55"),
-  ];
-
-  void _sort<T>(
-      Comparable<T> getField(RowObject d), int columnIndex, bool ascending) {
-    _resultsDataSource._sort<T>(getField, ascending);
-    setState(() {
-      _sortColumnIndex = columnIndex;
-      _sortAscending = ascending;
-    });
-  }
+  final SlidableController slidableController = new SlidableController();
 
   @override
   Widget build(BuildContext context) {
 
-    DataColumn col1 = DataColumn(
-        label: Text("Location",
-          style: TextStyle(fontWeight: FontWeight.bold),),
-        numeric: false,
-        tooltip: "Location Column"
-    );
+    List<Slidable> listOfRows = widget.data.map((RowObject row){
 
-    DataColumn col2 = DataColumn(
-        label: Text("Type",
-          style: TextStyle(fontWeight: FontWeight.bold),),
-        numeric: false,
-        tooltip: "Type Column",
-        onSort: (i, b){
-          print("$i $b");
-
-          setState(() {
-            data.sort((a, b) => a.type.compareTo(b.type));
-          });
-        }
-    );
-
-    DataColumn col3 = DataColumn(
-        label: Text("Status",
-          style: TextStyle(fontWeight: FontWeight.bold),),
-        numeric: false,
-        tooltip: "Status Column"
-    );
-
-    DataColumn col4 = DataColumn(
-        label: Text("User",
-          style: TextStyle(fontWeight: FontWeight.bold),),
-        numeric: false,
-        tooltip: "User Column"
-    );
-
-    DataColumn col5 = DataColumn(
-        label: Text("Time",
-          style: TextStyle(fontWeight: FontWeight.bold),),
-        numeric: false,
-        tooltip: "Time Column"
-    );
-
-    DataTable table = DataTable(
-        sortColumnIndex: _sortColumnIndex,
-        sortAscending: _sortAscending,
-        columns: <DataColumn>[
-          col1, col2,  col3, col4,  col5
+      Row dataRow = Row(
+        children: <Widget>[
+          Text(row.location),
+          Text(row.status),
+          Text(row.type)
         ],
+      );
+      
+      Padding padding = Padding(
+        child: dataRow, padding: EdgeInsets.all(5.0),
+      );
 
-        rows: data.map((RowObject row)=>DataRow(
-            cells: [
-              DataCell(Text(row.location)),
-              DataCell(Text(row.type)),
-              DataCell(Text(row.status)),
-              DataCell(Text(row.user)),
-              DataCell(Text(row.time), showEditIcon: false, placeholder: false),
-            ]
-        )).toList()
+      List<GestureDetector> leftActions = List<GestureDetector>();
+      if(widget.callbackLeft!=null){
+        leftActions.add(GestureDetector(
+          onTap: (){
+            widget.callbackLeft.callback;
+          },
+          child: Text(widget.callbackLeft.title),
+        ));
+      }
 
+      List<GestureDetector> rightActions = List<GestureDetector>();
+      if(widget.callbackRight!=null){
+        rightActions.add(GestureDetector(
+          onTap: (){
+            widget.callbackRight.callback;
+          },
+          child: Text(widget.callbackRight.title),
+        ));
+      }
+
+      Slidable slidable = Slidable(
+        controller: slidableController,
+        delegate: SlidableDrawerDelegate(),
+        actionExtentRatio: 0.25,
+        child:  Container(
+          color: Colors.white,
+          child:  padding,
+        ),
+        actions: rightActions,
+        secondaryActions: leftActions
+      );
+
+      return slidable;
+    }).toList();
+
+    return ListView(
+        children: listOfRows
     );
-
-    print(table.rows.length);
-    return SizedBox(child: ListView(children: <Widget>[table]));
   }
 }
 
@@ -130,6 +93,11 @@ class RowObject{
   RowObject({this.location, this.type, this.status, this.user, this.time});
 
   bool selected = false;
+
+  @override
+  String toString(){
+    return location;
+  }
 }
 
 class ResultsDataSource extends DataTableSource {
@@ -187,10 +155,114 @@ class ResultsDataSource extends DataTableSource {
   @override
   int get selectedRowCount => _selectedCount;
 
-  void _selectAll(bool checked) {
-    for (RowObject result in _results)
-      result.selected = checked;
-    _selectedCount = checked ? _results.length : 0;
-    notifyListeners();
+
+
+
+  //later
+//  void _selectAll(bool checked) {
+//    for (RowObject result in _results)
+//      result.selected = checked;
+//    _selectedCount = checked ? _results.length : 0;
+//    notifyListeners();
+//  }
+
+//  void _sort<T>(
+//      Comparable<T> getField(RowObject d), int columnIndex, bool ascending) {
+//    _resultsDataSource._sort<T>(getField, ascending);
+//    setState(() {
+//      _sortColumnIndex = columnIndex;
+//      _sortAscending = ascending;
+//    });
+//  }
+
+
+
+}
+
+
+class SlideMenu extends StatefulWidget {
+  final Widget child;
+  final List<Widget> menuItems;
+
+  SlideMenu({this.child, this.menuItems});
+
+  @override
+  _SlideMenuState createState() => new _SlideMenuState();
+}
+
+class _SlideMenuState extends State<SlideMenu> with SingleTickerProviderStateMixin {
+  AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = new AnimationController(vsync: this, duration: const Duration(milliseconds: 200));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final animation = new Tween(
+        begin: const Offset(0.0, 0.0),
+        end: const Offset(-0.2, 0.0)
+    ).animate(new CurveTween(curve: Curves.decelerate).animate(_controller));
+
+    return new GestureDetector(
+      onHorizontalDragUpdate: (data) {
+        // we can access context.size here
+        setState(() {
+          _controller.value -= data.primaryDelta / context.size.width;
+        });
+      },
+      onHorizontalDragEnd: (data) {
+        if (data.primaryVelocity > 2500)
+          _controller.animateTo(.0); //close menu on fast swipe in the right direction
+        else if (_controller.value >= .5 || data.primaryVelocity < -2500) // fully open if dragged a lot to left or on fast swipe to left
+          _controller.animateTo(1.0);
+        else // close if none of above
+          _controller.animateTo(.0);
+      },
+      child: new Stack(
+        children: <Widget>[
+          new SlideTransition(position: animation, child: widget.child),
+          new Positioned.fill(
+            child: new LayoutBuilder(
+              builder: (context, constraint) {
+                return new AnimatedBuilder(
+                  animation: _controller,
+                  builder: (context, child) {
+                    return new Stack(
+                      children: <Widget>[
+                        new Positioned(
+                          right: .0,
+                          top: .0,
+                          bottom: .0,
+                          width: constraint.maxWidth * animation.value.dx * -1,
+                          child: new Container(
+                            color: Colors.black26,
+                            child: new Row(
+                              children: widget.menuItems.map((child) {
+                                return new Expanded(
+                                  child: child,
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+            ),
+          )
+        ],
+      ),
+    );
   }
 }
