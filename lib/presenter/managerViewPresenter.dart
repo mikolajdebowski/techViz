@@ -1,9 +1,9 @@
-import 'package:techviz/model/summaryEntry.dart';
+import 'package:techviz/model/dataEntry.dart';
 
 abstract class IManagerViewPresenter {
-  void onOpenTasksLoaded(List<SummaryEntry> summaryList);
-  void onTeamAvailabilityLoaded(List<SummaryEntry> summaryList);
-  void onSlotFloorSummaryLoaded(List<SummaryEntry> summaryList);
+  void onOpenTasksLoaded(List<DataEntry> summaryList);
+  void onTeamAvailabilityLoaded(List<DataEntry> summaryList);
+  void onSlotFloorSummaryLoaded(List<DataEntry> summaryList);
 
   void onLoadError(dynamic error);
 }
@@ -18,7 +18,7 @@ class ManagerViewPresenter{
   void loadOpenTasks(){
     Future.delayed(Duration(seconds: 1), (){
 
-      List<SummaryEntry> list = List<SummaryEntry>();
+      List<DataEntry> list = List<DataEntry>();
 
       for(int i =0; i<99; i++){
 
@@ -29,7 +29,7 @@ class ManagerViewPresenter{
         mapEntry['User'] = 'irina';
         mapEntry['TimeTaken'] = i.toString();
 
-        list.add(SummaryEntry(mapEntry));
+        list.add(DataEntry(mapEntry));
       }
       _view.onOpenTasksLoaded(list);
 
@@ -38,7 +38,7 @@ class ManagerViewPresenter{
 
   void loadTeamAvailability(){
     Future.delayed(Duration(milliseconds: 500), (){
-      List<SummaryEntry> list = List<SummaryEntry>();
+      List<DataEntry> list = List<DataEntry>();
 
       for(int i =0; i<99; i++){
 
@@ -46,7 +46,7 @@ class ManagerViewPresenter{
         mapEntry['Attendant'] = i.toString()+i.toString()+i.toString();
         mapEntry['Status'] = i<10? 'Available' : ((i<80? 'On Break' : i<85? 'Other' : 'Off Shift'));
 
-        list.add(SummaryEntry(mapEntry));
+        list.add(DataEntry(mapEntry));
       }
       _view.onTeamAvailabilityLoaded(list);
 
@@ -55,7 +55,7 @@ class ManagerViewPresenter{
 
   void loadSlotFloorSummary(){
     Future.delayed(Duration(seconds: 2), (){
-      List<SummaryEntry> list = List<SummaryEntry>();
+      List<DataEntry> list = List<DataEntry>();
 
       for(int i =0; i<99; i++){
 
@@ -65,7 +65,7 @@ class ManagerViewPresenter{
         mapEntry['Status'] = i<80? 'Active Games' : ((i<85? 'Head Count' : i<90? 'Reserved' : 'Out of Service'));
         mapEntry['Denom'] = 0.01;
 
-        list.add(SummaryEntry(mapEntry));
+        list.add(DataEntry(mapEntry));
       }
       _view.onSlotFloorSummaryLoaded(list);
 

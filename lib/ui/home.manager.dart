@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:techviz/components/vizSummary.dart';
-import 'package:techviz/model/summaryEntry.dart';
+import 'package:techviz/model/dataEntry.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/managerViewPresenter.dart';
 import 'package:techviz/ui/home.dart';
@@ -15,9 +15,9 @@ class HomeManager extends StatefulWidget {
 class HomeManagerState extends State<HomeManager> implements TechVizHome, IManagerViewPresenter {
   ManagerViewPresenter _presenter;
 
-  List<SummaryEntry> _openTasksList;
-  List<SummaryEntry> _teamAvailabilityList;
-  List<SummaryEntry> _slotFloorList;
+  List<DataEntry> _openTasksList;
+  List<DataEntry> _teamAvailabilityList;
+  List<DataEntry> _slotFloorList;
 
   @override
   void initState() {
@@ -63,7 +63,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
   }
 
   @override
-  void onOpenTasksLoaded(List<SummaryEntry> summaryList) {
+  void onOpenTasksLoaded(List<DataEntry> summaryList) {
     if (this.mounted) {
       setState(() {
         _openTasksList = summaryList;
@@ -72,7 +72,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
   }
 
   @override
-  void onSlotFloorSummaryLoaded(List<SummaryEntry> summaryList) {
+  void onSlotFloorSummaryLoaded(List<DataEntry> summaryList) {
     if (this.mounted) {
       setState(() {
         _slotFloorList = summaryList;
@@ -81,7 +81,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
   }
 
   @override
-  void onTeamAvailabilityLoaded(List<SummaryEntry> summaryList) {
+  void onTeamAvailabilityLoaded(List<DataEntry> summaryList) {
     if (this.mounted) {
       setState(() {
         _teamAvailabilityList = summaryList;

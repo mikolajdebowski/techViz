@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizListView.dart';
 import 'package:techviz/components/vizSummaryHeader.dart';
-import 'package:techviz/presenter/managerViewListPresenter.dart';
 
 import 'package:http/http.dart' as http;
 
@@ -12,16 +11,11 @@ class About extends StatefulWidget {
   State<StatefulWidget> createState() => AboutState();
 }
 
-class AboutState extends State<About> implements IListPresenter{
-
-  //ManagerViewListPresenter _presenter;
+class AboutState extends State<About> {
 
   @override
   void initState() {
     super.initState();
-//
-//    _presenter = ManagerViewListPresenter(this);
-//    _presenter.loadRows();
   }
 
   void callbackLeft(dynamic obj){
@@ -36,36 +30,36 @@ class AboutState extends State<About> implements IListPresenter{
   @override
   Widget build(BuildContext context) {
 
-    List<RowObject> data = <RowObject>[
-      RowObject(location: "01-01-01", type:"Printer", status: "Assigned", user: "Joe", time: "1:03"),
-      RowObject(location: "01-01-02", type:"Change", status: "Carded", user: "Amy", time: "2:32"),
-      RowObject(location: "02-01-04", type:"Tilt", status: "Acknowledged", user: "Bob", time: "0:45"),
-      RowObject(location: "03-08-12", type:"Jackpot", status: "Jackpot", user: "Susan", time: "12:18"),
-      RowObject(location: "G-01-05", type:"Verify", status: "Carded", user: "James", time: "3:15"),
-      RowObject(location: "D-04-08", type:"Change", status: "Acknowledged", user: "Michelle", time: "0:28"),
-      RowObject(location: "05-01-01", type:"Bill", status: "Carded", user: "Joe", time: "4:55"),
-      RowObject(location: "01-01-01", type:"Printer", status: "Assigned", user: "Joe", time: "1:03"),
-      RowObject(location: "01-01-02", type:"Change", status: "Carded", user: "Amy", time: "2:32"),
-      RowObject(location: "02-01-04", type:"Tilt", status: "Acknowledged", user: "Bob", time: "0:45"),
-      RowObject(location: "03-08-12", type:"Jackpot", status: "Jackpot", user: "Susan", time: "12:18"),
-      RowObject(location: "G-01-05", type:"Verify", status: "Carded", user: "James", time: "3:15"),
-      RowObject(location: "D-04-08", type:"Change", status: "Acknowledged", user: "Michelle", time: "0:28"),
-      RowObject(location: "05-01-01", type:"Bill", status: "Carded", user: "Joe", time: "4:55"),
-      RowObject(location: "01-01-01", type:"Printer", status: "Assigned", user: "Joe", time: "1:03"),
-      RowObject(location: "01-01-02", type:"Change", status: "Carded", user: "Amy", time: "2:32"),
-      RowObject(location: "02-01-04", type:"Tilt", status: "Acknowledged", user: "Bob", time: "0:45"),
-      RowObject(location: "03-08-12", type:"Jackpot", status: "Jackpot", user: "Susan", time: "12:18"),
-      RowObject(location: "G-01-05", type:"Verify", status: "Carded", user: "James", time: "3:15"),
-      RowObject(location: "D-04-08", type:"Change", status: "Acknowledged", user: "Michelle", time: "0:28"),
-      RowObject(location: "05-01-01", type:"Bill", status: "Carded", user: "Joe", time: "4:55"),
-      RowObject(location: "01-01-01", type:"Printer", status: "Assigned", user: "Joe", time: "1:03"),
-      RowObject(location: "01-01-02", type:"Change", status: "Carded", user: "Amy", time: "2:32"),
-      RowObject(location: "02-01-04", type:"Tilt", status: "Acknowledged", user: "Bob", time: "0:45"),
-      RowObject(location: "03-08-12", type:"Jackpot", status: "Jackpot", user: "Susan", time: "12:18"),
-      RowObject(location: "G-01-05", type:"Verify", status: "Carded", user: "James", time: "3:15"),
-      RowObject(location: "D-04-08", type:"Change", status: "Acknowledged", user: "Michelle", time: "0:28"),
-      RowObject(location: "05-01-01", type:"Bill", status: "Carded", user: "Joe", time: "4:55"),
-    ];
+//    List<RowObject> data = <RowObject>[
+//      RowObject(location: "01-01-01", type:"Printer", status: "Assigned", user: "Joe", time: "1:03"),
+//      RowObject(location: "01-01-02", type:"Change", status: "Carded", user: "Amy", time: "2:32"),
+//      RowObject(location: "02-01-04", type:"Tilt", status: "Acknowledged", user: "Bob", time: "0:45"),
+//      RowObject(location: "03-08-12", type:"Jackpot", status: "Jackpot", user: "Susan", time: "12:18"),
+//      RowObject(location: "G-01-05", type:"Verify", status: "Carded", user: "James", time: "3:15"),
+//      RowObject(location: "D-04-08", type:"Change", status: "Acknowledged", user: "Michelle", time: "0:28"),
+//      RowObject(location: "05-01-01", type:"Bill", status: "Carded", user: "Joe", time: "4:55"),
+//      RowObject(location: "01-01-01", type:"Printer", status: "Assigned", user: "Joe", time: "1:03"),
+//      RowObject(location: "01-01-02", type:"Change", status: "Carded", user: "Amy", time: "2:32"),
+//      RowObject(location: "02-01-04", type:"Tilt", status: "Acknowledged", user: "Bob", time: "0:45"),
+//      RowObject(location: "03-08-12", type:"Jackpot", status: "Jackpot", user: "Susan", time: "12:18"),
+//      RowObject(location: "G-01-05", type:"Verify", status: "Carded", user: "James", time: "3:15"),
+//      RowObject(location: "D-04-08", type:"Change", status: "Acknowledged", user: "Michelle", time: "0:28"),
+//      RowObject(location: "05-01-01", type:"Bill", status: "Carded", user: "Joe", time: "4:55"),
+//      RowObject(location: "01-01-01", type:"Printer", status: "Assigned", user: "Joe", time: "1:03"),
+//      RowObject(location: "01-01-02", type:"Change", status: "Carded", user: "Amy", time: "2:32"),
+//      RowObject(location: "02-01-04", type:"Tilt", status: "Acknowledged", user: "Bob", time: "0:45"),
+//      RowObject(location: "03-08-12", type:"Jackpot", status: "Jackpot", user: "Susan", time: "12:18"),
+//      RowObject(location: "G-01-05", type:"Verify", status: "Carded", user: "James", time: "3:15"),
+//      RowObject(location: "D-04-08", type:"Change", status: "Acknowledged", user: "Michelle", time: "0:28"),
+//      RowObject(location: "05-01-01", type:"Bill", status: "Carded", user: "Joe", time: "4:55"),
+//      RowObject(location: "01-01-01", type:"Printer", status: "Assigned", user: "Joe", time: "1:03"),
+//      RowObject(location: "01-01-02", type:"Change", status: "Carded", user: "Amy", time: "2:32"),
+//      RowObject(location: "02-01-04", type:"Tilt", status: "Acknowledged", user: "Bob", time: "0:45"),
+//      RowObject(location: "03-08-12", type:"Jackpot", status: "Jackpot", user: "Susan", time: "12:18"),
+//      RowObject(location: "G-01-05", type:"Verify", status: "Carded", user: "James", time: "3:15"),
+//      RowObject(location: "D-04-08", type:"Change", status: "Acknowledged", user: "Michelle", time: "0:28"),
+//      RowObject(location: "05-01-01", type:"Bill", status: "Carded", user: "Joe", time: "4:55"),
+//    ];
 
 
     SwipeAction toTheLeftAction = SwipeAction('To the left', (dynamic whatever){
@@ -77,7 +71,7 @@ class AboutState extends State<About> implements IListPresenter{
     });
 
     Container container = Container(
-      child: VizListView(data: data, callbackLeft: toTheLeftAction, callbackRight: toTheRightAction),
+      child: VizListView(/*data: data,*/ callbackLeft: toTheLeftAction, callbackRight: toTheRightAction),
 
       decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -91,15 +85,6 @@ class AboutState extends State<About> implements IListPresenter{
     return Scaffold(backgroundColor: Colors.black, appBar: ActionBar(title: 'About'), body: safe);
   }
 
-  @override
-  void onLoadError(dynamic error) {
-    // TODO: implement onLoadError
-  }
-
-  @override
-  void onRowsLoaded(VizSummaryHeader summaryHeader) {
-    // TODO: implement onRowsLoaded
-  }
 }
 
 

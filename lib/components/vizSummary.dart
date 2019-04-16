@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:techviz/components/vizListView.dart';
 import 'package:techviz/components/vizSummaryHeader.dart';
-import 'package:techviz/model/summaryEntry.dart';
+import 'package:techviz/model/dataEntry.dart';
 
 class VizSummary extends StatefulWidget {
   final String title;
-  final List<SummaryEntry> data;
+  final List<DataEntry> data;
   final List<String> groupByKeys;
 
   VizSummary(this.title, this.data, this.groupByKeys, {Key key}) : super(key: key);
@@ -29,6 +29,10 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
     }
 
     return destination;
+  }
+
+  List<T> whereBy<T>({bool Function(T) keySelector, List<T> list}) {
+    return list.where((T element) => keySelector(element)).toList();
   }
 
   @override
@@ -55,7 +59,7 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
     else{
       String keys = widget.groupByKeys[0];
 
-      Map<String, dynamic> grouped = groupBy<SummaryEntry, String>(keySelector: (SummaryEntry entry) => entry.items[keys], list: widget.data);
+      Map<String, dynamic> grouped = groupBy<DataEntry, String>(keySelector: (DataEntry entry) => entry.items[keys], list: widget.data);
       Map<String, int> count = grouped.map<String, int>((String key, dynamic value) => MapEntry(key, (value as List).length));
 
       VizSummaryHeader header = VizSummaryHeader(headerTitle: widget.title, entries: count, actions: this, selectedEntryKey: _selectedEntryKey);
@@ -67,6 +71,9 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
           child: header,
         );
       } else {
+
+        List<DataEntry> filtered = whereBy<DataEntry>(keySelector: (DataEntry entry) => entry.items[keys]==_selectedEntryKey, list: widget.data);
+
         container = Container(
           key: Key('container'),
           decoration: boxDecoration,
@@ -76,7 +83,7 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
               header,
               Container(
                 height: 100,
-                child: VizListView(),
+                child: VizListView(data: filtered),
               )
             ],
           ),
