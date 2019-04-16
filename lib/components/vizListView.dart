@@ -35,7 +35,9 @@ class VizListViewState extends State<VizListView>{
         children: <Widget>[
           Expanded(child: Text(row.location)),
           Expanded(child: Text(row.status)),
-          Expanded(child: Text(row.type))
+          Expanded(child: Text(row.type)),
+          Expanded(child: Text(row.user)),
+          Expanded(child: Text(row.time))
         ],
       );
       
