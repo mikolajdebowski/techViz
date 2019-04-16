@@ -24,6 +24,7 @@ class VizListView extends StatefulWidget{
 
 class VizListViewState extends State<VizListView>{
   final SlidableController slidableController = new SlidableController();
+  final double paddingValue = 10.0;
 
   @override
   Widget build(BuildContext context) {
@@ -32,14 +33,14 @@ class VizListViewState extends State<VizListView>{
 
       Row dataRow = Row(
         children: <Widget>[
-          Text(row.location),
-          Text(row.status),
-          Text(row.type)
+          Expanded(child: Text(row.location)),
+          Expanded(child: Text(row.status)),
+          Expanded(child: Text(row.type))
         ],
       );
       
       Padding padding = Padding(
-        child: dataRow, padding: EdgeInsets.all(5.0),
+        child: dataRow, padding: EdgeInsets.all(paddingValue),
       );
 
       List<GestureDetector> leftActions = List<GestureDetector>();
@@ -48,7 +49,10 @@ class VizListViewState extends State<VizListView>{
           onTap: (){
             widget.callbackLeft.callback;
           },
-          child: Text(widget.callbackLeft.title),
+          child: Padding(
+            padding: EdgeInsets.all(paddingValue),
+            child: Text(widget.callbackLeft.title),
+          ),
         ));
       }
 
@@ -58,7 +62,10 @@ class VizListViewState extends State<VizListView>{
           onTap: (){
             widget.callbackRight.callback;
           },
-          child: Text(widget.callbackRight.title),
+          child: Padding(
+            padding: EdgeInsets.all(paddingValue),
+            child: Text(widget.callbackRight.title),
+          ),
         ));
       }
 
@@ -67,7 +74,6 @@ class VizListViewState extends State<VizListView>{
         delegate: SlidableDrawerDelegate(),
         actionExtentRatio: 0.25,
         child:  Container(
-          color: Colors.white,
           child:  padding,
         ),
         actions: rightActions,
@@ -98,85 +104,6 @@ class RowObject{
   String toString(){
     return location;
   }
-}
-
-class ResultsDataSource extends DataTableSource {
-  final List<RowObject> _results;
-
-  ResultsDataSource(this._results);
-
-  void _sort<T>(Comparable<T> getField(RowObject d), bool ascending) {
-    _results.sort((RowObject a, RowObject b) {
-      if (!ascending) {
-        final RowObject c = a;
-        a = b;
-        b = c;
-      }
-      final Comparable<T> aValue = getField(a);
-      final Comparable<T> bValue = getField(b);
-      return Comparable.compare(aValue, bValue);
-    });
-    notifyListeners();
-  }
-
-  int _selectedCount = 0;
-
-  @override
-  DataRow getRow(int index) {
-    assert(index >= 0);
-    if (index >= _results.length) return null;
-    final RowObject result = _results[index];
-    return DataRow.byIndex(
-        index: index,
-        selected: result.selected,
-        onSelectChanged: (bool value) {
-          if (result.selected != value) {
-            _selectedCount += value ? 1 : -1;
-            assert(_selectedCount >= 0);
-            result.selected = value;
-            notifyListeners();
-          }
-        },
-        cells: <DataCell>[
-          DataCell(Text('${result.location}')),
-          DataCell(Text('${result.type}')),
-          DataCell(Text('${result.status}')),
-          DataCell(Text('${result.user}')),
-          DataCell(Text('${result.type}')),
-        ]);
-  }
-
-  @override
-  int get rowCount => _results.length;
-
-  @override
-  bool get isRowCountApproximate => false;
-
-  @override
-  int get selectedRowCount => _selectedCount;
-
-
-
-
-  //later
-//  void _selectAll(bool checked) {
-//    for (RowObject result in _results)
-//      result.selected = checked;
-//    _selectedCount = checked ? _results.length : 0;
-//    notifyListeners();
-//  }
-
-//  void _sort<T>(
-//      Comparable<T> getField(RowObject d), int columnIndex, bool ascending) {
-//    _resultsDataSource._sort<T>(getField, ascending);
-//    setState(() {
-//      _sortColumnIndex = columnIndex;
-//      _sortAscending = ascending;
-//    });
-//  }
-
-
-
 }
 
 
