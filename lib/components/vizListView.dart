@@ -27,6 +27,7 @@ class VizListView extends StatefulWidget{
 class VizListViewState extends State<VizListView>{
   final SlidableController slidableController = new SlidableController();
   final double paddingValue = 10.0;
+  List<Widget> header;
 
 
 
@@ -37,6 +38,25 @@ class VizListViewState extends State<VizListView>{
     if(widget.data.length==0){
       return Text('No data to show');
     }
+
+    header = List<Widget>();
+    widget.data[0].items.forEach((String key, dynamic value){
+
+      header.add(Expanded(child: Text(key.toString())));
+    });
+
+    Row headerRow = Row(
+      children: header,
+    );
+
+    Padding headerPadding = Padding(
+      child: headerRow, padding: EdgeInsets.all(paddingValue),
+    );
+
+
+
+
+
 
 
     List<Slidable> rowsList = widget.data.map((DataEntry row){
@@ -97,20 +117,14 @@ class VizListViewState extends State<VizListView>{
     }).toList();
 
 
-
-    double listHeight = widget.rowHeight*widget.data.length;
-    if(widget.data.length>8){
       return ListView(
-          //put height = widget.rowHeight * 8;
-          children: rowsList
+        children: <Widget>[
+          headerPadding,
+          ListView(
+              shrinkWrap: true,
+              children: rowsList
+          ),
+        ],
       );
     }
-    else{
-      return ListView(
-          //put minHeigh
-          children: rowsList
-      );
-    }
-
-  }
 }
