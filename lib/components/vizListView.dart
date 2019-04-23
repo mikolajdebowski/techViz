@@ -53,12 +53,6 @@ class VizListViewState extends State<VizListView>{
       child: headerRow, padding: EdgeInsets.all(paddingValue),
     );
 
-
-
-
-
-
-
     List<Slidable> rowsList = widget.data.map((DataEntry row){
 
       List<Widget> columns = List<Widget>();
@@ -113,18 +107,19 @@ class VizListViewState extends State<VizListView>{
         secondaryActions: leftActions
       );
 
+
       return slidable;
     }).toList();
 
+    List<Widget> children = List<Widget>();
+    children.add(headerPadding);
+    children.addAll(rowsList);
 
-      return ListView(
-        children: <Widget>[
-          headerPadding,
-          ListView(
-              shrinkWrap: true,
-              children: rowsList
-          ),
-        ],
+
+    return SingleChildScrollView(
+        child: Column(
+          children: children
+        ),
       );
     }
 }
