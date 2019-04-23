@@ -38,11 +38,11 @@ class LocalRepository {
 
           UserTable.create(db);
 
-          EscalationPathTable().create();
+          EscalationPathTable().create(db);
 
-          TaskTypeTable().create();
+          TaskTypeTable().create(db);
 
-          RoleTable().create();
+          RoleTable().create(db);
 
           await db.execute('''
             create table TaskStatus ( 
