@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:techviz/components/VizAlert.dart';
+import 'package:techviz/components/vizDialog.dart';
+import 'package:techviz/components/vizListView.dart';
 import 'package:techviz/components/vizSummary.dart';
 import 'package:techviz/model/dataEntry.dart';
 import 'package:techviz/model/userStatus.dart';
@@ -38,14 +41,44 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            VizSummary('Open Tasks', _openTasksList, ['Status']),
-            VizSummary('Team Availability', _teamAvailabilityList, ['Status']),
+            VizSummary('Open Tasks', _openTasksList, ['Status'], onSwipeLeft: onOpenTasksSwipeLeft(), onSwipeRight: onOpenTasksSwipeRight()),
+            VizSummary('Team Availability', _teamAvailabilityList, ['Status'], onSwipeLeft: onTeamAvailiblitySwipeLeft()),
             VizSummary('Slot floor', _slotFloorList, ['Status'])
           ],
         ),
       ),
     );
   }
+
+
+  SwipeAction onOpenTasksSwipeLeft(){
+    return SwipeAction('Reassign others', (dynamic entry){
+
+      DataEntry dataEntry = (entry as DataEntry);
+      String location = dataEntry.columns['Location'] as String;
+
+      VizDialog.Alert(context, 'Reassign to others', 'Reassign to others location $location');
+    });
+  }
+
+  SwipeAction onOpenTasksSwipeRight(){
+    return SwipeAction('Reassign myself', (dynamic entry){
+
+      DataEntry dataEntry = (entry as DataEntry);
+      String location = dataEntry.columns['Status'] as String;
+
+      VizDialog.Alert(context, 'Reassign to myself', 'Reassign myself location $location');
+
+    });
+  }
+
+  SwipeAction onTeamAvailiblitySwipeLeft(){
+    return SwipeAction('Change Status', (dynamic entry){
+      VizDialog.Alert(context, 'Change user\' status', 'Opens Change user\' status');
+    });
+  }
+
+
 
   @override
   void onUserSectionsChanged(Object obj) {
@@ -88,4 +121,6 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
       });
     }
   }
+
+
 }

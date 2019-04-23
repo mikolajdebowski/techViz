@@ -7,8 +7,10 @@ class VizSummary extends StatefulWidget {
   final String title;
   final List<DataEntry> data;
   final List<String> groupByKeys;
+  final SwipeAction onSwipeLeft;
+  final SwipeAction onSwipeRight;
 
-  VizSummary(this.title, this.data, this.groupByKeys, {Key key}) : super(key: key);
+  VizSummary(this.title, this.data, this.groupByKeys, {Key key, this.onSwipeLeft, this.onSwipeRight}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => VizSummaryState();
@@ -59,7 +61,7 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
     else{
       String keys = widget.groupByKeys[0];
 
-      Map<String, dynamic> grouped = groupBy<DataEntry, String>(keySelector: (DataEntry entry) => entry.items[keys], list: widget.data);
+      Map<String, dynamic> grouped = groupBy<DataEntry, String>(keySelector: (DataEntry entry) => entry.columns[keys], list: widget.data);
       Map<String, int> count = grouped.map<String, int>((String key, dynamic value) => MapEntry(key, (value as List).length));
 
       VizSummaryHeader header = VizSummaryHeader(headerTitle: widget.title, entries: count, actions: this, selectedEntryKey: _selectedEntryKey);
@@ -72,7 +74,7 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
         );
       } else {
 
-        List<DataEntry> filtered = whereBy<DataEntry>(keySelector: (DataEntry entry) => entry.items[keys]==_selectedEntryKey, list: widget.data);
+        List<DataEntry> filtered = whereBy<DataEntry>(keySelector: (DataEntry entry) => entry.columns[keys]==_selectedEntryKey, list: widget.data);
 
         container = Container(
           key: Key('container'),
@@ -83,7 +85,7 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
               header,
               Container(
                 height: 100,
-                child: VizListView(data: filtered),
+                child: VizListView(data: filtered, onSwipeRight: widget.onSwipeRight, onSwipeLeft: widget.onSwipeLeft ),
               )
             ],
           ),

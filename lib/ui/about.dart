@@ -71,7 +71,7 @@ class AboutState extends State<About> {
     });
 
     Container container = Container(
-      child: VizListView(/*data: data,*/ callbackLeft: toTheLeftAction, callbackRight: toTheRightAction),
+      child: VizListView(/*data: data,*/ onSwipeLeft: toTheLeftAction, onSwipeRight: toTheRightAction),
 
       decoration: BoxDecoration(
           gradient: LinearGradient(

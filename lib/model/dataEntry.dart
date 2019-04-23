@@ -1,7 +1,7 @@
 class DataEntry{
-  final Map<String,dynamic> items;
+  final Map<String,dynamic> columns;
 
-  DataEntry(this.items);
+  DataEntry(this.columns);
 
 
 }
