@@ -38,7 +38,8 @@ class VizListViewState extends State<VizListView>{
     header = List<Widget>();
     widget.data[0].columns.forEach((String key, dynamic value){
 
-      header.add(Expanded(child: Text(key.toString())));
+      header.add(Expanded(child: Text(key.toString(),
+        style: TextStyle(fontWeight: FontWeight.bold),)));
     });
 
     Row headerRow = Row(

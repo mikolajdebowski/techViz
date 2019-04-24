@@ -84,7 +84,7 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
             children: <Widget>[
               header,
               Container(
-                height: 100,
+                height: 240,
                 child: VizListView(data: filtered, onSwipeRight: widget.onSwipeRight, onSwipeLeft: widget.onSwipeLeft ),
               )
             ],
