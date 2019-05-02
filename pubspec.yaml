@@ -23,6 +23,7 @@ dependencies:
   swipedetector: ^1.2.0
   dart_amqp: ^0.1.0
   flutter_slidable: ^0.4.9
+  shimmer: ^1.0.0
 
   vizexplorer_mobile_common:
     git: http://git.colo.bis2.net/Mobile/Plugins/common.git
@@ -109,6 +110,7 @@ flutter:
     - family: DigitalClock
       fonts:
         - asset: assets/fonts/DigitalClock.ttf
+
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro

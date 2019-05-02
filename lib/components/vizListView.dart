@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:techviz/model/dataEntry.dart';
+import 'package:shimmer/shimmer.dart';
 
 typedef SwipeActionCallback = void Function(dynamic tag);
 
@@ -27,6 +28,43 @@ class VizListView extends StatefulWidget{
 class VizListViewState extends State<VizListView>{
   final SlidableController slidableController = new SlidableController();
   final double paddingValue = 10.0;
+  final double buttonPaddingValue = 5.0;
+
+  final SizedBox left_swipe_ico = SizedBox(
+    width: 64.0,
+    child: Shimmer.fromColors(
+      baseColor: Colors.white70,
+      highlightColor: Colors.grey,
+      child: Text(
+        'slide>',
+        textAlign: TextAlign.right,
+        style: TextStyle(
+          fontSize: 15.0,
+          fontWeight:
+          FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+
+
+  final SizedBox right_swipe_ico = SizedBox(
+    width: 64.0,
+    child: Shimmer.fromColors(
+      baseColor: Colors.grey,
+      highlightColor: Colors.white10,
+      child: Text(
+        '<slide',
+        textAlign: TextAlign.left,
+        style: TextStyle(
+          fontSize: 15.0,
+          fontWeight:
+          FontWeight.bold,
+        ),
+      ),
+    ),
+  );
+
   List<Widget> header;
 
   @override
@@ -42,12 +80,36 @@ class VizListViewState extends State<VizListView>{
         style: TextStyle(fontWeight: FontWeight.bold),)));
     });
 
+
+    if(widget.onSwipeLeft!=null){
+      header.add(Opacity(
+        opacity: 1.0,
+        child: left_swipe_ico,
+      ));
+    }
+    else{
+      header.add(Opacity(
+        opacity: 0.0,
+        child: left_swipe_ico,
+      ));
+    }
+
+    if(widget.onSwipeRight!=null){
+      header.insert(0, Opacity(
+        opacity: 1.0,
+        child: right_swipe_ico,
+      ));
+    }
+    else{
+      header.insert(0, Opacity(
+        opacity: 0.0,
+        child: right_swipe_ico,
+      ));
+    }
+
+
     Row headerRow = Row(
       children: header,
-    );
-
-    Padding headerPadding = Padding(
-      child: headerRow, padding: EdgeInsets.all(paddingValue),
     );
 
     List<Slidable> rowsList = widget.data.map((DataEntry row){
@@ -56,20 +118,15 @@ class VizListViewState extends State<VizListView>{
 
       List<Widget> columns = List<Widget>();
       row.columns.forEach((String key, dynamic value){
-
         columns.add(Expanded(child: Text(value.toString())));
       });
 
       Row dataRow = Row(
         children: columns,
       );
-      
-      Padding padding = Padding(
-        child: dataRow, padding: EdgeInsets.all(paddingValue),
-      );
 
       GestureDetector gestureDetector = GestureDetector(
-        child: padding,
+        child: dataRow,
         onTap: (){
           SlidableState slidableState = _slidableKey.currentState;
           slidableState.close();
@@ -78,24 +135,49 @@ class VizListViewState extends State<VizListView>{
 
       List<Widget> leftActions = List<Widget>();
       if(widget.onSwipeLeft!=null){
+
+//        columns.add(left_swipe_ico);
+        columns.add(Opacity(
+          opacity: 0.0,
+          child: right_swipe_ico,
+        ));
+
         leftActions.add(Padding(
-            padding: EdgeInsets.all(paddingValue),
-            child: RaisedButton(onPressed: (){
-              widget.onSwipeLeft.callback(row);
-            }, child: Text(widget.onSwipeLeft.title)),
-          ),
-        );
+          padding: EdgeInsets.all(buttonPaddingValue),
+          child: RaisedButton(onPressed: (){
+                widget.onSwipeLeft.callback(row);
+              }, child: Text(widget.onSwipeLeft.title)),
+        ),);
+      }
+      else {
+        columns.add(Opacity(
+          opacity: 0.0,
+          child: right_swipe_ico,
+        ));
       }
 
       List<Widget> rightActions = List<Widget>();
       if(widget.onSwipeRight!=null){
+
+//        columns.insert(0, right_swipe_ico);
+        columns..insert(0, (Opacity(
+          opacity: 0.0,
+          child: right_swipe_ico,
+        )));
+
         rightActions.add(Padding(
-            padding: EdgeInsets.all(paddingValue),
-            child: RaisedButton(onPressed: (){
-              widget.onSwipeRight.callback(row);
-            }, child: Text(widget.onSwipeRight.title)),
-          ),
+          padding: EdgeInsets.all(buttonPaddingValue),
+          child: RaisedButton(onPressed: (){
+                widget.onSwipeRight.callback(row);
+              }, child: Text(widget.onSwipeRight.title)),
+        ),
         );
+      }
+      else {
+        columns.insert(0, (Opacity(
+          opacity: 0.0,
+          child: left_swipe_ico,
+        )));
       }
 
       Slidable slidable = Slidable(
@@ -111,18 +193,19 @@ class VizListViewState extends State<VizListView>{
         secondaryActions: leftActions
       );
 
-
       return slidable;
     }).toList();
 
     List<Widget> children = List<Widget>();
-    children.add(headerPadding);
+    children.add(headerRow);
     children.addAll(rowsList);
 
-
     return SingleChildScrollView(
-        child: Column(
-          children: children
+        child: Padding(
+          padding: EdgeInsets.all(paddingValue),
+          child: Column(
+            children: children
+          ),
         ),
       );
     }
