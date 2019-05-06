@@ -182,17 +182,20 @@ class SwipeButton extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return FlatButton(
-      color: const Color(0xFFDDDDDD),
-      splashColor: const Color(0xFFFFFFFF),
-      child: Text(
-        text,
-        maxLines: 1,
-        style: TextStyle(color: Colors.black, fontSize: 12),
+    return Padding(
+      padding: EdgeInsets.all(5),
+      child: FlatButton(
+          color: const Color(0xFFDDDDDD),
+          splashColor: const Color(0xFFFFFFFF),
+          child: Text(
+            text,
+            maxLines: 1,
+            style: TextStyle(color: Colors.black, fontSize: 10),
+          ),
+          onPressed: onPressed,
+          materialTapTargetSize: MaterialTapTargetSize.padded,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0))
       ),
-      onPressed: onPressed,
-      materialTapTargetSize: MaterialTapTargetSize.padded,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0))
     );
   }
 }

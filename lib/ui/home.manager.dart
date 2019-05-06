@@ -15,12 +15,13 @@ class HomeManager extends StatefulWidget {
   State<StatefulWidget> createState() => HomeManagerState();
 }
 
-class HomeManagerState extends State<HomeManager> implements TechVizHome, IManagerViewPresenter {
+class HomeManagerState extends State<HomeManager> implements TechVizHome, IManagerViewPresenter, VizSummaryActions {
   ManagerViewPresenter _presenter;
 
   List<DataEntry> _openTasksList;
   List<DataEntry> _teamAvailabilityList;
   List<DataEntry> _slotFloorList;
+  ScrollController _mainController;
 
   @override
   void initState() {
@@ -30,6 +31,8 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
     _presenter.loadOpenTasks();
     _presenter.loadTeamAvailability();
     _presenter.loadSlotFloorSummary();
+
+    _mainController = ScrollController();
   }
 
   @override
@@ -38,12 +41,13 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
       constraints: BoxConstraints.expand(),
       decoration: BoxDecoration(gradient: LinearGradient(colors: [Color(0xFF586676), Color(0xFF8B9EA7)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
       child: SingleChildScrollView(
+        controller: _mainController,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            VizSummary('OPEN TASKS', _openTasksList, ['Status'], onSwipeLeft: onOpenTasksSwipeLeft(), onSwipeRight: onOpenTasksSwipeRight()),
-            VizSummary('TEAM AVAILABILITY', _teamAvailabilityList, ['Status'], onSwipeLeft: onTeamAvailiblitySwipeLeft()),
-            VizSummary('SLOT FLOOR', _slotFloorList, ['Status'])
+            VizSummary('OPEN TASKS', _openTasksList, ['Status'], onSwipeLeft: onOpenTasksSwipeLeft(), onSwipeRight: onOpenTasksSwipeRight(), summaryActions: this, key: GlobalKey()),
+            VizSummary('TEAM AVAILABILITY', _teamAvailabilityList, ['Status'], onSwipeLeft: onTeamAvailiblitySwipeLeft(), summaryActions: this,  key: GlobalKey()),
+            VizSummary('SLOT FLOOR', _slotFloorList, ['Status'], summaryActions: this,  key: GlobalKey())
           ],
         ),
       ),
@@ -57,7 +61,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
       DataEntry dataEntry = (entry as DataEntry);
       String location = dataEntry.columns['Location'] as String;
 
-      VizDialog.Alert(context, 'To others', 'Reassign to others location $location');
+      VizDialog.Alert(context, 'Reassign To others', 'Reassign to others location $location');
     });
   }
 
@@ -67,7 +71,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
       DataEntry dataEntry = (entry as DataEntry);
       String location = dataEntry.columns['Status'] as String;
 
-      VizDialog.Alert(context, 'To myself', 'Reassign myself location $location');
+      VizDialog.Alert(context, 'Reassign To myself', 'Reassign myself location $location');
 
     });
   }
@@ -122,5 +126,17 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
     }
   }
 
+  @override
+  void onSummaryPanelCollapsed(GlobalKey summary) {
+    RenderBox renderBox = summary.currentContext.findRenderObject();
+    print('collapsed');
+  }
 
+  @override
+  void onSummaryPanelExpanded(GlobalKey summary) {
+    RenderBox renderBox = summary.currentContext.findRenderObject();
+    //Offset offset = renderBox.localToGlobal(Offset.zero);
+    //_mainController.animateTo(offset.dy-80, duration: Duration(milliseconds: 200), curve: Curves.easeIn);
+    print('expanded');
+  }
 }
