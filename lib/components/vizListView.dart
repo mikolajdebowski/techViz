@@ -32,25 +32,31 @@ class VizListViewState extends State<VizListView>{
   final double paddingValue = 10.0;
   static const SizedBox spacer = SizedBox(width: 64);
 
-  SizedBox iconForSwipe(String text, ShimmerDirection direction){
+  SizedBox iconForSwipe(String text, ShimmerDirection direction) {
     return SizedBox(
-      width: 64.0,
-      child: Shimmer.fromColors(
-        direction: direction,
-        baseColor: Color(0xFFAAAAAA),
-        highlightColor: Colors.white,
-        child: Text(
-          text,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 15.0,
-            fontWeight:
-            FontWeight.bold,
-          ),
-        ),
-      ),
+        width: 64.0,
+        child: Shimmer.fromColors(
+            direction: direction,
+            baseColor: Color(0xFFAAAAAA),
+            highlightColor: Colors.white,
+            child: Text(
+                text,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 15.0,
+                    fontWeight:
+                    FontWeight.bold)
+            )
+        )
     );
   }
+
+  final double buttonPaddingValue = 0.0;
+
+
+  BoxDecoration decoration = BoxDecoration(
+      border: Border(bottom: BorderSide(color: Colors.black, width: 1.0))
+  );
 
   List<Widget> header;
 
@@ -140,6 +146,7 @@ class VizListViewState extends State<VizListView>{
         delegate: SlidableDrawerDelegate(),
         actionExtentRatio: 0.25,
         child:  Container(
+          decoration: decoration,
           height: widget.rowHeight,
           child:  gestureDetector,
         ),
@@ -153,6 +160,9 @@ class VizListViewState extends State<VizListView>{
     List<Widget> children = List<Widget>();
     children.add(headerRow);
     children.addAll(rowsList);
+
+
+
 
     return SingleChildScrollView(
         child: Padding(
