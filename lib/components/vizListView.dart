@@ -28,7 +28,12 @@ class VizListView extends StatefulWidget{
 class VizListViewState extends State<VizListView>{
   final SlidableController slidableController = new SlidableController();
   final double paddingValue = 10.0;
-  final double buttonPaddingValue = 5.0;
+  final double buttonPaddingValue = 0.0;
+
+
+  BoxDecoration decoration = BoxDecoration(
+      border: Border(bottom: BorderSide(color: Colors.black, width: 1.0))
+  );
 
   final SizedBox left_swipe_ico = SizedBox(
     width: 64.0,
@@ -186,6 +191,7 @@ class VizListViewState extends State<VizListView>{
         delegate: SlidableDrawerDelegate(),
         actionExtentRatio: 0.25,
         child:  Container(
+          decoration: decoration,
           height: widget.rowHeight,
           child:  gestureDetector,
         ),
@@ -199,6 +205,9 @@ class VizListViewState extends State<VizListView>{
     List<Widget> children = List<Widget>();
     children.add(headerRow);
     children.addAll(rowsList);
+
+
+
 
     return SingleChildScrollView(
         child: Padding(

@@ -41,9 +41,9 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            VizSummary('Open Tasks', _openTasksList, ['Status'], onSwipeLeft: onOpenTasksSwipeLeft(), onSwipeRight: onOpenTasksSwipeRight()),
-            VizSummary('Team Availability', _teamAvailabilityList, ['Status'], onSwipeLeft: onTeamAvailiblitySwipeLeft()),
-            VizSummary('Slot floor', _slotFloorList, ['Status'])
+            VizSummary('OPEN TASKS', _openTasksList, ['Status'], onSwipeLeft: onOpenTasksSwipeLeft(), onSwipeRight: onOpenTasksSwipeRight()),
+            VizSummary('TEAM AVAILABILITY', _teamAvailabilityList, ['Status'], onSwipeLeft: onTeamAvailiblitySwipeLeft()),
+            VizSummary('SLOT FLOOR', _slotFloorList, ['Status'])
           ],
         ),
       ),
