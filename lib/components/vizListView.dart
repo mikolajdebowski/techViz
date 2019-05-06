@@ -7,10 +7,11 @@ import 'package:shimmer/shimmer.dart';
 typedef SwipeActionCallback = void Function(dynamic tag);
 
 class SwipeAction{
+  final String headerTitle;
   final String title;
   final SwipeActionCallback callback;
 
-  SwipeAction(this.title, this.callback);
+  SwipeAction(this.title, this.headerTitle, this.callback);
 }
 
 class VizListView extends StatefulWidget{
@@ -18,6 +19,7 @@ class VizListView extends StatefulWidget{
   final SwipeAction onSwipeLeft;
   final SwipeAction onSwipeRight;
   final double rowHeight = 40.0;
+
 
   const VizListView({Key key, this.data, this.onSwipeLeft, this.onSwipeRight}) : super(key: key);
 
@@ -28,42 +30,27 @@ class VizListView extends StatefulWidget{
 class VizListViewState extends State<VizListView>{
   final SlidableController slidableController = new SlidableController();
   final double paddingValue = 10.0;
-  final double buttonPaddingValue = 5.0;
+  static const SizedBox spacer = SizedBox(width: 64);
 
-  final SizedBox left_swipe_ico = SizedBox(
-    width: 64.0,
-    child: Shimmer.fromColors(
-      baseColor: Colors.white70,
-      highlightColor: Colors.grey,
-      child: Text(
-        'slide>',
-        textAlign: TextAlign.right,
-        style: TextStyle(
-          fontSize: 15.0,
-          fontWeight:
-          FontWeight.bold,
+  SizedBox iconForSwipe(String text, ShimmerDirection direction){
+    return SizedBox(
+      width: 64.0,
+      child: Shimmer.fromColors(
+        direction: direction,
+        baseColor: Color(0xFFAAAAAA),
+        highlightColor: Colors.white,
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 15.0,
+            fontWeight:
+            FontWeight.bold,
           ),
         ),
       ),
     );
-
-
-  final SizedBox right_swipe_ico = SizedBox(
-    width: 64.0,
-    child: Shimmer.fromColors(
-      baseColor: Colors.grey,
-      highlightColor: Colors.white10,
-      child: Text(
-        '<slide',
-        textAlign: TextAlign.left,
-        style: TextStyle(
-          fontSize: 15.0,
-          fontWeight:
-          FontWeight.bold,
-        ),
-      ),
-    ),
-  );
+  }
 
   List<Widget> header;
 
@@ -81,30 +68,24 @@ class VizListViewState extends State<VizListView>{
     });
 
 
+    //left
+
     if(widget.onSwipeLeft!=null){
-      header.add(Opacity(
-        opacity: 1.0,
-        child: left_swipe_ico,
-      ));
+      var left_swipe_ico = iconForSwipe(widget.onSwipeLeft.headerTitle, ShimmerDirection.rtl);
+      header.add(left_swipe_ico);
     }
     else{
-      header.add(Opacity(
-        opacity: 0.0,
-        child: left_swipe_ico,
-      ));
+      header.add(spacer);
     }
 
+
+    //right
     if(widget.onSwipeRight!=null){
-      header.insert(0, Opacity(
-        opacity: 1.0,
-        child: right_swipe_ico,
-      ));
+      var right_swipe_ico = iconForSwipe(widget.onSwipeRight.headerTitle, ShimmerDirection.ltr);
+      header.insert(0, right_swipe_ico);
     }
     else{
-      header.insert(0, Opacity(
-        opacity: 0.0,
-        child: right_swipe_ico,
-      ));
+      header.insert(0, spacer);
     }
 
 
@@ -133,51 +114,24 @@ class VizListViewState extends State<VizListView>{
         },
       );
 
+
       List<Widget> leftActions = List<Widget>();
       if(widget.onSwipeLeft!=null){
 
-//        columns.add(left_swipe_ico);
-        columns.add(Opacity(
-          opacity: 0.0,
-          child: right_swipe_ico,
-        ));
+        columns.add(spacer);
 
-        leftActions.add(Padding(
-          padding: EdgeInsets.all(buttonPaddingValue),
-          child: RaisedButton(onPressed: (){
-                widget.onSwipeLeft.callback(row);
-              }, child: Text(widget.onSwipeLeft.title)),
-        ),);
-      }
-      else {
-        columns.add(Opacity(
-          opacity: 0.0,
-          child: right_swipe_ico,
-        ));
+        leftActions.add(SwipeButton(text: widget.onSwipeLeft.title, onPressed: (){
+          widget.onSwipeLeft.callback(row);
+        }));
       }
 
       List<Widget> rightActions = List<Widget>();
       if(widget.onSwipeRight!=null){
+        columns..insert(0, spacer);
 
-//        columns.insert(0, right_swipe_ico);
-        columns..insert(0, (Opacity(
-          opacity: 0.0,
-          child: right_swipe_ico,
-        )));
-
-        rightActions.add(Padding(
-          padding: EdgeInsets.all(buttonPaddingValue),
-          child: RaisedButton(onPressed: (){
-                widget.onSwipeRight.callback(row);
-              }, child: Text(widget.onSwipeRight.title)),
-        ),
-        );
-      }
-      else {
-        columns.insert(0, (Opacity(
-          opacity: 0.0,
-          child: left_swipe_ico,
-        )));
+        rightActions.add(SwipeButton(text: widget.onSwipeRight.title, onPressed: (){
+          widget.onSwipeRight.callback(row);
+        }));
       }
 
       Slidable slidable = Slidable(
@@ -209,4 +163,26 @@ class VizListViewState extends State<VizListView>{
         ),
       );
     }
+}
+
+class SwipeButton extends StatelessWidget{
+  SwipeButton({@required this.onPressed, @required this.text});
+  final GestureTapCallback onPressed;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return FlatButton(
+      color: const Color(0xFFDDDDDD),
+      splashColor: const Color(0xFFFFFFFF),
+      child: Text(
+        text,
+        maxLines: 1,
+        style: TextStyle(color: Colors.black, fontSize: 12),
+      ),
+      onPressed: onPressed,
+      materialTapTargetSize: MaterialTapTargetSize.padded,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0))
+    );
+  }
 }

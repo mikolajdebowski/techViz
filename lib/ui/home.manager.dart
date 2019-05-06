@@ -52,28 +52,28 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
 
 
   SwipeAction onOpenTasksSwipeLeft(){
-    return SwipeAction('Reassign others', (dynamic entry){
+    return SwipeAction('Reassign to others', '<<<', (dynamic entry){
 
       DataEntry dataEntry = (entry as DataEntry);
       String location = dataEntry.columns['Location'] as String;
 
-      VizDialog.Alert(context, 'Reassign to others', 'Reassign to others location $location');
+      VizDialog.Alert(context, 'To others', 'Reassign to others location $location');
     });
   }
 
   SwipeAction onOpenTasksSwipeRight(){
-    return SwipeAction('Reassign myself', (dynamic entry){
+    return SwipeAction('Reassign to myself', '>>>',(dynamic entry){
 
       DataEntry dataEntry = (entry as DataEntry);
       String location = dataEntry.columns['Status'] as String;
 
-      VizDialog.Alert(context, 'Reassign to myself', 'Reassign myself location $location');
+      VizDialog.Alert(context, 'To myself', 'Reassign myself location $location');
 
     });
   }
 
   SwipeAction onTeamAvailiblitySwipeLeft(){
-    return SwipeAction('Change Status', (dynamic entry){
+    return SwipeAction('Change Status', '<<<',(dynamic entry){
       VizDialog.Alert(context, 'Change user\' status', 'Opens Change user\' status');
     });
   }
