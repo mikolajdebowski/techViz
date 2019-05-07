@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:techviz/components/VizAlert.dart';
 import 'package:techviz/components/vizDialog.dart';
 import 'package:techviz/components/vizListView.dart';
 import 'package:techviz/components/vizSummary.dart';
@@ -15,7 +14,7 @@ class HomeManager extends StatefulWidget {
   State<StatefulWidget> createState() => HomeManagerState();
 }
 
-class HomeManagerState extends State<HomeManager> implements TechVizHome, IManagerViewPresenter, VizSummaryActions {
+class HomeManagerState extends State<HomeManager> implements TechVizHome, IManagerViewPresenter {
   ManagerViewPresenter _presenter;
 
   List<DataEntry> _openTasksList;
@@ -45,9 +44,9 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            VizSummary('OPEN TASKS', _openTasksList, ['Status'], onSwipeLeft: onOpenTasksSwipeLeft(), onSwipeRight: onOpenTasksSwipeRight(), summaryActions: this, key: GlobalKey()),
-            VizSummary('TEAM AVAILABILITY', _teamAvailabilityList, ['Status'], onSwipeLeft: onTeamAvailiblitySwipeLeft(), summaryActions: this,  key: GlobalKey()),
-            VizSummary('SLOT FLOOR', _slotFloorList, ['Status'], summaryActions: this,  key: GlobalKey())
+            VizSummary('OPEN TASKS', _openTasksList, ['Status'], onSwipeLeft: onOpenTasksSwipeLeft(), onSwipeRight: onOpenTasksSwipeRight()),
+            VizSummary('TEAM AVAILABILITY', _teamAvailabilityList, ['Status'], onSwipeLeft: onTeamAvailiblitySwipeLeft()),
+            VizSummary('SLOT FLOOR', _slotFloorList, ['Status'])
           ],
         ),
       ),
@@ -124,19 +123,5 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
         _teamAvailabilityList = summaryList;
       });
     }
-  }
-
-  @override
-  void onSummaryPanelCollapsed(GlobalKey summary) {
-    RenderBox renderBox = summary.currentContext.findRenderObject();
-    print('collapsed');
-  }
-
-  @override
-  void onSummaryPanelExpanded(GlobalKey summary) {
-    RenderBox renderBox = summary.currentContext.findRenderObject();
-    //Offset offset = renderBox.localToGlobal(Offset.zero);
-    //_mainController.animateTo(offset.dy-80, duration: Duration(milliseconds: 200), curve: Curves.easeIn);
-    print('expanded');
   }
 }

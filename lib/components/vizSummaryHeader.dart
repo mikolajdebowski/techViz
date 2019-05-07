@@ -6,7 +6,7 @@ abstract class VizSummaryHeaderActions {
 }
 
 class VizSummaryHeader extends StatelessWidget {
-  final double height = 90;
+  final double height = 75;
   final String headerTitle;
   final String selectedEntryKey;
   final Map<String, int> entries;
@@ -18,7 +18,7 @@ class VizSummaryHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     List<Widget> itensChildren = List<Widget>();
 
-    Radius defaultRadius = Radius.circular(6.0);
+    Radius defaultRadius = Radius.circular(5.0);
 
     if(entries==null || entries.length==0){
         itensChildren.add(CircularProgressIndicator());
@@ -32,7 +32,6 @@ class VizSummaryHeader extends StatelessWidget {
         bool isNotHighlighted = selectedEntryKey == null || selectedEntryKey != entryKey;
 
         BoxDecoration decorationEntryHeader = BoxDecoration(border: borderHeader, color: (isNotHighlighted ? Color(0xFFAAAAAA) : Color(0xFFFFFFFF)));
-//        BoxDecoration decorationEntryValue = BoxDecoration(border: borderValue, color: (isNotHighlighted ? Colors.transparent : Color(0xffff0000)));
         BoxDecoration decorationEntryValue = BoxDecoration(border: borderValue, color: Color(0xffffffff));
 
         Container containerHeader = Container(decoration: decorationEntryHeader, child: Center(child: Text(entryKey, key: Key('headerItemTitle'),)));
@@ -73,7 +72,7 @@ class VizSummaryHeader extends StatelessWidget {
         children: <Widget>[
           Container(
             decoration: decorationHeader,
-            padding: EdgeInsets.all(5.0),
+            padding: EdgeInsets.only(top: 1.0, bottom: 1.0),
             child: Align(child: Text(headerTitle, key: Key('headerTitle'), style: TextStyle(color: Colors.white, fontWeight:
                 FontWeight.bold)), alignment: Alignment.center),
           ),

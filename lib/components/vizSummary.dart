@@ -9,9 +9,7 @@ class VizSummary extends StatefulWidget {
   final List<String> groupByKeys;
   final SwipeAction onSwipeLeft;
   final SwipeAction onSwipeRight;
-  final VizSummaryActions summaryActions;
-
-  VizSummary(this.title, this.data, this.groupByKeys, {Key key, this.onSwipeLeft, this.onSwipeRight, this.summaryActions}) : super(key: key);
+  VizSummary(this.title, this.data, this.groupByKeys, {Key key, this.onSwipeLeft, this.onSwipeRight}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => VizSummaryState();
@@ -81,13 +79,10 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
           key: Key('container'),
           decoration: boxDecoration,
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: MainAxisSize.max,
             children: <Widget>[
               header,
-              Container(
-                height: 240,
-                child: VizListView(data: filtered, onSwipeRight: widget.onSwipeRight, onSwipeLeft: widget.onSwipeLeft ),
-              )
+              VizListView(data: filtered, onSwipeRight: widget.onSwipeRight, onSwipeLeft: widget.onSwipeLeft )
             ],
           ),
         );
@@ -107,23 +102,11 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
       if(_selectedEntryKey == selectedEntryKey){
         _expanded = false;
         _selectedEntryKey = null;
-
-        if(widget.summaryActions!=null){
-          widget.summaryActions.onSummaryPanelCollapsed(widget.key);
-        }
       }
       else{
         _selectedEntryKey = selectedEntryKey;
         _expanded = true;
-        if(widget.summaryActions!=null){
-          widget.summaryActions.onSummaryPanelExpanded(widget.key);
-        }
       }
     });
   }
-}
-
-abstract class VizSummaryActions{
-  void onSummaryPanelExpanded(GlobalKey summary);
-  void onSummaryPanelCollapsed(GlobalKey summary);
 }

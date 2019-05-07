@@ -18,7 +18,7 @@ class VizListView extends StatefulWidget{
   final List<DataEntry> data;
   final SwipeAction onSwipeLeft;
   final SwipeAction onSwipeRight;
-  final double rowHeight = 40.0;
+  final double rowHeight = 35.0;
 
 
   const VizListView({Key key, this.data, this.onSwipeLeft, this.onSwipeRight}) : super(key: key);
@@ -29,7 +29,7 @@ class VizListView extends StatefulWidget{
 
 class VizListViewState extends State<VizListView>{
   final SlidableController slidableController = new SlidableController();
-  final double paddingValue = 10.0;
+  final double paddingValue = 5.0;
   static const SizedBox spacer = SizedBox(width: 64);
 
   SizedBox iconForSwipe(String text, ShimmerDirection direction) {
@@ -50,9 +50,6 @@ class VizListViewState extends State<VizListView>{
         )
     );
   }
-
-  final double buttonPaddingValue = 0.0;
-
 
   BoxDecoration decoration = BoxDecoration(
       border: Border(bottom: BorderSide(color: Colors.black, width: 1.0))
