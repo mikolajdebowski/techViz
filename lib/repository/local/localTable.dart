@@ -1,15 +1,14 @@
 import 'dart:async';
 
+import 'package:sqflite/sqflite.dart';
 import 'package:techviz/repository/local/localRepository.dart';
 
 class LocalTable{
   String tableName;
   String createSQL;
 
-  Future<void> create() async {
-    LocalRepository localRepo = LocalRepository();
-      await localRepo.open();
-    return localRepo.db.execute(createSQL);
+  Future<void> create(Database db) async {
+    return db.execute(createSQL);
   }
 
   Future<int> cleanUp() async {

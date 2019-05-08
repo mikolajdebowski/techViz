@@ -89,8 +89,5 @@ class VizButton extends StatelessWidget {
             end: Alignment.bottomCenter),
         borderRadius: BorderRadius.circular(5.0));
   }
-
-
-
 }
 

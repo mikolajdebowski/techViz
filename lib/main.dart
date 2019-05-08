@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
+import 'package:techviz/ui/about.dart';
 import 'package:techviz/ui/config.dart';
 import 'package:techviz/ui/home.dart';
 import 'package:techviz/ui/logging.dart';
@@ -70,7 +71,8 @@ class TechVizAppState extends State<TechVizApp> with WidgetsBindingObserver {
         '/login': (BuildContext context) => Login(),
         '/config': (BuildContext context) => Config(),
         '/profile': (BuildContext context) => Profile(),
-        '/logging': (BuildContext context) => Logging()
+        '/logging': (BuildContext context) => Logging(),
+        '/about': (BuildContext context) => About(),
       },
     );
   }
