@@ -177,7 +177,6 @@ class TaskRepository implements IRepository<Task>{
   Future escalateTask(String taskID, EscalationPath escalationPath, {TaskType escalationTaskType, String notes}) async {
     Completer<dynamic> _completer = Completer<dynamic>();
 
-
     LocalRepository localRepo = LocalRepository();
     if(!localRepo.db.isOpen)
       await localRepo.open();
@@ -198,6 +197,26 @@ class TaskRepository implements IRepository<Task>{
     TaskRouting().PublishMessage(message).then((dynamic d) async{
 
       //ONLY UPDATE LOCALLY AFTER CALLBACK RETURNS
+      LocalRepository localRepo = LocalRepository();
+      if(!localRepo.db.isOpen)
+        await localRepo.open();
+
+      await  LocalRepository().db.rawUpdate('UPDATE TASK SET _DIRTY = 1 WHERE _ID = ?', [taskID].toList());
+
+      _completer.complete(d);
+    }).catchError((dynamic error){
+      _completer.completeError(error);
+    });
+
+    return _completer.future;
+  }
+
+  Future reassign(String taskID, String userID) async {
+    Completer<dynamic> _completer = Completer<dynamic>();
+    dynamic message = {'taskID': taskID, 'userID': userID};
+
+    TaskRouting().PublishMessage(message).then((dynamic d) async{
+
       LocalRepository localRepo = LocalRepository();
       if(!localRepo.db.isOpen)
         await localRepo.open();

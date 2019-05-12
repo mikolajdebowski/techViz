@@ -1,4 +1,6 @@
 import 'package:techviz/model/dataEntry.dart';
+import 'package:techviz/repository/repository.dart';
+import 'package:techviz/repository/taskRepository.dart';
 
 abstract class IManagerViewPresenter {
   void onOpenTasksLoaded(List<DataEntry> summaryList);
@@ -70,5 +72,10 @@ class ManagerViewPresenter{
       _view.onSlotFloorSummaryLoaded(list);
 
     });
+  }
+
+  Future reassign(String taskID, String userID){
+    TaskRepository repo = Repository().taskRepository;
+    return repo.reassign(taskID, userID);
   }
 }

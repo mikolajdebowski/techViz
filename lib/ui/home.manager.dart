@@ -5,6 +5,7 @@ import 'package:techviz/components/vizSummary.dart';
 import 'package:techviz/model/dataEntry.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/managerViewPresenter.dart';
+import 'package:techviz/repository/session.dart';
 import 'package:techviz/ui/home.dart';
 
 class HomeManager extends StatefulWidget {
@@ -55,7 +56,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
 
 
   SwipeAction onOpenTasksSwipeLeft(){
-    return SwipeAction('Reassign to others', '<<<', (dynamic entry){
+    return SwipeAction('Re-assign to others', '<<<', (dynamic entry){
 
       DataEntry dataEntry = (entry as DataEntry);
       String location = dataEntry.columns['Location'] as String;
@@ -65,12 +66,24 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
   }
 
   SwipeAction onOpenTasksSwipeRight(){
-    return SwipeAction('Reassign to myself', '>>>',(dynamic entry){
+    return SwipeAction('Re-assign to myself', '>>>',(dynamic entry){
+
+      GlobalKey dialogKey = GlobalKey();
 
       DataEntry dataEntry = (entry as DataEntry);
       String location = dataEntry.columns['Status'] as String;
 
-      VizDialog.Alert(context, 'Reassign To myself', 'Reassign myself location $location');
+      VizDialogButton btnYes = VizDialogButton('Yes', (){
+        _presenter.reassign('<TASKID>', Session().user.userID).then((dynamic d){
+          Navigator.of(dialogKey.currentContext).pop(true);
+        });
+      });
+
+      VizDialogButton btnNo = VizDialogButton('No', (){
+        Navigator.of(dialogKey.currentContext).pop(true);
+      }, highlighted: false);
+
+      VizDialog.Confirm(dialogKey, context, 'Re-assign task', 'Are you sure you want to re-assign the task to yourself?', actions: [btnNo, btnYes]);
 
     });
   }
@@ -80,8 +93,6 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
       VizDialog.Alert(context, 'Change user\' status', 'Opens Change user\' status');
     });
   }
-
-
 
   @override
   void onUserSectionsChanged(Object obj) {
