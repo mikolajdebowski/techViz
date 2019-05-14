@@ -54,7 +54,6 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
     );
   }
 
-
   SwipeAction onOpenTasksSwipeLeft(){
     return SwipeAction('Re-assign to others', '<<<', (dynamic entry){
 
@@ -71,11 +70,12 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
       GlobalKey dialogKey = GlobalKey();
 
       DataEntry dataEntry = (entry as DataEntry);
-      String location = dataEntry.columns['Status'] as String;
 
       VizDialogButton btnYes = VizDialogButton('Yes', (){
-        _presenter.reassign('<TASKID>', Session().user.userID).then((dynamic d){
+        _presenter.reassign(dataEntry.id, Session().user.userID).then((dynamic d){
+
           Navigator.of(dialogKey.currentContext).pop(true);
+
         });
       });
 
