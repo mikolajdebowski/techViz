@@ -76,6 +76,11 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
 
           Navigator.of(dialogKey.currentContext).pop(true);
 
+          setState(() {
+            _openTasksList = null;
+          });
+          _presenter.loadOpenTasks();
+
         });
       });
 
