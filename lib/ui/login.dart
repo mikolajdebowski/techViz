@@ -145,7 +145,7 @@ class LoginState extends State<Login> {
       _loadingMessage = 'Authenticating...';
     });
 
-    SessionClient client = SessionClient.getInstance();
+    SessionClient client = SessionClient();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String serverUrl = prefs.get(Config.SERVERURL) as String;
 

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:core';
 import 'package:techviz/repository/processor/processorLiveTable.dart';
-import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
+import 'package:techviz/repository/processor/processorRepositoryConfig.dart';
 import 'package:techviz/repository/remoteRepository.dart';
 import 'dart:convert';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
@@ -14,7 +14,7 @@ class ProcessorUserSkillsRepository extends ProcessorLiveTable<dynamic> implemen
     print('Fetching '+this.toString());
 
     Completer _completer = Completer<void>();
-    SessionClient client = SessionClient.getInstance();
+    SessionClient client = SessionClient();
 
     var config = ProcessorRepositoryConfig();
     String liveTableID = config.GetLiveTable(LiveTableType.TECHVIZ_MOBILE_USER_SKILLS.toString()).id;

@@ -13,9 +13,13 @@ import 'dart:convert';
 typedef TaskUpdateCallBack = void Function(String taskID);
 typedef TaskSubmitallBack = void Function(String taskID);
 
+abstract class ITaskRepository extends IRemoteRepository<Task>{
+  Future openTasks();
+}
+
 class TaskRepository implements IRepository<Task>{
 
-  IRemoteRepository remoteRepository;
+  ITaskRepository remoteRepository;
   TaskRepository({this.remoteRepository});
 
   Future<List<Task>> getOpenTasks(String userID) async {
@@ -229,6 +233,11 @@ class TaskRepository implements IRepository<Task>{
     });
 
     return _completer.future;
+
+  }
+
+  Future openTasks() async {
+    return remoteRepository.openTasks();
   }
 }
 

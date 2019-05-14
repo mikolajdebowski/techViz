@@ -5,7 +5,7 @@ import 'package:techviz/model/dataEntry.dart';
 
 class VizSummary extends StatefulWidget {
   final String title;
-  final List<DataEntry> data;
+  final List<DataEntryGroup> data;
   final List<String> groupByKeys;
   final SwipeAction onSwipeLeft;
   final SwipeAction onSwipeRight;
@@ -58,10 +58,15 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
       );
     }
     else{
-      String keys = widget.groupByKeys[0];
+//      String keys = widget.groupByKeys[0];
+//
+//      Map<String, dynamic> grouped = groupBy<DataEntry, String>(keySelector: (DataEntry entry) => entry.columns[keys], list: widget.data);
+//      Map<String, int> count = grouped.map<String, int>((String key, dynamic value) => MapEntry(key, (value as List).length));
 
-      Map<String, dynamic> grouped = groupBy<DataEntry, String>(keySelector: (DataEntry entry) => entry.columns[keys], list: widget.data);
-      Map<String, int> count = grouped.map<String, int>((String key, dynamic value) => MapEntry(key, (value as List).length));
+      Map<String,int> count = Map<String,int>();
+      widget.data.forEach((DataEntryGroup group){
+        count[group.headerTitle] = group.entries.length;
+      });
 
       VizSummaryHeader header = VizSummaryHeader(headerTitle: widget.title, entries: count, actions: this, selectedEntryKey: _selectedEntryKey);
 
@@ -73,7 +78,10 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
         );
       } else {
 
-        List<DataEntry> filtered = whereBy<DataEntry>(keySelector: (DataEntry entry) => entry.columns[keys]==_selectedEntryKey, list: widget.data);
+        //List<DataEntry> filtered = whereBy<DataEntry>(keySelector: (DataEntry entry) => entry.columns[keys]==_selectedEntryKey, list: widget.data);
+
+        Iterable<DataEntryGroup> where = widget.data.where((DataEntryGroup group)=> group.headerTitle == _selectedEntryKey);
+        List<DataEntry> filtered = where.first.entries;
 
         container = Container(
           key: Key('container'),

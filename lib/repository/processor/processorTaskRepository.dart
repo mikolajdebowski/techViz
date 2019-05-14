@@ -1,11 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:techviz/model/task.dart';
-import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
-import 'package:techviz/repository/remoteRepository.dart';
+import 'package:techviz/repository/processor/processorRepositoryConfig.dart';
+import 'package:techviz/repository/taskRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
-class ProcessorTaskRepository implements IRemoteRepository<Task>{
+class ProcessorTaskRepository implements ITaskRepository{
 
   /**
    * fetch data from rest VizProcessor endpoint and store locally
@@ -15,9 +14,9 @@ class ProcessorTaskRepository implements IRemoteRepository<Task>{
     print('Fetching '+this.toString());
 
     Completer _completer = Completer<List<Map<String, dynamic>>>();
-    SessionClient client = SessionClient.getInstance();
+    SessionClient client = SessionClient();
 
-    var config = ProcessorRepositoryConfig();
+    ProcessorRepositoryConfig config = ProcessorRepositoryConfig();
     String liveTableID = config.GetLiveTable(LiveTableType.TECHVIZ_MOBILE_TASK.toString()).id;
     String url = 'live/${config.DocumentID}/${liveTableID}/select.json';
 
@@ -25,7 +24,7 @@ class ProcessorTaskRepository implements IRemoteRepository<Task>{
       dynamic decoded = json.decode(rawResult);
       List<dynamic> rows = decoded['Rows'] as List<dynamic>;
 
-      var _columnNames = (decoded['ColumnNames'] as String).split(',');
+      List<String> _columnNames = (decoded['ColumnNames'] as String).split(',');
 
       List<Map<String, dynamic>> listToReturn =  List<Map<String, dynamic>>();
 
@@ -45,11 +44,11 @@ class ProcessorTaskRepository implements IRemoteRepository<Task>{
 
 
 
-        var dateCreated = DateTime.parse(values[_columnNames.indexOf("TaskCreated")].toString());
+        DateTime dateCreated = DateTime.parse(values[_columnNames.indexOf("TaskCreated")].toString());
         //var utcCreated = DateTime.utc(dateCreated.year, dateCreated.month, dateCreated.day, dateCreated.hour, dateCreated.minute, dateCreated.second, dateCreated.millisecond);
         map['TASKCREATED'] = dateCreated.toString();
 
-        var dateAssigned = DateTime.parse(values[_columnNames.indexOf("TaskAssigned")].toString());
+        DateTime dateAssigned = DateTime.parse(values[_columnNames.indexOf("TaskAssigned")].toString());
         //var utcAssigned = DateTime.utc(dateAssigned.year, dateAssigned.month, dateAssigned.day, dateAssigned.hour, dateAssigned.minute, dateAssigned.second, dateAssigned.millisecond);
         map['TASKASSIGNED'] = dateAssigned.toString();
 
@@ -69,6 +68,48 @@ class ProcessorTaskRepository implements IRemoteRepository<Task>{
       print(onError.toString());
       _completer.completeError(onError);
     });
+
+    return _completer.future;
+  }
+
+
+  @override
+  Future openTasks() async {
+    String tag = 'TECHVIZ_MOBILE_TASK_SUMMARY';
+
+    print('Fetching $tag');
+
+    Completer _completer = Completer<void>();
+    String url = ProcessorRepositoryConfig().GetURL(tag);
+
+    SessionClient().get(url).then((String rawResult) async {
+
+      List<Map<String, dynamic>> listToReturn =  List<Map<String, dynamic>>();
+
+      dynamic decoded = json.decode(rawResult);
+      List<dynamic> rows = decoded['Rows'] as List<dynamic>;
+      List<String> _columnNames = (decoded['ColumnNames'] as String).split(',');
+      rows.forEach((dynamic d) {
+
+        dynamic values = d['Values'];
+        Map<String, dynamic> mapEntry = Map<String, dynamic>();
+        mapEntry['_ID'] = values[_columnNames.indexOf("_ID")];
+        mapEntry['Location'] = values[_columnNames.indexOf("Location")];
+        mapEntry['TaskTypeID'] = values[_columnNames.indexOf("TaskTypeID")];
+        mapEntry['TaskStatusID'] = values[_columnNames.indexOf("TaskStatusID")];
+        mapEntry['UserID'] = values[_columnNames.indexOf("UserID")];
+        mapEntry['ElapsedTime'] = values[_columnNames.indexOf("ElapsedTime")];
+
+        listToReturn.add(mapEntry);
+      });
+
+      _completer.complete(listToReturn);
+
+    }).catchError((dynamic e){
+      print(e.toString());
+      _completer.completeError(e);
+    });
+
 
     return _completer.future;
   }

@@ -6,7 +6,7 @@ import 'package:techviz/repository/escalationPathRepository.dart';
 import 'package:techviz/repository/local/localRepository.dart';
 import 'package:techviz/repository/processor/ProcessorReservationTimeRepository.dart';
 import 'package:techviz/repository/processor/processorEscalationPathRepository.dart';
-import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
+import 'package:techviz/repository/processor/processorRepositoryConfig.dart';
 import 'package:techviz/repository/processor/processorRoleRepository.dart';
 import 'package:techviz/repository/processor/processorSectionRepository.dart';
 import 'package:techviz/repository/processor/processorStatsMonthRepository.dart';
@@ -61,7 +61,7 @@ class Repository{
     _flavor = flavor;
 
     if(_flavor == Flavor.PROCESSOR){
-      SessionClient client = SessionClient.getInstance();
+      SessionClient client = SessionClient();
       var config = ProcessorRepositoryConfig();
       await config.Setup(client);
     }
@@ -164,7 +164,7 @@ class Repository{
 
   TaskRepository get taskRepository {
     switch(_flavor) {
-      default:return TaskRepository(remoteRepository: ProcessorTaskRepository());
+     default:return TaskRepository(remoteRepository: ProcessorTaskRepository());
     }
   }
 

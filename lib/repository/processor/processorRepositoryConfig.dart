@@ -5,6 +5,13 @@ import 'dart:convert';
 
 class ProcessorRepositoryConfig {
   static final ProcessorRepositoryConfig _singleton = new ProcessorRepositoryConfig._internal();
+  String _documentID;
+  List<LiveTable> _liveTables;
+
+  String get DocumentID{
+    return _documentID;
+  }
+
 
   factory ProcessorRepositoryConfig() {
     return _singleton;
@@ -12,87 +19,56 @@ class ProcessorRepositoryConfig {
   ProcessorRepositoryConfig._internal();
 
 
-  String DocumentID;
-  List<LiveTable> LiveTables;
-
   Future<void> Setup(SessionClient client) async{
     String documentListStr = await client.post("visualDocIndex/advancedSearch.json", advancedSearchXML);
-    dynamic documentList = json.decode(documentListStr);
-    Map<String,dynamic> documentMobile;
+    List<dynamic> documentList = json.decode(documentListStr);
+    dynamic docsWhere = documentList.where((dynamic doc)=> doc['Tag'] == 'TechVizMobile');
 
-    for(Map<String,dynamic> doc  in documentList){
-      String tag = doc['Tag'] as String;
-      if(tag.contains('TechVizMobile')){
-        documentMobile = doc;
-        break;
-      }
-    }
-
-    if(documentMobile == null){
+    if(docsWhere==null || docsWhere.length==0){
       throw Exception('No mobile document');
     }
 
-    DocumentID = documentMobile['ID'] as String;
+    Map<String,dynamic> documentMobile = docsWhere.first;
 
-    String documentStr = await client.get("visualDoc/${DocumentID}.json?&itemCount=200");
+    _documentID = documentMobile['ID'] as String;
+
+    String documentStr = await client.get("visualDoc/${_documentID}.json?&itemCount=200");
     dynamic documentJson = json.decode(documentStr);
     List<dynamic> liveTableslist = documentJson['liveDataDefinition']['liveTables'] as List<dynamic>;
 
-    List<LiveTableType> mandatorySyncTablesTags = List<LiveTableType>();
-    mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_TASK);
-    mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_TASK_STATUS);
-    mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_TASK_TYPE);
-    mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_ROLE);
-    mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_USER_ROLE);
-    mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_USER);
-    mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_USER_STATUS);
-    mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_SECTION);
-    mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_ESCALATION_PATH);
-    mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_USER_SECTION);
-    mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_TASK_URGENCY);
-    mandatorySyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_USER_GENERAL_INFO);
+    //filter only livetables where tags property length is > 0
+    liveTableslist = liveTableslist.where((dynamic lt)=> (lt['tags'] as String).length>0).toList();
 
-
-    List<LiveTableType> laterSyncTablesTags = List<LiveTableType>();
-    laterSyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_SLOTS);
-    laterSyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_RESERVATION_TIME);
-    laterSyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_USER_TODAY_STATS);
-    laterSyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_TEAM_TODAY_STATS);
-    laterSyncTablesTags.add(LiveTableType.TECHVIZ_MOBILE_USER_SKILLS);
-    LiveTables = List<LiveTable>();
+    _liveTables = List<LiveTable>();
     for(dynamic liveTable in liveTableslist){
-      String liveTableTag = liveTable['tags'] as String;
-      if(liveTableTag.length==0)
-        continue;
-
-      liveTableTag = 'LiveTableType.$liveTableTag';
-
-      LiveTableType liveTableTagTyped = LiveTableType.values.firstWhere((e)=> e.toString() == liveTableTag, orElse: () => null);
-
-      if(liveTableTagTyped==null)
-        continue;
-
-      if(mandatorySyncTablesTags.contains(liveTableTagTyped)){
-        LiveTables.add(LiveTable(liveTable['ID'].toString(), liveTableTag, []));
-      }
-      else if(laterSyncTablesTags.contains(liveTableTagTyped)){
-        LiveTables.add(LiveTable(liveTable['ID'].toString(), liveTableTag, [], initialSync: false));
-      };
+      String _liveTableTag = liveTable['tags'] as String;
+      _liveTables.add(LiveTable(liveTable['ID'].toString(), _liveTableTag));
     }
 
     print('Setup is done');
 
   }
 
-  LiveTable GetLiveTable(String Tag){
-    assert(DocumentID!=null);
-    assert(LiveTables!=null);
+  LiveTable GetLiveTable(String tagID){
+    assert(_documentID!=null);
+    assert(_liveTables!=null);
 
-    LiveTable lt = LiveTables.firstWhere((LiveTable lt) => lt.tags == Tag, orElse: () => null);
+    tagID = tagID.replaceAll('LiveTableType.', '');
+
+    LiveTable lt = _liveTables.firstWhere((LiveTable lt) => lt.tags == tagID, orElse: () => null);
     if(lt==null){
-      throw Exception('No livetable for ${Tag}');
+      throw Exception('No livetable for TAG ${tagID}');
     }
     return lt;
+  }
+
+  String GetURL(String livetableTagID){
+    assert(_documentID!=null);
+    assert(_liveTables!=null);
+
+    LiveTable lt = GetLiveTable(livetableTagID);
+
+    return 'live/${_documentID}/${lt.id}/select.json';
   }
 
 
@@ -214,20 +190,22 @@ enum LiveTableType{
   TECHVIZ_MOBILE_USER_SECTION,
   TECHVIZ_MOBILE_SLOTS,
   TECHVIZ_MOBILE_USER_GENERAL_INFO,
-  TECHVIZ_MOBILE_ESCALATION_PATH
-  ,
+  TECHVIZ_MOBILE_ESCALATION_PATH,
 
 
+  //stats
   TECHVIZ_MOBILE_USER_TODAY_STATS,
   TECHVIZ_MOBILE_TEAM_TODAY_STATS,
-  TECHVIZ_MOBILE_USER_SKILLS
+  TECHVIZ_MOBILE_USER_SKILLS,
+
+  //summary
+  TECHVIZ_MOBILE_TASK_SUMMARY
 }
 
 class LiveTable{
   final String id;
   final String tags;
-  final List<String> columns;
   final bool initialSync;
 
-  LiveTable(this.id, this.tags, this.columns, {this.initialSync = true});
+  LiveTable(this.id, this.tags, {this.initialSync = true});
 }

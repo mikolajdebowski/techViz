@@ -3,9 +3,9 @@ import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/taskRepository.dart';
 
 abstract class IManagerViewPresenter {
-  void onOpenTasksLoaded(List<DataEntry> summaryList);
-  void onTeamAvailabilityLoaded(List<DataEntry> summaryList);
-  void onSlotFloorSummaryLoaded(List<DataEntry> summaryList);
+  void onOpenTasksLoaded(List<DataEntryGroup> list);
+  void onTeamAvailabilityLoaded(List<DataEntryGroup> list);
+  void onSlotFloorSummaryLoaded(List<DataEntryGroup> list);
 
   void onLoadError(dynamic error);
 }
@@ -18,59 +18,68 @@ class ManagerViewPresenter{
   }
 
   void loadOpenTasks(){
-    Future.delayed(Duration(seconds: 1), (){
+      Repository().taskRepository.openTasks().then((dynamic result){
 
-      List<DataEntry> list = List<DataEntry>();
+        DataEntry mapToDataEntry(Map<String, dynamic> mapEntry){
 
-      for(int i =0; i<99; i++){
+          Map<String,dynamic> columns = Map<String,dynamic>();
+          columns['Location'] = mapEntry['Location'];
+          columns['Type'] = mapEntry['TaskTypeID']; //convert to business readable string
+          columns['Status'] = mapEntry['TaskStatusID']; //convert to business readable string
+          columns['User'] = mapEntry['UserID'];
+          columns['Time Taken'] = mapEntry['ElapsedTime'];
 
-        Map<String,dynamic> mapEntry = Map<String,dynamic>();
-        mapEntry['Location'] = i.toString()+i.toString()+i.toString();
-        mapEntry['Type'] = '1';
-        mapEntry['Status'] = i<20? 'Assigned' : ((i<40? 'Unassigned' : i<60? 'Overdue' : 'Escalated'));
-        mapEntry['User'] = 'irina';
-        mapEntry['TimeTaken'] = i.toString();
+          return DataEntry(mapEntry['_ID'].toString(), columns);
+        }
 
-        list.add(DataEntry(mapEntry));
-      }
-      _view.onOpenTasksLoaded(list);
+        //ASSIGNED todo: confirm if TaskStatusID equals to 1 means assigned
+        Iterable<Map<String,dynamic>> assignedWhere = result.where((Map<String,dynamic> map)=> map['TaskStatusID'] == '1');
+        List<DataEntry> assignedList = assignedWhere != null ? assignedWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntry(d)).toList(): List<DataEntry>();
 
-    });
+        //UNASSIGNED todo: confirm if TaskStatusID equals to 0 means unassigned
+        Iterable<Map<String,dynamic>> unassignedWhere = result.where((Map<String,dynamic> map)=> map['TaskStatusID'] == '0');
+        List<DataEntry> unassignedList = unassignedWhere != null ? unassignedWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntry(d)).toList(): List<DataEntry>();
+
+        //OVERDUE? todo: find out when a task is overdue
+        Iterable<Map<String,dynamic>> overdueWhere = result.where((Map<String,dynamic> map)=> int.parse(map['ElapsedTime'] as String) > 1000);
+        List<DataEntry> overdueList = overdueWhere != null ? overdueWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntry(d)).toList(): List<DataEntry>();
+
+        //ESCALATED? todo: find out when a task is escalated
+        Iterable<Map<String,dynamic>> escalatedWhere = result.where((Map<String,dynamic> map)=> map['TaskStatusID']  == '5');
+        List<DataEntry> escalatedList = escalatedWhere != null ? escalatedWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntry(d)).toList(): List<DataEntry>();
+
+        List<DataEntryGroup> group = List<DataEntryGroup>();
+        group.add(DataEntryGroup('Assigned', assignedList));
+        group.add(DataEntryGroup('Unassigned', unassignedList));
+        group.add(DataEntryGroup('Overdue', overdueList));
+        group.add(DataEntryGroup('Escalated', escalatedList));
+
+        _view.onOpenTasksLoaded(group);
+      });
   }
 
   void loadTeamAvailability(){
+
     Future.delayed(Duration(milliseconds: 500), (){
-      List<DataEntry> list = List<DataEntry>();
+      List<DataEntryGroup> group = List<DataEntryGroup>();
+      group.add(DataEntryGroup('Available', List<DataEntry>()));
+      group.add(DataEntryGroup('On Break', List<DataEntry>()));
+      group.add(DataEntryGroup('Other', List<DataEntry>()));
+      group.add(DataEntryGroup('Off Shift', List<DataEntry>()));
 
-      for(int i =0; i<99; i++){
-
-        Map<String,dynamic> mapEntry = Map<String,dynamic>();
-        mapEntry['Attendant'] = i.toString()+i.toString()+i.toString();
-        mapEntry['Status'] = i<10? 'Available' : ((i<80? 'On Break' : i<85? 'Other' : 'Off Shift'));
-
-        list.add(DataEntry(mapEntry));
-      }
-      _view.onTeamAvailabilityLoaded(list);
-
+      _view.onTeamAvailabilityLoaded(group);
     });
   }
 
   void loadSlotFloorSummary(){
-    Future.delayed(Duration(seconds: 2), (){
-      List<DataEntry> list = List<DataEntry>();
+    Future.delayed(Duration(milliseconds: 500), (){
+      List<DataEntryGroup> group = List<DataEntryGroup>();
+      group.add(DataEntryGroup('Active Games', List<DataEntry>()));
+      group.add(DataEntryGroup('Head Count', List<DataEntry>()));
+      group.add(DataEntryGroup('Reserved', List<DataEntry>()));
+      group.add(DataEntryGroup('Out of Service', List<DataEntry>()));
 
-      for(int i =0; i<99; i++){
-
-        Map<String,dynamic> mapEntry = Map<String,dynamic>();
-        mapEntry['Location/StandID'] = i.toString()+i.toString()+i.toString();
-        mapEntry['Game/Theme'] = '1';
-        mapEntry['Status'] = i<80? 'Active Games' : ((i<85? 'Head Count' : i<90? 'Reserved' : 'Out of Service'));
-        mapEntry['Denom'] = 0.01;
-
-        list.add(DataEntry(mapEntry));
-      }
-      _view.onSlotFloorSummaryLoaded(list);
-
+      _view.onSlotFloorSummaryLoaded(group);
     });
   }
 

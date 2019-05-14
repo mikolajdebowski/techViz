@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:techviz/repository/local/escalationPathTable.dart';
 import 'package:techviz/repository/processor/processorLiveTable.dart';
-import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
+import 'package:techviz/repository/processor/processorRepositoryConfig.dart';
 import 'package:techviz/repository/remoteRepository.dart';
 
 class ProcessorEscalationPathRepository extends ProcessorLiveTable<dynamic> implements IRemoteRepository<dynamic> {

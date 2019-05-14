@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:techviz/model/slotMachine.dart';
 import 'package:techviz/repository/processor/processorLiveTable.dart';
-import 'package:techviz/repository/processor/processorRepositoryFactory.dart';
+import 'package:techviz/repository/processor/processorRepositoryConfig.dart';
 import 'package:techviz/repository/remoteRepository.dart';
 
 class ProcessorSlotMachineRepository extends ProcessorLiveTable<SlotMachine> implements IRemoteRepository<SlotMachine> {

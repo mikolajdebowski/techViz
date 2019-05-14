@@ -18,9 +18,9 @@ class HomeManager extends StatefulWidget {
 class HomeManagerState extends State<HomeManager> implements TechVizHome, IManagerViewPresenter {
   ManagerViewPresenter _presenter;
 
-  List<DataEntry> _openTasksList;
-  List<DataEntry> _teamAvailabilityList;
-  List<DataEntry> _slotFloorList;
+  List<DataEntryGroup> _openTasksList;
+  List<DataEntryGroup> _teamAvailabilityList;
+  List<DataEntryGroup> _slotFloorList;
   ScrollController _mainController;
 
   @override
@@ -110,28 +110,28 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
   }
 
   @override
-  void onOpenTasksLoaded(List<DataEntry> summaryList) {
+  void onOpenTasksLoaded(List<DataEntryGroup> list) {
     if (this.mounted) {
       setState(() {
-        _openTasksList = summaryList;
+        _openTasksList = list;
       });
     }
   }
 
   @override
-  void onSlotFloorSummaryLoaded(List<DataEntry> summaryList) {
+  void onSlotFloorSummaryLoaded(List<DataEntryGroup> list) {
     if (this.mounted) {
       setState(() {
-        _slotFloorList = summaryList;
+        _slotFloorList = list;
       });
     }
   }
 
   @override
-  void onTeamAvailabilityLoaded(List<DataEntry> summaryList) {
+  void onTeamAvailabilityLoaded(List<DataEntryGroup> list) {
     if (this.mounted) {
       setState(() {
-        _teamAvailabilityList = summaryList;
+        _teamAvailabilityList = list;
       });
     }
   }

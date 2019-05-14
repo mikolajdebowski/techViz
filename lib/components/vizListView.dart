@@ -60,7 +60,10 @@ class VizListViewState extends State<VizListView>{
   @override
   Widget build(BuildContext context) {
     if(widget.data.length==0){
-      return Text('No data to show');
+      return Padding(
+        padding: EdgeInsets.only(top: 10, bottom: 10),
+        child: Text('No data to show'),
+      );
     }
 
     header = List<Widget>();
