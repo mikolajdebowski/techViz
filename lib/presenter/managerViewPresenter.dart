@@ -34,10 +34,15 @@ class ManagerViewPresenter{
           Iterable<TaskType> listTypeWhere = listTypes.where((TaskType tt) => tt.taskTypeId == int.parse(mapEntry['TaskTypeID'].toString()));
           Iterable<TaskStatus> listStatusesWhere = listStatuses.where((TaskStatus ts) => ts.id == int.parse(mapEntry['TaskStatusID'].toString()));
 
-          columns['Type'] = listTypeWhere!=null ? listTypeWhere.first : mapEntry['TaskTypeID'].toString();
-          columns['Status'] = listStatusesWhere!=null ? listStatusesWhere.first : mapEntry['TaskStatusID'].toString();
+          columns['Type'] = listTypeWhere!=null && listTypeWhere.length>0 ? listTypeWhere.first : mapEntry['TaskTypeID'].toString();
+          columns['Status'] = listStatusesWhere!=null && listStatusesWhere.length>0 ? listStatusesWhere.first : mapEntry['TaskStatusID'].toString();
           columns['User'] = mapEntry['UserID'];
-          columns['Time Taken'] = mapEntry['ElapsedTime'];
+
+          int elapsedTime = int.parse(mapEntry['ElapsedTime'].toString());
+          int hours = (elapsedTime/60).floor();
+          int mins = (elapsedTime%60).ceil();
+
+          columns['Time Taken'] = '${hours.toString().padLeft(1, '0')}:${mins.toString().padLeft(1, '0')}';
 
           return DataEntry(mapEntry['_ID'].toString(), columns);
         }
