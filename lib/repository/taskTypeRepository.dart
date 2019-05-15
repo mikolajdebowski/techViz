@@ -9,12 +9,16 @@ class TaskTypeRepository implements IRepository<TaskType>{
   IRemoteRepository remoteRepository;
   TaskTypeRepository({this.remoteRepository});
 
-  Future<List<TaskType>> getAll(TaskTypeLookup lookup) async {
+  Future<List<TaskType>> getAll({TaskTypeLookup lookup}) async {
     LocalRepository localRepo = LocalRepository();
 
-    String taskTypeLookup = lookup.toString().split('.')[1]; //only  enum value
+    String query = "SELECT * FROM TaskType";
+    if(lookup!=null) {
+      String taskTypeLookup = lookup.toString().replaceAll("TaskTypeLookup.", ""); //only  enum value
+      query += "WHERE LookupName = '$taskTypeLookup'";
+    }
 
-    List<Map<String, dynamic>> queryResult = await localRepo.db.rawQuery("SELECT * FROM TaskType WHERE LookupName = '$taskTypeLookup'");
+    List<Map<String, dynamic>> queryResult = await localRepo.db.rawQuery(query);
 
     List<TaskType> toReturn = List<TaskType>();
     queryResult.forEach((Map<String, dynamic> task) {

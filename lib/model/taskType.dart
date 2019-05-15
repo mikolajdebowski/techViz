@@ -4,4 +4,9 @@ class TaskType{
   final String lookupName;
 
   const TaskType({this.taskTypeId, this.description, this.lookupName});
+
+  @override
+  String toString(){
+    return description;
+  }
 }

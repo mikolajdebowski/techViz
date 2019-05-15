@@ -105,7 +105,7 @@ class VizListViewState extends State<VizListView>{
 
       List<Widget> columns = List<Widget>();
       row.columns.forEach((String key, dynamic value){
-        columns.add(Expanded(child: Text(value.toString())));
+        columns.add(Expanded(child: Text(value.toString(), overflow: TextOverflow.ellipsis, maxLines: 2,)));
       });
 
       Row dataRow = Row(

@@ -1,6 +1,9 @@
 import 'package:techviz/model/dataEntry.dart';
+import 'package:techviz/model/taskStatus.dart';
+import 'package:techviz/model/taskType.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/taskRepository.dart';
+import 'package:techviz/repository/taskTypeRepository.dart';
 
 abstract class IManagerViewPresenter {
   void onOpenTasksLoaded(List<DataEntryGroup> list);
@@ -18,14 +21,21 @@ class ManagerViewPresenter{
   }
 
   void loadOpenTasks(){
-      Repository().taskRepository.openTasks().then((dynamic result){
+      Repository().taskRepository.openTasks().then((dynamic result) async {
+
+        List<TaskStatus> listStatuses = await Repository().taskStatusRepository.getAll();
+        List<TaskType> listTypes = await Repository().taskTypeRepository.getAll();
 
         DataEntry mapToDataEntry(Map<String, dynamic> mapEntry){
 
           Map<String,dynamic> columns = Map<String,dynamic>();
           columns['Location'] = mapEntry['Location'];
-          columns['Type'] = mapEntry['TaskTypeID']; //convert to business readable string
-          columns['Status'] = mapEntry['TaskStatusID']; //convert to business readable string
+
+          Iterable<TaskType> listTypeWhere = listTypes.where((TaskType tt) => tt.taskTypeId == int.parse(mapEntry['TaskTypeID'].toString()));
+          Iterable<TaskStatus> listStatusesWhere = listStatuses.where((TaskStatus ts) => ts.id == int.parse(mapEntry['TaskStatusID'].toString()));
+
+          columns['Type'] = listTypeWhere!=null ? listTypeWhere.first : mapEntry['TaskTypeID'].toString();
+          columns['Status'] = listStatusesWhere!=null ? listStatusesWhere.first : mapEntry['TaskStatusID'].toString();
           columns['User'] = mapEntry['UserID'];
           columns['Time Taken'] = mapEntry['ElapsedTime'];
 
