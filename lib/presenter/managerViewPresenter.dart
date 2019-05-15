@@ -32,20 +32,22 @@ class ManagerViewPresenter{
           return DataEntry(mapEntry['_ID'].toString(), columns);
         }
 
-        //ASSIGNED todo: confirm if TaskStatusID equals to 1 means assigned
-        Iterable<Map<String,dynamic>> assignedWhere = result.where((Map<String,dynamic> map)=> map['TaskStatusID'] == '1');
+        //from ACT-1344
+        //Assigned: UserID is not null AND TaskStatusID is not equal to 7 (reassigned)
+        Iterable<Map<String,dynamic>> assignedWhere = result.where((Map<String,dynamic> map)=> (map['UserID'] != null && map['UserID'].toString().length>0) && map['TaskStatusID'] != '7');
         List<DataEntry> assignedList = assignedWhere != null ? assignedWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntry(d)).toList(): List<DataEntry>();
 
-        //UNASSIGNED todo: confirm if TaskStatusID equals to 0 means unassigned
-        Iterable<Map<String,dynamic>> unassignedWhere = result.where((Map<String,dynamic> map)=> map['TaskStatusID'] == '0');
+
+        //Unassigned: UserID is null OR TaskStatusID = 7 (reassigned)
+        Iterable<Map<String,dynamic>> unassignedWhere = result.where((Map<String,dynamic> map)=> (map['UserID'] == null || map['UserID'].toString().length==0) || map['TaskStatusID'] == '7');
         List<DataEntry> unassignedList = unassignedWhere != null ? unassignedWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntry(d)).toList(): List<DataEntry>();
 
-        //OVERDUE? todo: find out when a task is overdue
-        Iterable<Map<String,dynamic>> overdueWhere = result.where((Map<String,dynamic> map)=> int.parse(map['ElapsedTime'] as String) > 1000);
+        //Overdue: TaskUrgencyID is 3 (overdue)
+        Iterable<Map<String,dynamic>> overdueWhere = result.where((Map<String,dynamic> map)=> map['TaskUrgencyID'] == '3');
         List<DataEntry> overdueList = overdueWhere != null ? overdueWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntry(d)).toList(): List<DataEntry>();
 
-        //ESCALATED? todo: find out when a task is escalated
-        Iterable<Map<String,dynamic>> escalatedWhere = result.where((Map<String,dynamic> map)=> map['TaskStatusID']  == '5');
+        //Escalated: IsTechTask is 1 AND ParentID is not null (all escalated tasks are for technicians and have a parentID)
+        Iterable<Map<String,dynamic>> escalatedWhere = result.where((Map<String,dynamic> map)=> map['IsTechTask']  == '1' && map['ParentID'] != null);
         List<DataEntry> escalatedList = escalatedWhere != null ? escalatedWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntry(d)).toList(): List<DataEntry>();
 
         List<DataEntryGroup> group = List<DataEntryGroup>();
