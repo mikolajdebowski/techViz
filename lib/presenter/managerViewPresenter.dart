@@ -57,7 +57,7 @@ class ManagerViewPresenter{
         List<DataEntry> overdueList = overdueWhere != null ? overdueWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntry(d)).toList(): List<DataEntry>();
 
         //Escalated: IsTechTask is 1 AND ParentID is not null (all escalated tasks are for technicians and have a parentID)
-        Iterable<Map<String,dynamic>> escalatedWhere = result.where((Map<String,dynamic> map)=> map['IsTechTask']  == '1' && map['ParentID'] != null);
+        Iterable<Map<String,dynamic>> escalatedWhere = result.where((Map<String,dynamic> map)=> map['IsTechTask']  == '1' && (map['ParentID'] != null && map['ParentID'].toString().length>0));
         List<DataEntry> escalatedList = escalatedWhere != null ? escalatedWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntry(d)).toList(): List<DataEntry>();
 
         List<DataEntryGroup> group = List<DataEntryGroup>();

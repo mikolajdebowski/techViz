@@ -102,6 +102,7 @@ class ProcessorTaskRepository implements ITaskRepository{
 
         mapEntry['TaskUrgencyID'] = values[_columnNames.indexOf("TaskUrgencyID")];
         mapEntry['ParentID'] = values[_columnNames.indexOf("ParentID")];
+        mapEntry['IsTechTask'] = values[_columnNames.indexOf("IsTechTask")];
 
         listToReturn.add(mapEntry);
       });
