@@ -1,13 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:techviz/model/user.dart';
 import 'package:techviz/repository/local/localRepository.dart';
 import 'package:techviz/repository/processor/processorRepositoryConfig.dart';
-import 'package:techviz/repository/remoteRepository.dart';
+import 'package:techviz/repository/userRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
-class ProcessorUserRepository implements IRemoteRepository<User>{
+class ProcessorUserRepository implements IUserRepository{
 
   @override
   Future fetch() {
@@ -53,4 +52,48 @@ class ProcessorUserRepository implements IRemoteRepository<User>{
 
     return _completer.future;
   }
+
+  @override
+  Future allUsers() {
+
+    String tag = 'TECHVIZ_MOBILE_USERS';
+
+    print('Fetching $tag');
+
+    Completer _completer = Completer<void>();
+    String url = ProcessorRepositoryConfig().GetURL(tag);
+
+    SessionClient().get(url).then((String rawResult) async {
+
+      List<Map<String, dynamic>> listToReturn =  List<Map<String, dynamic>>();
+
+      dynamic decoded = json.decode(rawResult);
+      List<dynamic> rows = decoded['Rows'] as List<dynamic>;
+      List<String> _columnNames = (decoded['ColumnNames'] as String).split(',');
+      rows.forEach((dynamic d) {
+
+//        dynamic values = d['Values'];
+//        Map<String, dynamic> mapEntry = Map<String, dynamic>();
+//        mapEntry['_ID'] = values[_columnNames.indexOf("_ID")];
+//        mapEntry['Location'] = values[_columnNames.indexOf("Location")];
+//        mapEntry['TaskTypeID'] = values[_columnNames.indexOf("TaskTypeID")];
+//        mapEntry['TaskStatusID'] = values[_columnNames.indexOf("TaskStatusID")];
+//        mapEntry['UserID'] = values[_columnNames.indexOf("UserID")];
+//        mapEntry['ElapsedTime'] = values[_columnNames.indexOf("ElapsedTime")];
+//
+//        listToReturn.add(mapEntry);
+      });
+
+      _completer.complete(listToReturn);
+
+    }).catchError((dynamic e){
+      print(e.toString());
+      _completer.completeError(e);
+    });
+
+
+    return _completer.future;
+  }
+
+
 }

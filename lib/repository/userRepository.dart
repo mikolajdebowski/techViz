@@ -5,9 +5,13 @@ import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/local/userTable.dart';
 import 'package:techviz/repository/remoteRepository.dart';
 
+abstract class IUserRepository extends IRemoteRepository<User>{
+  Future allUsers();
+}
+
 class UserRepository implements IRepository<User>{
 
-  IRemoteRepository remoteRepository;
+  IUserRepository remoteRepository;
   UserRepository({this.remoteRepository});
 
   @override
@@ -41,6 +45,17 @@ class UserRepository implements IRepository<User>{
 
 
     return _completer.future;
+  }
+
+  Future<List<User>> allUsers(){
+    Completer<List<User>> _completer = Completer<List<User>>();
+
+    this.remoteRepository.allUsers().then((dynamic result){
+      //List<Map<String,dynamic>> listMap = result as List<Map<String,dynamic>>;
+      _completer.complete([User(userID: 'irina'),User(userID: 'rodrigo'),User(userID: 'rodrigo2')]);
+    });
+    return _completer.future;
+
   }
 
 }

@@ -7,12 +7,14 @@ class VizDialog {
     return fb;
   }
 
+  static RoundedRectangleBorder defaultBorder = RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5.0)));
+
   static Future<bool> Alert(BuildContext context, String title, String message) {
     return showDialog<bool>(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5.0))),
+            shape: defaultBorder,
             title: Text(title),
             content: Text(message),
             actions: <Widget>[
@@ -32,42 +34,64 @@ class VizDialog {
         builder: (BuildContext context) {
           return AlertDialog(
             key: key,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5.0))),
+            shape: defaultBorder,
             title: Text(title),
             content: Text(message),
             actions: actions,
           );
         });
   }
+
+  static Future<bool> Dialog(Key key, BuildContext context, String title, Widget innerWidget) {
+    return showDialog<bool>(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+
+            contentPadding: EdgeInsets.all(10.0),
+            content:innerWidget,
+            key: key,
+            shape: defaultBorder,
+            title: Text(title),
+          );
+        });
+  }
 }
 
 
-class VizDialogButton extends StatelessWidget{
+
+class VizDialogButton extends StatelessWidget {
   final String title;
   final Function action;
   final bool highlighted;
+  final bool processing;
+  final bool disabled;
 
-  VizDialogButton(this.title, this.action, {this.highlighted = true});
+  VizDialogButton(this.title, this.action, {this.highlighted = true, this.processing = false, this.disabled = false});
 
   @override
   Widget build(BuildContext context) {
-    if(this.highlighted){
+    if (this.highlighted) {
       return RaisedButton(
-          child: Text(title, style: TextStyle(color: Colors.white)),
+          elevation: 5,
+          child: this.processing ? Center(child: SizedBox(
+            child: CircularProgressIndicator(),
+            height: 25.0,
+            width: 25.0,
+          )) : Text(title, style: TextStyle(color: Colors.white)),
           onPressed: () {
-            action();
+            if (!this.disabled)
+              action();
           });
     }
-    else{
+    else {
       return FlatButton(
-          child: Text(title),
+          child: Text(title, style: TextStyle(color: this.disabled ? Colors.grey : Colors.black)),
           onPressed: () {
-            action();
+            if (!this.disabled)
+              action();
           });
     }
-
-
   }
-
-
 }

@@ -7,6 +7,7 @@ import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/managerViewPresenter.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:techviz/ui/home.dart';
+import 'package:techviz/ui/reassignDialog.dart';
 
 class HomeManager extends StatefulWidget {
   HomeManager(Key key) : super(key: key);
@@ -57,10 +58,20 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
   SwipeAction onOpenTasksSwipeLeft(){
     return SwipeAction('Re-assign to others', '<<<', (dynamic entry){
 
+      GlobalKey dialogKey = GlobalKey();
       DataEntry dataEntry = (entry as DataEntry);
-      String location = dataEntry.columns['Location'] as String;
 
-      VizDialog.Alert(context, 'Reassign To others', 'Reassign to others location $location');
+
+
+
+      VizDialog.Dialog(dialogKey, context, 'Re-assign task', ReassignDialog(dataEntry.id)).then((bool done){
+        if(done){
+          setState(() {
+            _openTasksList = null;
+          });
+          _presenter.loadOpenTasks();
+        }
+      });
     });
   }
 
@@ -68,14 +79,12 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
     return SwipeAction('Re-assign to myself', '>>>',(dynamic entry){
 
       GlobalKey dialogKey = GlobalKey();
-
       DataEntry dataEntry = (entry as DataEntry);
-
       VizDialogButton btnYes = VizDialogButton('Yes', (){
+
         _presenter.reassign(dataEntry.id, Session().user.userID).then((dynamic d){
 
           Navigator.of(dialogKey.currentContext).pop(true);
-
           setState(() {
             _openTasksList = null;
           });
@@ -141,3 +150,4 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
     }
   }
 }
+
