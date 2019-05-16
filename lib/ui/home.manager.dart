@@ -64,24 +64,27 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
     _presenter.loadOpenTasks();
   }
 
-  SwipeAction onOpenTasksSwipeLeft(){
+  SwipeAction onOpenTasksSwipeLeft(){ //action of the right of the view
     return SwipeAction('Re-assign to others', '<<<', (dynamic entry){
 
-      GlobalKey dialogKey = GlobalKey();
       DataEntry dataEntry = (entry as DataEntry);
 
-      VizDialog.Dialog(dialogKey, context, 'Re-assign task', ReassignDialog(dataEntry.id)).then((bool done){
-        if(done){
-          setState(() {
-            _openTasksLoading = false;
-          });
-          _presenter.loadOpenTasks();
-        }
+      showDialog<bool>(
+          context: context,
+          builder: (BuildContext context) {
+            return ReassignDialog(dataEntry.id);
+          }).then((bool isDone){
+            if(isDone!=null && isDone){
+              setState(() {
+                _openTasksLoading = true;
+              });
+              _presenter.loadOpenTasks();
+            }
       });
     });
   }
 
-  SwipeAction onOpenTasksSwipeRight(){
+  SwipeAction onOpenTasksSwipeRight(){ //action of the left of the view
     return SwipeAction('Re-assign to myself', '>>>',(dynamic entry){
 
       GlobalKey dialogKey = GlobalKey();
@@ -92,7 +95,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
 
           Navigator.of(dialogKey.currentContext).pop(true);
           setState(() {
-            _openTasksLoading = false;
+            _openTasksLoading = true;
           });
           _presenter.loadOpenTasks();
 

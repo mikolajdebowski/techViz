@@ -51,8 +51,9 @@ class UserRepository implements IRepository<User>{
     Completer<List<User>> _completer = Completer<List<User>>();
 
     this.remoteRepository.allUsers().then((dynamic result){
-      //List<Map<String,dynamic>> listMap = result as List<Map<String,dynamic>>;
-      _completer.complete([User(userID: 'irina'),User(userID: 'rodrigo'),User(userID: 'rodrigo2')]);
+      List<Map> listMap = result as List<Map>;
+      List<User> listUsers = listMap.map((Map map)=> User.fromMap(map)).toList();
+      _completer.complete(listUsers);
     });
     return _completer.future;
 

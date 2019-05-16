@@ -41,6 +41,7 @@ class ReassignDialogState extends State<ReassignDialog> implements IReassignPres
 
   @override
   Widget build(BuildContext context) {
+
     if (_userList == null) {
       return Center(
         child: Padding(
@@ -56,7 +57,7 @@ class ReassignDialogState extends State<ReassignDialog> implements IReassignPres
       listItems.add(DropdownMenuItem<String>(
         value: user.userID,
         child: Text(
-          user.userID,
+          '${user.userName} (${user.userID})',
         ),
       ));
     });
@@ -74,29 +75,27 @@ class ReassignDialogState extends State<ReassignDialog> implements IReassignPres
       style: Theme.of(context).textTheme.title,
     );
 
-    return Stack(
+    Column contanteContainer = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Center(
-            child: Column(
-          children: <Widget>[
-            Text('Please select the user to re-assign this task for:'),
-            Padding(
-              padding: EdgeInsets.only(top: 10),
-              child: ddb,
-            )
-          ],
-        )),
-        Positioned(
-            bottom: 10,
-            right: 10,
-            child: Row(children: <Widget>[
-              VizDialogButton('Cancel', () {
-                Navigator.of(context).pop(false);
-              }, highlighted: false, disabled: _processing == true),
-              VizDialogButton('Re-assign', () {
-                reassign();
-              }, processing: _processing, disabled: _processing == true)
-            ]))
+        Text('Select the user to re-assign this task:'),
+        Padding(
+          padding: EdgeInsets.only(top: 10),
+          child: ddb,
+        ),
+      ],
+    );
+
+    return AlertDialog(
+      title: Text('Re-assign task'),
+      content: contanteContainer,
+      actions: <Widget>[
+        VizDialogButton('Cancel', () {
+          Navigator.of(context).pop(false);
+        }, highlighted: false, disabled: _processing == true),
+        VizDialogButton('Re-assign', () {
+          reassign();
+        }, processing: _processing, disabled: _processing == true)
       ],
     );
   }

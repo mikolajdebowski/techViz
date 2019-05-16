@@ -55,45 +55,37 @@ class ProcessorUserRepository implements IUserRepository{
 
   @override
   Future allUsers() {
-
     String tag = 'TECHVIZ_MOBILE_USERS';
-
     print('Fetching $tag');
 
-    Completer _completer = Completer<void>();
+    Completer<List<Map<String, dynamic>>> _completer = Completer<List<Map<String, dynamic>>>();
     String url = ProcessorRepositoryConfig().GetURL(tag);
 
     SessionClient().get(url).then((String rawResult) async {
-
       List<Map<String, dynamic>> listToReturn =  List<Map<String, dynamic>>();
-
       dynamic decoded = json.decode(rawResult);
       List<dynamic> rows = decoded['Rows'] as List<dynamic>;
       List<String> _columnNames = (decoded['ColumnNames'] as String).split(',');
       rows.forEach((dynamic d) {
 
-//        dynamic values = d['Values'];
-//        Map<String, dynamic> mapEntry = Map<String, dynamic>();
-//        mapEntry['_ID'] = values[_columnNames.indexOf("_ID")];
-//        mapEntry['Location'] = values[_columnNames.indexOf("Location")];
-//        mapEntry['TaskTypeID'] = values[_columnNames.indexOf("TaskTypeID")];
-//        mapEntry['TaskStatusID'] = values[_columnNames.indexOf("TaskStatusID")];
-//        mapEntry['UserID'] = values[_columnNames.indexOf("UserID")];
-//        mapEntry['ElapsedTime'] = values[_columnNames.indexOf("ElapsedTime")];
-//
-//        listToReturn.add(mapEntry);
-      });
+        dynamic values = d['Values'];
 
+        Map<String, dynamic> mapEntry = Map<String, dynamic>();
+        mapEntry['UserID'] = values[_columnNames.indexOf("UserID")];
+        mapEntry['UserName'] = values[_columnNames.indexOf("UserName")];
+        mapEntry['UserRoleID'] = values[_columnNames.indexOf("UserRoleID")];
+        mapEntry['UserStatusID'] = values[_columnNames.indexOf("UserStatusID")];
+        mapEntry['StaffID'] = values[_columnNames.indexOf("StaffID")];
+        mapEntry['SiteID'] = values[_columnNames.indexOf("SiteID")];
+
+        listToReturn.add(mapEntry);
+      });
       _completer.complete(listToReturn);
 
     }).catchError((dynamic e){
       print(e.toString());
       _completer.completeError(e);
     });
-
-
     return _completer.future;
   }
-
-
 }
