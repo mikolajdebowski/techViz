@@ -11,8 +11,9 @@ class VizSummaryHeader extends StatelessWidget {
   final String selectedEntryKey;
   final Map<String, int> entries;
   final VizSummaryHeaderActions actions;
+  final bool isProcessing;
 
-  VizSummaryHeader({Key key, this.headerTitle, this.entries, this.selectedEntryKey, this.actions}) : super(key: key);
+  VizSummaryHeader({Key key, this.headerTitle, this.entries, this.selectedEntryKey, this.actions, this.isProcessing = false}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -73,8 +74,13 @@ class VizSummaryHeader extends StatelessWidget {
           Container(
             decoration: decorationHeader,
             padding: EdgeInsets.only(top: 1.0, bottom: 1.0),
-            child: Align(child: Text(headerTitle, key: Key('headerTitle'), style: TextStyle(color: Colors.white, fontWeight:
-                FontWeight.bold)), alignment: Alignment.center),
+            child: Center(child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(headerTitle, key: Key('headerTitle'), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                Opacity(opacity: this.isProcessing ? 1.0 : 0.0, child: Padding(child: SizedBox(child: CircularProgressIndicator(strokeWidth: 2), width: 10, height: 10), padding: EdgeInsets.only(left: 5)))
+              ],
+            )),
           ),
           Expanded(
             child: Row(

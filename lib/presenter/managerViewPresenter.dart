@@ -3,7 +3,6 @@ import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/model/taskType.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/taskRepository.dart';
-import 'package:techviz/repository/taskTypeRepository.dart';
 
 abstract class IManagerViewPresenter {
   void onOpenTasksLoaded(List<DataEntryGroup> list);

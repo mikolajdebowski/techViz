@@ -24,6 +24,8 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
   List<DataEntryGroup> _slotFloorList;
   ScrollController _mainController;
 
+  bool _openTasksLoading;
+
   @override
   void initState() {
     super.initState();
@@ -46,13 +48,20 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            VizSummary('OPEN TASKS', _openTasksList, ['Status'], onSwipeLeft: onOpenTasksSwipeLeft(), onSwipeRight: onOpenTasksSwipeRight()),
-            VizSummary('TEAM AVAILABILITY', _teamAvailabilityList, ['Status'], onSwipeLeft: onTeamAvailiblitySwipeLeft()),
-            VizSummary('SLOT FLOOR', _slotFloorList, ['Status'])
+            VizSummary('OPEN TASKS', _openTasksList, onSwipeLeft: onOpenTasksSwipeLeft(), onSwipeRight: onOpenTasksSwipeRight(), onMetricTap: onOpenTasksMetricTap, isProcessing:  _openTasksLoading),
+            VizSummary('TEAM AVAILABILITY', _teamAvailabilityList,onSwipeLeft: onTeamAvailiblitySwipeLeft()),
+            VizSummary('SLOT FLOOR', _slotFloorList)
           ],
         ),
       ),
     );
+  }
+
+  void onOpenTasksMetricTap(){
+    setState(() {
+      _openTasksLoading = true;
+    });
+    _presenter.loadOpenTasks();
   }
 
   SwipeAction onOpenTasksSwipeLeft(){
@@ -60,9 +69,6 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
 
       GlobalKey dialogKey = GlobalKey();
       DataEntry dataEntry = (entry as DataEntry);
-
-
-
 
       VizDialog.Dialog(dialogKey, context, 'Re-assign task', ReassignDialog(dataEntry.id)).then((bool done){
         if(done){
@@ -127,6 +133,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
   void onOpenTasksLoaded(List<DataEntryGroup> list) {
     if (this.mounted) {
       setState(() {
+        _openTasksLoading = false;
         _openTasksList = list;
       });
     }

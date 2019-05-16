@@ -6,10 +6,12 @@ import 'package:techviz/model/dataEntry.dart';
 class VizSummary extends StatefulWidget {
   final String title;
   final List<DataEntryGroup> data;
-  final List<String> groupByKeys;
   final SwipeAction onSwipeLeft;
   final SwipeAction onSwipeRight;
-  VizSummary(this.title, this.data, this.groupByKeys, {Key key, this.onSwipeLeft, this.onSwipeRight}) : super(key: key);
+  final Function onMetricTap;
+  final bool isProcessing;
+
+  VizSummary(this.title, this.data, {Key key, this.onSwipeLeft, this.onSwipeRight, this.onMetricTap, this.isProcessing = false}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => VizSummaryState();
@@ -58,17 +60,12 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
       );
     }
     else{
-//      String keys = widget.groupByKeys[0];
-//
-//      Map<String, dynamic> grouped = groupBy<DataEntry, String>(keySelector: (DataEntry entry) => entry.columns[keys], list: widget.data);
-//      Map<String, int> count = grouped.map<String, int>((String key, dynamic value) => MapEntry(key, (value as List).length));
-
       Map<String,int> count = Map<String,int>();
       widget.data.forEach((DataEntryGroup group){
         count[group.headerTitle] = group.entries.length;
       });
 
-      VizSummaryHeader header = VizSummaryHeader(headerTitle: widget.title, entries: count, actions: this, selectedEntryKey: _selectedEntryKey);
+      VizSummaryHeader header = VizSummaryHeader(headerTitle: widget.title, entries: count, actions: this, selectedEntryKey: _selectedEntryKey, isProcessing: widget.isProcessing);
 
       if (!_expanded) {
         container = Container(
@@ -77,9 +74,6 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
           child: header,
         );
       } else {
-
-        //List<DataEntry> filtered = whereBy<DataEntry>(keySelector: (DataEntry entry) => entry.columns[keys]==_selectedEntryKey, list: widget.data);
-
         Iterable<DataEntryGroup> where = widget.data.where((DataEntryGroup group)=> group.headerTitle == _selectedEntryKey);
         List<DataEntry> filtered = where.first.entries;
 
@@ -105,6 +99,10 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
 
   @override
   void onItemTap(String selectedEntryKey) {
+
+    if(widget.onMetricTap!=null){
+      widget.onMetricTap();
+    }
 
     setState(() {
       if(_selectedEntryKey == selectedEntryKey){
