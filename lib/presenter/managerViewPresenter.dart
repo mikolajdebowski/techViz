@@ -20,7 +20,7 @@ class ManagerViewPresenter{
   }
 
   void loadOpenTasks(){
-      Repository().taskRepository.openTasks().then((dynamic result) async {
+      Repository().taskRepository.openTasksSummary().then((dynamic result) async {
 
         List<TaskStatus> listStatuses = await Repository().taskStatusRepository.getAll();
         List<TaskType> listTypes = await Repository().taskTypeRepository.getAll();

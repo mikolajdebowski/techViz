@@ -74,7 +74,7 @@ class ProcessorTaskRepository implements ITaskRepository{
 
 
   @override
-  Future openTasks() async {
+  Future openTasksSummary() async {
     String tag = 'TECHVIZ_MOBILE_TASK_SUMMARY';
 
     print('Fetching $tag');

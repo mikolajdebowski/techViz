@@ -14,7 +14,7 @@ typedef TaskUpdateCallBack = void Function(String taskID);
 typedef TaskSubmitallBack = void Function(String taskID);
 
 abstract class ITaskRepository extends IRemoteRepository<Task>{
-  Future openTasks();
+  Future openTasksSummary();
 }
 
 class TaskRepository implements IRepository<Task>{
@@ -236,8 +236,8 @@ class TaskRepository implements IRepository<Task>{
 
   }
 
-  Future openTasks() async {
-    return remoteRepository.openTasks();
+  Future openTasksSummary() async {
+    return remoteRepository.openTasksSummary();
   }
 }
 
