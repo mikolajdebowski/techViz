@@ -14,11 +14,11 @@ flutter build ios
 xcodebuild -workspace ios/Runner.xcworkspace \
             -scheme Runner -sdk iphoneos \
             -configuration Release archive \
-            -archivePath ios/Temp/Build/v08b54.xcarchive
+            -archivePath ios/Temp/Build/v08b55.xcarchive
 
 xcodebuild -exportArchive \
-            -archivePath ios/Temp/Build/v08b54.xcarchive \
-            -exportOptionsPlist ios/Runner/exportOptionsAdHoc.plist -exportPath ios/Temp/Build/v08b54
+            -archivePath ios/Temp/Build/v08b55.xcarchive \
+            -exportOptionsPlist ios/Runner/exportOptionsAdHoc.plist -exportPath ios/Temp/Build/v08b55
 
 
 
