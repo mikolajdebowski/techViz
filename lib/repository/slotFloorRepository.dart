@@ -6,7 +6,7 @@ import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/remoteRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
-class SlotMachineRepository implements IRepository<SlotMachine> {
+class SlotFloorRepository implements IRepository<SlotMachine> {
   IRemoteRepository remoteRepository;
   IRouting<SlotMachine> remoteRouting;
 
@@ -23,7 +23,7 @@ class SlotMachineRepository implements IRepository<SlotMachine> {
     _remoteSlotMachineController.add(_cache.data);
   }
 
-  SlotMachineRepository({this.remoteRepository, this.remoteRouting}) {
+  SlotFloorRepository({this.remoteRepository, this.remoteRouting}) {
     assert(this.remoteRepository != null);
     assert(this.remoteRouting != null);
 

@@ -8,7 +8,7 @@ import 'package:techviz/components/vizDialog.dart';
 import 'package:techviz/components/vizElevated.dart';
 import 'package:techviz/ui/machineReservation.dart';
 import 'package:techviz/model/slotMachine.dart';
-import 'package:techviz/repository/SlotMachineRepository.dart';
+import 'package:techviz/repository/slotFloorRepository.dart';
 import 'package:techviz/repository/repository.dart';
 
 class SlotLookup extends StatefulWidget {
@@ -21,7 +21,7 @@ class SlotLookupState extends State<SlotLookup> with WidgetsBindingObserver {
 
   final FocusNode _txtSearchFocusNode = FocusNode();
   final TextEditingController _txtSearchController = TextEditingController();
-  SlotMachineRepository _repository = Repository().slotMachineRepository;
+  SlotFloorRepository _repository = Repository().slotMachineRepository;
   String _searchKey;
 
   @override

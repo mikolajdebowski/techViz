@@ -6,7 +6,7 @@ import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizDialog.dart';
 import 'package:techviz/model/reservationTime.dart';
 import 'package:techviz/model/slotMachine.dart';
-import 'package:techviz/repository/SlotMachineRepository.dart';
+import 'package:techviz/repository/slotFloorRepository.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/reservationTimeRepository.dart';
 import 'package:techviz/repository/session.dart';
@@ -24,7 +24,7 @@ class MachineReservation extends StatefulWidget {
 
 class MachineReservationState extends State<MachineReservation> {
   ReservationTimeRepository _reservationTimeRepo = Repository().reservationTimeRepository;
-  SlotMachineRepository _slotMachineRepositoryRepo = Repository().slotMachineRepository;
+  SlotFloorRepository _slotMachineRepositoryRepo = Repository().slotMachineRepository;
 
   List<ReservationTime> times = [];
   final _formKey = GlobalKey<FormState>();

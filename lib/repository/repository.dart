@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:techviz/repository/SlotMachineRepository.dart';
+import 'package:techviz/repository/slotFloorRepository.dart';
 import 'package:techviz/repository/async/SlotMachineRouting.dart';
 import 'package:techviz/repository/escalationPathRepository.dart';
 import 'package:techviz/repository/local/localRepository.dart';
@@ -169,9 +169,9 @@ class Repository{
   }
 
   //SLOTMACHINE
-  SlotMachineRepository get slotMachineRepository {
+  SlotFloorRepository get slotMachineRepository {
     switch(_flavor) {
-      default:return SlotMachineRepository(remoteRepository: ProcessorSlotMachineRepository(), remoteRouting: SlotMachineRouting());
+      default:return SlotFloorRepository(remoteRepository: ProcessorSlotMachineRepository(), remoteRouting: SlotMachineRouting());
     }
   }
 
