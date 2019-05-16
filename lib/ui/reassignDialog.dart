@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:techviz/components/vizDialog.dart';
 import 'package:techviz/model/user.dart';
 import 'package:techviz/presenter/reassignPresenter.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class ReassignDialog extends StatefulWidget {
   final String taskID;
@@ -18,6 +19,7 @@ class ReassignDialogState extends State<ReassignDialog> implements IReassignPres
   List<User> _userList;
   ReassignPresenter _presenter;
   bool _processing = false;
+  final TextEditingController _typeUserController = TextEditingController();
 
   @override
   void initState() {
@@ -51,28 +53,32 @@ class ReassignDialogState extends State<ReassignDialog> implements IReassignPres
       );
     }
 
-    List<DropdownMenuItem<String>> listItems = List<DropdownMenuItem<String>>();
+    TypeAheadField typeUser = TypeAheadField<User>(
 
-    _userList.forEach((User user) {
-      listItems.add(DropdownMenuItem<String>(
-        value: user.userID,
-        child: Text(
-          '${user.userName} (${user.userID})',
-        ),
-      ));
-    });
-
-    //TODO: CHANGE FOR AUTOCOMPLETE
-    DropdownButton ddb = DropdownButton<String>(
-      isExpanded: true,
-      value: _selectedValue,
-      items: listItems,
-      onChanged: (value) {
+      noItemsFoundBuilder: (BuildContext context){
+        return Padding(padding: EdgeInsets.all(10), child: Text('No users found'));
+      },
+      textFieldConfiguration: TextFieldConfiguration<User>(
+        controller: this._typeUserController,
+          autofocus: true
+      ),
+      suggestionsCallback: (String pattern) async {
+        pattern = pattern.toLowerCase();
+        return _userList.where((User user)=> user.userName.toLowerCase().contains(pattern) || user.userID.toLowerCase().contains(pattern)).toList();
+      },
+      itemBuilder: (context, User suggestion) {
+        return ListTile(
+          dense: true,
+          title: Text(suggestion.userID),
+          subtitle: Text('${suggestion.userName}'),
+        );
+      },
+      onSuggestionSelected: (User suggestion) {
         setState(() {
-          _selectedValue = value;
+          this._typeUserController.text = suggestion.userID;
+          this._selectedValue = suggestion.userID;
         });
       },
-      style: Theme.of(context).textTheme.title,
     );
 
     Column contanteContainer = Column(
@@ -81,7 +87,7 @@ class ReassignDialogState extends State<ReassignDialog> implements IReassignPres
         Text('Select the user to re-assign this task:'),
         Padding(
           padding: EdgeInsets.only(top: 10),
-          child: ddb,
+          child: typeUser,
         ),
       ],
     );
