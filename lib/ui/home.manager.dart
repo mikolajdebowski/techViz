@@ -73,7 +73,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
       VizDialog.Dialog(dialogKey, context, 'Re-assign task', ReassignDialog(dataEntry.id)).then((bool done){
         if(done){
           setState(() {
-            _openTasksList = null;
+            _openTasksLoading = false;
           });
           _presenter.loadOpenTasks();
         }
@@ -92,7 +92,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
 
           Navigator.of(dialogKey.currentContext).pop(true);
           setState(() {
-            _openTasksList = null;
+            _openTasksLoading = false;
           });
           _presenter.loadOpenTasks();
 

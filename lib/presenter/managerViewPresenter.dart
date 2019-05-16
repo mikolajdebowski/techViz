@@ -41,7 +41,7 @@ class ManagerViewPresenter{
           int hours = (elapsedTime/60).floor();
           int mins = (elapsedTime%60).ceil();
 
-          columns['Time Taken'] = '${hours.toString().padLeft(1, '0')}:${mins.toString().padLeft(1, '0')}';
+          columns['Time Taken'] = '${hours.toString().padLeft(2, '0')}:${mins.toString().padLeft(2, '0')}';
 
           return DataEntry(mapEntry['_ID'].toString(), columns);
         }

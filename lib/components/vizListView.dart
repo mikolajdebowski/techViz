@@ -105,7 +105,10 @@ class VizListViewState extends State<VizListView>{
 
       List<Widget> columns = List<Widget>();
       row.columns.forEach((String key, dynamic value){
-        columns.add(Expanded(child: Text(value.toString(), overflow: TextOverflow.ellipsis, maxLines: 2,)));
+        String text = value.toString();
+        TextStyle style = TextStyle(fontSize: text.length>= 20? 10: 12);
+
+        columns.add(Expanded(child: Text(text, style: style, overflow: TextOverflow.ellipsis, softWrap: true, maxLines: 2,)));
       });
 
       Row dataRow = Row(
@@ -168,6 +171,7 @@ class VizListViewState extends State<VizListView>{
         child: Padding(
           padding: EdgeInsets.all(paddingValue),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: children
           ),
         ),
