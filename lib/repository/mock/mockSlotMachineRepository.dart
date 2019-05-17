@@ -21,7 +21,7 @@ class MockSlotMachineRepository implements IRemoteRepository<SlotMachine> {
         var _denom = 0.01;
 
         var inst = SlotMachine(
-            _standID,
+            standID: _standID,
             machineTypeName: _machineTypeName,
             machineStatusID:_machineStatusID,
             machineStatusDescription: _machineStatusDescription,

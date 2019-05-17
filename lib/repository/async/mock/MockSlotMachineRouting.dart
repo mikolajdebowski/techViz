@@ -24,7 +24,7 @@ class MockSlotMachineRouting implements IRouting<SlotMachine> {
       Random rndStatus = new Random();
       num selectionStatus = minStatus + rndStatus.nextInt(maxStatus - minStatus);
 
-      _controller.add(SlotMachine(_standID, machineStatusID: selectionStatus.toString()));
+      _controller.add(SlotMachine(standID: _standID, machineStatusID: selectionStatus.toString()));
     });
 
     _controller.onCancel = (){

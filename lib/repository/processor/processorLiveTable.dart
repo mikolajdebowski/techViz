@@ -44,4 +44,33 @@ class ProcessorLiveTable<T> implements IRemoteRepository<T>{
 
     return _completer.future;
   }
+
+  Future<dynamic> fetchMapByTAG(String tagID){
+    print('Fetching $tagID');
+
+    Completer<dynamic> _completer = Completer<dynamic>();
+    String url = ProcessorRepositoryConfig().GetURL(tagID);
+
+    SessionClient().get(url).then((String rawResult) async {
+
+      List<Map<String, dynamic>> listToReturn =  List<Map<String, dynamic>>();
+
+      dynamic decoded = json.decode(rawResult);
+      List<dynamic> rows = decoded['Rows'] as List<dynamic>;
+      List<String> _columnNames = (decoded['ColumnNames'] as String).split(',');
+      rows.forEach((dynamic d) {
+        dynamic values = d['Values'];
+        dynamic mapResult = _columnNames.map((String columnName)=> MapEntry<String,dynamic>(columnName, values[_columnNames.indexOf(columnName)]));
+        Map<String,dynamic> converted = Map<String,dynamic>.fromEntries(mapResult);
+
+        listToReturn.add(converted);
+      });
+      _completer.complete(listToReturn);
+
+    }).catchError((dynamic e){
+      print(e.toString());
+      _completer.completeError(e);
+    });
+    return _completer.future;
+  }
 }

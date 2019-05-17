@@ -2,17 +2,20 @@ import 'dart:async';
 import 'package:techviz/model/slotMachine.dart';
 import 'package:techviz/repository/processor/processorLiveTable.dart';
 import 'package:techviz/repository/processor/processorRepositoryConfig.dart';
-import 'package:techviz/repository/remoteRepository.dart';
+import 'package:techviz/repository/slotFloorRepository.dart';
 
-class ProcessorSlotMachineRepository extends ProcessorLiveTable<SlotMachine> implements IRemoteRepository<SlotMachine> {
+class ProcessorSlotFloorRepository extends ProcessorLiveTable<SlotMachine> implements ISlotFloorRepository {
 
-  ProcessorSlotMachineRepository(){
+  final String TAG_SLOTFLOOR_SUMMARY = 'TECHVIZ_MOBILE_SLOTFLOOR_SUMMARY';
+
+  ProcessorSlotFloorRepository(){
     tableID = LiveTableType.TECHVIZ_MOBILE_SLOTS.toString();
   }
 
   @override
   Future<List<SlotMachine>> fetch() {
-    var _completer = Completer<List<SlotMachine>>();
+    //TODO: REFACTOR THIS METHOD TO RETURN A GENERIC FUTURE AND NOT A LIST OF THIS MODEL
+    Completer<List<SlotMachine>> _completer = Completer<List<SlotMachine>>();
 
     super.fetch().then((dynamic livetableResult){
       var _columnNames = livetableResult[0] as List<String>;
@@ -31,7 +34,7 @@ class ProcessorSlotMachineRepository extends ProcessorLiveTable<SlotMachine> imp
         var _updatedAt = DateTime.now().toUtc();
 
         listToReturn.add(SlotMachine(
-            _standID,
+            standID: _standID,
             machineTypeName: _machineTypeName,
             machineStatusID:_machineStatusID,
             machineStatusDescription: _machineStatusDescription,
@@ -45,4 +48,8 @@ class ProcessorSlotMachineRepository extends ProcessorLiveTable<SlotMachine> imp
     return _completer.future;
   }
 
+  @override
+  Future slotFloorSummary() {
+    return fetchMapByTAG(TAG_SLOTFLOOR_SUMMARY);
+  }
 }

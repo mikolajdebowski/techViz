@@ -79,7 +79,7 @@ class ProcessorTaskRepository implements ITaskRepository{
 
     print('Fetching $tag');
 
-    Completer _completer = Completer<void>();
+    Completer<dynamic> _completer = Completer<dynamic>();
     String url = ProcessorRepositoryConfig().GetURL(tag);
 
     SessionClient().get(url).then((String rawResult) async {

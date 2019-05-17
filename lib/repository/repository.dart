@@ -12,7 +12,7 @@ import 'package:techviz/repository/processor/processorSectionRepository.dart';
 import 'package:techviz/repository/processor/processorStatsMonthRepository.dart';
 import 'package:techviz/repository/processor/processorStatsTodayRepository.dart';
 import 'package:techviz/repository/processor/processorStatsWeekRepository.dart';
-import 'package:techviz/repository/processor/processorSlotMachineRepository.dart';
+import 'package:techviz/repository/processor/processorSlotFloorRepository.dart';
 import 'package:techviz/repository/processor/processorTaskRepository.dart';
 import 'package:techviz/repository/processor/processorTaskStatusRepository.dart';
 import 'package:techviz/repository/processor/processorTaskTypeRepository.dart';
@@ -169,9 +169,9 @@ class Repository{
   }
 
   //SLOTMACHINE
-  SlotFloorRepository get slotMachineRepository {
+  SlotFloorRepository get slotFloorRepository {
     switch(_flavor) {
-      default:return SlotFloorRepository(remoteRepository: ProcessorSlotMachineRepository(), remoteRouting: SlotMachineRouting());
+      default:return SlotFloorRepository(remoteRepository: ProcessorSlotFloorRepository(), remoteRouting: SlotMachineRouting());
     }
   }
 

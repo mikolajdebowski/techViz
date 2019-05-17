@@ -33,7 +33,7 @@ class SlotMachineRouting implements IRouting<SlotMachine> {
 
   SlotMachine parser(dynamic json){
     return SlotMachine(
-      json['standId'].toString(),
+      standID: json['standId'].toString(),
       machineStatusID:  json['statusId'].toString(),
       machineStatusDescription: json['statusDescription'].toString(),
       updatedAt: DateTime.parse(json['startedAt'].toString())

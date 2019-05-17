@@ -6,8 +6,12 @@ import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/remoteRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
+abstract class ISlotFloorRepository extends IRemoteRepository<SlotMachine>{
+  Future slotFloorSummary();
+}
+
 class SlotFloorRepository implements IRepository<SlotMachine> {
-  IRemoteRepository remoteRepository;
+  ISlotFloorRepository remoteRepository;
   IRouting<SlotMachine> remoteRouting;
 
   StreamController<SlotMachine> _slotMachineController;
@@ -73,7 +77,7 @@ class SlotFloorRepository implements IRepository<SlotMachine> {
 
     DeviceInfo info = await Utils.deviceInfo;
 
-    var message = {'deviceId': '${info.DeviceID}', 'userId': '${userID}', 'standId': '${standId}', 'playerId': '${playerID}', 'reservationTimeId': int.parse(time), 'reservationStatusId': 0, 'siteId': 1};
+    dynamic message = {'deviceId': '${info.DeviceID}', 'userId': '${userID}', 'standId': '${standId}', 'playerId': '${playerID}', 'reservationTimeId': int.parse(time), 'reservationStatusId': 0, 'siteId': 1};
 
     remoteRouting.PublishMessage(message).then((dynamic result) {
       _completer.complete(result);
@@ -89,7 +93,7 @@ class SlotFloorRepository implements IRepository<SlotMachine> {
 
     DeviceInfo info = await Utils.deviceInfo;
 
-    var message = {'deviceId': '${info.DeviceID}', 'standId': '${standId}', 'reservationStatusId': 1, 'siteId': 1};
+    dynamic message = {'deviceId': '${info.DeviceID}', 'standId': '${standId}', 'reservationStatusId': 1, 'siteId': 1};
 
     remoteRouting.PublishMessage(message).then((dynamic result) {
       _completer.complete(result);
@@ -98,5 +102,30 @@ class SlotFloorRepository implements IRepository<SlotMachine> {
     });
 
     return _completer.future;
+  }
+
+  Future<List<SlotMachine>> slotFloorSummary(){
+    Completer<List<SlotMachine>> _completer = Completer<List<SlotMachine>>();
+    this.remoteRepository.slotFloorSummary().then((dynamic result){
+      List<SlotMachine> listToReturn = List<SlotMachine>();
+
+      SlotMachine parser(Map<String,dynamic> map){
+        return SlotMachine(
+          standID: map['StandID'].toString(),
+          denom: double.parse( map['Denom'].toString()),
+          machineStatusID:  map['StatusID'].toString(),
+          machineStatusDescription: map['StatusDescription'].toString(),
+          machineTypeName:  map['MachineTypeName'].toString()
+        );
+      }
+
+      List<Map<String,dynamic>> listMap = result as List<Map<String,dynamic>>;
+      listToReturn = listMap.map((Map<String,dynamic> map)=> parser(map)).toList();
+
+      _completer.complete(listToReturn);
+    });
+
+    return _completer.future;
+
   }
 }

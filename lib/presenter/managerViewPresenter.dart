@@ -1,4 +1,5 @@
 import 'package:techviz/model/dataEntry.dart';
+import 'package:techviz/model/slotMachine.dart';
 import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/model/taskType.dart';
 import 'package:techviz/repository/repository.dart';
@@ -88,11 +89,34 @@ class ManagerViewPresenter{
   }
 
   void loadSlotFloorSummary(){
-    Future.delayed(Duration(milliseconds: 500), (){
+    Repository().slotFloorRepository.slotFloorSummary().then((dynamic result) async {
+
+      List<SlotMachine> slotMachineList = result as List<SlotMachine>;
+
+      DataEntry slotMachineToDataEntry(SlotMachine slotMachine){
+
+        Map<String,dynamic> columns = Map<String,dynamic>();
+        columns['Column1'] = slotMachine.standID;
+        columns['Column2'] = slotMachine.machineStatusID;
+        columns['Column3'] = slotMachine.machineStatusDescription;
+        columns['Column4'] = slotMachine.machineTypeName;
+
+        return DataEntry(slotMachine.standID, columns);
+      }
+
+      Iterable<SlotMachine> activeGamesWhere = slotMachineList.where((SlotMachine sm)=> sm.machineStatusID == '2');
+      List<DataEntry> activeGamesList = activeGamesWhere != null ? activeGamesWhere.map<DataEntry>((SlotMachine sm)=> slotMachineToDataEntry(sm)).toList(): List<DataEntry>();
+
+      Iterable<SlotMachine> headCountWhere = slotMachineList.where((SlotMachine sm)=> sm.machineStatusID == '0');
+      List<DataEntry> headCountList = headCountWhere != null ? headCountWhere.map<DataEntry>((SlotMachine sm)=> slotMachineToDataEntry(sm)).toList(): List<DataEntry>();
+
+      Iterable<SlotMachine> reservedWhere = slotMachineList.where((SlotMachine sm)=> sm.machineStatusID == '1');
+      List<DataEntry> reservedList = reservedWhere != null ? reservedWhere.map<DataEntry>((SlotMachine sm)=> slotMachineToDataEntry(sm)).toList(): List<DataEntry>();
+
       List<DataEntryGroup> group = List<DataEntryGroup>();
-      group.add(DataEntryGroup('Active Games', List<DataEntry>()));
-      group.add(DataEntryGroup('Head Count', List<DataEntry>()));
-      group.add(DataEntryGroup('Reserved', List<DataEntry>()));
+      group.add(DataEntryGroup('Active Games', activeGamesList));
+      group.add(DataEntryGroup('Head Count', headCountList));
+      group.add(DataEntryGroup('Reserved', reservedList));
       group.add(DataEntryGroup('Out of Service', List<DataEntry>()));
 
       _view.onSlotFloorSummaryLoaded(group);
