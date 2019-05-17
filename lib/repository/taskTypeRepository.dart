@@ -15,7 +15,7 @@ class TaskTypeRepository implements IRepository<TaskType>{
     String query = "SELECT * FROM TaskType";
     if(lookup!=null) {
       String taskTypeLookup = lookup.toString().replaceAll("TaskTypeLookup.", ""); //only  enum value
-      query += "WHERE LookupName = '$taskTypeLookup'";
+      query += " WHERE LookupName = '$taskTypeLookup'";
     }
 
     List<Map<String, dynamic>> queryResult = await localRepo.db.rawQuery(query);
