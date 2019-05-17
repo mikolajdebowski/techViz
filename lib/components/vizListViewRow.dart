@@ -4,19 +4,20 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:techviz/components/vizListView.dart';
 import 'package:techviz/model/dataEntry.dart';
 
-class VizListViewRow extends StatefulWidget{
+class VizListViewRow extends StatefulWidget {
   final DataEntry dataEntry;
   final SwipeAction onSwipeLeft;
   final SwipeAction onSwipeRight;
 
-  const VizListViewRow(this.dataEntry, {Key key, this.onSwipeLeft, this.onSwipeRight}) : super(key: key);
+  const VizListViewRow(this.dataEntry,
+      {Key key, this.onSwipeLeft, this.onSwipeRight})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() => VizListViewRowState();
-
 }
 
-class VizListViewRowState extends State<VizListViewRow>{
+class VizListViewRowState extends State<VizListViewRow> {
   final double rowHeight = 35.0;
   final GlobalKey<SlidableState> _slidableKey = GlobalKey<SlidableState>();
   bool isBeingPressed = false;
@@ -25,15 +26,22 @@ class VizListViewRowState extends State<VizListViewRow>{
   Widget build(BuildContext context) {
     Color bgRowColor = isBeingPressed ? Colors.lightBlue : Colors.transparent;
     BoxDecoration decoration = BoxDecoration(
-      color: bgRowColor, border: Border(bottom: BorderSide(color: Colors.black, width: 1.0))
-    );
+        color: bgRowColor,
+        border: Border(bottom: BorderSide(color: Colors.black, width: 1.0)));
 
     List<Widget> columns = List<Widget>();
-    widget.dataEntry.columns.forEach((String key, dynamic value){
+    widget.dataEntry.columns.forEach((String key, dynamic value) {
       String text = value.toString();
-      TextStyle style = TextStyle(fontSize: text.length>= 20? 10: 12);
+      TextStyle style = TextStyle(fontSize: text.length >= 20 ? 10 : 12);
 
-      columns.add(Expanded(child: Text(text, style: style, overflow: TextOverflow.ellipsis, softWrap: true, maxLines: 2,)));
+      columns.add(Expanded(
+          child: Text(
+        text,
+        style: style,
+        overflow: TextOverflow.ellipsis,
+        softWrap: true,
+        maxLines: 2,
+      )));
     });
 
     Row dataRow = Row(
@@ -41,17 +49,35 @@ class VizListViewRowState extends State<VizListViewRow>{
     );
 
     List<Widget> leftActions = List<Widget>();
-    if(widget.onSwipeLeft!=null){
-      leftActions.add(SwipeButton(text: widget.onSwipeLeft.title, onPressed: (){
-        widget.onSwipeLeft.callback(widget.dataEntry);
-      }));
+    if (widget.onSwipeLeft != null) {
+      SwipeButton swipeButton = SwipeButton(
+          text: widget.onSwipeLeft.title,
+          onPressed: () {
+            widget.onSwipeLeft.callback(widget.dataEntry);
+          });
+
+      Container swipeButtonContainer = Container(
+        decoration: decoration,
+        child: swipeButton,
+      );
+
+      leftActions.add(swipeButtonContainer);
     }
 
     List<Widget> rightActions = List<Widget>();
-    if(widget.onSwipeRight!=null){
-      rightActions.add(SwipeButton(text: widget.onSwipeRight.title, onPressed: (){
-        widget.onSwipeRight.callback(widget.dataEntry);
-      }));
+    if (widget.onSwipeRight != null) {
+      SwipeButton swipeButton = SwipeButton(
+          text: widget.onSwipeRight.title,
+          onPressed: () {
+            widget.onSwipeRight.callback(widget.dataEntry);
+          });
+
+      Container swipeButtonContainer = Container(
+        decoration: decoration,
+        child: swipeButton,
+      );
+
+      rightActions.add(swipeButtonContainer);
     }
 
     Slidable slidable = Slidable(
@@ -62,14 +88,14 @@ class VizListViewRowState extends State<VizListViewRow>{
       child: Container(
         decoration: decoration,
         height: rowHeight,
-        child:  dataRow,
+        child: dataRow,
       ),
       actions: rightActions,
       secondaryActions: leftActions,
       dismissal: SlidableDismissal(
         dismissThresholds: <SlideActionType, double>{
           SlideActionType.secondary: 1.0,
-          SlideActionType.primary:1.0
+          SlideActionType.primary: 1.0
         },
         child: SlidableDrawerDismissal(),
         onDismissed: (actionType) {},
@@ -78,31 +104,47 @@ class VizListViewRowState extends State<VizListViewRow>{
 
     GestureDetector gestureDetector = GestureDetector(
         child: slidable,
-        onTap: (){
+        onTap: () {
           SlidableState slidableState = _slidableKey.currentState;
           slidableState.close();
           setState(() {
             this.isBeingPressed = false;
           });
-        }
-    );
+        });
 
     Listener listener = Listener(
-        child: gestureDetector,
-        onPointerDown: (PointerDownEvent event){
-          setState(() {
-            this.isBeingPressed = true;
-          });
-        },
-        onPointerUp: (PointerUpEvent event){
-          setState(() {
-            this.isBeingPressed = false;
-          });
-        },
+      child: gestureDetector,
+      onPointerDown: (PointerDownEvent event) {
+        setState(() {
+          this.isBeingPressed = true;
+        });
+      },
+      onPointerUp: (PointerUpEvent event) {
+        setState(() {
+          this.isBeingPressed = false;
+        });
+      },
     );
-    return listener;
+
+    Stack stack = Stack(
+      children: <Widget>[
+        listener,
+        Opacity(
+          opacity: isBeingPressed ? 1.0 : 0.0,
+          child: Align(
+            child: Text('<'),
+            alignment: Alignment.centerLeft,
+          ),
+        ),
+        Opacity(
+            opacity: isBeingPressed ? 1.0 : 0.0,
+            child: Align(
+              child: Text('>'),
+              alignment: Alignment.centerRight,
+            ))
+      ],
+    );
+
+    return stack;
   }
-
-
-
 }
