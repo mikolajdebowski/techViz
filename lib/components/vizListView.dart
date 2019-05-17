@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:techviz/model/dataEntry.dart';
-import 'package:shimmer/shimmer.dart';
 
 typedef SwipeActionCallback = void Function(dynamic tag);
 
@@ -30,26 +29,6 @@ class VizListView extends StatefulWidget{
 class VizListViewState extends State<VizListView>{
   final SlidableController slidableController = new SlidableController();
   final double paddingValue = 5.0;
-  static const SizedBox spacer = SizedBox(width: 64);
-
-  SizedBox iconForSwipe(String text, ShimmerDirection direction) {
-    return SizedBox(
-        width: 64.0,
-        child: Shimmer.fromColors(
-            direction: direction,
-            baseColor: Color(0xFFAAAAAA),
-            highlightColor: Colors.white,
-            child: Text(
-                text,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 15.0,
-                    fontWeight:
-                    FontWeight.bold)
-            )
-        )
-    );
-  }
 
   BoxDecoration decoration = BoxDecoration(
       border: Border(bottom: BorderSide(color: Colors.black, width: 1.0))
@@ -72,27 +51,6 @@ class VizListViewState extends State<VizListView>{
       header.add(Expanded(child: Text(key.toString(),
         style: TextStyle(fontWeight: FontWeight.bold),)));
     });
-
-
-    //left
-
-    if(widget.onSwipeLeft!=null){
-      var left_swipe_ico = iconForSwipe(widget.onSwipeLeft.headerTitle, ShimmerDirection.rtl);
-      header.add(left_swipe_ico);
-    }
-    else{
-      header.add(spacer);
-    }
-
-
-    //right
-    if(widget.onSwipeRight!=null){
-      var right_swipe_ico = iconForSwipe(widget.onSwipeRight.headerTitle, ShimmerDirection.ltr);
-      header.insert(0, right_swipe_ico);
-    }
-    else{
-      header.insert(0, spacer);
-    }
 
 
     Row headerRow = Row(
@@ -126,9 +84,6 @@ class VizListViewState extends State<VizListView>{
 
       List<Widget> leftActions = List<Widget>();
       if(widget.onSwipeLeft!=null){
-
-        columns.add(spacer);
-
         leftActions.add(SwipeButton(text: widget.onSwipeLeft.title, onPressed: (){
           widget.onSwipeLeft.callback(row);
         }));
@@ -136,8 +91,6 @@ class VizListViewState extends State<VizListView>{
 
       List<Widget> rightActions = List<Widget>();
       if(widget.onSwipeRight!=null){
-        columns..insert(0, spacer);
-
         rightActions.add(SwipeButton(text: widget.onSwipeRight.title, onPressed: (){
           widget.onSwipeRight.callback(row);
         }));
@@ -146,7 +99,7 @@ class VizListViewState extends State<VizListView>{
       Slidable slidable = Slidable(
         key: _slidableKey,
         controller: slidableController,
-        delegate: SlidableDrawerDelegate(),
+        actionPane: SlidableStrechActionPane(),
         actionExtentRatio: 0.25,
         child:  Container(
           decoration: decoration,
@@ -154,7 +107,18 @@ class VizListViewState extends State<VizListView>{
           child:  gestureDetector,
         ),
         actions: rightActions,
-        secondaryActions: leftActions
+        secondaryActions: leftActions,
+        dismissal: SlidableDismissal(
+          dismissThresholds: <SlideActionType, double>{
+            SlideActionType.secondary: 1.0,
+            SlideActionType.primary:1.0
+          },
+          child: SlidableDrawerDismissal(),
+          onDismissed: (actionType) {
+
+          },
+        ),
+
       );
 
       return slidable;
@@ -163,9 +127,6 @@ class VizListViewState extends State<VizListView>{
     List<Widget> children = List<Widget>();
     children.add(headerRow);
     children.addAll(rowsList);
-
-
-
 
     return SingleChildScrollView(
         child: Padding(
