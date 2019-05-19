@@ -87,8 +87,15 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
   SwipeAction onOpenTasksSwipeRight(){ //action of the left of the view
     return SwipeAction('Re-assign to myself', '>>>',(dynamic entry){
 
-      GlobalKey dialogKey = GlobalKey();
       DataEntry dataEntry = (entry as DataEntry);
+      String userID = dataEntry.columns['User'].toString();
+
+      if(userID!=null && userID == Session().user.userID){
+        VizDialog.Alert(context, 'Re-assign task', 'This task is already assigned to you.');
+        return;
+      }
+
+      GlobalKey dialogKey = GlobalKey();
       VizDialogButton btnYes = VizDialogButton('Yes', (){
 
         _presenter.reassign(dataEntry.id, Session().user.userID).then((dynamic d){

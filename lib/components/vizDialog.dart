@@ -9,7 +9,6 @@ class VizDialog {
 
   static RoundedRectangleBorder defaultBorder = RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5.0)));
 
-  @deprecated
   static Future<bool> Alert(BuildContext context, String title, String message) {
     return showDialog<bool>(
         context: context,
