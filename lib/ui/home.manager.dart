@@ -7,7 +7,7 @@ import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/managerViewPresenter.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:techviz/ui/home.dart';
-import 'package:techviz/ui/reassignDialog.dart';
+import 'package:techviz/ui/reassignTask.dart';
 
 class HomeManager extends StatefulWidget {
   HomeManager(Key key) : super(key: key);
@@ -68,18 +68,19 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
     return SwipeAction('Re-assign to others', '<<<', (dynamic entry){
 
       DataEntry dataEntry = (entry as DataEntry);
+      String location = dataEntry.columns['Location'].toString();
 
-      showDialog<bool>(
-          context: context,
-          builder: (BuildContext context) {
-            return ReassignDialog(dataEntry.id);
-          }).then((bool isDone){
-            if(isDone!=null && isDone){
-              setState(() {
-                _openTasksLoading = true;
-              });
-              _presenter.loadOpenTasks();
-            }
+      ReassignTask reassignTaskView = ReassignTask(dataEntry.id, location);
+
+      Navigator.of(context).push<bool>(
+        MaterialPageRoute(builder: (context) => reassignTaskView),
+      ).then((bool isDone){
+        if(isDone!=null && isDone){
+            setState(() {
+              _openTasksLoading = true;
+            });
+            _presenter.loadOpenTasks();
+          }
       });
     });
   }
