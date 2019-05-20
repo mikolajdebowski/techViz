@@ -68,7 +68,9 @@ class VizListViewState extends State<VizListView>{
 
 
 class SwipeButton extends StatelessWidget{
-  SwipeButton({@required this.onPressed, @required this.text});
+  SwipeButton({@required this.onPressed, @required this.text, this.btnCol});
+
+  final Color btnCol;
   final GestureTapCallback onPressed;
   final String text;
 
@@ -77,8 +79,8 @@ class SwipeButton extends StatelessWidget{
     return Padding(
       padding: EdgeInsets.all(5),
       child: FlatButton(
-          color: const Color(0xFFEEEEEE),
-          splashColor: const Color(0xFFFFFFFF),
+          color: btnCol,
+          splashColor: Color(0xFFFFFFFF),
           child: Text(
             text,
             maxLines: 1,

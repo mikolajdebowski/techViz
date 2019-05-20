@@ -72,6 +72,7 @@ class VizListViewRowState extends State<VizListViewRow> {
     List<Widget> leftActions = List<Widget>();
     if (widget.onSwipeLeft != null) {
       SwipeButton swipeButton = SwipeButton(
+          btnCol: Color(0xFF96CF96),
           text: widget.onSwipeLeft.title,
           onPressed: () {
             widget.onSwipeLeft.callback(widget.dataEntry);
@@ -88,6 +89,7 @@ class VizListViewRowState extends State<VizListViewRow> {
     List<Widget> rightActions = List<Widget>();
     if (widget.onSwipeRight != null) {
       SwipeButton swipeButton = SwipeButton(
+          btnCol: Colors.white70,
           text: widget.onSwipeRight.title,
           onPressed: () {
             widget.onSwipeRight.callback(widget.dataEntry);
