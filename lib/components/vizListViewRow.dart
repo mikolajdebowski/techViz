@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:techviz/components/vizListView.dart';
+import 'package:techviz/components/vizShimmer.dart';
 import 'package:techviz/model/dataEntry.dart';
 
 class VizListViewRow extends StatefulWidget {
@@ -21,6 +22,26 @@ class VizListViewRowState extends State<VizListViewRow> {
   final double rowHeight = 35.0;
   final GlobalKey<SlidableState> _slidableKey = GlobalKey<SlidableState>();
   bool isBeingPressed = false;
+
+  Container createShimmer(String _txt, String _direction){
+    return Container(
+        child: Shimmer.fromColors(
+          direction: _direction,
+          baseColor: Colors.white,
+          highlightColor: Colors.grey,
+          child: Text(
+            _txt,
+            textAlign: TextAlign.left,
+            style: TextStyle(
+              fontSize: 25.0,
+              fontWeight:
+              FontWeight.bold,
+            ),
+          ),
+        )
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -130,16 +151,16 @@ class VizListViewRowState extends State<VizListViewRow> {
       children: <Widget>[
         listener,
         Opacity(
-          opacity: isBeingPressed ? 1.0 : 0.0,
+          opacity: (isBeingPressed && (widget.onSwipeLeft != null)) ? 1.0 : 0.0,
           child: Align(
-            child: Text('<'),
+            child: createShimmer('<', 'rtl'),
             alignment: Alignment.centerLeft,
           ),
         ),
         Opacity(
-            opacity: isBeingPressed ? 1.0 : 0.0,
+            opacity: (isBeingPressed && (widget.onSwipeRight != null)) ? 1.0 : 0.0,
             child: Align(
-              child: Text('>'),
+              child: createShimmer('>', 'ltr'),
               alignment: Alignment.centerRight,
             ))
       ],

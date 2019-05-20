@@ -18,8 +18,6 @@ class VizListView extends StatefulWidget{
   final SwipeAction onSwipeLeft;
   final SwipeAction onSwipeRight;
 
-
-
   const VizListView({Key key, this.data, this.onSwipeLeft, this.onSwipeRight}) : super(key: key);
 
   @override
@@ -48,7 +46,8 @@ class VizListViewState extends State<VizListView>{
       children: header,
     );
 
-    List<VizListViewRow> rowsList = widget.data.map((DataEntry row) => VizListViewRow(row, onSwipeLeft: widget.onSwipeLeft, onSwipeRight: widget.onSwipeRight)).toList();
+    List<VizListViewRow> rowsList = widget.data.map((DataEntry row) =>
+        VizListViewRow(row, onSwipeLeft: widget.onSwipeLeft, onSwipeRight: widget.onSwipeRight)).toList();
 
     List<Widget> children = List<Widget>();
     children.add(headerRow);
