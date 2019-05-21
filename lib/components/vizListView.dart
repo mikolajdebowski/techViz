@@ -36,8 +36,7 @@ class VizListViewState extends State<VizListView> {
     _scrollController.addListener(() {
       if (_scrollController.offset >= _scrollController.position.maxScrollExtent) {
         widget.onScroll(ScrollingStatus.ReachOnBottom);
-      }
-      else if (_scrollController.offset <= _scrollController.position.minScrollExtent) {
+      } else if (_scrollController.offset <= _scrollController.position.minScrollExtent) {
         widget.onScroll(ScrollingStatus.ReachOnTop);
       }
     });
@@ -54,10 +53,11 @@ class VizListViewState extends State<VizListView> {
     }
 
     List<Widget> header = List<Widget>();
-    widget.data.first.columns.forEach((String key, dynamic value) {
+    widget.data.first.columns.forEach((DataEntryCell dataCell) {
       header.add(Expanded(
           child: Text(
-        key.toString(),
+        dataCell.column.toString(),
+        textAlign: TextAlign.center,
         style: TextStyle(fontWeight: FontWeight.bold),
       )));
     });
@@ -113,8 +113,4 @@ class SwipeButton extends StatelessWidget {
   }
 }
 
-enum ScrollingStatus{
-  ReachOnTop,
-  ReachOnBottom,
-  IsScrolling
-}
+enum ScrollingStatus { ReachOnTop, ReachOnBottom, IsScrolling }

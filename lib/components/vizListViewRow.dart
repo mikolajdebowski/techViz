@@ -10,9 +10,7 @@ class VizListViewRow extends StatefulWidget {
   final SwipeAction onSwipeLeft;
   final SwipeAction onSwipeRight;
 
-  const VizListViewRow(this.dataEntry,
-      {Key key, this.onSwipeLeft, this.onSwipeRight})
-      : super(key: key);
+  const VizListViewRow(this.dataEntry, {Key key, this.onSwipeLeft, this.onSwipeRight}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => VizListViewRowState();
@@ -23,41 +21,39 @@ class VizListViewRowState extends State<VizListViewRow> {
   final GlobalKey<SlidableState> _slidableKey = GlobalKey<SlidableState>();
   bool isBeingPressed = false;
 
-  Container createShimmer(String _txt, String _direction){
+  Container createShimmer(String _txt, String _direction) {
     return Container(
         child: Shimmer.fromColors(
-          direction: _direction,
-          baseColor: Colors.white,
-          highlightColor: Colors.grey,
-          child: Text(
-            _txt,
-            textAlign: TextAlign.left,
-            style: TextStyle(
-              fontSize: 25.0,
-              fontWeight:
-              FontWeight.bold,
-            ),
-          ),
-        )
-    );
+      direction: _direction,
+      baseColor: Colors.white,
+      highlightColor: Colors.grey,
+      child: Text(
+        _txt,
+        textAlign: TextAlign.left,
+        style: TextStyle(
+          fontSize: 25.0,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    ));
   }
-
 
   @override
   Widget build(BuildContext context) {
     Color bgRowColor = isBeingPressed ? Colors.lightBlue : Colors.transparent;
-    BoxDecoration decoration = BoxDecoration(
-        color: bgRowColor,
-        border: Border(bottom: BorderSide(color: Colors.black, width: 1.0)));
+    BoxDecoration decoration = BoxDecoration(color: bgRowColor, border: Border(bottom: BorderSide(color: Colors.black, width: 1.0)));
 
     List<Widget> columns = List<Widget>();
-    widget.dataEntry.columns.forEach((String key, dynamic value) {
-      String text = value.toString();
+    widget.dataEntry.columns.forEach((DataEntryCell dataCell) {
+      String text = dataCell.toString();
       TextStyle style = TextStyle(fontSize: text.length >= 20 ? 10 : 12);
+
+      TextAlign align = dataCell.alignment == DataAlignment.left ? TextAlign.left : (dataCell.alignment == DataAlignment.right ? TextAlign.right : TextAlign.center);
 
       columns.add(Expanded(
           child: Text(
         text,
+        textAlign: align,
         style: style,
         overflow: TextOverflow.ellipsis,
         softWrap: true,
@@ -116,10 +112,7 @@ class VizListViewRowState extends State<VizListViewRow> {
       actions: rightActions,
       secondaryActions: leftActions,
       dismissal: SlidableDismissal(
-        dismissThresholds: <SlideActionType, double>{
-          SlideActionType.secondary: 1.0,
-          SlideActionType.primary: 1.0
-        },
+        dismissThresholds: <SlideActionType, double>{SlideActionType.secondary: 1.0, SlideActionType.primary: 1.0},
         child: SlidableDrawerDismissal(),
         onDismissed: (actionType) {},
       ),

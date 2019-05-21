@@ -79,7 +79,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
     return SwipeAction('Re-assign to others', '<<<', (dynamic entry){
 
       DataEntry dataEntry = (entry as DataEntry);
-      String location = dataEntry.columns['Location'].toString();
+      String location = dataEntry.columns.where((DataEntryCell dataCell)=> dataCell.column == 'Location').toString();
 
       ReassignTask reassignTaskView = ReassignTask(dataEntry.id, location);
 
@@ -101,7 +101,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
     return SwipeAction('Re-assign to myself', '>>>',(dynamic entry){
 
       DataEntry dataEntry = (entry as DataEntry);
-      String userID = dataEntry.columns['User'].toString();
+      String userID = dataEntry.columns.where((DataEntryCell dataCell)=> dataCell.column == 'User').toString();
 
       if(userID!=null && userID == Session().user.userID){
         VizDialog.Alert(context, 'Re-assign task', 'This task is already assigned to you.');

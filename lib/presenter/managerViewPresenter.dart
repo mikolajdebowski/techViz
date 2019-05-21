@@ -28,21 +28,21 @@ class ManagerViewPresenter{
 
         DataEntry mapToDataEntry(Map<String, dynamic> mapEntry){
 
-          Map<String,dynamic> columns = Map<String,dynamic>();
-          columns['Location'] = mapEntry['Location'];
+          List<DataEntryCell> columns = List<DataEntryCell>();
+          columns.add(DataEntryCell('Location', mapEntry['Location'], alignment: DataAlignment.center));
 
           Iterable<TaskType> listTypeWhere = listTypes.where((TaskType tt) => tt.taskTypeId == int.parse(mapEntry['TaskTypeID'].toString()));
           Iterable<TaskStatus> listStatusesWhere = listStatuses.where((TaskStatus ts) => ts.id == int.parse(mapEntry['TaskStatusID'].toString()));
 
-          columns['Type'] = listTypeWhere!=null && listTypeWhere.length>0 ? listTypeWhere.first : mapEntry['TaskTypeID'].toString();
-          columns['Status'] = listStatusesWhere!=null && listStatusesWhere.length>0 ? listStatusesWhere.first : mapEntry['TaskStatusID'].toString();
-          columns['User'] = mapEntry['UserID'];
+          columns.add(DataEntryCell('Type', listTypeWhere!=null && listTypeWhere.length>0 ? listTypeWhere.first : mapEntry['TaskTypeID'].toString()));
+          columns.add(DataEntryCell('Status', listStatusesWhere!=null && listStatusesWhere.length>0 ? listStatusesWhere.first : mapEntry['TaskStatusID'].toString(), alignment: DataAlignment.center));
+          columns.add(DataEntryCell('User', mapEntry['UserID'], alignment: DataAlignment.center));
 
           int elapsedTime = int.parse(mapEntry['ElapsedTime'].toString());
           int hours = (elapsedTime/60).floor();
           int mins = (elapsedTime%60).ceil();
 
-          columns['Time Taken'] = '${hours.toString().padLeft(2, '0')}:${mins.toString().padLeft(2, '0')}';
+          columns.add(DataEntryCell('Time Taken', '${hours.toString().padLeft(2, '0')}:${mins.toString().padLeft(2, '0')}', alignment: DataAlignment.center));
 
           return DataEntry(mapEntry['_ID'].toString(), columns);
         }
@@ -94,30 +94,31 @@ class ManagerViewPresenter{
       List<SlotMachine> slotMachineList = result as List<SlotMachine>;
 
       DataEntry slotMachineToDataEntryForActiveGamesOutOfService(SlotMachine slotMachine){
-        Map<String,dynamic> columns = Map<String,dynamic>();
-        columns['Location/StandID'] = slotMachine.standID;
-        columns['Game/Theme'] = slotMachine.machineTypeName;
-        columns['Denom'] = slotMachine.denom.toString();
-        columns['Status'] = slotMachine.machineStatusDescription;
+        List<DataEntryCell> columns = List<DataEntryCell>();
+
+        columns.add(DataEntryCell('Location/StandID', slotMachine.standID, alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Game/Theme', slotMachine.machineTypeName));
+        columns.add(DataEntryCell('Denom', slotMachine.denom.toString(), alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Status', slotMachine.machineStatusDescription, alignment: DataAlignment.center));
         return DataEntry(slotMachine.standID, columns);
       }
 
       DataEntry slotMachineToDataEntryForHeadCount(SlotMachine slotMachine){
-        Map<String,dynamic> columns = Map<String,dynamic>();
-        columns['Location/StandID'] = slotMachine.standID;
-        columns['Game/Theme'] = slotMachine.machineTypeName;
-        columns['Denom'] = slotMachine.denom.toString();
-        columns['PlayerID'] = '<MISSING>';
+        List<DataEntryCell> columns = List<DataEntryCell>();
+        columns.add(DataEntryCell('Location/StandID', slotMachine.standID, alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Game/Theme', slotMachine.machineTypeName));
+        columns.add(DataEntryCell('Denom', slotMachine.denom.toString(), alignment: DataAlignment.center));
+        columns.add(DataEntryCell('PlayerID', '<MISSING>', alignment: DataAlignment.center));
         return DataEntry(slotMachine.standID, columns);
       }
 
       DataEntry slotMachineToDataEntryForReserved(SlotMachine slotMachine){
-        Map<String,dynamic> columns = Map<String,dynamic>();
-        columns['Location/StandID'] = slotMachine.standID;
-        columns['Game/Theme'] = slotMachine.machineTypeName;
-        columns['Denom'] = slotMachine.denom.toString();
-        columns['PlayerID'] = '<MISSING>';
-        columns['Duration'] = '<MISSING>';
+        List<DataEntryCell> columns = List<DataEntryCell>();
+        columns.add(DataEntryCell('Location/StandID', slotMachine.standID, alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Game/Theme', slotMachine.machineTypeName));
+        columns.add(DataEntryCell('Denom', slotMachine.denom.toString(), alignment: DataAlignment.center));
+        columns.add(DataEntryCell('PlayerID', '<MISSING>', alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Duration', '<MISSING>', alignment: DataAlignment.center));
         return DataEntry(slotMachine.standID, columns);
       }
 
