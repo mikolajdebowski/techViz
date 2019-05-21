@@ -40,6 +40,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
 
   @override
   Widget build(BuildContext context) {
+
     return Container(
       constraints: BoxConstraints.expand(),
       decoration: BoxDecoration(gradient: LinearGradient(colors: [Color(0xFF586676), Color(0xFF8B9EA7)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
@@ -48,13 +49,23 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            VizSummary('OPEN TASKS', _openTasksList, onSwipeLeft: onOpenTasksSwipeLeft(), onSwipeRight: onOpenTasksSwipeRight(), onMetricTap: onOpenTasksMetricTap, isProcessing:  _openTasksLoading),
-            VizSummary('TEAM AVAILABILITY', _teamAvailabilityList,onSwipeLeft: onTeamAvailiblitySwipeLeft()),
-            VizSummary('SLOT FLOOR', _slotFloorList)
+            VizSummary('OPEN TASKS', _openTasksList, onSwipeLeft: onOpenTasksSwipeLeft(), onSwipeRight: onOpenTasksSwipeRight(), onMetricTap: onOpenTasksMetricTap, isProcessing:  _openTasksLoading, onScroll: _onChildScroll),
+            VizSummary('TEAM AVAILABILITY', _teamAvailabilityList,onSwipeLeft: onTeamAvailiblitySwipeLeft(), onScroll: _onChildScroll),
+            VizSummary('SLOT FLOOR', _slotFloorList, onScroll: _onChildScroll)
           ],
         ),
       ),
     );
+  }
+
+  void _onChildScroll(ScrollingStatus scroll){
+    int maxOffset = 3;
+    if(scroll==ScrollingStatus.ReachOnTop && _mainController.offset >= maxOffset){
+      _mainController.jumpTo(_mainController.offset-maxOffset);
+    }
+    else if(scroll==ScrollingStatus.ReachOnBottom && _mainController.offset <= _mainController.position.maxScrollExtent-maxOffset) {
+      _mainController.jumpTo(_mainController.offset+maxOffset);
+    }
   }
 
   void onOpenTasksMetricTap(){
@@ -78,6 +89,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
         if(isDone!=null && isDone){
             setState(() {
               _openTasksLoading = true;
+              _openTasksList = null;
             });
             _presenter.loadOpenTasks();
           }
@@ -104,6 +116,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
           Navigator.of(dialogKey.currentContext).pop(true);
           setState(() {
             _openTasksLoading = true;
+            _openTasksList = null;
           });
           _presenter.loadOpenTasks();
 

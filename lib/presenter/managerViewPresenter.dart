@@ -93,31 +93,51 @@ class ManagerViewPresenter{
 
       List<SlotMachine> slotMachineList = result as List<SlotMachine>;
 
-      DataEntry slotMachineToDataEntry(SlotMachine slotMachine){
-
+      DataEntry slotMachineToDataEntryForActiveGamesOutOfService(SlotMachine slotMachine){
         Map<String,dynamic> columns = Map<String,dynamic>();
-        columns['Column1'] = slotMachine.standID;
-        columns['Column2'] = slotMachine.machineStatusID;
-        columns['Column3'] = slotMachine.machineStatusDescription;
-        columns['Column4'] = slotMachine.machineTypeName;
-
+        columns['Location/StandID'] = slotMachine.standID;
+        columns['Game/Theme'] = slotMachine.machineTypeName;
+        columns['Denom'] = slotMachine.denom.toString();
+        columns['Status'] = slotMachine.machineStatusDescription;
         return DataEntry(slotMachine.standID, columns);
       }
 
-      Iterable<SlotMachine> activeGamesWhere = slotMachineList.where((SlotMachine sm)=> sm.machineStatusID == '2');
-      List<DataEntry> activeGamesList = activeGamesWhere != null ? activeGamesWhere.map<DataEntry>((SlotMachine sm)=> slotMachineToDataEntry(sm)).toList(): List<DataEntry>();
+      DataEntry slotMachineToDataEntryForHeadCount(SlotMachine slotMachine){
+        Map<String,dynamic> columns = Map<String,dynamic>();
+        columns['Location/StandID'] = slotMachine.standID;
+        columns['Game/Theme'] = slotMachine.machineTypeName;
+        columns['Denom'] = slotMachine.denom.toString();
+        columns['PlayerID'] = '<MISSING>';
+        return DataEntry(slotMachine.standID, columns);
+      }
 
-      Iterable<SlotMachine> headCountWhere = slotMachineList.where((SlotMachine sm)=> sm.machineStatusID == '0');
-      List<DataEntry> headCountList = headCountWhere != null ? headCountWhere.map<DataEntry>((SlotMachine sm)=> slotMachineToDataEntry(sm)).toList(): List<DataEntry>();
+      DataEntry slotMachineToDataEntryForReserved(SlotMachine slotMachine){
+        Map<String,dynamic> columns = Map<String,dynamic>();
+        columns['Location/StandID'] = slotMachine.standID;
+        columns['Game/Theme'] = slotMachine.machineTypeName;
+        columns['Denom'] = slotMachine.denom.toString();
+        columns['PlayerID'] = '<MISSING>';
+        columns['Duration'] = '<MISSING>';
+        return DataEntry(slotMachine.standID, columns);
+      }
+
+      Iterable<SlotMachine> activeGamesWhere = slotMachineList.where((SlotMachine sm)=> sm.machineStatusID != '0');
+      List<DataEntry> activeGamesList = activeGamesWhere != null ? activeGamesWhere.map<DataEntry>((SlotMachine sm)=> slotMachineToDataEntryForActiveGamesOutOfService(sm)).toList(): List<DataEntry>();
+
+      Iterable<SlotMachine> headCountWhere = slotMachineList.where((SlotMachine sm)=> sm.machineStatusID == '2');
+      List<DataEntry> headCountList = headCountWhere != null ? headCountWhere.map<DataEntry>((SlotMachine sm)=> slotMachineToDataEntryForHeadCount(sm)).toList(): List<DataEntry>();
 
       Iterable<SlotMachine> reservedWhere = slotMachineList.where((SlotMachine sm)=> sm.machineStatusID == '1');
-      List<DataEntry> reservedList = reservedWhere != null ? reservedWhere.map<DataEntry>((SlotMachine sm)=> slotMachineToDataEntry(sm)).toList(): List<DataEntry>();
+      List<DataEntry> reservedList = reservedWhere != null ? reservedWhere.map<DataEntry>((SlotMachine sm)=> slotMachineToDataEntryForReserved(sm)).toList(): List<DataEntry>();
+
+      Iterable<SlotMachine> outOfServiceWhere = slotMachineList.where((SlotMachine sm)=> sm.machineStatusID == '0');
+      List<DataEntry> outOfServiceList = outOfServiceWhere != null ? outOfServiceWhere.map<DataEntry>((SlotMachine sm)=> slotMachineToDataEntryForActiveGamesOutOfService(sm)).toList(): List<DataEntry>();
 
       List<DataEntryGroup> group = List<DataEntryGroup>();
       group.add(DataEntryGroup('Active Games', activeGamesList));
       group.add(DataEntryGroup('Head Count', headCountList));
       group.add(DataEntryGroup('Reserved', reservedList));
-      group.add(DataEntryGroup('Out of Service', List<DataEntry>()));
+      group.add(DataEntryGroup('Out of Service', outOfServiceList));
 
       _view.onSlotFloorSummaryLoaded(group);
     });

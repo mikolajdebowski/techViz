@@ -10,8 +10,9 @@ class VizSummary extends StatefulWidget {
   final SwipeAction onSwipeRight;
   final Function onMetricTap;
   final bool isProcessing;
+  final OnScroll onScroll;
 
-  VizSummary(this.title, this.data, {Key key, this.onSwipeLeft, this.onSwipeRight, this.onMetricTap, this.isProcessing = false}) : super(key: key);
+  VizSummary(this.title, this.data, {Key key, this.onSwipeLeft, this.onSwipeRight, this.onMetricTap, this.isProcessing = false, this.onScroll}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => VizSummaryState();
@@ -74,8 +75,19 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
           child: header,
         );
       } else {
-        Iterable<DataEntryGroup> where = widget.data.where((DataEntryGroup group)=> group.headerTitle == _selectedEntryKey);
-        List<DataEntry> filtered = where.first.entries;
+
+        Widget child;
+
+        if(widget.isProcessing){
+          child = Center(
+            child: Padding(padding: EdgeInsets.all(5.0), child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)))
+          );
+        }
+        else {
+          Iterable<DataEntryGroup> where = widget.data.where((DataEntryGroup group)=> group.headerTitle == _selectedEntryKey);
+          List<DataEntry> filtered = where.first.entries;
+          child = VizListView(data: filtered, onSwipeRight: widget.onSwipeRight, onSwipeLeft: widget.onSwipeLeft, onScroll: widget.onScroll);
+        }
 
         container = Container(
           key: Key('container'),
@@ -83,8 +95,8 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
-              header,
-              VizListView(data: filtered, onSwipeRight: widget.onSwipeRight, onSwipeLeft: widget.onSwipeLeft )
+              header,child
+
             ],
           ),
         );
