@@ -71,8 +71,10 @@ class VizListViewState extends State<VizListView> {
     List<VizListViewRow> rowsList =
         widget.data.map((DataEntry row) => VizListViewRow(row, onSwipeLeft: widget.onSwipeLeft, onSwipeRight: widget.onSwipeRight)).toList();
 
+    double maxHeight = widget.data.length == 0 ? VizListViewRow.rowHeight : (widget.data.length < 10 ? widget.data.length * VizListViewRow.rowHeight : VizListViewRow.rowHeight*10);
+
     Container listViewContainer = Container(
-      constraints: BoxConstraints(minHeight: 20, maxHeight: 300),
+      constraints: BoxConstraints(maxHeight: maxHeight),
       child: ListView(
         controller: _scrollController,
         children: rowsList,

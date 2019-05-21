@@ -6,6 +6,7 @@ import 'package:techviz/components/vizShimmer.dart';
 import 'package:techviz/model/dataEntry.dart';
 
 class VizListViewRow extends StatefulWidget {
+  static final double rowHeight = 35.0;
   final DataEntry dataEntry;
   final SwipeAction onSwipeLeft;
   final SwipeAction onSwipeRight;
@@ -17,7 +18,7 @@ class VizListViewRow extends StatefulWidget {
 }
 
 class VizListViewRowState extends State<VizListViewRow> {
-  final double rowHeight = 35.0;
+
   final GlobalKey<SlidableState> _slidableKey = GlobalKey<SlidableState>();
   bool isBeingPressed = false;
 
@@ -106,7 +107,7 @@ class VizListViewRowState extends State<VizListViewRow> {
       actionExtentRatio: 0.25,
       child: Container(
         decoration: decoration,
-        height: rowHeight,
+        height: VizListViewRow.rowHeight,
         child: dataRow,
       ),
       actions: rightActions,
