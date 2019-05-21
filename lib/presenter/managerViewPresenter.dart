@@ -108,7 +108,7 @@ class ManagerViewPresenter{
         columns.add(DataEntryCell('Location/StandID', slotMachine.standID, alignment: DataAlignment.center));
         columns.add(DataEntryCell('Game/Theme', slotMachine.machineTypeName));
         columns.add(DataEntryCell('Denom', slotMachine.denom.toString(), alignment: DataAlignment.center));
-        columns.add(DataEntryCell('PlayerID', '<MISSING>', alignment: DataAlignment.center));
+        columns.add(DataEntryCell('PlayerID', slotMachine.playerID, alignment: DataAlignment.center));
         return DataEntry(slotMachine.standID, columns);
       }
 
@@ -117,8 +117,8 @@ class ManagerViewPresenter{
         columns.add(DataEntryCell('Location/StandID', slotMachine.standID, alignment: DataAlignment.center));
         columns.add(DataEntryCell('Game/Theme', slotMachine.machineTypeName));
         columns.add(DataEntryCell('Denom', slotMachine.denom.toString(), alignment: DataAlignment.center));
-        columns.add(DataEntryCell('PlayerID', '<MISSING>', alignment: DataAlignment.center));
-        columns.add(DataEntryCell('Duration', '<MISSING>', alignment: DataAlignment.center));
+        columns.add(DataEntryCell('PlayerID', slotMachine.playerID, alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Duration', slotMachine.reservationTime, alignment: DataAlignment.center));
         return DataEntry(slotMachine.standID, columns);
       }
 

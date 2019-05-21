@@ -58,7 +58,7 @@ class VizListViewState extends State<VizListView> {
           child: Text(
         dataCell.column.toString(),
         textAlign: TextAlign.center,
-        style: TextStyle(fontWeight: FontWeight.bold),
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
       )));
     });
 
