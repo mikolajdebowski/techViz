@@ -8,17 +8,16 @@ typedef void OnCustomBackButtonActionTapped();
 
 class ActionBar extends StatefulWidget implements PreferredSizeWidget {
   final OnCustomBackButtonActionTapped onCustomBackButtonActionTapped;
-
-  ActionBar({this.title, this.leadingWidget, this.tailWidget, this.centralWidgets, this.titleColor = const Color(0xFF0073C1), this.isRoot = false, this.onCustomBackButtonActionTapped});
-
   final double barHeight = Platform.isIOS ? 60.0 : 65.0;
   final Widget tailWidget;
   final Widget leadingWidget;
   final List<Widget> centralWidgets;
-  final bool isRoot;
 
   final String title;
   final Color titleColor;
+
+  ActionBar({this.title, this.leadingWidget, this.tailWidget, this.centralWidgets, this.titleColor = const Color(0xFF0073C1), this.onCustomBackButtonActionTapped});
+
 
   @override
   ActionBarState createState() => ActionBarState();
@@ -29,22 +28,18 @@ class ActionBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class ActionBarState extends State<ActionBar> {
-  void goBack() {
-    Navigator.maybePop(context);
-  }
-
   @override
   Widget build(BuildContext context) {
     List<Widget> children = List<Widget>();
     SizedBox leadingContainer;
 
     //the backbutton when the view can pop
-    if (widget.isRoot == false) {
+    if (Navigator.of(context).canPop()) {
       VizButton backBtn = VizButton(title: 'Back', onTap: (){
         if(widget.onCustomBackButtonActionTapped!=null){
           widget.onCustomBackButtonActionTapped();
         }
-        goBack();
+        Navigator.maybePop(context);
       });
 
       leadingContainer = SizedBox(width: 100.0, child: Flex(direction: Axis.horizontal, children: <Widget>[backBtn]));

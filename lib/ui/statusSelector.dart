@@ -95,7 +95,7 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
 
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: ActionBar(title: 'My Status', titleColor: Colors.blue, isRoot: false, tailWidget: okBtn),
+      appBar: ActionBar(title: 'My Status', titleColor: Colors.blue, tailWidget: okBtn),
       body: SafeArea(child: container),
     );
   }

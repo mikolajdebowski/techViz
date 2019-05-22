@@ -7,7 +7,7 @@ import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/managerViewPresenter.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:techviz/ui/home.dart';
-import 'package:techviz/ui/reassignDialog.dart';
+import 'package:techviz/ui/reassignTask.dart';
 
 class HomeManager extends StatefulWidget {
   HomeManager(Key key) : super(key: key);
@@ -40,6 +40,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
 
   @override
   Widget build(BuildContext context) {
+
     return Container(
       constraints: BoxConstraints.expand(),
       decoration: BoxDecoration(gradient: LinearGradient(colors: [Color(0xFF586676), Color(0xFF8B9EA7)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
@@ -48,13 +49,23 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            VizSummary('OPEN TASKS', _openTasksList, onSwipeLeft: onOpenTasksSwipeLeft(), onSwipeRight: onOpenTasksSwipeRight(), onMetricTap: onOpenTasksMetricTap, isProcessing:  _openTasksLoading),
-            VizSummary('TEAM AVAILABILITY', _teamAvailabilityList,onSwipeLeft: onTeamAvailiblitySwipeLeft()),
-            VizSummary('SLOT FLOOR', _slotFloorList)
+            VizSummary('OPEN TASKS', _openTasksList, onSwipeLeft: onOpenTasksSwipeLeft(), onSwipeRight: onOpenTasksSwipeRight(), onMetricTap: onOpenTasksMetricTap, isProcessing:  _openTasksLoading, onScroll: _onChildScroll),
+            VizSummary('TEAM AVAILABILITY', _teamAvailabilityList,onSwipeLeft: onTeamAvailiblitySwipeLeft(), onScroll: _onChildScroll),
+            VizSummary('SLOT FLOOR', _slotFloorList, onScroll: _onChildScroll)
           ],
         ),
       ),
     );
+  }
+
+  void _onChildScroll(ScrollingStatus scroll){
+    int maxOffset = 3;
+    if(scroll==ScrollingStatus.ReachOnTop && _mainController.offset >= maxOffset){
+      _mainController.jumpTo(_mainController.offset-maxOffset);
+    }
+    else if(scroll==ScrollingStatus.ReachOnBottom && _mainController.offset <= _mainController.position.maxScrollExtent-maxOffset) {
+      _mainController.jumpTo(_mainController.offset+maxOffset);
+    }
   }
 
   void onOpenTasksMetricTap(){
@@ -68,18 +79,20 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
     return SwipeAction('Re-assign to others', '<<<', (dynamic entry){
 
       DataEntry dataEntry = (entry as DataEntry);
+      String location = dataEntry.columns.where((DataEntryCell dataCell)=> dataCell.column == 'Location').toString();
 
-      showDialog<bool>(
-          context: context,
-          builder: (BuildContext context) {
-            return ReassignDialog(dataEntry.id);
-          }).then((bool isDone){
-            if(isDone!=null && isDone){
-              setState(() {
-                _openTasksLoading = true;
-              });
-              _presenter.loadOpenTasks();
-            }
+      ReassignTask reassignTaskView = ReassignTask(dataEntry.id, location);
+
+      Navigator.of(context).push<bool>(
+        MaterialPageRoute(builder: (context) => reassignTaskView),
+      ).then((bool isDone){
+        if(isDone!=null && isDone){
+            setState(() {
+              _openTasksLoading = true;
+              _openTasksList = null;
+            });
+            _presenter.loadOpenTasks();
+          }
       });
     });
   }
@@ -87,8 +100,15 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
   SwipeAction onOpenTasksSwipeRight(){ //action of the left of the view
     return SwipeAction('Re-assign to myself', '>>>',(dynamic entry){
 
-      GlobalKey dialogKey = GlobalKey();
       DataEntry dataEntry = (entry as DataEntry);
+      String userID = dataEntry.columns.where((DataEntryCell dataCell)=> dataCell.column == 'User').toString();
+
+      if(userID!=null && userID == Session().user.userID){
+        VizDialog.Alert(context, 'Re-assign task', 'This task is already assigned to you.');
+        return;
+      }
+
+      GlobalKey dialogKey = GlobalKey();
       VizDialogButton btnYes = VizDialogButton('Yes', (){
 
         _presenter.reassign(dataEntry.id, Session().user.userID).then((dynamic d){
@@ -96,6 +116,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
           Navigator.of(dialogKey.currentContext).pop(true);
           setState(() {
             _openTasksLoading = true;
+            _openTasksList = null;
           });
           _presenter.loadOpenTasks();
 

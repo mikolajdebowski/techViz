@@ -28,21 +28,21 @@ class ManagerViewPresenter{
 
         DataEntry mapToDataEntry(Map<String, dynamic> mapEntry){
 
-          Map<String,dynamic> columns = Map<String,dynamic>();
-          columns['Location'] = mapEntry['Location'];
+          List<DataEntryCell> columns = List<DataEntryCell>();
+          columns.add(DataEntryCell('Location', mapEntry['Location'], alignment: DataAlignment.center));
 
           Iterable<TaskType> listTypeWhere = listTypes.where((TaskType tt) => tt.taskTypeId == int.parse(mapEntry['TaskTypeID'].toString()));
           Iterable<TaskStatus> listStatusesWhere = listStatuses.where((TaskStatus ts) => ts.id == int.parse(mapEntry['TaskStatusID'].toString()));
 
-          columns['Type'] = listTypeWhere!=null && listTypeWhere.length>0 ? listTypeWhere.first : mapEntry['TaskTypeID'].toString();
-          columns['Status'] = listStatusesWhere!=null && listStatusesWhere.length>0 ? listStatusesWhere.first : mapEntry['TaskStatusID'].toString();
-          columns['User'] = mapEntry['UserID'];
+          columns.add(DataEntryCell('Type', listTypeWhere!=null && listTypeWhere.length>0 ? listTypeWhere.first : mapEntry['TaskTypeID'].toString()));
+          columns.add(DataEntryCell('Status', listStatusesWhere!=null && listStatusesWhere.length>0 ? listStatusesWhere.first : mapEntry['TaskStatusID'].toString(), alignment: DataAlignment.center));
+          columns.add(DataEntryCell('User', mapEntry['UserID'], alignment: DataAlignment.center));
 
           int elapsedTime = int.parse(mapEntry['ElapsedTime'].toString());
           int hours = (elapsedTime/60).floor();
           int mins = (elapsedTime%60).ceil();
 
-          columns['Time Taken'] = '${hours.toString().padLeft(2, '0')}:${mins.toString().padLeft(2, '0')}';
+          columns.add(DataEntryCell('Time Taken', '${hours.toString().padLeft(2, '0')}:${mins.toString().padLeft(2, '0')}', alignment: DataAlignment.center));
 
           return DataEntry(mapEntry['_ID'].toString(), columns);
         }
@@ -93,31 +93,52 @@ class ManagerViewPresenter{
 
       List<SlotMachine> slotMachineList = result as List<SlotMachine>;
 
-      DataEntry slotMachineToDataEntry(SlotMachine slotMachine){
+      DataEntry slotMachineToDataEntryForActiveGamesOutOfService(SlotMachine slotMachine){
+        List<DataEntryCell> columns = List<DataEntryCell>();
 
-        Map<String,dynamic> columns = Map<String,dynamic>();
-        columns['Column1'] = slotMachine.standID;
-        columns['Column2'] = slotMachine.machineStatusID;
-        columns['Column3'] = slotMachine.machineStatusDescription;
-        columns['Column4'] = slotMachine.machineTypeName;
-
+        columns.add(DataEntryCell('Location/StandID', slotMachine.standID, alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Game/Theme', slotMachine.machineTypeName));
+        columns.add(DataEntryCell('Denom', slotMachine.denom.toString(), alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Status', slotMachine.machineStatusDescription, alignment: DataAlignment.center));
         return DataEntry(slotMachine.standID, columns);
       }
 
-      Iterable<SlotMachine> activeGamesWhere = slotMachineList.where((SlotMachine sm)=> sm.machineStatusID == '2');
-      List<DataEntry> activeGamesList = activeGamesWhere != null ? activeGamesWhere.map<DataEntry>((SlotMachine sm)=> slotMachineToDataEntry(sm)).toList(): List<DataEntry>();
+      DataEntry slotMachineToDataEntryForHeadCount(SlotMachine slotMachine){
+        List<DataEntryCell> columns = List<DataEntryCell>();
+        columns.add(DataEntryCell('Location/StandID', slotMachine.standID, alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Game/Theme', slotMachine.machineTypeName));
+        columns.add(DataEntryCell('Denom', slotMachine.denom.toString(), alignment: DataAlignment.center));
+        columns.add(DataEntryCell('PlayerID', slotMachine.playerID, alignment: DataAlignment.center));
+        return DataEntry(slotMachine.standID, columns);
+      }
 
-      Iterable<SlotMachine> headCountWhere = slotMachineList.where((SlotMachine sm)=> sm.machineStatusID == '0');
-      List<DataEntry> headCountList = headCountWhere != null ? headCountWhere.map<DataEntry>((SlotMachine sm)=> slotMachineToDataEntry(sm)).toList(): List<DataEntry>();
+      DataEntry slotMachineToDataEntryForReserved(SlotMachine slotMachine){
+        List<DataEntryCell> columns = List<DataEntryCell>();
+        columns.add(DataEntryCell('Location/StandID', slotMachine.standID, alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Game/Theme', slotMachine.machineTypeName));
+        columns.add(DataEntryCell('Denom', slotMachine.denom.toString(), alignment: DataAlignment.center));
+        columns.add(DataEntryCell('PlayerID', slotMachine.playerID, alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Duration', slotMachine.reservationTime, alignment: DataAlignment.center));
+        return DataEntry(slotMachine.standID, columns);
+      }
+
+      Iterable<SlotMachine> activeGamesWhere = slotMachineList.where((SlotMachine sm)=> sm.machineStatusID != '0');
+      List<DataEntry> activeGamesList = activeGamesWhere != null ? activeGamesWhere.map<DataEntry>((SlotMachine sm)=> slotMachineToDataEntryForActiveGamesOutOfService(sm)).toList(): List<DataEntry>();
+
+      Iterable<SlotMachine> headCountWhere = slotMachineList.where((SlotMachine sm)=> sm.machineStatusID == '2');
+      List<DataEntry> headCountList = headCountWhere != null ? headCountWhere.map<DataEntry>((SlotMachine sm)=> slotMachineToDataEntryForHeadCount(sm)).toList(): List<DataEntry>();
 
       Iterable<SlotMachine> reservedWhere = slotMachineList.where((SlotMachine sm)=> sm.machineStatusID == '1');
-      List<DataEntry> reservedList = reservedWhere != null ? reservedWhere.map<DataEntry>((SlotMachine sm)=> slotMachineToDataEntry(sm)).toList(): List<DataEntry>();
+      List<DataEntry> reservedList = reservedWhere != null ? reservedWhere.map<DataEntry>((SlotMachine sm)=> slotMachineToDataEntryForReserved(sm)).toList(): List<DataEntry>();
+
+      Iterable<SlotMachine> outOfServiceWhere = slotMachineList.where((SlotMachine sm)=> sm.machineStatusID == '0');
+      List<DataEntry> outOfServiceList = outOfServiceWhere != null ? outOfServiceWhere.map<DataEntry>((SlotMachine sm)=> slotMachineToDataEntryForActiveGamesOutOfService(sm)).toList(): List<DataEntry>();
 
       List<DataEntryGroup> group = List<DataEntryGroup>();
       group.add(DataEntryGroup('Active Games', activeGamesList));
       group.add(DataEntryGroup('Head Count', headCountList));
       group.add(DataEntryGroup('Reserved', reservedList));
-      group.add(DataEntryGroup('Out of Service', List<DataEntry>()));
+      group.add(DataEntryGroup('Out of Service', outOfServiceList));
 
       _view.onSlotFloorSummaryLoaded(group);
     });

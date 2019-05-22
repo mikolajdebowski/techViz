@@ -115,7 +115,9 @@ class SlotFloorRepository implements IRepository<SlotMachine> {
           denom: double.parse( map['Denom'].toString()),
           machineStatusID:  map['StatusID'].toString(),
           machineStatusDescription: map['StatusDescription'].toString(),
-          machineTypeName:  map['MachineTypeName'].toString()
+          machineTypeName:  map['MachineTypeName'].toString(),
+          reservationTime: map['ReservationTime'].toString(),
+          playerID: map['PlayerID'].toString(),
         );
       }
 

@@ -75,7 +75,7 @@ class VizSelectorState extends State<VizSelector> {
 
     return Scaffold(
         backgroundColor: Colors.black,
-        appBar: ActionBar(title: widget.title, titleColor: Colors.blue, isRoot: canPop == false, leadingWidget: leading, tailWidget: tailing),
+        appBar: ActionBar(title: widget.title, titleColor: Colors.blue, leadingWidget: leading, tailWidget: tailing),
         body: Container(
           decoration: defaultBgDeco,
           constraints: BoxConstraints.expand(),

@@ -4,8 +4,9 @@ import 'package:techviz/components/vizListViewRow.dart';
 import 'package:techviz/model/dataEntry.dart';
 
 typedef SwipeActionCallback = void Function(dynamic tag);
+typedef OnScroll = void Function(ScrollingStatus scroll);
 
-class SwipeAction{
+class SwipeAction {
   final String headerTitle;
   final String title;
   final SwipeActionCallback callback;
@@ -13,61 +14,82 @@ class SwipeAction{
   SwipeAction(this.title, this.headerTitle, this.callback);
 }
 
-class VizListView extends StatefulWidget{
+class VizListView extends StatefulWidget {
   final List<DataEntry> data;
   final SwipeAction onSwipeLeft;
   final SwipeAction onSwipeRight;
+  final OnScroll onScroll;
 
-  const VizListView({Key key, this.data, this.onSwipeLeft, this.onSwipeRight}) : super(key: key);
+  const VizListView({Key key, this.data, this.onSwipeLeft, this.onSwipeRight, this.onScroll}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => VizListViewState();
 }
 
-class VizListViewState extends State<VizListView>{
+class VizListViewState extends State<VizListView> {
   final double paddingValue = 5.0;
+  ScrollController _scrollController;
+
+  @override
+  void initState() {
+    _scrollController = ScrollController();
+    _scrollController.addListener(() {
+      if (_scrollController.offset >= _scrollController.position.maxScrollExtent) {
+        widget.onScroll(ScrollingStatus.ReachOnBottom);
+      } else if (_scrollController.offset <= _scrollController.position.minScrollExtent) {
+        widget.onScroll(ScrollingStatus.ReachOnTop);
+      }
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    if(widget.data.length==0){
+    if (widget.data.length == 0) {
       return Padding(
-        padding: EdgeInsets.only(top: 10, bottom: 10),
+        padding: EdgeInsets.only(top: paddingValue, bottom: paddingValue),
         child: Text('No data to show'),
       );
     }
 
     List<Widget> header = List<Widget>();
-    widget.data.first.columns.forEach((String key, dynamic value){
-      header.add(Expanded(child: Text(key.toString(),
-        style: TextStyle(fontWeight: FontWeight.bold),)));
+    widget.data.first.columns.forEach((DataEntryCell dataCell) {
+      header.add(Expanded(
+          child: Text(
+        dataCell.column.toString(),
+        textAlign: TextAlign.center,
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+      )));
     });
 
+    //HEADER
     Row headerRow = Row(
       children: header,
     );
 
-    List<VizListViewRow> rowsList = widget.data.map((DataEntry row) =>
-        VizListViewRow(row, onSwipeLeft: widget.onSwipeLeft, onSwipeRight: widget.onSwipeRight)).toList();
+    //LISTVIEW
+    List<VizListViewRow> rowsList =
+        widget.data.map((DataEntry row) => VizListViewRow(row, onSwipeLeft: widget.onSwipeLeft, onSwipeRight: widget.onSwipeRight)).toList();
 
-    List<Widget> children = List<Widget>();
-    children.add(headerRow);
-    children.addAll(rowsList);
+    double maxHeight = widget.data.length == 0 ? VizListViewRow.rowHeight : (widget.data.length < 10 ? widget.data.length * VizListViewRow.rowHeight : VizListViewRow.rowHeight*10);
+
+    Container listViewContainer = Container(
+      constraints: BoxConstraints(maxHeight: maxHeight),
+      child: ListView(
+        controller: _scrollController,
+        children: rowsList,
+      ),
+    );
 
     return SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(paddingValue),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: children
-          ),
-        ),
-      );
-    }
+      padding: EdgeInsets.all(paddingValue),
+      child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [headerRow, listViewContainer]),
+    ));
+  }
 }
 
-
-
-class SwipeButton extends StatelessWidget{
+class SwipeButton extends StatelessWidget {
   SwipeButton({@required this.onPressed, @required this.text, this.btnCol});
 
   final Color btnCol;
@@ -88,8 +110,9 @@ class SwipeButton extends StatelessWidget{
           ),
           onPressed: onPressed,
           materialTapTargetSize: MaterialTapTargetSize.padded,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3.0))
-      ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3.0))),
     );
   }
 }
+
+enum ScrollingStatus { ReachOnTop, ReachOnBottom, IsScrolling }

@@ -9,7 +9,6 @@ class VizDialog {
 
   static RoundedRectangleBorder defaultBorder = RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5.0)));
 
-  @deprecated
   static Future<bool> Alert(BuildContext context, String title, String message) {
     return showDialog<bool>(
         context: context,
@@ -29,7 +28,6 @@ class VizDialog {
         });
   }
 
-  @deprecated
   static Future<bool> Confirm(Key key, BuildContext context, String title, String message, {List<VizDialogButton> actions}) {
     return showDialog<bool>(
         context: context,
@@ -40,23 +38,6 @@ class VizDialog {
             title: Text(title),
             content: Text(message),
             actions: actions,
-          );
-        });
-  }
-
-  @deprecated
-  static Future<bool> Dialog(Key key, BuildContext context, String title, Widget innerWidget) {
-    return showDialog<bool>(
-        barrierDismissible: false,
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-
-            contentPadding: EdgeInsets.all(10.0),
-            content:innerWidget,
-            key: key,
-            shape: defaultBorder,
-            title: Text(title),
           );
         });
   }
