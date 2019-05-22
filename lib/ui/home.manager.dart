@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:techviz/components/vizDialog.dart';
 import 'package:techviz/components/vizListView.dart';
+import 'package:techviz/components/vizListViewRow.dart';
 import 'package:techviz/components/vizSummary.dart';
 import 'package:techviz/model/dataEntry.dart';
 import 'package:techviz/model/userStatus.dart';
@@ -94,37 +95,45 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
     });
   }
 
-  SwipeAction onOpenTasksSwipeRight(){ //action of the left of the view
-    return SwipeAction('Re-assign to myself', (dynamic entry){
+  SwipeAction onOpenTasksSwipeRight(){
 
-      DataEntry dataEntry = (entry as DataEntry);
-      String userID = dataEntry.columns.where((DataEntryCell dataCell)=> dataCell.column == 'User').toString();
+     Function reassignTaskCallback = (dynamic entry){
 
-      if(userID!=null && userID == Session().user.userID){
-        VizDialog.Alert(context, 'Re-assign task', 'This task is already assigned to you.');
-        return;
-      }
+        DataEntry dataEntry = (entry as DataEntry);
 
-      GlobalKey dialogKey = GlobalKey();
-      VizDialogButton btnYes = VizDialogButton('Yes', (){
 
-        _presenter.reassign(dataEntry.id, Session().user.userID).then((dynamic d){
+        GlobalKey dialogKey = GlobalKey();
+        VizDialogButton btnYes = VizDialogButton('Yes', (){
 
-          Navigator.of(dialogKey.currentContext).pop(true);
-          setState(() {
-            _openTasksLoading = true;
-            _openTasksList = null;
+          _presenter.reassign(dataEntry.id, Session().user.userID).then((dynamic d){
+
+            Navigator.of(dialogKey.currentContext).pop(true);
+            setState(() {
+              _openTasksLoading = true;
+              _openTasksList = null;
+            });
+            _presenter.loadOpenTasks();
+
           });
-          _presenter.loadOpenTasks();
-
         });
-      });
 
-      VizDialogButton btnNo = VizDialogButton('No', (){
-        Navigator.of(dialogKey.currentContext).pop(true);
-      }, highlighted: false);
+        VizDialogButton btnNo = VizDialogButton('No', (){
+          Navigator.of(dialogKey.currentContext).pop(true);
+        }, highlighted: false);
 
-      VizDialog.Confirm(dialogKey, context, 'Re-assign task', 'Are you sure you want to re-assign the task to yourself?', actions: [btnNo, btnYes]);
+        VizDialog.Confirm(dialogKey, context, 'Re-assign task', 'Are you sure you want to re-assign the task to yourself?', actions: [btnNo, btnYes]);
+    };
+
+
+    //action of the left of the view
+    return SwipeAction('Re-assign to myself', reassignTaskCallback, swipable: (dynamic parameter){
+      DataEntry dataEntry = (parameter as DataEntry);
+      String userID = dataEntry.columns.where((DataEntryCell dataCell) => dataCell.column == 'User').first.toString();
+
+      bool allowReassignToMySelf = userID != Session().user.userID;
+      print(allowReassignToMySelf);
+
+      return allowReassignToMySelf;
 
     });
   }

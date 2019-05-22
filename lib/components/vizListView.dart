@@ -6,13 +6,7 @@ import 'package:techviz/model/dataEntry.dart';
 
 typedef SwipeActionCallback = void Function(dynamic tag);
 typedef OnScroll = void Function(ScrollingStatus scroll);
-
-class SwipeAction {
-  final String title;
-  final SwipeActionCallback callback;
-
-  SwipeAction(this.title, this.callback);
-}
+typedef Swipable = bool Function(dynamic parameter);
 
 class VizListView extends StatefulWidget {
   final List<DataEntry> data;
@@ -108,9 +102,9 @@ class VizListViewState extends State<VizListView> {
 }
 
 class SwipeButton extends StatelessWidget {
-  SwipeButton({@required this.onPressed, @required this.text, this.btnCol});
+  SwipeButton({@required this.onPressed, @required this.text, this.color});
 
-  final Color btnCol;
+  final Color color;
   final GestureTapCallback onPressed;
   final String text;
 
@@ -119,7 +113,8 @@ class SwipeButton extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.all(5),
       child: FlatButton(
-          color: btnCol,
+          disabledColor: Colors.grey[300],
+          color: color,
           splashColor: Color(0xFFFFFFFF),
           child: Text(
             text,

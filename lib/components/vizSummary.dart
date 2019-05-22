@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:techviz/components/vizListView.dart';
+import 'package:techviz/components/vizListViewRow.dart';
 import 'package:techviz/components/vizSummaryHeader.dart';
 import 'package:techviz/model/dataEntry.dart';
 

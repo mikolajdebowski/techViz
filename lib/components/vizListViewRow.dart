@@ -5,7 +5,16 @@ import 'package:techviz/components/vizListView.dart';
 import 'package:techviz/components/vizShimmer.dart';
 import 'package:techviz/model/dataEntry.dart';
 
-typedef onSwipingCallback = void Function(bool isOpen, GlobalKey<SlidableState> key);
+typedef onSwipingCallback = void Function(
+    bool isOpen, GlobalKey<SlidableState> key);
+
+class SwipeAction {
+  final String title;
+  final SwipeActionCallback callback;
+  final Swipable swipable;
+
+  SwipeAction(this.title, this.callback, {this.swipable});
+}
 
 class VizListViewRow extends StatefulWidget {
   static final double rowHeight = 35.0;
@@ -13,30 +22,47 @@ class VizListViewRow extends StatefulWidget {
   final SwipeAction onSwipeLeft;
   final SwipeAction onSwipeRight;
   final onSwipingCallback onSwiping;
+  final Swipable swipable;
 
-  const VizListViewRow(this.dataEntry, {Key key, this.onSwipeLeft, this.onSwipeRight, this.onSwiping}) : super(key: key);
+  const VizListViewRow(this.dataEntry,
+      {Key key,
+      this.onSwipeLeft,
+      this.onSwipeRight,
+      this.onSwiping,
+      this.swipable})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() => VizListViewRowState();
 }
 
 class VizListViewRowState extends State<VizListViewRow> {
+  static Color leftBtnColor = const Color(0xFF96CF96);
+  static Color rightBtnColor = const Color(0xFFFFA500);
   bool isBeingPressed = false;
   final double rowHeight = 35.0;
   final GlobalKey<SlidableState> _slidableKey = GlobalKey<SlidableState>();
   SlidableController _slidableController;
 
-  @override
-  void initState(){
+  Color get bgRowColor {
+    return isBeingPressed ? Colors.lightBlue : Colors.transparent;
+  }
 
+  BoxDecoration get decoration {
+    return BoxDecoration(
+        color: bgRowColor,
+        border: Border(bottom: BorderSide(color: Colors.black, width: 1.0)));
+  }
+
+  @override
+  void initState() {
     _slidableController = SlidableController(
-        onSlideIsOpenChanged: (bool isOpen){
-          if(widget.onSwiping!=null){
+        onSlideIsOpenChanged: (bool isOpen) {
+          if (widget.onSwiping != null) {
             widget.onSwiping(isOpen, _slidableKey);
           }
         },
-        onSlideAnimationChanged: (Animation<double> animation){}
-    );
+        onSlideAnimationChanged: (Animation<double> animation) {});
     super.initState();
   }
 
@@ -57,10 +83,31 @@ class VizListViewRowState extends State<VizListViewRow> {
     ));
   }
 
+  SwipeButton extractActionButton(SwipeAction swipeAction, Color color) {
+    if (swipeAction == null) return null;
+
+    bool enabled = true;
+
+    if(swipeAction.swipable!=null){
+      enabled = swipeAction.swipable(widget.dataEntry);
+    }
+
+    SwipeButton swipeButton = SwipeButton(
+        color: color,
+        text: swipeAction.title,
+        onPressed: enabled
+            ? () {
+                swipeAction.callback(widget.dataEntry);
+              }
+            : null);
+    return swipeButton;
+  }
+
   @override
   Widget build(BuildContext context) {
-    Color bgRowColor = isBeingPressed ? Colors.lightBlue : Colors.transparent;
-    BoxDecoration decoration = BoxDecoration(color: bgRowColor, border: Border(bottom: BorderSide(color: Colors.black, width: 1.0)));
+    BoxDecoration decoration = BoxDecoration(
+        color: bgRowColor,
+        border: Border(bottom: BorderSide(color: Colors.black, width: 1.0)));
 
     List<Widget> columns = List<Widget>();
 
@@ -68,7 +115,11 @@ class VizListViewRowState extends State<VizListViewRow> {
       String text = dataCell.toString();
       TextStyle style = TextStyle(fontSize: text.length >= 20 ? 10 : 12);
 
-      TextAlign align = dataCell.alignment == DataAlignment.left ? TextAlign.left : (dataCell.alignment == DataAlignment.right ? TextAlign.right : TextAlign.center);
+      TextAlign align = dataCell.alignment == DataAlignment.left
+          ? TextAlign.left
+          : (dataCell.alignment == DataAlignment.right
+              ? TextAlign.right
+              : TextAlign.center);
 
       columns.add(Expanded(
           child: Text(
@@ -85,39 +136,15 @@ class VizListViewRowState extends State<VizListViewRow> {
       children: columns,
     );
 
-    List<Widget> leftActions = List<Widget>();
-    if (widget.onSwipeLeft != null) {
-      SwipeButton swipeButton = SwipeButton(
-          btnCol: Color(0xFF96CF96),
-          text: widget.onSwipeLeft.title,
-          onPressed: () {
-            widget.onSwipeLeft.callback(widget.dataEntry);
-          });
+    Container leftButtonContainer = Container(
+      decoration: decoration,
+      child: extractActionButton(widget.onSwipeLeft, leftBtnColor),
+    );
 
-      Container swipeButtonContainer = Container(
-        decoration: decoration,
-        child: swipeButton,
-      );
-
-      leftActions.add(swipeButtonContainer);
-    }
-
-    List<Widget> rightActions = List<Widget>();
-    if (widget.onSwipeRight != null) {
-      SwipeButton swipeButton = SwipeButton(
-          btnCol: Colors.white70,
-          text: widget.onSwipeRight.title,
-          onPressed: () {
-            widget.onSwipeRight.callback(widget.dataEntry);
-          });
-
-      Container swipeButtonContainer = Container(
-        decoration: decoration,
-        child: swipeButton,
-      );
-
-      rightActions.add(swipeButtonContainer);
-    }
+    Container rightButtonContainer = Container(
+      decoration: decoration,
+      child: extractActionButton(widget.onSwipeRight, rightBtnColor),
+    );
 
     Slidable slidable = Slidable(
       key: _slidableKey,
@@ -129,10 +156,13 @@ class VizListViewRowState extends State<VizListViewRow> {
         height: VizListViewRow.rowHeight,
         child: dataRow,
       ),
-      actions: rightActions,
-      secondaryActions: leftActions,
+      actions: widget.onSwipeRight == null ? [] : [rightButtonContainer],
+      secondaryActions: widget.onSwipeLeft == null ? [] : [leftButtonContainer],
       dismissal: SlidableDismissal(
-        dismissThresholds: <SlideActionType, double>{SlideActionType.secondary: 1.0, SlideActionType.primary: 1.0},
+        dismissThresholds: <SlideActionType, double>{
+          SlideActionType.secondary: 1.0,
+          SlideActionType.primary: 1.0
+        },
         child: SlidableDrawerDismissal(),
         onDismissed: (actionType) {},
       ),
@@ -146,8 +176,7 @@ class VizListViewRowState extends State<VizListViewRow> {
           setState(() {
             this.isBeingPressed = false;
           });
-        }
-      );
+        });
 
     Listener listener = Listener(
       child: gestureDetector,
@@ -174,7 +203,8 @@ class VizListViewRowState extends State<VizListViewRow> {
           ),
         ),
         Opacity(
-            opacity: (isBeingPressed && (widget.onSwipeRight != null)) ? 1.0 : 0.0,
+            opacity:
+                (isBeingPressed && (widget.onSwipeRight != null)) ? 1.0 : 0.0,
             child: Align(
               child: createShimmer('>', 'ltr'),
               alignment: Alignment.centerRight,
