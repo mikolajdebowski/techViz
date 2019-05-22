@@ -5,23 +5,40 @@ import 'package:techviz/components/vizListView.dart';
 import 'package:techviz/components/vizShimmer.dart';
 import 'package:techviz/model/dataEntry.dart';
 
+typedef onSwipingCallback = void Function(bool isOpen, GlobalKey<SlidableState> key);
+
 class VizListViewRow extends StatefulWidget {
   static final double rowHeight = 35.0;
   final DataEntry dataEntry;
   final SwipeAction onSwipeLeft;
   final SwipeAction onSwipeRight;
+  final onSwipingCallback onSwiping;
 
-  const VizListViewRow(this.dataEntry, {Key key, this.onSwipeLeft, this.onSwipeRight}) : super(key: key);
+  const VizListViewRow(this.dataEntry, {Key key, this.onSwipeLeft, this.onSwipeRight, this.onSwiping}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => VizListViewRowState();
 }
 
 class VizListViewRowState extends State<VizListViewRow> {
+  bool isBeingPressed = false;
   final double rowHeight = 35.0;
   final GlobalKey<SlidableState> _slidableKey = GlobalKey<SlidableState>();
+  SlidableController _slidableController;
 
-  bool isBeingPressed = false;
+  @override
+  void initState(){
+
+    _slidableController = SlidableController(
+        onSlideIsOpenChanged: (bool isOpen){
+          if(widget.onSwiping!=null){
+            widget.onSwiping(isOpen, _slidableKey);
+          }
+        },
+        onSlideAnimationChanged: (Animation<double> animation){}
+    );
+    super.initState();
+  }
 
   Container createShimmer(String _txt, String _direction) {
     return Container(
@@ -104,7 +121,7 @@ class VizListViewRowState extends State<VizListViewRow> {
 
     Slidable slidable = Slidable(
       key: _slidableKey,
-      controller: SlidableController(),
+      controller: _slidableController,
       actionPane: SlidableScrollActionPane(),
       actionExtentRatio: 0.25,
       child: Container(

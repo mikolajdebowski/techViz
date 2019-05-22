@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:techviz/components/vizListViewRow.dart';
 import 'package:techviz/model/dataEntry.dart';
 
@@ -27,7 +28,9 @@ class VizListView extends StatefulWidget {
 
 class VizListViewState extends State<VizListView> {
   final double paddingValue = 5.0;
+
   ScrollController _scrollController;
+  GlobalKey<SlidableState> _lastRowkey;
 
   @override
   void initState() {
@@ -40,6 +43,21 @@ class VizListViewState extends State<VizListView> {
       }
     });
     super.initState();
+  }
+
+
+  void onRowSwiping(bool isOpen, GlobalKey<SlidableState> key){
+    if(_lastRowkey==null){
+      setState(() {
+        _lastRowkey = key;
+      });
+    }
+    else if(_lastRowkey!=null && _lastRowkey.hashCode != key.hashCode){
+      _lastRowkey.currentState.close();
+      setState(() {
+        _lastRowkey = key;
+      });
+    }
   }
 
   @override
@@ -68,7 +86,7 @@ class VizListViewState extends State<VizListView> {
 
     //LISTVIEW
     List<VizListViewRow> rowsList =
-        widget.data.map((DataEntry row) => VizListViewRow(row, onSwipeLeft: widget.onSwipeLeft, onSwipeRight: widget.onSwipeRight)).toList();
+        widget.data.map((DataEntry row) => VizListViewRow(row, onSwipeLeft: widget.onSwipeLeft, onSwipeRight: widget.onSwipeRight, onSwiping: onRowSwiping)).toList();
 
     double maxHeight = widget.data.length == 0 ? VizListViewRow.rowHeight : (widget.data.length < 10 ? widget.data.length * VizListViewRow.rowHeight : VizListViewRow.rowHeight*10);
 
