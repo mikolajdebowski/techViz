@@ -14,7 +14,7 @@ flutter build ios
 xcodebuild -workspace ios/Runner.xcworkspace \
             -scheme Runner -sdk iphoneos \
             -configuration Release archive \
-            -archivePath ios/Temp/Build/v08b60.xcarchive
+            -archivePath ios/Temp/Build/potato.xcarchive
 
 xcodebuild -exportArchive \
             -archivePath ios/Temp/Build/v08b60.xcarchive \
@@ -22,5 +22,12 @@ xcodebuild -exportArchive \
 
 
 
+#android
 
-flutter build apkv08
+flutter clean
+
+flutter analyze
+
+flutter test
+
+flutter build apk

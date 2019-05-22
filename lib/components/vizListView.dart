@@ -28,6 +28,7 @@ class VizListView extends StatefulWidget {
 
 class VizListViewState extends State<VizListView> {
   final double paddingValue = 5.0;
+  final int numOfRows = 4;
 
   ScrollController _scrollController;
   GlobalKey<SlidableState> _lastRowkey;
@@ -88,7 +89,7 @@ class VizListViewState extends State<VizListView> {
     List<VizListViewRow> rowsList =
         widget.data.map((DataEntry row) => VizListViewRow(row, onSwipeLeft: widget.onSwipeLeft, onSwipeRight: widget.onSwipeRight, onSwiping: onRowSwiping)).toList();
 
-    double maxHeight = widget.data.length == 0 ? VizListViewRow.rowHeight : (widget.data.length < 10 ? widget.data.length * VizListViewRow.rowHeight : VizListViewRow.rowHeight*10);
+    double maxHeight = widget.data.length == 0 ? VizListViewRow.rowHeight : (widget.data.length < numOfRows ? widget.data.length * VizListViewRow.rowHeight : VizListViewRow.rowHeight * numOfRows);
 
     Container listViewContainer = Container(
       constraints: BoxConstraints(maxHeight: maxHeight),
