@@ -9,6 +9,8 @@ import 'package:techviz/repository/session.dart';
 import 'package:techviz/ui/home.dart';
 import 'package:techviz/ui/reassignTask.dart';
 
+import 'machineReservation.dart';
+
 class HomeManager extends StatefulWidget {
   HomeManager(Key key) : super(key: key);
 
@@ -25,6 +27,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
   ScrollController _mainController;
 
   bool _openTasksLoading;
+  bool _slotFloorLoading;
 
   @override
   void initState() {
@@ -51,7 +54,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
           children: <Widget>[
             VizSummary('OPEN TASKS', _openTasksList, onSwipeLeft: onOpenTasksSwipeLeft(), onSwipeRight: onOpenTasksSwipeRight(), onMetricTap: onOpenTasksMetricTap, isProcessing:  _openTasksLoading, onScroll: _onChildScroll),
             VizSummary('TEAM AVAILABILITY', _teamAvailabilityList,onSwipeLeft: onTeamAvailiblitySwipeLeft(), onScroll: _onChildScroll),
-            VizSummary('SLOT FLOOR', _slotFloorList, onScroll: _onChildScroll)
+            VizSummary('SLOT FLOOR', _slotFloorList, onSwipeRight: onSlotFloorSwipeRight(), onSwipeLeft: onSlotFloorSwipeLeft(), onMetricTap: onSlotFloorMetricTap, isProcessing:  _slotFloorLoading, onScroll: _onChildScroll)
           ],
         ),
       ),
@@ -68,15 +71,9 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
     }
   }
 
-  void onOpenTasksMetricTap(){
-    setState(() {
-      _openTasksLoading = true;
-    });
-    _presenter.loadOpenTasks();
-  }
-
+  //OpenTasks
   SwipeAction onOpenTasksSwipeLeft(){ //action of the right of the view
-    return SwipeAction('Re-assign to others', '<<<', (dynamic entry){
+    return SwipeAction('Re-assign to others', (dynamic entry){
 
       DataEntry dataEntry = (entry as DataEntry);
       String location = dataEntry.columns.where((DataEntryCell dataCell)=> dataCell.column == 'Location').toString();
@@ -98,7 +95,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
   }
 
   SwipeAction onOpenTasksSwipeRight(){ //action of the left of the view
-    return SwipeAction('Re-assign to myself', '>>>',(dynamic entry){
+    return SwipeAction('Re-assign to myself', (dynamic entry){
 
       DataEntry dataEntry = (entry as DataEntry);
       String userID = dataEntry.columns.where((DataEntryCell dataCell)=> dataCell.column == 'User').toString();
@@ -131,27 +128,59 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
 
     });
   }
+  void onOpenTasksMetricTap(){
+    setState(() {
+      _openTasksLoading = true;
+    });
+    _presenter.loadOpenTasks();
+  }
 
+
+
+
+
+  //TeamAvailiblity
   SwipeAction onTeamAvailiblitySwipeLeft(){
-    return SwipeAction('Change Status', '<<<',(dynamic entry){
+    return SwipeAction('Change Status',(dynamic entry){
       VizDialog.Alert(context, 'Change user\' status', 'Opens Change user\' status');
     });
   }
 
-  @override
-  void onUserSectionsChanged(Object obj) {
-    // TODO: implement onUserSectionsChanged
+
+
+  //SlotFloor
+  SwipeAction onSlotFloorSwipeRight(){
+    return SwipeAction('Make a reservation',(dynamic entry){
+
+      DataEntry dataEntry = (entry as DataEntry);
+      String standID = dataEntry.id;
+
+      MachineReservation machineReservationContent = MachineReservation(standID: standID);
+
+      Navigator.push<dynamic>(context, MaterialPageRoute<dynamic>(builder: (BuildContext context) => machineReservationContent)).then((dynamic result){
+        setState(() {
+          _slotFloorLoading = true;
+          _slotFloorList = null;
+        });
+        _presenter.loadSlotFloorSummary();
+      });
+    });
   }
 
-  @override
-  void onUserStatusChanged(UserStatus us) {
-    // TODO: implement onUserStatusChanged
+  SwipeAction onSlotFloorSwipeLeft(){
+    return SwipeAction('Remove reservation', (dynamic entry){
+      print('Cancel reservation');
+    });
   }
 
-  @override
-  void onLoadError(dynamic error) {
-    // TODO: implement onLoadError
+  void onSlotFloorMetricTap(){
+    setState(() {
+      _slotFloorLoading = true;
+    });
+    _presenter.loadSlotFloorSummary();
   }
+
+
 
   @override
   void onOpenTasksLoaded(List<DataEntryGroup> list) {
@@ -167,6 +196,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
   void onSlotFloorSummaryLoaded(List<DataEntryGroup> list) {
     if (this.mounted) {
       setState(() {
+        _slotFloorLoading = false;
         _slotFloorList = list;
       });
     }
@@ -179,6 +209,26 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
         _teamAvailabilityList = list;
       });
     }
+  }
+
+  @override
+  void onLoadError(dynamic error) {
+    // TODO: implement onLoadError
+  }
+
+
+
+
+
+  //MASTERVIEW EVENTS
+  @override
+  void onUserSectionsChanged(Object obj) {
+    // TODO: implement onUserSectionsChanged
+  }
+
+  @override
+  void onUserStatusChanged(UserStatus us) {
+    // TODO: implement onUserStatusChanged
   }
 }
 
