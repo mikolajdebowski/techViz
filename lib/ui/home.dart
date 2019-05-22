@@ -131,7 +131,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   void goToSearchSelector() {
     Navigator.push<VizSelector>(
       context,
-      MaterialPageRoute(builder: (context) => SlotLookup()),
+      MaterialPageRoute(builder: (context) => SlotFloor()),
     );
   }
 

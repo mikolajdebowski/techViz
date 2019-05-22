@@ -11,12 +11,12 @@ import 'package:techviz/model/slotMachine.dart';
 import 'package:techviz/repository/slotFloorRepository.dart';
 import 'package:techviz/repository/repository.dart';
 
-class SlotLookup extends StatefulWidget {
+class SlotFloor extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => SlotLookupState();
+  State<StatefulWidget> createState() => SlotFloorState();
 }
 
-class SlotLookupState extends State<SlotLookup> with WidgetsBindingObserver {
+class SlotFloorState extends State<SlotFloor> with WidgetsBindingObserver {
   bool loading = true;
 
   final FocusNode _txtSearchFocusNode = FocusNode();
@@ -68,8 +68,22 @@ class SlotLookupState extends State<SlotLookup> with WidgetsBindingObserver {
     });
   }
 
-  void _showReservationView(SlotMachine slot) {
-    Navigator.push(context, MaterialPageRoute<MachineReservation>(builder: (BuildContext context) => MachineReservation(slotMachine: slot)));
+  void _showReservationView(final SlotMachine slot) {
+    MachineReservation content = MachineReservation(standID: slot.standID);
+
+    Navigator.push<dynamic>(context, MaterialPageRoute<dynamic>(builder: (BuildContext context) => content)).then((dynamic result){
+      SlotMachine slotToPush = SlotMachine(
+        standID: slot.standID,
+        denom: slot.denom,
+        machineTypeName: slot.machineTypeName,
+        reservationTime: slot.reservationTime,
+        updatedAt: result['updatedAt'],
+        machineStatusID: result['reservationStatusId'] == '0' ? '1' : '3',
+        machineStatusDescription: slot.machineStatusDescription,
+        playerID: slot.playerID
+      );
+      _repository.pushToController(slotToPush, 'RESERVATION');
+    });
   }
 
 

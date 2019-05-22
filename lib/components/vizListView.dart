@@ -7,11 +7,10 @@ typedef SwipeActionCallback = void Function(dynamic tag);
 typedef OnScroll = void Function(ScrollingStatus scroll);
 
 class SwipeAction {
-  final String headerTitle;
   final String title;
   final SwipeActionCallback callback;
 
-  SwipeAction(this.title, this.headerTitle, this.callback);
+  SwipeAction(this.title, this.callback);
 }
 
 class VizListView extends StatefulWidget {

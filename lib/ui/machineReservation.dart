@@ -14,9 +14,9 @@ import 'package:techviz/repository/session.dart';
 typedef OnMachineReservationResult = void Function(bool result);
 
 class MachineReservation extends StatefulWidget {
-  final SlotMachine slotMachine;
+  final String standID;
 
-  const MachineReservation({Key key, this.slotMachine}) : super(key: key);
+  const MachineReservation({Key key, this.standID}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => MachineReservationState();
@@ -58,7 +58,7 @@ class MachineReservationState extends State<MachineReservation> {
                   child: Padding(
                       padding: EdgeInsets.only(top: 5.0),
                       child: Text(
-                        '${widget.slotMachine.standID}',
+                        '${widget.standID}',
                         style: TextStyle(color: Colors.white),
                       )),
                 ),
@@ -134,18 +134,21 @@ class MachineReservationState extends State<MachineReservation> {
 
             Session session = Session();
             _slotMachineRepositoryRepo
-                .setReservation(session.user.userID, widget.slotMachine.standID, _txtControllerPlayerID.text, _ddbTimeReservation)
+                .setReservation(session.user.userID, widget.standID, _txtControllerPlayerID.text, _ddbTimeReservation)
                 .then((dynamic result) {
               _loadingBar.dismiss();
 
               String reservationStatusId = result['reservationStatusId'].toString();
-              SlotMachine copy = widget.slotMachine;
-              copy.machineStatusID = reservationStatusId == '0' ? '1' : '3';
-              copy.updatedAt = DateTime.parse(result['sentAt'].toString());
 
-              _slotMachineRepositoryRepo.pushToController(copy, 'RESERVATION');
+//              SlotMachine copy = widget.slotMachine;
+//              copy.machineStatusID = reservationStatusId == '0' ? '1' : '3';
+//              copy.updatedAt = DateTime.parse(result['sentAt'].toString());
+//
+//              _slotMachineRepositoryRepo.pushToController(copy, 'RESERVATION');
 
-              Navigator.of(context).pop();
+              dynamic toReturn = {'standID': widget.standID, 'reservationStatusID' : reservationStatusId == '0' ? '1' : '3', 'updatedAt' : DateTime.parse(result['sentAt'].toString())};
+
+              Navigator.of(context).pop<dynamic>(toReturn);
             }).catchError((dynamic error) {
               VizDialog.Alert(context, 'Error', error.toString());
             }).whenComplete(() {
@@ -156,7 +159,7 @@ class MachineReservationState extends State<MachineReservation> {
         });
 
     ActionBar actionBar = ActionBar(
-        title: 'Reservation for StandID ${widget.slotMachine.standID}',
+        title: 'Reservation for StandID ${widget.standID}',
         tailWidget: okBtn,
         onCustomBackButtonActionTapped: () {
           //widget.onEscalationResult(false);
