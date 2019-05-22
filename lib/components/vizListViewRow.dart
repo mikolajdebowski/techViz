@@ -19,8 +19,8 @@ class VizListViewRow extends StatefulWidget {
 
 class VizListViewRowState extends State<VizListViewRow> {
   final double rowHeight = 35.0;
-
   final GlobalKey<SlidableState> _slidableKey = GlobalKey<SlidableState>();
+
   bool isBeingPressed = false;
 
   Container createShimmer(String _txt, String _direction) {
@@ -104,7 +104,6 @@ class VizListViewRowState extends State<VizListViewRow> {
 
     Slidable slidable = Slidable(
       key: _slidableKey,
-        //key: Key(widget.dataEntry.id),
       controller: SlidableController(),
       actionPane: SlidableScrollActionPane(),
       actionExtentRatio: 0.25,
@@ -125,12 +124,13 @@ class VizListViewRowState extends State<VizListViewRow> {
     GestureDetector gestureDetector = GestureDetector(
         child: slidable,
         onTap: () {
-//          SlidableState slidableState = _slidableKey.currentState;
-//          slidableState.close();
+          SlidableState slidableState = _slidableKey.currentState;
+          slidableState.close();
           setState(() {
             this.isBeingPressed = false;
           });
-        });
+        }
+      );
 
     Listener listener = Listener(
       child: gestureDetector,
