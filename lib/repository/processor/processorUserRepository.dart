@@ -54,11 +54,11 @@ class ProcessorUserRepository implements IUserRepository{
   }
 
   @override
-  Future allUsers() {
-    String tag = 'TECHVIZ_MOBILE_USERS';
+  Future<List<Map>> usersBySectionsByTaskCount() {
+    String tag = 'TECHVIZ_MOBILE_USERS_SECTIONS_TASKCOUNT';
     print('Fetching $tag');
 
-    Completer<List<Map<String, dynamic>>> _completer = Completer<List<Map<String, dynamic>>>();
+    Completer _completer = Completer<List<Map>>();
     String url = ProcessorRepositoryConfig().GetURL(tag);
 
     SessionClient().get(url).then((String rawResult) async {
@@ -73,10 +73,8 @@ class ProcessorUserRepository implements IUserRepository{
         Map<String, dynamic> mapEntry = Map<String, dynamic>();
         mapEntry['UserID'] = values[_columnNames.indexOf("UserID")];
         mapEntry['UserName'] = values[_columnNames.indexOf("UserName")];
-        mapEntry['UserRoleID'] = values[_columnNames.indexOf("UserRoleID")];
-        mapEntry['UserStatusID'] = values[_columnNames.indexOf("UserStatusID")];
-        mapEntry['StaffID'] = values[_columnNames.indexOf("StaffID")];
-        mapEntry['SiteID'] = values[_columnNames.indexOf("SiteID")];
+        mapEntry['SectionCount'] = values[_columnNames.indexOf("SectionCount")];
+        mapEntry['TaskCount'] = values[_columnNames.indexOf("TaskCount7")];
 
         listToReturn.add(mapEntry);
       });

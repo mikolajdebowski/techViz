@@ -6,7 +6,7 @@ import 'package:techviz/repository/local/userTable.dart';
 import 'package:techviz/repository/remoteRepository.dart';
 
 abstract class IUserRepository extends IRemoteRepository<User>{
-  Future allUsers();
+  Future<List<Map>> usersBySectionsByTaskCount();
 }
 
 class UserRepository implements IRepository<User>{
@@ -47,16 +47,8 @@ class UserRepository implements IRepository<User>{
     return _completer.future;
   }
 
-  Future<List<User>> allUsers(){
-    Completer<List<User>> _completer = Completer<List<User>>();
-
-    this.remoteRepository.allUsers().then((dynamic result){
-      List<Map> listMap = result as List<Map>;
-      List<User> listUsers = listMap.map((Map map)=> User.fromMap(map)).toList();
-      _completer.complete(listUsers);
-    });
-    return _completer.future;
-
+  Future<List<Map>> usersBySectionsByTaskCount(){
+    return this.remoteRepository.usersBySectionsByTaskCount();
   }
 
 }

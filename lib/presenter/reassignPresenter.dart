@@ -1,11 +1,10 @@
-
-import 'package:techviz/model/user.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/taskRepository.dart';
 import 'package:techviz/repository/userRepository.dart';
+import 'package:techviz/viewmodel/reassignUsers.dart';
 
 abstract class IReassignPresenter {
-  void onUserLoaded(List<User> list);
+  void onUserLoaded(List<ReassignUser> list);
   void onLoadError(dynamic error);
 }
 
@@ -18,8 +17,11 @@ class ReassignPresenter {
 
   void loadUsers() {
     UserRepository _repository = Repository().userRepository;
-    _repository.allUsers().then((List<User> list){
-      this._view.onUserLoaded(list);
+    _repository.usersBySectionsByTaskCount().then((List<Map> list){
+
+      List<ReassignUser> toReturn = list.map((Map map) => ReassignUser.fromMap(map)).toList();
+      this._view.onUserLoaded(toReturn);
+
     });
   }
 
