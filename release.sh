@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
 # change Runner/Info.plist CFBundleVersion and CFBundleShortVersionString
-version = "v07b46"
+
+#IOS
+#IPA file will be in build/ios/Temp/Runner.ipa
 
 flutter clean
 
@@ -14,15 +16,16 @@ flutter build ios
 xcodebuild -workspace ios/Runner.xcworkspace \
             -scheme Runner -sdk iphoneos \
             -configuration Release archive \
-            -archivePath ios/Temp/Build/potato.xcarchive
+            -archivePath build/ios/Temp/temp.xcarchive
 
 xcodebuild -exportArchive \
-            -archivePath ios/Temp/Build/v08b60.xcarchive \
-            -exportOptionsPlist ios/Runner/exportOptionsAdHoc.plist -exportPath ios/Temp/Build/v08b60
+            -archivePath build/ios/Temp/temp.xcarchive \
+            -exportOptionsPlist ios/Runner/exportOptionsAdHoc.plist -exportPath build/ios/Temp/
 
 
-
-#android
+#ANDROID
+#APK file will be build/app/outputs/apk/release/app-release.apk
+#export location folder can be changed at android/app/build.gradle
 
 flutter clean
 
