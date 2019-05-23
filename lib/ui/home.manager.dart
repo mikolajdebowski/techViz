@@ -102,6 +102,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
      Function reassignTaskCallback = (dynamic entry){
 
         DataEntry dataEntry = (entry as DataEntry);
+        String location = dataEntry.columns.where((DataEntryCell cell) => cell.column == 'Location').first.value.toString();
 
         GlobalKey dialogKey = GlobalKey();
         VizDialogButton btnYes = VizDialogButton('Yes', (){
@@ -122,9 +123,8 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
           Navigator.of(dialogKey.currentContext).pop(true);
         }, highlighted: false);
 
-        VizDialog.Confirm(dialogKey, context, 'Re-assign task', 'Are you sure you want to re-assign the task to yourself?', actions: [btnNo, btnYes]);
+        VizDialog.Confirm(dialogKey, context, 'Re-assign task', 'Are you sure you want to re-assign the task $location to yourself?', actions: [btnNo, btnYes]);
     };
-
 
     //action of the left of the view
     return SwipeAction('Re-assign to myself', reassignTaskCallback);

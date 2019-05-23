@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
-import 'package:techviz/model/user.dart';
 import 'package:techviz/presenter/reassignPresenter.dart';
+import 'package:techviz/viewmodel/reassignUsers.dart';
 
 class ReassignTask extends StatefulWidget {
   final String taskID;
@@ -17,7 +17,7 @@ class ReassignTask extends StatefulWidget {
 
 class ReassignTaskState extends State<ReassignTask> implements IReassignPresenter {
   String _selectedValue;
-  List<User> _userList;
+  List<ReassignUser> _userList;
   ReassignPresenter _presenter;
   bool _processing = false;
 
@@ -38,7 +38,7 @@ class ReassignTaskState extends State<ReassignTask> implements IReassignPresente
   }
 
   @override
-  void onUserLoaded(List<User> list) {
+  void onUserLoaded(List<ReassignUser> list) {
     setState(() {
       _userList = list;
     });
@@ -50,10 +50,10 @@ class ReassignTaskState extends State<ReassignTask> implements IReassignPresente
            DataCell(Text(_userList[index].userID), onTap: (){
              onCellTap(_userList[index].userID);
            }),
-           DataCell(Text('1,2,3'), onTap: (){
+           DataCell(Text(_userList[index].sectionsCount.toString()), onTap: (){
              onCellTap(_userList[index].userID);
            }),
-           DataCell(Text('1'), onTap: (){
+           DataCell(Text(_userList[index].taskCount.toString()), onTap: (){
              onCellTap(_userList[index].userID);
            }),
         ]));
@@ -82,27 +82,29 @@ class ReassignTaskState extends State<ReassignTask> implements IReassignPresente
             label: Text("User", style: TextStyle(fontWeight: FontWeight.bold)),
             onSort: (int index, bool ascending){
               setState(() {
-                _userList.sort((a,b)=> ascending ? a.userID.compareTo(b.userID) : b.userID.compareTo(a.userID));
+                _userList.sort((a, b)=> ascending ? a.userID.compareTo(b.userID) : b.userID.compareTo(a.userID));
                 _sortColumnIndex = index;
                 _sortAscending = ascending;
               });
             }
         ),
         DataColumn(
-            label: Text("Sections", style: TextStyle(fontWeight: FontWeight.bold)),
+            numeric: true,
+            label: Text("Sections Count", style: TextStyle(fontWeight: FontWeight.bold)),
             onSort: (int index, bool ascending){
               setState(() {
-                _userList.sort((a,b)=> ascending ? a.userID.compareTo(b.userID) : b.userID.compareTo(a.userID));
+                _userList.sort((a, b)=> ascending ? a.sectionsCount.compareTo(b.sectionsCount) : b.sectionsCount.compareTo(a.sectionsCount));
                 _sortColumnIndex = index;
                 _sortAscending = ascending;
               });
             }
         ),
         DataColumn(
-            label: Text("Task count", style: TextStyle(fontWeight: FontWeight.bold)),
+            numeric: true,
+            label: Text("Tasks Count", style: TextStyle(fontWeight: FontWeight.bold)),
             onSort: (int index, bool ascending){
               setState(() {
-                _userList.sort((a,b)=> ascending ? a.userID.compareTo(b.userID) : b.userID.compareTo(a.userID));
+                _userList.sort((a, b)=> ascending ? a.taskCount.compareTo(b.taskCount) : b.taskCount.compareTo(a.taskCount));
                 _sortColumnIndex = index;
                 _sortAscending = ascending;
               });
