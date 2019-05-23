@@ -101,7 +101,6 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
 
         DataEntry dataEntry = (entry as DataEntry);
 
-
         GlobalKey dialogKey = GlobalKey();
         VizDialogButton btnYes = VizDialogButton('Yes', (){
 
@@ -126,16 +125,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
 
 
     //action of the left of the view
-    return SwipeAction('Re-assign to myself', reassignTaskCallback, swipable: (dynamic parameter){
-      DataEntry dataEntry = (parameter as DataEntry);
-      String userID = dataEntry.columns.where((DataEntryCell dataCell) => dataCell.column == 'User').first.toString();
-
-      bool allowReassignToMySelf = userID != Session().user.userID;
-      //print(allowReassignToMySelf);
-
-      return allowReassignToMySelf;
-
-    });
+    return SwipeAction('Re-assign to myself', reassignTaskCallback);
   }
   void onOpenTasksMetricTap(){
     setState(() {
@@ -143,9 +133,6 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
     });
     _presenter.loadOpenTasks();
   }
-
-
-
 
 
   //TeamAvailiblity
@@ -159,27 +146,32 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
 
   //SlotFloor
   SwipeAction onSlotFloorSwipeRight(){
-    return SwipeAction('Make a reservation',(dynamic entry){
 
+    Function onSlotActionButtonClickedCallback = (dynamic entry) {
       DataEntry dataEntry = (entry as DataEntry);
       String standID = dataEntry.id;
 
       MachineReservation machineReservationContent = MachineReservation(standID: standID);
 
-      Navigator.push<dynamic>(context, MaterialPageRoute<dynamic>(builder: (BuildContext context) => machineReservationContent)).then((dynamic result){
-        setState(() {
-          _slotFloorLoading = true;
-          _slotFloorList = null;
-        });
-        _presenter.loadSlotFloorSummary();
+      Navigator.of(context).push<dynamic>(MaterialPageRoute<dynamic>(builder: (BuildContext context) => machineReservationContent)).then((dynamic result) {
+        if (result != null && result) {
+          setState(() {
+            _slotFloorLoading = true;
+            _slotFloorList = null;
+          });
+          _presenter.loadSlotFloorSummary();
+        }
       });
-    });
+    };
+
+    return SwipeAction('Make a reservation', onSlotActionButtonClickedCallback);
   }
 
   SwipeAction onSlotFloorSwipeLeft(){
-    return SwipeAction('Remove reservation', (dynamic entry){
+    Function onSlotActionButtonClickedCallback = (dynamic entry) {
       print('Cancel reservation');
-    });
+    };
+    return SwipeAction('Remove reservation', onSlotActionButtonClickedCallback);
   }
 
   void onSlotFloorMetricTap(){

@@ -3,6 +3,7 @@ import 'package:techviz/model/slotMachine.dart';
 import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/model/taskType.dart';
 import 'package:techviz/repository/repository.dart';
+import 'package:techviz/repository/session.dart';
 import 'package:techviz/repository/taskRepository.dart';
 
 abstract class IManagerViewPresenter {
@@ -44,7 +45,10 @@ class ManagerViewPresenter{
 
           columns.add(DataEntryCell('Time Taken', '${hours.toString().padLeft(2, '0')}:${mins.toString().padLeft(2, '0')}', alignment: DataAlignment.center));
 
-          return DataEntry(mapEntry['_ID'].toString(), columns);
+          return DataEntry(mapEntry['_ID'].toString(), columns, onSwipeRightActionConditional: (){
+            String userID = mapEntry['UserID'].toString();
+            return userID == null || userID != Session().user.userID.toString();
+          });
         }
 
         //from ACT-1344

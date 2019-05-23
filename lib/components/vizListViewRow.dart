@@ -11,9 +11,9 @@ typedef onSwipingCallback = void Function(
 class SwipeAction {
   final String title;
   final SwipeActionCallback callback;
-  final Swipable swipable;
+  //final Swipable swipable;
 
-  SwipeAction(this.title, this.callback, {this.swipable});
+  SwipeAction(this.title, this.callback);
 }
 
 class VizListViewRow extends StatefulWidget {
@@ -83,25 +83,6 @@ class VizListViewRowState extends State<VizListViewRow> {
     ));
   }
 
-  SwipeButton extractActionButton(SwipeAction swipeAction, Color color) {
-    if (swipeAction == null) return null;
-
-    bool enabled = true;
-
-    if(swipeAction.swipable!=null){
-      enabled = swipeAction.swipable(widget.dataEntry);
-    }
-
-    SwipeButton swipeButton = SwipeButton(
-        color: color,
-        text: swipeAction.title,
-        onPressed: enabled
-            ? () {
-                swipeAction.callback(widget.dataEntry);
-              }
-            : null);
-    return swipeButton;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -136,14 +117,39 @@ class VizListViewRowState extends State<VizListViewRow> {
       children: columns,
     );
 
+    SwipeButton swipeLeftButton;
+    if(widget.onSwipeLeft!=null){
+      bool btnEnabled = widget.dataEntry.onSwipeLeftActionConditional == null || widget.dataEntry.onSwipeLeftActionConditional();
+      swipeLeftButton = SwipeButton(
+          color: leftBtnColor,
+          text: widget.onSwipeLeft.title,
+          onPressed: btnEnabled
+              ? () {
+            widget.onSwipeLeft.callback(widget.dataEntry);
+          }
+              : null);
+    }
     Container leftButtonContainer = Container(
       decoration: decoration,
-      child: extractActionButton(widget.onSwipeLeft, leftBtnColor),
+      child: swipeLeftButton,
     );
+
+    SwipeButton swipeRightButton;
+    if(widget.onSwipeRight!=null){
+      bool btnEnabled = widget.dataEntry.onSwipeRightActionConditional == null || widget.dataEntry.onSwipeRightActionConditional();
+      swipeRightButton = SwipeButton(
+          color: rightBtnColor,
+          text: widget.onSwipeRight.title,
+          onPressed: btnEnabled
+              ? () {
+            widget.onSwipeRight.callback(widget.dataEntry);
+          }
+              : null);
+    }
 
     Container rightButtonContainer = Container(
       decoration: decoration,
-      child: extractActionButton(widget.onSwipeRight, rightBtnColor),
+      child: swipeRightButton,
     );
 
     Slidable slidable = Slidable(

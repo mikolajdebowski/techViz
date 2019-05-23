@@ -1,3 +1,5 @@
+typedef ActionConditional = bool Function();
+
 class DataEntryGroup{
   final String headerTitle;
   final List<DataEntry> entries;
@@ -8,8 +10,10 @@ class DataEntryGroup{
 class DataEntry{
   final String id;
   final List<DataEntryCell> columns;
+  final ActionConditional onSwipeLeftActionConditional;
+  final ActionConditional onSwipeRightActionConditional;
 
-  DataEntry(this.id, this.columns);
+  DataEntry(this.id, this.columns, {this.onSwipeLeftActionConditional, this.onSwipeRightActionConditional});
 }
 
 class DataEntryCell{
