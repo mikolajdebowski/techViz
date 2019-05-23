@@ -97,25 +97,40 @@ class ManagerViewPresenter{
 
       List<SlotMachine> slotMachineList = result as List<SlotMachine>;
 
-      DataEntry slotMachineToDataEntryForActiveGamesOutOfService(SlotMachine slotMachine){
+      bool allowToReserve(dynamic statusID){
+        return statusID != '1';
+      }
+
+      bool allowToCancelReservation(dynamic statusID){
+        return statusID == '1';
+      }
+
+      //ONLINE MACHINES: CAN BE BOTH RESERVED OR CANCELED
+      DataEntry slotMachineToDataEntryForActiveGames(SlotMachine slotMachine){
         List<DataEntryCell> columns = List<DataEntryCell>();
 
         columns.add(DataEntryCell('Location/StandID', slotMachine.standID, alignment: DataAlignment.center));
         columns.add(DataEntryCell('Game/Theme', slotMachine.machineTypeName));
         columns.add(DataEntryCell('Denom', slotMachine.denom.toString(), alignment: DataAlignment.center));
         columns.add(DataEntryCell('Status', slotMachine.machineStatusDescription, alignment: DataAlignment.center));
-        return DataEntry(slotMachine.standID, columns);
+        return DataEntry(slotMachine.standID, columns, onSwipeRightActionConditional: (){
+          return allowToReserve(slotMachine.machineStatusID);
+        }, onSwipeLeftActionConditional: (){
+          return allowToCancelReservation(slotMachine.machineStatusID);
+        });
       }
 
+      //MACHINES IN USE: CAN NOT BE RESERVED OR CANCELED
       DataEntry slotMachineToDataEntryForHeadCount(SlotMachine slotMachine){
         List<DataEntryCell> columns = List<DataEntryCell>();
         columns.add(DataEntryCell('Location/StandID', slotMachine.standID, alignment: DataAlignment.center));
         columns.add(DataEntryCell('Game/Theme', slotMachine.machineTypeName));
         columns.add(DataEntryCell('Denom', slotMachine.denom.toString(), alignment: DataAlignment.center));
         columns.add(DataEntryCell('PlayerID', slotMachine.playerID, alignment: DataAlignment.center));
-        return DataEntry(slotMachine.standID, columns);
+        return DataEntry(slotMachine.standID, columns, onSwipeLeftActionConditional: (){return false;}, onSwipeRightActionConditional: (){return false;});
       }
 
+      //RESERVED MACHINES: CAN ONLY BE CANCELED; CANOT BE RESERVED
       DataEntry slotMachineToDataEntryForReserved(SlotMachine slotMachine){
         List<DataEntryCell> columns = List<DataEntryCell>();
         columns.add(DataEntryCell('Location/StandID', slotMachine.standID, alignment: DataAlignment.center));
@@ -123,11 +138,24 @@ class ManagerViewPresenter{
         columns.add(DataEntryCell('Denom', slotMachine.denom.toString(), alignment: DataAlignment.center));
         columns.add(DataEntryCell('PlayerID', slotMachine.playerID, alignment: DataAlignment.center));
         columns.add(DataEntryCell('Duration', slotMachine.reservationTime, alignment: DataAlignment.center));
-        return DataEntry(slotMachine.standID, columns);
+        return DataEntry(slotMachine.standID, columns, onSwipeLeftActionConditional: (){
+          return allowToCancelReservation(slotMachine.machineStatusID);
+        }, onSwipeRightActionConditional: (){return false;});
+      }
+
+      //OUT OF SERVICE MACHINES, CAN NOT BE RESERVED OR CANCELED
+      DataEntry slotMachineToDataEntryForOutOfService(SlotMachine slotMachine){
+        List<DataEntryCell> columns = List<DataEntryCell>();
+
+        columns.add(DataEntryCell('Location/StandID', slotMachine.standID, alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Game/Theme', slotMachine.machineTypeName));
+        columns.add(DataEntryCell('Denom', slotMachine.denom.toString(), alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Status', slotMachine.machineStatusDescription, alignment: DataAlignment.center));
+        return DataEntry(slotMachine.standID, columns, onSwipeLeftActionConditional: (){return false;}, onSwipeRightActionConditional: (){return false;});
       }
 
       Iterable<SlotMachine> activeGamesWhere = slotMachineList.where((SlotMachine sm)=> sm.machineStatusID != '0');
-      List<DataEntry> activeGamesList = activeGamesWhere != null ? activeGamesWhere.map<DataEntry>((SlotMachine sm)=> slotMachineToDataEntryForActiveGamesOutOfService(sm)).toList(): List<DataEntry>();
+      List<DataEntry> activeGamesList = activeGamesWhere != null ? activeGamesWhere.map<DataEntry>((SlotMachine sm)=> slotMachineToDataEntryForActiveGames(sm)).toList(): List<DataEntry>();
 
       Iterable<SlotMachine> headCountWhere = slotMachineList.where((SlotMachine sm)=> sm.machineStatusID == '2');
       List<DataEntry> headCountList = headCountWhere != null ? headCountWhere.map<DataEntry>((SlotMachine sm)=> slotMachineToDataEntryForHeadCount(sm)).toList(): List<DataEntry>();
@@ -136,7 +164,7 @@ class ManagerViewPresenter{
       List<DataEntry> reservedList = reservedWhere != null ? reservedWhere.map<DataEntry>((SlotMachine sm)=> slotMachineToDataEntryForReserved(sm)).toList(): List<DataEntry>();
 
       Iterable<SlotMachine> outOfServiceWhere = slotMachineList.where((SlotMachine sm)=> sm.machineStatusID == '0');
-      List<DataEntry> outOfServiceList = outOfServiceWhere != null ? outOfServiceWhere.map<DataEntry>((SlotMachine sm)=> slotMachineToDataEntryForActiveGamesOutOfService(sm)).toList(): List<DataEntry>();
+      List<DataEntry> outOfServiceList = outOfServiceWhere != null ? outOfServiceWhere.map<DataEntry>((SlotMachine sm)=> slotMachineToDataEntryForOutOfService(sm)).toList(): List<DataEntry>();
 
       List<DataEntryGroup> group = List<DataEntryGroup>();
       group.add(DataEntryGroup('Active Games', activeGamesList));
