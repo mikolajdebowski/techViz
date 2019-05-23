@@ -19,21 +19,29 @@ class VizSummaryHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     List<Widget> itensChildren = List<Widget>();
 
-    Radius defaultRadius = Radius.circular(5.0);
+    Radius defaultRadius = Radius.circular(3.0);
+    bool isFirst = true;
 
     if(entries==null || entries.length==0){
         itensChildren.add(CircularProgressIndicator());
     }
     else{
       entries.forEach((final String entryKey, int count) {
+
         BorderSide bs = BorderSide(color: Colors.white, width: 1.0);
-        Border borderHeader = Border(left: bs, top: bs);
-        Border borderValue = Border(left: bs, bottom: bs);
+        Border borderHeader;
+
+        if(isFirst){
+          borderHeader= Border(top: bs);
+          isFirst = false;
+        }else{
+          borderHeader= Border(left: bs, top: bs);
+        }
 
         bool isNotHighlighted = selectedEntryKey == null || selectedEntryKey != entryKey;
 
         BoxDecoration decorationEntryHeader = BoxDecoration(border: borderHeader, color: (isNotHighlighted ? Color(0xFFAAAAAA) : Color(0xFFFFFFFF)));
-        BoxDecoration decorationEntryValue = BoxDecoration(border: borderValue, color: Color(0xffffffff));
+        BoxDecoration decorationEntryValue = BoxDecoration(color: Color(0xffffffff));
 
         Container containerHeader = Container(decoration: decorationEntryHeader, child: Center(child: Text(entryKey, key: Key('headerItemTitle'),)));
         Container containerValue = Container(decoration: decorationEntryValue, child: Center(child: Text(count.toString(), key: Key('headerItemValue'))));

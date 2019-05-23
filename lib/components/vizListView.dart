@@ -114,7 +114,7 @@ class SwipeButton extends StatelessWidget {
       padding: EdgeInsets.all(5),
       child: FlatButton(
           color:  onPressed == null ? Color(0xFFC1C1C1): color,
-          splashColor: Color(0xFFFFFFFF),
+          splashColor: onPressed == null ? Color(0xFFC1C1C1) : color,
           child: Text(
             text,
             maxLines: 1,
