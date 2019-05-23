@@ -131,7 +131,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
       String userID = dataEntry.columns.where((DataEntryCell dataCell) => dataCell.column == 'User').first.toString();
 
       bool allowReassignToMySelf = userID != Session().user.userID;
-      print(allowReassignToMySelf);
+      //print(allowReassignToMySelf);
 
       return allowReassignToMySelf;
 
