@@ -1,3 +1,4 @@
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:techviz/components/vizDialog.dart';
 import 'package:techviz/components/vizListView.dart';
@@ -6,6 +7,7 @@ import 'package:techviz/components/vizSummary.dart';
 import 'package:techviz/model/dataEntry.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/managerViewPresenter.dart';
+import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:techviz/ui/home.dart';
 import 'package:techviz/ui/reassignTask.dart';
@@ -154,7 +156,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
       MachineReservation machineReservationContent = MachineReservation(standID: standID);
 
       Navigator.of(context).push<dynamic>(MaterialPageRoute<dynamic>(builder: (BuildContext context) => machineReservationContent)).then((dynamic result) {
-        if (result != null && result) {
+        if (result != null) {
           setState(() {
             _slotFloorLoading = true;
             _slotFloorList = null;
@@ -169,7 +171,47 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
 
   SwipeAction onSlotFloorSwipeLeft(){
     Function onSlotActionButtonClickedCallback = (dynamic entry) {
-      print('Cancel reservation');
+      DataEntry dataEntry = (entry as DataEntry);
+      String standID = dataEntry.id;
+
+      showDialog<bool>(context: context, builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: Text('Cancel reservation'),
+          content: Text("Cancel reservation for ${standID}?"),
+          actions: <Widget>[
+            FlatButton(
+              child: Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+            FlatButton(
+              child: Text("Yes"),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+            )
+          ],
+        );
+      }).then((bool cancel){
+        if(cancel){
+          final Flushbar _loadingBar = VizDialog.LoadingBar(message: 'Cancelling reservation...');
+          _loadingBar.show(context);
+
+          Repository().slotFloorRepository.cancelReservation(standID).then((dynamic result) {
+            setState(() {
+              _slotFloorLoading = true;
+              _slotFloorList = null;
+            });
+            _presenter.loadSlotFloorSummary();
+
+            _loadingBar.dismiss();
+          }).catchError((dynamic error){
+            _loadingBar.dismiss();
+          });
+        }
+      });
     };
     return SwipeAction('Remove reservation', onSlotActionButtonClickedCallback);
   }
@@ -180,8 +222,6 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
     });
     _presenter.loadSlotFloorSummary();
   }
-
-
 
   @override
   void onOpenTasksLoaded(List<DataEntryGroup> list) {
