@@ -41,6 +41,7 @@ class ReassignTaskState extends State<ReassignTask> implements IReassignPresente
   void onUserLoaded(List<ReassignUser> list) {
     setState(() {
       _userList = list;
+      _userList.sort((a, b)=> a.userID.compareTo(b.userID));
     });
   }
 
