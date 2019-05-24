@@ -177,26 +177,26 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
       showDialog<bool>(context: context, builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: Text('Cancel reservation'),
-          content: Text("Cancel reservation for ${standID}?"),
+          title: Text('Remove Reservation'),
+          content: Text("Are you sure you want to remove the reservation for this slot (${standID})?"),
           actions: <Widget>[
             FlatButton(
-              child: Text("Cancel"),
+              child: Text("No"),
               onPressed: () {
                 Navigator.of(context).pop(false);
               },
             ),
-            FlatButton(
-              child: Text("Yes"),
+            RaisedButton(
+              child: Text("Yes", style: TextStyle(color: Colors.white)),
               onPressed: () {
                 Navigator.of(context).pop(true);
               },
             )
           ],
         );
-      }).then((bool cancel){
-        if(cancel){
-          final Flushbar _loadingBar = VizDialog.LoadingBar(message: 'Cancelling reservation...');
+      }).then((bool remove){
+        if(remove !=null && remove){
+          final Flushbar _loadingBar = VizDialog.LoadingBar(message: 'Removing reservation...');
           _loadingBar.show(context);
 
           Repository().slotFloorRepository.cancelReservation(standID).then((dynamic result) {
