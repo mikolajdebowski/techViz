@@ -98,7 +98,7 @@ class ManagerViewPresenter{
       List<SlotMachine> slotMachineList = result as List<SlotMachine>;
 
       bool allowToReserve(dynamic statusID){
-        return statusID != '1';
+        return statusID == '3';
       }
 
       bool allowToCancelReservation(dynamic statusID){
