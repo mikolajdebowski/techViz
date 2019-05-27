@@ -10,7 +10,7 @@ class VizLegend extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<Widget> children = [];
-    if (items != null && items.length > 0) {
+    if (items != null && items.isNotEmpty) {
       items.forEach((VizLegendModel legend) {
         children.add(Row(
           mainAxisAlignment: MainAxisAlignment.end,

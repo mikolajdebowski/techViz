@@ -12,7 +12,7 @@ import 'package:techviz/repository/session.dart';
 import 'package:techviz/repository/userSectionRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
-typedef void FncOnUserSectionsChanged(List<UserSection> sections);
+typedef FncOnUserSectionsChanged = void Function(List<UserSection> sections);
 
 class SectionSelector extends StatefulWidget {
   SectionSelector({Key key, @required this.onUserSectionsChanged}) : super(key: key);

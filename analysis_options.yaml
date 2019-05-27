@@ -59,14 +59,21 @@ linter:
     - prefer_const_declarations
     - prefer_conditional_assignment
     - prefer_const_constructors_in_immutables
-
-
+    - prefer_contains
+    - prefer_equal_for_default_values
+    - prefer_final_fields
+    - prefer_foreach
+    - prefer_generic_function_type_aliases
+    - prefer_initializing_formals
+#    - prefer_is_empty
+#    - prefer_is_not_empty
 #PENDING REFACTORING
   #   - prefer_collection_literals
   #   - prefer_const_constructors
   #   - prefer_const_literals_to_create_immutables
   #   - file_names # not yet tested
   #   - non_constant_identifier_names
+  #   - prefer_final_locals
 
 
 #RULES DISABLED BY DEFAULT OF FLUTTER COMMUNITY
@@ -79,28 +86,11 @@ linter:
 #    # - one_member_abstracts # too many false positives
 #    # - only_throw_errors # https://github.com/flutter/flutter/issues/5792
 #    # - parameter_assignments # we do this commonly
-#    - prefer_adjacent_string_concatenation
-#    - prefer_asserts_in_initializer_lists
-#    - prefer_collection_literals
-#    - prefer_conditional_assignment
-#    - prefer_const_constructors
-#    - prefer_const_constructors_in_immutables
-#    - prefer_const_declarations
-#    - prefer_const_literals_to_create_immutables
 #    # - prefer_constructors_over_static_methods # not yet tested
-#    - prefer_contains
-#    - prefer_equal_for_default_values
 #    # - prefer_expression_function_bodies # conflicts with https://github.com/flutter/flutter/wiki/Style-guide-for-Flutter-repo#consider-using--for-short-functions-and-methods
-#    - prefer_final_fields
-#    - prefer_final_locals
-#    - prefer_foreach
 #    # - prefer_function_declarations_over_variables # not yet tested
-#    - prefer_generic_function_type_aliases
-#    - prefer_initializing_formals
 #    # - prefer_int_literals # not yet tested
 #    # - prefer_interpolation_to_compose_strings # not yet tested
-#    - prefer_is_empty
-#    - prefer_is_not_empty
 #    - prefer_iterable_whereType
 #    # - prefer_mixin # https://github.com/dart-lang/language/issues/32
 #    # - prefer_null_aware_operators # disable until NNBD, see https://github.com/flutter/flutter/pull/32711#issuecomment-492930932

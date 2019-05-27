@@ -22,8 +22,8 @@ class MachineReservation extends StatefulWidget {
 }
 
 class MachineReservationState extends State<MachineReservation> {
-  ReservationTimeRepository _reservationTimeRepo = Repository().reservationTimeRepository;
-  SlotFloorRepository _slotMachineRepositoryRepo = Repository().slotFloorRepository;
+  final ReservationTimeRepository _reservationTimeRepo = Repository().reservationTimeRepository;
+  final SlotFloorRepository _slotMachineRepositoryRepo = Repository().slotFloorRepository;
 
   List<ReservationTime> times = [];
   final _formKey = GlobalKey<FormState>();

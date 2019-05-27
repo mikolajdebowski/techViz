@@ -16,7 +16,7 @@ class SlotFloorRepository implements IRepository<SlotMachine> {
 
   StreamController<SlotMachine> _slotMachineController;
   StreamController<List<SlotMachine>> _remoteSlotMachineController;
-  SlotMachineCache _cache = SlotMachineCache();
+  final SlotMachineCache _cache = SlotMachineCache();
 
   StreamController<List<SlotMachine>> get remoteSlotMachineController{
     return _remoteSlotMachineController;

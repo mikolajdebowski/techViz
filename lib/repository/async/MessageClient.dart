@@ -10,7 +10,7 @@ class MessageClient {
   static final MessageClient _instance = MessageClient._internal();
   Client _rabbitmqClient;
   String _exchangeName;
-  Duration _timeoutDuration = Duration(seconds: 10);
+  final Duration _timeoutDuration = Duration(seconds: 10);
   Consumer _consumer;
   Exchange _exchange;
 
@@ -155,7 +155,7 @@ class MessageClient {
     });
   }
 
-  Future PublishMessage(dynamic object, String routingKeyPattern, {bool wait : false, Function parser}) async {
+  Future PublishMessage(dynamic object, String routingKeyPattern, {bool wait = false, Function parser}) async {
     Completer<void> _completer = Completer<void>();
     _completer.future.timeout(_timeoutDuration, onTimeout: (){
       _completer.completeError(TimeoutException('Max connect timeout reached after ${_timeoutDuration.inSeconds} seconds.'));
@@ -193,7 +193,7 @@ class MessageClient {
     return _completer.future;
   }
 
-  StreamController ListenQueue(String routingKeyPattern, Function onData, {Function onError, bool timeOutEnabled = true, Function parser, bool appendDeviceID : true}) {
+  StreamController ListenQueue(String routingKeyPattern, Function onData, {Function onError, bool timeOutEnabled = true, Function parser, bool appendDeviceID = true}) {
     String routingKey = '${routingKeyPattern}';
     if(appendDeviceID!=null && appendDeviceID){
       routingKey += '.${_deviceID}';

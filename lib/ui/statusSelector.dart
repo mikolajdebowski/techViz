@@ -12,7 +12,7 @@ import 'package:techviz/repository/session.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 import 'package:flushbar/flushbar.dart';
 
-typedef void FncOnTapOK(UserStatus selected);
+typedef FncOnTapOK = void Function(UserStatus selected);
 
 class StatusSelector extends StatefulWidget {
   StatusSelector({Key key, @required this.onTapOK, this.preSelectedID}) : super(key: key) {

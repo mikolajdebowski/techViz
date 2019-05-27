@@ -15,9 +15,9 @@ abstract class IEscalationPathPresenter {
 
 class EscalationPathPresenter{
   IEscalationPathPresenter _view;
-  EscalationPathRepository _escalationPathRepository = Repository().escalationPathRepository;
-  TaskTypeRepository _taskTypeRepository = Repository().taskTypeRepository;
-  TaskRepository _taskRepository = Repository().taskRepository;
+  final EscalationPathRepository _escalationPathRepository = Repository().escalationPathRepository;
+  final TaskTypeRepository _taskTypeRepository = Repository().taskTypeRepository;
+  final TaskRepository _taskRepository = Repository().taskRepository;
 
   EscalationPathPresenter(this._view);
 

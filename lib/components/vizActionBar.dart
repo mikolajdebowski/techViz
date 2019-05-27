@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/vizElevated.dart';
 
-typedef void OnCustomBackButtonActionTapped();
+typedef OnCustomBackButtonActionTapped = void Function();
 
 class ActionBar extends StatefulWidget implements PreferredSizeWidget {
   final OnCustomBackButtonActionTapped onCustomBackButtonActionTapped;

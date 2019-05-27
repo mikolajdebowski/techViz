@@ -21,7 +21,7 @@ class SlotFloorState extends State<SlotFloor> with WidgetsBindingObserver {
 
   final FocusNode _txtSearchFocusNode = FocusNode();
   final TextEditingController _txtSearchController = TextEditingController();
-  SlotFloorRepository _repository = Repository().slotFloorRepository;
+  final SlotFloorRepository _repository = Repository().slotFloorRepository;
   String _searchKey;
 
   @override

@@ -13,7 +13,7 @@ class Profile extends StatefulWidget {
 }
 
 class ProfileState extends State<Profile> implements IRoleListPresenter<Role>, IStatusListPresenter<UserStatus> {
-  List<ProfileItem> _userInfo = [];
+  final List<ProfileItem> _userInfo = [];
   RoleListPresenter roleListPresenter;
   StatusListPresenter statusListPresenter;
 
