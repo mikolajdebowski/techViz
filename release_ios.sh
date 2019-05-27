@@ -8,9 +8,8 @@
 echo Performing clean
 flutter clean
 
-echo Performing packages get
-flutter packages get
-
+#echo Performing packages get
+#flutter packages get
 #flutter analyze
 #flutter test
 
@@ -25,11 +24,12 @@ xcodebuild -workspace ios/Runner.xcworkspace \
             -configuration Release archive \
             -archivePath build/ios/Temp/temp.xcarchive
 
-echo Archive IPA file
+echo Archiving IPA file
 xcodebuild -exportArchive \
             -archivePath build/ios/Temp/temp.xcarchive \
             -exportOptionsPlist ios/Runner/exportOptionsAdHoc.plist -exportPath build/ios/Temp/
 
+echo Pushing to HockeyApp
 curl \
   -F "status=2" \
   -F "notify=0" \
