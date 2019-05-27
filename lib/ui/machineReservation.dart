@@ -5,7 +5,6 @@ import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizDialog.dart';
 import 'package:techviz/model/reservationTime.dart';
-import 'package:techviz/model/slotMachine.dart';
 import 'package:techviz/repository/slotFloorRepository.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/reservationTimeRepository.dart';

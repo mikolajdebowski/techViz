@@ -62,12 +62,7 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
       );
     }
     else{
-      Map<String,int> count = Map<String,int>();
-      widget.data.forEach((DataEntryGroup group){
-        count[group.headerTitle] = group.entries.length;
-      });
-
-      VizSummaryHeader header = VizSummaryHeader(headerTitle: widget.title, entries: count, actions: this, selectedEntryKey: _selectedEntryKey, isProcessing: widget.isProcessing);
+      VizSummaryHeader header = VizSummaryHeader(headerTitle: widget.title, entries: widget.data, actions: this, selectedEntryKey: _selectedEntryKey, isProcessing: widget.isProcessing);
 
       if (!_expanded) {
         container = Container(

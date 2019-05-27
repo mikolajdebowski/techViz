@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:techviz/model/dataEntry.dart';
 import 'package:techviz/model/slotMachine.dart';
 import 'package:techviz/model/taskStatus.dart';
@@ -27,23 +28,42 @@ class ManagerViewPresenter{
         List<TaskStatus> listStatuses = await Repository().taskStatusRepository.getAll();
         List<TaskType> listTypes = await Repository().taskTypeRepository.getAll();
 
-        DataEntry mapToDataEntry(Map<String, dynamic> mapEntry){
-
-          List<DataEntryCell> columns = List<DataEntryCell>();
-          columns.add(DataEntryCell('Location', mapEntry['Location'], alignment: DataAlignment.center));
-
-          Iterable<TaskType> listTypeWhere = listTypes.where((TaskType tt) => tt.taskTypeId == int.parse(mapEntry['TaskTypeID'].toString()));
-          Iterable<TaskStatus> listStatusesWhere = listStatuses.where((TaskStatus ts) => ts.id == int.parse(mapEntry['TaskStatusID'].toString()));
-
-          columns.add(DataEntryCell('Type', listTypeWhere!=null && listTypeWhere.length>0 ? listTypeWhere.first : mapEntry['TaskTypeID'].toString()));
-          columns.add(DataEntryCell('Status', listStatusesWhere!=null && listStatusesWhere.length>0 ? listStatusesWhere.first : mapEntry['TaskStatusID'].toString(), alignment: DataAlignment.center));
-          columns.add(DataEntryCell('User', mapEntry['UserID'], alignment: DataAlignment.center));
-
-          int elapsedTime = int.parse(mapEntry['ElapsedTime'].toString());
+        Function timeElapsedParsed = (String elapsedTimeInSeconds){
+          int elapsedTime = int.parse(elapsedTimeInSeconds);
           int hours = (elapsedTime/60).floor();
           int mins = (elapsedTime%60).ceil();
 
-          columns.add(DataEntryCell('Time Taken', '${hours.toString().padLeft(2, '0')}:${mins.toString().padLeft(2, '0')}', alignment: DataAlignment.center));
+          return '${hours.toString().padLeft(2, '0')}:${mins.toString().padLeft(2, '0')}';
+        };
+
+        DataEntry mapToDataEntry(Map<String, dynamic> mapEntry){
+
+          List<DataEntryCell> columns = List<DataEntryCell>();
+          Iterable<TaskType> listTypeWhere = listTypes.where((TaskType tt) => tt.taskTypeId == int.parse(mapEntry['TaskTypeID'].toString()));
+          Iterable<TaskStatus> listStatusesWhere = listStatuses.where((TaskStatus ts) => ts.id == int.parse(mapEntry['TaskStatusID'].toString()));
+
+          columns.add(DataEntryCell('Location', mapEntry['Location'], alignment: DataAlignment.center));
+          columns.add(DataEntryCell('Type', listTypeWhere!=null && listTypeWhere.length>0 ? listTypeWhere.first : mapEntry['TaskTypeID'].toString()));
+          columns.add(DataEntryCell('Status', listStatusesWhere!=null && listStatusesWhere.length>0 ? listStatusesWhere.first : mapEntry['TaskStatusID'].toString(), alignment: DataAlignment.center));
+          columns.add(DataEntryCell('User', mapEntry['UserID'], alignment: DataAlignment.center));
+          columns.add(DataEntryCell('Time Taken', timeElapsedParsed(mapEntry['ElapsedTime'].toString()), alignment: DataAlignment.center));
+
+          return DataEntry(mapEntry['_ID'].toString(), columns, onSwipeRightActionConditional: (){
+            String userID = mapEntry['UserID'].toString();
+            return userID == null || userID != Session().user.userID.toString();
+          });
+        }
+
+        DataEntry mapToDataEntryForUnassigned(Map<String, dynamic> mapEntry){
+
+          List<DataEntryCell> columns = List<DataEntryCell>();
+          Iterable<TaskType> listTypeWhere = listTypes.where((TaskType tt) => tt.taskTypeId == int.parse(mapEntry['TaskTypeID'].toString()));
+          Iterable<TaskStatus> listStatusesWhere = listStatuses.where((TaskStatus ts) => ts.id == int.parse(mapEntry['TaskStatusID'].toString()));
+
+          columns.add(DataEntryCell('Location', mapEntry['Location'], alignment: DataAlignment.center));
+          columns.add(DataEntryCell('Type', listTypeWhere!=null && listTypeWhere.length>0 ? listTypeWhere.first : mapEntry['TaskTypeID'].toString()));
+          columns.add(DataEntryCell('Status', listStatusesWhere!=null && listStatusesWhere.length>0 ? listStatusesWhere.first : mapEntry['TaskStatusID'].toString(), alignment: DataAlignment.center));
+          columns.add(DataEntryCell('Time Taken', timeElapsedParsed(mapEntry['ElapsedTime'].toString()), alignment: DataAlignment.center));
 
           return DataEntry(mapEntry['_ID'].toString(), columns, onSwipeRightActionConditional: (){
             String userID = mapEntry['UserID'].toString();
@@ -56,10 +76,9 @@ class ManagerViewPresenter{
         Iterable<Map<String,dynamic>> assignedWhere = result.where((Map<String,dynamic> map)=> (map['UserID'] != null && map['UserID'].toString().length>0) && map['TaskStatusID'] != '7');
         List<DataEntry> assignedList = assignedWhere != null ? assignedWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntry(d)).toList(): List<DataEntry>();
 
-
         //Unassigned: UserID is null OR TaskStatusID = 7 (reassigned)
         Iterable<Map<String,dynamic>> unassignedWhere = result.where((Map<String,dynamic> map)=> (map['UserID'] == null || map['UserID'].toString().length==0) || map['TaskStatusID'] == '7');
-        List<DataEntry> unassignedList = unassignedWhere != null ? unassignedWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntry(d)).toList(): List<DataEntry>();
+        List<DataEntry> unassignedList = unassignedWhere != null ? unassignedWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntryForUnassigned(d)).toList(): List<DataEntry>();
 
         //Overdue: TaskUrgencyID is 3 (overdue)
         Iterable<Map<String,dynamic>> overdueWhere = result.where((Map<String,dynamic> map)=> map['TaskUrgencyID'] == '3');
@@ -72,7 +91,7 @@ class ManagerViewPresenter{
         List<DataEntryGroup> group = List<DataEntryGroup>();
         group.add(DataEntryGroup('Assigned', assignedList));
         group.add(DataEntryGroup('Unassigned', unassignedList));
-        group.add(DataEntryGroup('Overdue', overdueList));
+        group.add(DataEntryGroup('Overdue', overdueList, highlightedDecoration: (){ return overdueList.length > 0 ? Color(0xFFFF0000): null; }));
         group.add(DataEntryGroup('Escalated', escalatedList));
 
         _view.onOpenTasksLoaded(group);
@@ -170,7 +189,7 @@ class ManagerViewPresenter{
       group.add(DataEntryGroup('Active Games', activeGamesList));
       group.add(DataEntryGroup('Head Count', headCountList));
       group.add(DataEntryGroup('Reserved', reservedList));
-      group.add(DataEntryGroup('Out of Service', outOfServiceList));
+      group.add(DataEntryGroup('Out of Service', outOfServiceList, highlightedDecoration: (){ return outOfServiceList.length > 0 ? Color(0xFFFF0000): null; }));
 
       _view.onSlotFloorSummaryLoaded(group);
     });

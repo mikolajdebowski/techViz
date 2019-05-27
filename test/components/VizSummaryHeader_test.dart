@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:techviz/components/vizSummaryHeader.dart';
+import 'package:techviz/model/dataEntry.dart';
 
 void main(){
 
@@ -32,12 +33,12 @@ void main(){
 
     testWidgets('should have 3 columns named Column1,Column2 and Column3 with values 1, 2 and 3 respectively', (WidgetTester tester) async {
 
-      Map<String,int> mapEntries = Map<String,int>();
-      mapEntries['Column 1'] = 3;
-      mapEntries['Column 2'] = 2;
-      mapEntries['Column 3'] = 1;
+      List<DataEntryGroup> listEntries = List<DataEntryGroup>();
+      listEntries.add(DataEntryGroup('Column 1', List<DataEntry>()));
+      listEntries.add(DataEntryGroup('Column 2', List<DataEntry>()));
+      listEntries.add(DataEntryGroup('Column 3', List<DataEntry>()));
 
-      VizSummaryHeader header = VizSummaryHeader(headerTitle:'header title', entries: mapEntries);
+      VizSummaryHeader header = VizSummaryHeader(headerTitle:'header title', entries: listEntries);
       await tester.pumpWidget(MaterialApp(home: header));
 
       Finder rowContainerFinder = find.byKey(Key('rowContainer'));
