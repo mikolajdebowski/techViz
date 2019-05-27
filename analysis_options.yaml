@@ -65,66 +65,39 @@ linter:
     - prefer_foreach
     - prefer_generic_function_type_aliases
     - prefer_initializing_formals
-#    - prefer_is_empty
-#    - prefer_is_not_empty
+    - prefer_iterable_whereType
+    - prefer_void_to_null
+    - prefer_typing_uninitialized_variables
+
 #PENDING REFACTORING
+  #   - prefer_single_quotes
+  #   - prefer_is_empty
+  #   - prefer_is_not_empty
   #   - prefer_collection_literals
   #   - prefer_const_constructors
   #   - prefer_const_literals_to_create_immutables
   #   - file_names # not yet tested
   #   - non_constant_identifier_names
   #   - prefer_final_locals
-
-
-#RULES DISABLED BY DEFAULT OF FLUTTER COMMUNITY
-#    # - invariant_booleans # too many false positives: https://github.com/dart-lang/linter/issues/811#
-#    # - join_return_with_assignment # not yet tested
-#    # - lines_longer_than_80_chars # not yet tested
-#    # - literal_only_boolean_expressions # too many false positives: https://github.com/dart-lang/sdk/issues/34181
-#    # - null_closures  # not yet tested
-#    # - omit_local_variable_types # opposite of always_specify_types
-#    # - one_member_abstracts # too many false positives
-#    # - only_throw_errors # https://github.com/flutter/flutter/issues/5792
-#    # - parameter_assignments # we do this commonly
-#    # - prefer_constructors_over_static_methods # not yet tested
-#    # - prefer_expression_function_bodies # conflicts with https://github.com/flutter/flutter/wiki/Style-guide-for-Flutter-repo#consider-using--for-short-functions-and-methods
-#    # - prefer_function_declarations_over_variables # not yet tested
-#    # - prefer_int_literals # not yet tested
-#    # - prefer_interpolation_to_compose_strings # not yet tested
-#    - prefer_iterable_whereType
-#    # - prefer_mixin # https://github.com/dart-lang/language/issues/32
-#    # - prefer_null_aware_operators # disable until NNBD, see https://github.com/flutter/flutter/pull/32711#issuecomment-492930932
-#    - prefer_single_quotes
-#    - prefer_typing_uninitialized_variables
-#    - prefer_void_to_null
-#    # - public_member_api_docs # enabled on a case-by-case basis; see e.g. packages/analysis_options.yaml
-#    - recursive_getters
-#    - slash_for_doc_comments
-#    - sort_constructors_first
-#    - sort_pub_dependencies
-#    - sort_unnamed_constructors_first
-#    # - super_goes_last # no longer needed w/ Dart 2
-#    - test_types_in_equals
-#    - throw_in_finally
-#    # - type_annotate_public_apis # subset of always_specify_types
-#    - type_init_formals
-#    # - unawaited_futures # too many false positives
-#    # - unnecessary_await_in_return # not yet tested
-#    - unnecessary_brace_in_string_interps
-#    - unnecessary_const
-#    - unnecessary_getters_setters
-#    # - unnecessary_lambdas # has false positives: https://github.com/dart-lang/linter/issues/498
-#    - unnecessary_new
-#    - unnecessary_null_aware_assignments
-#    - unnecessary_null_in_if_null_operators
-#    - unnecessary_overrides
-#    - unnecessary_parenthesis
-#    - unnecessary_statements
-#    - unnecessary_this
-#    - unrelated_type_equality_checks
-#    # - use_function_type_syntax_for_parameters # not yet tested
-#    - use_rethrow_when_possible
-#    # - use_setters_to_change_properties # not yet tested
-#    # - use_string_buffers # has false positives: https://github.com/dart-lang/sdk/issues/34182
-#    # - use_to_and_as_if_applicable # has false positives, so we prefer to catch this by code-review
-#    - valid_regexps
+  #    - recursive_getters
+  #    - slash_for_doc_comments
+  #    - sort_constructors_first
+  #    - sort_pub_dependencies
+  #    - sort_unnamed_constructors_first
+  #    - test_types_in_equals
+  #    - throw_in_finally
+  #    - type_init_formals
+  #    - unnecessary_brace_in_string_interps
+  #    - unnecessary_const
+  #    - unnecessary_getters_setters
+  #    - unnecessary_new
+  #    - unnecessary_null_aware_assignments
+  #    - unnecessary_null_in_if_null_operators
+  #    - unnecessary_overrides
+  #    - unnecessary_parenthesis
+  #    - unnecessary_statements
+  #    - unnecessary_this
+  #    - unrelated_type_equality_checks
+  #    - use_rethrow_when_possible
+  #    - valid_regexps
+  
