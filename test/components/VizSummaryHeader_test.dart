@@ -34,7 +34,7 @@ void main(){
 
     testWidgets('should have 3 columns named Column1,Column2 and Column3 with values 1, 2 and 3 respectively', (WidgetTester tester) async {
 
-      List<DataEntryGroup> listEntries = List<DataEntryGroup>();
+      List<DataEntryGroup> listEntries = <DataEntryGroup>[];
       listEntries.add(DataEntryGroup('Column 1', List<DataEntry>()));
       listEntries.add(DataEntryGroup('Column 2', List<DataEntry>()));
       listEntries.add(DataEntryGroup('Column 3', List<DataEntry>()));

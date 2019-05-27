@@ -6,7 +6,7 @@ class GroupedBarChart extends StatelessWidget {
   final List<charts.Series<dynamic, String>> seriesList;
   final bool animate;
 
-  GroupedBarChart(this.seriesList, {this.animate});
+  const GroupedBarChart(this.seriesList, {this.animate});
 
   @override
   Widget build(BuildContext context) {

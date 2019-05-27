@@ -103,7 +103,7 @@ class VizListViewState extends State<VizListView> {
 }
 
 class SwipeButton extends StatelessWidget {
-  SwipeButton({@required this.onPressed, @required this.text, this.color});
+  const SwipeButton({@required this.onPressed, @required this.text, this.color});
 
   final Color color;
   final GestureTapCallback onPressed;

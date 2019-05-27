@@ -11,7 +11,7 @@ class VizTaskItem extends StatelessWidget{
   final bool selected;
   final String urgencyHEXColor;
 
-  VizTaskItem(String this.id,
+  const VizTaskItem(String this.id,
       String this.title,
       int this.index,
       VizTaskListItemCallback this.itemTapCallback,

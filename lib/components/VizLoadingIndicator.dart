@@ -5,7 +5,7 @@ class VizLoadingIndicator extends StatelessWidget {
   final String message;
   final bool isLoading;
 
-  VizLoadingIndicator({this.message = 'Loading', this.isLoading = false});
+  const VizLoadingIndicator({this.message = 'Loading', this.isLoading = false});
   @override
   Widget build(BuildContext context) {
 

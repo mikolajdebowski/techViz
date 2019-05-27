@@ -52,7 +52,7 @@ class VizDialogButton extends StatelessWidget {
   final bool processing;
   final bool disabled;
 
-  VizDialogButton(this.title, this.action, {this.highlighted = true, this.processing = false, this.disabled = false});
+  const VizDialogButton(this.title, this.action, {this.highlighted = true, this.processing = false, this.disabled = false});
 
   @override
   Widget build(BuildContext context) {

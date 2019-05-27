@@ -7,7 +7,7 @@ class SimplePieChart extends StatelessWidget implements IVizChart{
   final List<charts.Series> seriesList;
   final bool animate;
 
-  SimplePieChart(this.seriesList, {this.animate});
+  const SimplePieChart(this.seriesList, {this.animate});
 
   @override
   Widget build(BuildContext context) {

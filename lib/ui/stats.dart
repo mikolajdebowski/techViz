@@ -7,8 +7,6 @@ import 'package:techviz/presenter/statsPresenter.dart';
 import 'package:swipedetector/swipedetector.dart';
 
 class Stats extends StatefulWidget {
-  Stats();
-
   @override
   State<StatefulWidget> createState() => StatsState();
 }

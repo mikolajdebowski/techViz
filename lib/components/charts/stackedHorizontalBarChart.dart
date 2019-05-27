@@ -6,7 +6,7 @@ class StackedHorizontalBarChart extends StatelessWidget {
   final List<charts.Series<dynamic, String>> seriesList;
   final bool animate;
 
-  StackedHorizontalBarChart(this.seriesList, {this.animate});
+  const StackedHorizontalBarChart(this.seriesList, {this.animate});
 
   @override
   Widget build(BuildContext context) {

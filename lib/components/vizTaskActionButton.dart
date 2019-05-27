@@ -7,7 +7,7 @@ class VizTaskActionButton extends StatelessWidget{
   final Function onTapCallback;
   final bool enabled;
 
-  VizTaskActionButton(this.title, this.colors, {this.onTapCallback, this.enabled = true});
+  const VizTaskActionButton(this.title, this.colors, {this.onTapCallback, this.enabled = true});
 
   @override
   Widget build(BuildContext context) {

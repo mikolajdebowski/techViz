@@ -10,7 +10,7 @@ class VizAlert{
         builder: (BuildContext context) {
           return Center(
               child: Padding(
-                padding: EdgeInsets.all(80.0),
+                padding: const EdgeInsets.all(80.0),
                 child: Text(message),
               ));
         });

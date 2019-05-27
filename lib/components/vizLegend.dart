@@ -5,7 +5,7 @@ import 'package:flutter/widgets.dart';
 class VizLegend extends StatelessWidget {
   final List<VizLegendModel> items;
 
-  VizLegend(this.items);
+  const VizLegend(this.items);
 
   @override
   Widget build(BuildContext context) {

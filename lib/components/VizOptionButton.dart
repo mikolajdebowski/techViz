@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 typedef OptionCallback = void Function(Object tag);
 
 class VizOptionButton extends StatelessWidget {
-  VizOptionButton(this.title, {
+  const VizOptionButton(this.title, {
         this.tag,
         this.onTap,
         this.flex = 1,

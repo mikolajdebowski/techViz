@@ -20,8 +20,8 @@ import 'package:logging/logging.dart';
 
 class Login extends StatefulWidget {
 
-  static final String USERNAME = 'USERNAME';
-  static final String PASSWORD = 'PASSWORD';
+  static const String USERNAME = 'USERNAME';
+  static const String PASSWORD = 'PASSWORD';
 
   @override
   State<StatefulWidget> createState() => LoginState();

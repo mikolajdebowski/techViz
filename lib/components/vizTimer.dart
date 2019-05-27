@@ -8,7 +8,7 @@ class VizTimer extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => VizTimerState();
   final DateTime timeStarted;
-  VizTimer({this.timeStarted});
+  const VizTimer({this.timeStarted});
 }
 
 class VizTimerState extends State<VizTimer> {

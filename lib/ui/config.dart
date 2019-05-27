@@ -7,7 +7,7 @@ import 'package:techviz/components/vizRainbow.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 class Config extends StatefulWidget {
-  static final String SERVERURL = 'SERVERURL';
+  static const String SERVERURL = 'SERVERURL';
 
   @override
   State<StatefulWidget> createState() => ConfigState();

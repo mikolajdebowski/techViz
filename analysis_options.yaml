@@ -51,9 +51,25 @@ linter:
     - list_remove_unrelated_type
     - no_adjacent_strings_in_list
     - no_duplicate_case_values
+    - overridden_fields
+    - package_api_docs
+    - package_names
+    - package_prefixed_library_names
+    - prefer_adjacent_string_concatenation
+    - prefer_const_declarations
+    - prefer_conditional_assignment
+    - prefer_const_constructors_in_immutables
 
-#   - file_names # not yet tested
-#   - non_constant_identifier_names
+
+#PENDING REFACTORING
+  #   - prefer_collection_literals
+  #   - prefer_const_constructors
+  #   - prefer_const_literals_to_create_immutables
+  #   - file_names # not yet tested
+  #   - non_constant_identifier_names
+
+
+#RULES DISABLED BY DEFAULT OF FLUTTER COMMUNITY
 #    # - invariant_booleans # too many false positives: https://github.com/dart-lang/linter/issues/811#
 #    # - join_return_with_assignment # not yet tested
 #    # - lines_longer_than_80_chars # not yet tested
@@ -62,10 +78,6 @@ linter:
 #    # - omit_local_variable_types # opposite of always_specify_types
 #    # - one_member_abstracts # too many false positives
 #    # - only_throw_errors # https://github.com/flutter/flutter/issues/5792
-#    - overridden_fields
-#    - package_api_docs
-#    - package_names
-#    - package_prefixed_library_names
 #    # - parameter_assignments # we do this commonly
 #    - prefer_adjacent_string_concatenation
 #    - prefer_asserts_in_initializer_lists

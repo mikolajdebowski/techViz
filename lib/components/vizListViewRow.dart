@@ -19,7 +19,7 @@ class SwipeAction {
 }
 
 class VizListViewRow extends StatefulWidget {
-  static final double rowHeight = 35.0;
+  static const double rowHeight = 35.0;
   final DataEntry dataEntry;
   final SwipeAction onSwipeLeft;
   final SwipeAction onSwipeRight;

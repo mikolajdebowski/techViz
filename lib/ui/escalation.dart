@@ -16,7 +16,7 @@ class EscalationForm extends StatefulWidget {
   final String _taskLocation;
   final OnEscalationResult onEscalationResult;
 
-  EscalationForm(this._taskID, this._taskLocation, this.onEscalationResult);
+  const EscalationForm(this._taskID, this._taskLocation, this.onEscalationResult);
 
   @override
   State<StatefulWidget> createState() => EscalationFormState();
