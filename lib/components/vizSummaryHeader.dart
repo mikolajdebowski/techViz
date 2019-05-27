@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:techviz/model/dataEntry.dart';
 
 abstract class VizSummaryHeaderActions {
   void onItemTap(String headerKey);
@@ -9,9 +10,10 @@ class VizSummaryHeader extends StatelessWidget {
   final double height = 75;
   final String headerTitle;
   final String selectedEntryKey;
-  final Map<String, int> entries;
+  final List<DataEntryGroup> entries;
   final VizSummaryHeaderActions actions;
   final bool isProcessing;
+
 
   VizSummaryHeader({Key key, this.headerTitle, this.entries, this.selectedEntryKey, this.actions, this.isProcessing = false}) : super(key: key);
 
@@ -26,25 +28,23 @@ class VizSummaryHeader extends StatelessWidget {
         itensChildren.add(CircularProgressIndicator());
     }
     else{
-      entries.forEach((final String entryKey, int count) {
+      entries.forEach((final DataEntryGroup dataEntryGroup) {
 
-        BorderSide bs = BorderSide(color: Colors.white, width: 1.0);
-        Border borderHeader;
+        BorderSide borderSide = BorderSide(color: Colors.white, width: 1.0);
 
-        if(isFirst){
-          borderHeader= Border(top: bs);
-          isFirst = false;
-        }else{
-          borderHeader= Border(left: bs, top: bs);
+        bool isNotHighlighted = selectedEntryKey == null || selectedEntryKey != dataEntryGroup.headerTitle;
+
+        BoxDecoration decorationEntryHeader = BoxDecoration(border: isFirst ? Border(top: borderSide) : Border(left: borderSide, top: borderSide), color: (isNotHighlighted ? Color(0xFFAAAAAA) : Color(0xFFFFFFFF)));
+        BoxDecoration decorationEntryValue = BoxDecoration(border: isFirst ? Border(top: borderSide, bottom: borderSide) : Border(left: borderSide, top: borderSide, bottom: borderSide), color: Color(0xFFFFFFFF));
+
+        Container containerHeader = Container(decoration: decorationEntryHeader, child: Center(child: Text(dataEntryGroup.headerTitle, key: Key('headerItemTitle'),)));
+
+        Color highlightedFontColor = Colors.black;
+        if(dataEntryGroup.highlightedDecoration!=null){
+          highlightedFontColor = dataEntryGroup.highlightedDecoration();
         }
 
-        bool isNotHighlighted = selectedEntryKey == null || selectedEntryKey != entryKey;
-
-        BoxDecoration decorationEntryHeader = BoxDecoration(border: borderHeader, color: (isNotHighlighted ? Color(0xFFAAAAAA) : Color(0xFFFFFFFF)));
-        BoxDecoration decorationEntryValue = BoxDecoration(color: Color(0xffffffff));
-
-        Container containerHeader = Container(decoration: decorationEntryHeader, child: Center(child: Text(entryKey, key: Key('headerItemTitle'),)));
-        Container containerValue = Container(decoration: decorationEntryValue, child: Center(child: Text(count.toString(), key: Key('headerItemValue'))));
+        Container containerValue = Container(decoration: decorationEntryValue, child: Center(child: Text(dataEntryGroup.entries.length.toString(), style: TextStyle(color: highlightedFontColor), key: Key('headerItemValue'))));
 
         Column column = Column(
           children: <Widget>[
@@ -59,7 +59,7 @@ class VizSummaryHeader extends StatelessWidget {
               child: column,
               onTap: () {
                 if (actions != null) {
-                  actions.onItemTap(entryKey);
+                  actions.onItemTap(dataEntryGroup.headerTitle);
                 }
               },
             ),

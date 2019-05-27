@@ -1,10 +1,14 @@
+import 'dart:ui';
+
 typedef ActionConditional = bool Function();
+typedef HighlightedDecoration = Color Function();
 
 class DataEntryGroup{
   final String headerTitle;
   final List<DataEntry> entries;
+  final HighlightedDecoration highlightedDecoration;
 
-  DataEntryGroup(this.headerTitle, this.entries);
+  DataEntryGroup(this.headerTitle, this.entries, {this.highlightedDecoration});
 }
 
 class DataEntry{

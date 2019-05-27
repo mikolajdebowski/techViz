@@ -19,7 +19,6 @@ class ReassignTaskState extends State<ReassignTask> implements IReassignPresente
   String _selectedValue;
   List<ReassignUser> _userList;
   ReassignPresenter _presenter;
-  bool _processing = false;
 
   int _sortColumnIndex = 0;
   bool _sortAscending = true;
@@ -138,20 +137,11 @@ class ReassignTaskState extends State<ReassignTask> implements IReassignPresente
     if (_selectedValue == null) {
       return;
     }
-    setState(() {
-      _processing = true;
-    });
 
     _presenter.reassign(widget.taskID, _selectedValue).then((dynamic result) {
-      setState(() {
-        _processing = false;
-      });
       Navigator.of(context).pop(true);
     }).catchError((dynamic error){
       //TODO: HANDLE proper error message
-      setState(() {
-        _processing = false;
-      });
     });
   }
 }

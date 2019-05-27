@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:techviz/model/dataEntry.dart';
 import 'package:techviz/model/slotMachine.dart';
 import 'package:techviz/model/taskStatus.dart';
@@ -51,11 +52,12 @@ class ManagerViewPresenter{
           });
         }
 
+
+
         //from ACT-1344
         //Assigned: UserID is not null AND TaskStatusID is not equal to 7 (reassigned)
         Iterable<Map<String,dynamic>> assignedWhere = result.where((Map<String,dynamic> map)=> (map['UserID'] != null && map['UserID'].toString().length>0) && map['TaskStatusID'] != '7');
         List<DataEntry> assignedList = assignedWhere != null ? assignedWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntry(d)).toList(): List<DataEntry>();
-
 
         //Unassigned: UserID is null OR TaskStatusID = 7 (reassigned)
         Iterable<Map<String,dynamic>> unassignedWhere = result.where((Map<String,dynamic> map)=> (map['UserID'] == null || map['UserID'].toString().length==0) || map['TaskStatusID'] == '7');
@@ -72,7 +74,7 @@ class ManagerViewPresenter{
         List<DataEntryGroup> group = List<DataEntryGroup>();
         group.add(DataEntryGroup('Assigned', assignedList));
         group.add(DataEntryGroup('Unassigned', unassignedList));
-        group.add(DataEntryGroup('Overdue', overdueList));
+        group.add(DataEntryGroup('Overdue', overdueList, highlightedDecoration: (){ return overdueList.length > 0 ? Color(0xFFFF0000): null; }));
         group.add(DataEntryGroup('Escalated', escalatedList));
 
         _view.onOpenTasksLoaded(group);
@@ -170,7 +172,7 @@ class ManagerViewPresenter{
       group.add(DataEntryGroup('Active Games', activeGamesList));
       group.add(DataEntryGroup('Head Count', headCountList));
       group.add(DataEntryGroup('Reserved', reservedList));
-      group.add(DataEntryGroup('Out of Service', outOfServiceList));
+      group.add(DataEntryGroup('Out of Service', outOfServiceList, highlightedDecoration: (){ return outOfServiceList.length > 0 ? Color(0xFFFF0000): null; }));
 
       _view.onSlotFloorSummaryLoaded(group);
     });
