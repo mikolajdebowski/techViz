@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:techviz/model/dataEntry.dart';
+import 'package:techviz/components/dataEntry/dataEntry.dart';
+import 'package:techviz/components/dataEntry/dataEntryCell.dart';
+import 'package:techviz/components/dataEntry/dataEntryGroup.dart';
 import 'package:techviz/model/slotMachine.dart';
 import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/model/taskType.dart';

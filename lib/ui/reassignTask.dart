@@ -33,7 +33,7 @@ class ReassignTaskState extends State<ReassignTask> implements IReassignPresente
 
   @override
   void onLoadError(dynamic error) {
-    // TODO: implement onLoadError
+    // TODO(rmathias): implement onLoadError
   }
 
   @override
@@ -141,7 +141,7 @@ class ReassignTaskState extends State<ReassignTask> implements IReassignPresente
     _presenter.reassign(widget.taskID, _selectedValue).then((dynamic result) {
       Navigator.of(context).pop(true);
     }).catchError((dynamic error){
-      //TODO: HANDLE proper error message
+      // TODO(rmathias): HANDLE proper error message
     });
   }
 }

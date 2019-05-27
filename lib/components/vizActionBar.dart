@@ -22,7 +22,7 @@ class ActionBar extends StatefulWidget implements PreferredSizeWidget {
   @override
   ActionBarState createState() => ActionBarState();
 
-  // TODO: implement preferredSize
+  // TODO(rmathias): implement preferredSize
   @override
   Size get preferredSize => Size.fromHeight(barHeight);
 }

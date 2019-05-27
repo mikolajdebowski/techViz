@@ -14,7 +14,7 @@ class ProcessorSlotFloorRepository extends ProcessorLiveTable<SlotMachine> imple
 
   @override
   Future<List<SlotMachine>> fetch() {
-    //TODO: REFACTOR THIS METHOD TO RETURN A GENERIC FUTURE AND NOT A LIST OF THIS MODEL
+    // TODO(rmathias): REFACTOR THIS METHOD TO RETURN A GENERIC FUTURE AND NOT A LIST OF THIS MODEL
     Completer<List<SlotMachine>> _completer = Completer<List<SlotMachine>>();
 
     super.fetch().then((dynamic livetableResult){

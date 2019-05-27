@@ -23,7 +23,7 @@ class ProcessorStatsTodayRepository extends ProcessorLiveTable<dynamic> implemen
     }
   }
 
-  // TODO: just mock data for demo
+  // TODO(rmathias): just mock data for demo
   @override
   Future fetch() async {
     print('Fetching '+this.toString());

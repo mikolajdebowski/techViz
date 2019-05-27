@@ -21,7 +21,7 @@ class MessageClient {
     return _instance;
   }
 
-  MessageClient._internal() {}
+  MessageClient._internal();
 
   Future Init() async {
     print('MessageClient: Init');

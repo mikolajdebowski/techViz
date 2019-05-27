@@ -1,10 +1,12 @@
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:techviz/components/dataEntry/dataEntry.dart';
+import 'package:techviz/components/dataEntry/dataEntryCell.dart';
+import 'package:techviz/components/dataEntry/dataEntryGroup.dart';
 import 'package:techviz/components/vizDialog.dart';
 import 'package:techviz/components/vizListView.dart';
 import 'package:techviz/components/vizListViewRow.dart';
 import 'package:techviz/components/vizSummary.dart';
-import 'package:techviz/model/dataEntry.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/managerViewPresenter.dart';
 import 'package:techviz/repository/repository.dart';
@@ -254,7 +256,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
 
   @override
   void onLoadError(dynamic error) {
-    // TODO: implement onLoadError
+    // TODO(rmathias): implement onLoadError
   }
 
 
@@ -264,12 +266,12 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
   //MASTERVIEW EVENTS
   @override
   void onUserSectionsChanged(Object obj) {
-    // TODO: implement onUserSectionsChanged
+    // TODO(rmathias): implement onUserSectionsChanged
   }
 
   @override
   void onUserStatusChanged(UserStatus us) {
-    // TODO: implement onUserStatusChanged
+    // TODO(rmathias): implement onUserStatusChanged
   }
 }
 

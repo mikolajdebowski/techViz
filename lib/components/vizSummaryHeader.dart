@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:techviz/model/dataEntry.dart';
+
+import 'dataEntry/dataEntryGroup.dart';
 
 abstract class VizSummaryHeaderActions {
   void onItemTap(String headerKey);

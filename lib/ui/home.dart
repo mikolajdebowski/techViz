@@ -108,7 +108,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     _userStatusText = userStatusSelected.description;
     _isOnline = userStatusSelected.isOnline;
 
-    homeChildKey.currentState.onUserStatusChanged(userStatusSelected); //TODO: NULL?
+    homeChildKey.currentState.onUserStatusChanged(userStatusSelected); // TODO(rmathias): NULL?
   }
 
   void goToSectionSelector() {

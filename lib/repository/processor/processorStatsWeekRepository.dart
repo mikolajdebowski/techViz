@@ -1,10 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:core';
+
 import 'dart:ui';
 import 'package:charts_common/common.dart';
 import 'package:flutter/services.dart';
 import 'package:techviz/repository/remoteRepository.dart';
-import 'dart:convert';
-import 'dart:core';
 import 'package:techviz/components/charts/vizChart.dart';
 
 class ProcessorStatsWeekRepository extends IRemoteRepository<dynamic>{

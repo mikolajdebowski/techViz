@@ -92,7 +92,8 @@ class HomeAttendantState extends State<HomeAttendant> with WidgetsBindingObserve
 
   @override
   void onTaskListLoaded(List<Task> result) {
-    if(!mounted) return;
+    if(!mounted)
+      return;
 
     setState(() {
       _taskList = result;
@@ -107,11 +108,12 @@ class HomeAttendantState extends State<HomeAttendant> with WidgetsBindingObserve
 
   @override
   void onLoadError(dynamic error) {
-    // TODO: implement onLoadError
+    // TODO(rmathias): implement onLoadError
   }
 
   void onTaskItemTapCallback(String taskID) {
-    if(!mounted) return;
+    if(!mounted)
+      return;
 
     setState(() {
       _selectedTask = _taskList.where((Task task) => task.id == taskID).first;
@@ -642,7 +644,8 @@ class HomeAttendantState extends State<HomeAttendant> with WidgetsBindingObserve
   }
 
   void reloadTasks() {
-    if(!mounted) return;
+    if(!mounted)
+      return;
 
     setState(() {
       _isLoadingTasks = true;

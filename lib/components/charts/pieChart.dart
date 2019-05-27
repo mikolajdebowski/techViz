@@ -32,7 +32,7 @@ class SimplePieChart extends StatelessWidget implements IVizChart{
 
   @override
   void load() {
-    // TODO: implement load
+    // TODO(rmathias): implement load
   }
 
 }

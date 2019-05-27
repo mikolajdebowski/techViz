@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:techviz/components/vizListViewRow.dart';
-import 'package:techviz/model/dataEntry.dart';
+import 'dataEntry/dataEntry.dart';
+import 'dataEntry/dataEntryCell.dart';
+import 'vizListViewRow.dart';
 
 typedef SwipeActionCallback = void Function(dynamic tag);
 typedef OnScroll = void Function(ScrollingStatus scroll);

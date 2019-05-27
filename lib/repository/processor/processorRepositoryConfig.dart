@@ -1,7 +1,7 @@
 import 'dart:async';
-
-import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 import 'dart:convert';
+import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
+
 
 class ProcessorRepositoryConfig {
   static final ProcessorRepositoryConfig _singleton = new ProcessorRepositoryConfig._internal();

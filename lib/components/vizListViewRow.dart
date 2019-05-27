@@ -3,7 +3,9 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:techviz/components/vizListView.dart';
 import 'package:techviz/components/vizShimmer.dart';
-import 'package:techviz/model/dataEntry.dart';
+
+import 'dataEntry/dataEntry.dart';
+import 'dataEntry/dataEntryCell.dart';
 
 typedef onSwipingCallback = void Function(
     bool isOpen, GlobalKey<SlidableState> key);

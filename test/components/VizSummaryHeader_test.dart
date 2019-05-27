@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:techviz/components/dataEntry/dataEntry.dart';
+import 'package:techviz/components/dataEntry/dataEntryGroup.dart';
 import 'package:techviz/components/vizSummaryHeader.dart';
-import 'package:techviz/model/dataEntry.dart';
 
 void main(){
 
