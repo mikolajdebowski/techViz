@@ -167,7 +167,7 @@ class VizListViewRowState extends State<VizListViewRow> {
       actions: widget.onSwipeRight == null ? [] : [rightButtonContainer],
       secondaryActions: widget.onSwipeLeft == null ? [] : [leftButtonContainer],
       dismissal: SlidableDismissal(
-        dismissThresholds: <SlideActionType, double>{
+        dismissThresholds: const <SlideActionType, double>{
           SlideActionType.secondary: 1.0,
           SlideActionType.primary: 1.0
         },

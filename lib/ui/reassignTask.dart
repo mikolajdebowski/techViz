@@ -117,7 +117,7 @@ class ReassignTaskState extends State<ReassignTask> implements IReassignPresente
       child: innerWidget,
     );
 
-    BoxDecoration defaultBgDeco = BoxDecoration(gradient: LinearGradient(colors: [Color(0xFF636f7e), Color(0xFF9aa8b0)], begin: Alignment.topCenter, end: Alignment.bottomCenter));
+    BoxDecoration defaultBgDeco = BoxDecoration(gradient: LinearGradient(colors: const [Color(0xFF636f7e), Color(0xFF9aa8b0)], begin: Alignment.topCenter, end: Alignment.bottomCenter));
     Container container = Container(
         decoration: defaultBgDeco,
         constraints: BoxConstraints.expand(),

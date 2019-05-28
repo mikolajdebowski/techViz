@@ -192,7 +192,7 @@ class LoginState extends State<Login> {
 
     var backgroundDecoration = BoxDecoration(
         gradient: LinearGradient(
-            colors: [Color(0xFFd6dfe3), Color(0xFFb1c2cb)],
+            colors: const [Color(0xFFd6dfe3), Color(0xFFb1c2cb)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             tileMode: TileMode.repeated));

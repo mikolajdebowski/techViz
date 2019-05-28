@@ -32,7 +32,7 @@ class ProcessorRepositoryConfig {
 
     _documentID = documentMobile['ID'] as String;
 
-    String documentStr = await client.get("visualDoc/${_documentID}.json?&itemCount=200");
+    String documentStr = await client.get("visualDoc/$_documentID.json?&itemCount=200");
     dynamic documentJson = json.decode(documentStr);
     List<dynamic> liveTableslist = documentJson['liveDataDefinition']['liveTables'] as List<dynamic>;
 
@@ -57,7 +57,7 @@ class ProcessorRepositoryConfig {
 
     LiveTable lt = _liveTables.firstWhere((LiveTable lt) => lt.tags == tagID, orElse: () => null);
     if(lt==null){
-      throw Exception('No livetable for TAG ${tagID}');
+      throw Exception('No livetable for TAG $tagID');
     }
     return lt;
   }
@@ -68,7 +68,7 @@ class ProcessorRepositoryConfig {
 
     LiveTable lt = GetLiveTable(livetableTagID);
 
-    return 'live/${_documentID}/${lt.id}/select.json';
+    return 'live/$_documentID/${lt.id}/select.json';
   }
 
 

@@ -16,8 +16,8 @@ class MockSlotMachineRouting implements IRouting<SlotMachine> {
       Random rnd = Random();
       num selection = min + rnd.nextInt(max - min);
 
-      var standPartID = '${selection.toString().padLeft(2, '0')}';
-      var _standID = '${standPartID}-${standPartID}-${standPartID}';
+      String standPartID = '${selection.toString().padLeft(2, '0')}';
+      String _standID = '$standPartID-$standPartID-$standPartID';
 
       int minStatus = 0;
       int maxStatus = 3;

@@ -6,9 +6,8 @@ import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 class ProcessorTaskRepository implements ITaskRepository{
 
-  /**
-   * fetch data from rest VizProcessor endpoint and store locally
-   */
+  ///fetch data from rest VizProcessor endpoint and store locally
+
   @override
   Future<dynamic> fetch()  {
     print('Fetching '+ toString());
@@ -18,7 +17,7 @@ class ProcessorTaskRepository implements ITaskRepository{
 
     ProcessorRepositoryConfig config = ProcessorRepositoryConfig();
     String liveTableID = config.GetLiveTable(LiveTableType.TECHVIZ_MOBILE_TASK.toString()).id;
-    String url = 'live/${config.DocumentID}/${liveTableID}/select.json';
+    String url = 'live/${config.DocumentID}/$liveTableID/select.json';
 
     client.get(url).then((String rawResult) async{
       dynamic decoded = json.decode(rawResult);

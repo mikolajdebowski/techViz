@@ -37,7 +37,7 @@ class MessageClient {
     _deviceID = deviceInfo.DeviceID;
 
     //UNIQUE DEVICE QUEUE
-    String queueName = "mobile.${_deviceID}";
+    String queueName = "mobile.$_deviceID";
 
     Completer<void> _completer = Completer<void>();
     _rabbitmqClient = null;
@@ -111,7 +111,7 @@ class MessageClient {
   }
 
   void _addRoutingKeyListener(String routingKey, StreamController<AmqpMessage> subscription) async{
-    print('_addRoutingKeyListener  ${routingKey}');
+    print('_addRoutingKeyListener  $routingKey');
     await _bindQueue(routingKey);
 
     if(!_mapStreamControllers.containsKey(routingKey)){
@@ -121,7 +121,7 @@ class MessageClient {
   }
 
   void _removeRoutingKeyListener(String routingKey){
-    print('_removeRoutingKeyListener  ${routingKey}');
+    print('_removeRoutingKeyListener  $routingKey');
     _consumer.queue.unbind(_exchange, routingKey);
     if(_mapStreamControllers.containsKey(routingKey)){
       _mapStreamControllers.remove(routingKey);
@@ -162,7 +162,7 @@ class MessageClient {
     });
 
     if(wait!=null && wait){
-      String routingKey = '${routingKeyPattern}.update.${_deviceID}';
+      String routingKey = '$routingKeyPattern.update.$_deviceID';
       StreamController<AmqpMessage> sc = StreamController<AmqpMessage>();
       sc.stream.listen((AmqpMessage message){
         _removeRoutingKeyListener(routingKey);
@@ -184,7 +184,7 @@ class MessageClient {
     props.contentType = 'application/json';
 
     String encoded = JsonEncoder().convert(mapObject);
-    _exchange.publish(encoded, "${routingKeyPattern}.update", properties: props);
+    _exchange.publish(encoded, "$routingKeyPattern.update", properties: props);
 
     if(!wait){
       _completer.complete();
@@ -194,9 +194,9 @@ class MessageClient {
   }
 
   StreamController ListenQueue(String routingKeyPattern, Function onData, {Function onError, bool timeOutEnabled = true, Function parser, bool appendDeviceID = true}) {
-    String routingKey = '${routingKeyPattern}';
+    String routingKey = '$routingKeyPattern';
     if(appendDeviceID!=null && appendDeviceID){
-      routingKey += '.${_deviceID}';
+      routingKey += '.$_deviceID';
     }
 
     void onCancel(){

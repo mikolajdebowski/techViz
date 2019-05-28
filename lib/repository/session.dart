@@ -51,7 +51,7 @@ class Session extends PropertyChangeNotifier {
     ConnectionStatus oldValue = connectionStatus;
     connectionStatus = newStatus;
 
-    print('Connection status changed: ${oldValue} to ${newStatus}');
+    print('Connection status changed: $oldValue to $newStatus');
 
     notifyPropertyChange(#connectionStatus, oldValue, newStatus);
   }

@@ -106,7 +106,7 @@ class ProfileState extends State<Profile> implements IRoleListPresenter<Role>, I
       ),
       decoration: BoxDecoration(
           gradient: LinearGradient(
-              colors: [Color(0xFF586676), Color(0xFF8B9EA7)],
+              colors: const [Color(0xFF586676), Color(0xFF8B9EA7)],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               tileMode: TileMode.repeated)),

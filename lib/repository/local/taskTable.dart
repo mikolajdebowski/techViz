@@ -87,17 +87,17 @@ class TaskTable {
     row.forEach((String key, dynamic value)
     {
         if(value == null){
-          sql += " ${key} = null,";
+          sql += " $key = null,";
         }
         else if(value.runtimeType == String || value.runtimeType == DateTime){
-          sql += " ${key} = '${value}',";
+          sql += " $key = '$value',";
         }
         else if(value.runtimeType == bool){
           bool bValue = value as bool;
-          sql += " ${key} = ${bValue ? 1: 0},";
+          sql += " $key = ${bValue ? 1: 0},";
         }
         else {
-          sql += " ${key} = ${value},";
+          sql += " $key = $value,";
         }
     });
     sql = sql.substring(0, sql.length - 1);

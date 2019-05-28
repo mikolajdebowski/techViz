@@ -39,7 +39,7 @@ class VizButton extends StatelessWidget {
         innerWidget = innerText;
       }
       else{
-        Image icon = Image(image: AssetImage('assets/images/${iconName}'), height: 30.0,);
+        Image icon = Image(image: AssetImage('assets/images/$iconName'), height: 30.0,);
         innerWidget = Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[icon,Padding(child: innerText, padding: EdgeInsets.only(left: 10.0))],
@@ -81,7 +81,7 @@ class VizButton extends StatelessWidget {
     var disabledBg = [Color(0xFFD3D3D3), Color(0xFFD3D3D3)];
 
     return BoxDecoration(
-        boxShadow: [BoxShadow(color: Color(0xAA000000), offset: Offset(2.0, 2.0), blurRadius: 2.0)],
+        boxShadow: const [BoxShadow(color: Color(0xAA000000), offset: Offset(2.0, 2.0), blurRadius: 2.0)],
         border: Border.all(color: highlighted? Colors.transparent : Colors.white),
         gradient: LinearGradient(
             colors: enabled == false ? disabledBg: (highlighted ? highlightBg : defaultBg),

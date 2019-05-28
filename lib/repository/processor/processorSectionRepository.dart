@@ -17,7 +17,7 @@ class ProcessorSectionRepository implements IRemoteRepository<Role> {
 
     var config = ProcessorRepositoryConfig();
     String liveTableID = config.GetLiveTable(LiveTableType.TECHVIZ_MOBILE_SECTION.toString()).id;
-    String url = 'live/${config.DocumentID}/${liveTableID}/select.json';
+    String url = 'live/${config.DocumentID}/$liveTableID/select.json';
 
     client.get(url).then((String rawResult) async {
       dynamic decoded = json.decode(rawResult);

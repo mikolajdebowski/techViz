@@ -37,7 +37,7 @@ class TaskRepository implements IRepository<Task>{
         " INNER JOIN TaskStatus ts on t.TASKSTATUSID == ts.TaskStatusID "
         " INNER JOIN TaskType tt on t.TASKTYPEID == tt.TaskTypeID "
         " INNER JOIN TaskUrgency tu on t.TaskUrgencyID == tu.ID "
-        " WHERE t.TASKSTATUSID in (1,2,3) AND t.USERID = '${userID}' "
+        " WHERE t.TASKSTATUSID in (1,2,3) AND t.USERID = '$userID' "
         " ORDER BY t.TASKCREATED ASC;";
 
     List<Map<String, dynamic>> queryResult = await localRepo.db.rawQuery(sql);
@@ -60,7 +60,7 @@ class TaskRepository implements IRepository<Task>{
         ",ts.TaskStatusDescription "
         ",tt.TaskTypeDescription "
         ",tt.LookupName as TaskTypeLookupName "
-        "FROM TASK t INNER JOIN TaskStatus ts on t.TASKSTATUSID == ts.TaskStatusID INNER JOIN TaskType tt on t.TASKTYPEID == tt.TaskTypeID WHERE t._ID == '${taskID}';";
+        "FROM TASK t INNER JOIN TaskStatus ts on t.TASKSTATUSID == ts.TaskStatusID INNER JOIN TaskType tt on t.TASKTYPEID == tt.TaskTypeID WHERE t._ID == '$taskID';";
 
     List<Map<String, dynamic>> queryResult = await LocalRepository().db.rawQuery(sql);
 

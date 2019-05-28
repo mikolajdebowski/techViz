@@ -32,7 +32,7 @@ class VizOptionButton extends StatelessWidget {
       innerWidget = innerText;
     }
     else{
-      Image icon = Image(image: AssetImage('assets/images/${iconName}'), height: 30.0,);
+      Image icon = Image(image: AssetImage('assets/images/$iconName'), height: 30.0,);
       innerWidget = Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[icon,Padding(child: innerText, padding: EdgeInsets.only(left: 10.0))],
@@ -81,9 +81,9 @@ class VizOptionButton extends StatelessWidget {
 
   BoxDecoration get DefaultBoxDecoration{
     return BoxDecoration(
-        boxShadow: [BoxShadow(color: Color(0xAA000000), offset: Offset(3.0, 3.0), blurRadius: 3.0)],
+        boxShadow: const [BoxShadow(color: Color(0xAA000000), offset: Offset(3.0, 3.0), blurRadius: 3.0)],
         gradient: LinearGradient(
-            colors: [Color(0xFFBDCCD4), Color(0xFFEBF0F2)],
+            colors: const [Color(0xFFBDCCD4), Color(0xFFEBF0F2)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter),
         borderRadius: BorderRadius.circular(4.0));
@@ -91,9 +91,9 @@ class VizOptionButton extends StatelessWidget {
 
   BoxDecoration get DisabledBoxDecoration{
     return BoxDecoration(
-        boxShadow: [BoxShadow(color: Color(0xAA000000), offset: Offset(3.0, 3.0), blurRadius: 3.0)],
+        boxShadow: const [BoxShadow(color: Color(0xAA000000), offset: Offset(3.0, 3.0), blurRadius: 3.0)],
         gradient: LinearGradient(
-            colors: [Color(0xFF888888), Color(0xFFAAAAAA)],
+            colors: const [Color(0xFF888888), Color(0xFFAAAAAA)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter),
         borderRadius: BorderRadius.circular(4.0));
@@ -101,9 +101,9 @@ class VizOptionButton extends StatelessWidget {
 
   BoxDecoration get HighlightedBoxDecoration{
     return BoxDecoration(
-        boxShadow: [BoxShadow(color: Color(0xAA000000), offset: Offset(3.0, 2.0), blurRadius: 3.0)],
+        boxShadow: const [BoxShadow(color: Color(0xAA000000), offset: Offset(3.0, 2.0), blurRadius: 3.0)],
         gradient: LinearGradient(
-            colors: [Color(0xFF66B5E1), Color(0xFF0C7DC2), Color(0xFF00649C)],
+            colors: const [Color(0xFF66B5E1), Color(0xFF0C7DC2), Color(0xFF00649C)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter),
         borderRadius: BorderRadius.circular(4.0));

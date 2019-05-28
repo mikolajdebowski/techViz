@@ -18,7 +18,7 @@ class ProcessorUserStatusRepository implements IRemoteRepository<UserStatus>{
 
     var config = ProcessorRepositoryConfig();
     String liveTableID = config.GetLiveTable(LiveTableType.TECHVIZ_MOBILE_USER_STATUS.toString()).id;
-    String url = 'live/${config.DocumentID}/${liveTableID}/select.json';
+    String url = 'live/${config.DocumentID}/$liveTableID/select.json';
 
     client.get(url).then((String rawResult) async {
 

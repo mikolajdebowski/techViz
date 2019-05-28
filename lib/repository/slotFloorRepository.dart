@@ -77,7 +77,7 @@ class SlotFloorRepository implements IRepository<SlotMachine> {
 
     DeviceInfo info = await Utils.deviceInfo;
 
-    dynamic message = {'deviceId': '${info.DeviceID}', 'userId': '${userID}', 'standId': '${standId}', 'playerId': '${playerID}', 'reservationTimeId': int.parse(time), 'reservationStatusId': 0, 'siteId': 1};
+    dynamic message = {'deviceId': '${info.DeviceID}', 'userId': '$userID', 'standId': '$standId', 'playerId': '$playerID', 'reservationTimeId': int.parse(time), 'reservationStatusId': 0, 'siteId': 1};
 
     remoteRouting.PublishMessage(message).then((dynamic result) {
       _completer.complete(result);
@@ -93,7 +93,7 @@ class SlotFloorRepository implements IRepository<SlotMachine> {
 
     DeviceInfo info = await Utils.deviceInfo;
 
-    dynamic message = {'deviceId': '${info.DeviceID}', 'standId': '${standId}', 'reservationStatusId': 1, 'siteId': 1};
+    dynamic message = {'deviceId': '${info.DeviceID}', 'standId': '$standId', 'reservationStatusId': 1, 'siteId': 1};
 
     remoteRouting.PublishMessage(message).then((dynamic result) {
       _completer.complete(result);

@@ -71,7 +71,7 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
 
   @override
   Widget build(BuildContext context) {
-    var defaultBgDeco = BoxDecoration(gradient: LinearGradient(colors: [Color(0xFF636f7e), Color(0xFF9aa8b0)], begin: Alignment.topCenter, end: Alignment.bottomCenter));
+    var defaultBgDeco = BoxDecoration(gradient: LinearGradient(colors: const [Color(0xFF636f7e), Color(0xFF9aa8b0)], begin: Alignment.topCenter, end: Alignment.bottomCenter));
 
     var okBtn = VizButton(title: 'OK', highlighted: true, onTap: () => validate(context));
 

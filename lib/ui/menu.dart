@@ -68,7 +68,7 @@ class _MenuState extends State<Menu> {
           child: Column(
             children: <Widget>[Expanded(child: rowProfileSettings), Expanded(child: rowHelpAbout), rowLogoff],
           )),
-      decoration: BoxDecoration(gradient: LinearGradient(colors: [Color(0xFF586676), Color(0xFF8B9EA7)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
+      decoration: BoxDecoration(gradient: LinearGradient(colors: const [Color(0xFF586676), Color(0xFF8B9EA7)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
     );
 
     var safe = SafeArea(child: container);

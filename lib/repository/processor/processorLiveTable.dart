@@ -23,7 +23,7 @@ class ProcessorLiveTable<T> implements IRemoteRepository<T>{
 
     var config = ProcessorRepositoryConfig();
     String liveTableID = config.GetLiveTable(tableID).id;
-    String url = 'live/${config.DocumentID}/${liveTableID}/select.json';
+    String url = 'live/${config.DocumentID}/$liveTableID/select.json';
 
     client.get(url).then((String rawResult) async{
       dynamic decoded = json.decode(rawResult);

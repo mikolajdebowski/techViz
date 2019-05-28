@@ -21,8 +21,8 @@ class VizTaskItem extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
 
-    Color urgencyColorStart = urgencyHEXColor!= null ? Color(int.parse("0xFF${urgencyHEXColor}")) : Color(0xFF45505D);
-    Color urgencyColorEnd = urgencyHEXColor!= null ? Color(int.parse("0xAA${urgencyHEXColor}")) : Color(0xFF45505D);
+    Color urgencyColorStart = urgencyHEXColor!= null ? Color(int.parse("0xFF$urgencyHEXColor")) : Color(0xFF45505D);
+    Color urgencyColorEnd = urgencyHEXColor!= null ? Color(int.parse("0xAA$urgencyHEXColor")) : Color(0xFF45505D);
 
     List<Color> mainBackgroundColor = selected ? [Color(0xFF65b1d9), Color(0xFF0268a2)] : [Color(0xFFB2C7CF), Color(0xFFE4EDEF)];
     Color locationColor =  selected ? Colors.white : Colors.black45;

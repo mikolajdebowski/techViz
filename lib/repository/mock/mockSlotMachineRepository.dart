@@ -12,15 +12,15 @@ class MockSlotMachineRepository implements IRemoteRepository<SlotMachine> {
       List<SlotMachine> listToReturn =  <SlotMachine>[];
       for (int loop = 0; loop < 99; loop++) {
 
-        var standPartID = '${loop.toString().padLeft(2, '0')}';
+        String standPartID = '${loop.toString().padLeft(2, '0')}';
 
-        var _standID = '${standPartID}-${standPartID}-${standPartID}';
-        var _machineTypeName = 'GAME ${standPartID}';
-        var _machineStatusID = '1';
-        var _machineStatusDescription = 'ETC';
-        var _denom = 0.01;
+        String _standID = '$standPartID-$standPartID-$standPartID';
+        String _machineTypeName = 'GAME $standPartID';
+        String _machineStatusID = '1';
+        String _machineStatusDescription = 'ETC';
+        double _denom = 0.01;
 
-        var inst = SlotMachine(
+        SlotMachine inst = SlotMachine(
             standID: _standID,
             machineTypeName: _machineTypeName,
             machineStatusID:_machineStatusID,

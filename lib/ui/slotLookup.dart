@@ -159,7 +159,7 @@ class SlotFloorState extends State<SlotFloor> with WidgetsBindingObserver {
         color = Colors.red;
         break;
     }
-    return Image.asset("assets/images/ic_machine_${iconName}.png", color: color);
+    return Image.asset("assets/images/ic_machine_$iconName.png", color: color);
   }
 
   @override
@@ -281,7 +281,7 @@ class SlotFloorState extends State<SlotFloor> with WidgetsBindingObserver {
         });
 
     var body = Container(
-      decoration: BoxDecoration(gradient: LinearGradient(colors: [Color(0xFF586676), Color(0xFF8B9EA7)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
+      decoration: BoxDecoration(gradient: LinearGradient(colors: const [Color(0xFF586676), Color(0xFF8B9EA7)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
       child: Column(
         children: <Widget>[header, Expanded(child: loading ? loadindIndicator : Container(child: builder, color: Colors.white))],
       ),

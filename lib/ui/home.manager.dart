@@ -51,7 +51,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
 
     return Container(
       constraints: BoxConstraints.expand(),
-      decoration: BoxDecoration(gradient: LinearGradient(colors: [Color(0xFF586676), Color(0xFF8B9EA7)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
+      decoration: BoxDecoration(gradient: LinearGradient(colors: const [Color(0xFF586676), Color(0xFF8B9EA7)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
       child: SingleChildScrollView(
         controller: _mainController,
         child: Column(
@@ -180,7 +180,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
         // return object of type Dialog
         return AlertDialog(
           title: Text('Remove Reservation'),
-          content: Text("Are you sure you want to remove the reservation for this slot (${standID})?"),
+          content: Text("Are you sure you want to remove the reservation for this slot ($standID)?"),
           actions: <Widget>[
             FlatButton(
               child: Text("No"),

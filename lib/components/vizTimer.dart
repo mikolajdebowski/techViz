@@ -25,7 +25,6 @@ class VizTimerState extends State<VizTimer> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     if(widget.timeStarted != null){
@@ -37,7 +36,7 @@ class VizTimerState extends State<VizTimer> {
         }
 
         _peridic = Timer.periodic(Duration(milliseconds: 500), (Timer t) {
-          var now = DateTime.now().toUtc();
+          DateTime now = DateTime.now().toUtc();
 
           if(widget == null || widget.timeStarted == null){
             t.cancel();
@@ -50,18 +49,17 @@ class VizTimerState extends State<VizTimer> {
             return;
           }
 
-          var _difference = now.difference(widget.timeStarted);
+          Duration _difference = now.difference(widget.timeStarted);
 
-
-          var hours = _difference.inHours;
-          var mins = _difference.inMinutes - (_difference.inHours * 60);
-          var secs = _difference.inSeconds - (_difference.inMinutes * 60);
+          int hours = _difference.inHours;
+          int mins = _difference.inMinutes - (_difference.inHours * 60);
+          int secs = _difference.inSeconds - (_difference.inMinutes * 60);
 
           String format = 'mm:ss';
-          String timeStr = '${mins}:${secs}';
+          String timeStr = '$mins:$secs';
           if (hours > 0) {
             format = 'H:mm:ss';
-            timeStr = '${hours}:${mins}:${secs}';
+            timeStr = '$hours:$mins:$secs';
           }
 
           try{

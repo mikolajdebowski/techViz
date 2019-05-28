@@ -116,7 +116,7 @@ class MachineReservationState extends State<MachineReservation> {
         constraints: BoxConstraints.expand(),
         decoration: BoxDecoration(
             gradient: LinearGradient(
-                colors: [Color(0xFF586676), Color(0xFF8B9EA7)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
+                colors: const [Color(0xFF586676), Color(0xFF8B9EA7)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
         child: Padding(padding: EdgeInsets.all(5.0), child: body));
 
     VizButton okBtn = VizButton(

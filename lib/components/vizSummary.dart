@@ -48,7 +48,7 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
         borderRadius: BorderRadius.circular(4.0),
         border: Border.all(color: Color(0xFFFFFFFF)),
         gradient: LinearGradient(
-            colors: [Color(0xFF81919D), Color(0xFFAAB7BD)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated));
+            colors: const [Color(0xFF81919D), Color(0xFFAAB7BD)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated));
 
 
     Container container;

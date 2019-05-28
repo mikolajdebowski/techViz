@@ -18,13 +18,13 @@ class ProcessorRoleRepository extends IRemoteRepository<Role>{
 
     var config = ProcessorRepositoryConfig();
     String liveTableID = config.GetLiveTable(LiveTableType.TECHVIZ_MOBILE_ROLE.toString()).id;
-    String url = 'live/${config.DocumentID}/${liveTableID}/select.json';
+    String url = 'live/${config.DocumentID}/$liveTableID/select.json';
 
     client.get(url).then((String rawResult) async {
       dynamic decoded = json.decode(rawResult);
       List<dynamic> rows = decoded['Rows'] as List<dynamic>;
 
-      var _columnNames = (decoded['ColumnNames'] as String).split(',');
+      List<String> _columnNames = (decoded['ColumnNames'] as String).split(',');
 
       LocalRepository localRepo = LocalRepository();
       await localRepo.open();

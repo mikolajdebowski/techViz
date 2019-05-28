@@ -158,7 +158,7 @@ class HomeAttendantState extends State<HomeAttendant> with WidgetsBindingObserve
             children: <Widget>[
               Padding(
                 padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                child: Text('Cancel Task ${location}'),
+                child: Text('Cancel Task $location'),
               ),
               Divider(
                 color: Colors.grey,
@@ -255,7 +255,7 @@ class HomeAttendantState extends State<HomeAttendant> with WidgetsBindingObserve
   Widget build(BuildContext context) {
     final defaultHeaderDecoration = BoxDecoration(
         border: Border.all(color: Colors.black, width: 0.5),
-        gradient: LinearGradient(colors: [Color(0xFF4D4D4D), Color(0xFF000000)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated));
+        gradient: LinearGradient(colors: const [Color(0xFF4D4D4D), Color(0xFF000000)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated));
 
     //LEFT PANEL WIDGETS
     var listTasks = <Widget>[];
@@ -303,7 +303,7 @@ class HomeAttendantState extends State<HomeAttendant> with WidgetsBindingObserve
                 Text('0 Pending', style: TextStyle(color: Colors.orange)),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
+                  children: const <Widget>[
                     Text('Priority', style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic)),
                     ImageIcon(AssetImage("assets/images/ic_arrow_up.png"), size: 20.0, color: Colors.grey)
                   ],
@@ -372,7 +372,7 @@ class HomeAttendantState extends State<HomeAttendant> with WidgetsBindingObserve
     var actionBoxDecoration = BoxDecoration(
         borderRadius: BorderRadius.circular(6.0),
         border: Border.all(color: Color(0xFFFFFFFF)),
-        gradient: LinearGradient(colors: [Color(0xFF81919D), Color(0xFFAAB7BD)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated));
+        gradient: LinearGradient(colors: const [Color(0xFF81919D), Color(0xFFAAB7BD)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated));
 
     Widget taskBody;
 
@@ -486,7 +486,7 @@ class HomeAttendantState extends State<HomeAttendant> with WidgetsBindingObserve
           String tierColorHexStr = _selectedTask.playerTierColorHEX;
           if (tier != null && tierColorHexStr != null) {
             tierColorHexStr = tierColorHexStr.replaceAll('#', '');
-            var hexColor = Color(int.parse('0xFF${tierColorHexStr}'));
+            var hexColor = Color(int.parse('0xFF$tierColorHexStr'));
             boxDecoForTierWidget = BoxDecoration(borderRadius: BorderRadius.circular(6.0), color: hexColor);
           } else {
             boxDecoForTierWidget = BoxDecoration(borderRadius: BorderRadius.circular(6.0), border: Border.all(color: Colors.white));
@@ -587,13 +587,13 @@ class HomeAttendantState extends State<HomeAttendant> with WidgetsBindingObserve
     if (_selectedTask != null) {
       bool enableButtons = _selectedTask.dirty == false;
       if (_selectedTask.taskStatus.id == 2 || _selectedTask.taskStatus.id == 3) {
-        rightActionWidgets.add(VizTaskActionButton('Cancel', [Color(0xFF433177), Color(0xFFF2003C)], enabled: enableButtons, onTapCallback: () {
+        rightActionWidgets.add(VizTaskActionButton('Cancel', const [Color(0xFF433177), Color(0xFFF2003C)], enabled: enableButtons, onTapCallback: () {
           _showCancellationDialog(_selectedTask.id);
         }));
       }
 
       if (_selectedTask.taskStatus.id == 3) {
-        rightActionWidgets.add(VizTaskActionButton('Escalate', [Color(0xFF1356ab), Color(0xFF23ABE7)], enabled: enableButtons, onTapCallback: () {
+        rightActionWidgets.add(VizTaskActionButton('Escalate', const [Color(0xFF1356ab), Color(0xFF23ABE7)], enabled: enableButtons, onTapCallback: () {
 //          _showConfirmationDialogWithOptions('Escalate a task').then((bool choice) {
 //            if (choice) {
 //              updateTaskStatus("5");
@@ -626,7 +626,7 @@ class HomeAttendantState extends State<HomeAttendant> with WidgetsBindingObserve
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       body: Container(
-          decoration: BoxDecoration(gradient: LinearGradient(colors: [Color(0xFF586676), Color(0xFF8B9EA7)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
+          decoration: BoxDecoration(gradient: LinearGradient(colors: const [Color(0xFF586676), Color(0xFF8B9EA7)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
           child: Row(
             children: <Widget>[leftPanel, centerPanel, rightPanel],
           )),
