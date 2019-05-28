@@ -37,7 +37,7 @@ class ProcessorRepositoryConfig {
     List<dynamic> liveTableslist = documentJson['liveDataDefinition']['liveTables'] as List<dynamic>;
 
     //filter only livetables where tags property length is > 0
-    liveTableslist = liveTableslist.where((dynamic lt)=> (lt['tags'] as String).length>0).toList();
+    liveTableslist = liveTableslist.where((dynamic lt)=> (lt['tags'] as String).isNotEmpty).toList();
 
     _liveTables = List<LiveTable>();
     for(dynamic liveTable in liveTableslist){

@@ -35,7 +35,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
   String get getSectionsText {
     String sections = "";
-    if (currentSections.length == 0) {
+    if (currentSections.isEmpty) {
       sections = "-";
     }
 

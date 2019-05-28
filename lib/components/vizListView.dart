@@ -58,7 +58,7 @@ class VizListViewState extends State<VizListView> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.data.length == 0) {
+    if (widget.data.isEmpty) {
       return Padding(
         padding: EdgeInsets.only(top: paddingValue, bottom: paddingValue),
         child: Text('No data to show'),
@@ -84,7 +84,7 @@ class VizListViewState extends State<VizListView> {
     List<VizListViewRow> rowsList =
         widget.data.map((DataEntry row) => VizListViewRow(row, onSwipeLeft: widget.onSwipeLeft, onSwipeRight: widget.onSwipeRight, onSwiping: onRowSwiping)).toList();
 
-    double maxHeight = widget.data.length == 0 ? VizListViewRow.rowHeight : (widget.data.length < numOfRows ? widget.data.length * VizListViewRow.rowHeight : VizListViewRow.rowHeight * numOfRows);
+    double maxHeight = widget.data.isEmpty ? VizListViewRow.rowHeight : (widget.data.length < numOfRows ? widget.data.length * VizListViewRow.rowHeight : VizListViewRow.rowHeight * numOfRows);
 
     Container listViewContainer = Container(
       constraints: BoxConstraints(maxHeight: maxHeight),

@@ -64,7 +64,7 @@ class TaskRepository implements IRepository<Task>{
 
     List<Map<String, dynamic>> queryResult = await LocalRepository().db.rawQuery(sql);
 
-    return Future.value(queryResult.length>0? _fromMap(queryResult.first): null);
+    return Future.value(queryResult.isNotEmpty? _fromMap(queryResult.first): null);
   }
 
   Task _fromMap(Map<String, dynamic> task){

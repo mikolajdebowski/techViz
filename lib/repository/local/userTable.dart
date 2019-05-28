@@ -45,7 +45,7 @@ class UserTable{
     String sql = "SELECT UserID, UserName, UserRoleID, UserStatusID, StaffID FROM User WHERE UserID = ?";
     List<Map<String, dynamic>> queryResult = await localRepo.db.rawQuery(sql, [userID].toList());
 
-    if(queryResult.length>0){
+    if(queryResult.isNotEmpty){
       return User.fromMap(queryResult.first);
     }
 

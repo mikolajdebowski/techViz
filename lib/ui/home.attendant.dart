@@ -266,12 +266,12 @@ class HomeAttendantState extends State<HomeAttendant> with WidgetsBindingObserve
       listTasks.add(taskItem);
     }
 
-    var taskTextStr = listTasks.length == 0 ? 'No tasks' : (listTasks.length == 1 ? '1 Task' : '${listTasks.length} Tasks');
+    var taskTextStr = listTasks.isEmpty ? 'No tasks' : (listTasks.length == 1 ? '1 Task' : '${listTasks.length} Tasks');
 
     Widget listContainer = Center(child: null);
     if (_isLoadingTasks) {
       listContainer = Center(child: CircularProgressIndicator());
-    } else if (listTasks != null && listTasks.length > 0) {
+    } else if (listTasks != null && listTasks.isNotEmpty) {
       //list container
       listContainer = ListView(
         children: listTasks,
@@ -478,7 +478,7 @@ class HomeAttendantState extends State<HomeAttendant> with WidgetsBindingObserve
       if (_selectedTask != null) {
         taskDetailsHeader.add(taskInfo);
 
-        if (_selectedTask.playerID != null && _selectedTask.playerID.length > 0) {
+        if (_selectedTask.playerID != null && _selectedTask.playerID.isNotEmpty) {
           String playerName = '${_selectedTask.playerFirstName} ${_selectedTask.playerLastName}';
 
           BoxDecoration boxDecoForTierWidget;
@@ -567,7 +567,7 @@ class HomeAttendantState extends State<HomeAttendant> with WidgetsBindingObserve
                   ? taskBody
                   : Center(
                       child: Text(
-                      (_isLoadingTasks || _taskList.length == 0) ? '' : 'Select a Task',
+                      (_isLoadingTasks || _taskList.isEmpty) ? '' : 'Select a Task',
                       style: TextStyle(color: Colors.white, fontStyle: FontStyle.italic),
                     )))
         ],

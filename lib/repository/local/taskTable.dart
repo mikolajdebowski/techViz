@@ -33,7 +33,7 @@ class TaskTable {
   static Future<int> insertOrUpdate(dynamic toInsert) async {
     var toInsertList = toInsert as List<Map<String, dynamic>>;
 
-    if(toInsertList.length==0)
+    if(toInsertList.isEmpty)
       return Future.value(0);
 
 
@@ -51,7 +51,7 @@ class TaskTable {
         var batch = txn.batch();
 
         List<Map<String,dynamic>> exists = await txn.rawQuery("SELECT _ID FROM TASK WHERE _ID = '${entry['_ID'].toString()}';");
-        if(exists!=null && exists.length>0){
+        if(exists!=null && exists.isNotEmpty){
           print('task ${entry['LOCATION'].toString()} EXISTS! UPDATING WITH STATUSID ${entry['TASKSTATUSID'].toString()}');
           String sqlUpdate = buildUpdateSQL(entry);
           updatedRows = await txn.rawUpdate(sqlUpdate);

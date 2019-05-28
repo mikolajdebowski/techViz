@@ -43,7 +43,7 @@ class ProfileState extends State<Profile> implements IRoleListPresenter<Role>, I
 
     Widget subItem;
     if(_userInfo[index].columnName == 'UserStatusID'){
-      if(_statuses==null || _statuses.length==0){
+      if(_statuses==null || _statuses.isEmpty){
         subItem = Center(child: CircularProgressIndicator());
       }
       else{
@@ -53,7 +53,7 @@ class ProfileState extends State<Profile> implements IRoleListPresenter<Role>, I
       }
     }
     else if(_userInfo[index].columnName == 'UserRoleID'){
-      if(_roles==null || _roles.length==0){
+      if(_roles==null || _roles.isEmpty){
         subItem = Center(child: CircularProgressIndicator());
       }
       else{
@@ -77,7 +77,7 @@ class ProfileState extends State<Profile> implements IRoleListPresenter<Role>, I
 
   Widget _buildProfileList() {
     Widget list;
-    if (_userInfo.length > 0) {
+    if (_userInfo.isNotEmpty) {
       list = ListView.builder(
         itemCount: _userInfo.length,
         itemBuilder: _buildProfileItem,

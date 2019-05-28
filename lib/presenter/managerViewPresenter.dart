@@ -45,8 +45,8 @@ class ManagerViewPresenter{
           Iterable<TaskStatus> listStatusesWhere = listStatuses.where((TaskStatus ts) => ts.id == int.parse(mapEntry['TaskStatusID'].toString()));
 
           columns.add(DataEntryCell('Location', mapEntry['Location'], alignment: DataAlignment.center));
-          columns.add(DataEntryCell('Type', listTypeWhere!=null && listTypeWhere.length>0 ? listTypeWhere.first : mapEntry['TaskTypeID'].toString()));
-          columns.add(DataEntryCell('Status', listStatusesWhere!=null && listStatusesWhere.length>0 ? listStatusesWhere.first : mapEntry['TaskStatusID'].toString(), alignment: DataAlignment.center));
+          columns.add(DataEntryCell('Type', listTypeWhere!=null && listTypeWhere.isNotEmpty ? listTypeWhere.first : mapEntry['TaskTypeID'].toString()));
+          columns.add(DataEntryCell('Status', listStatusesWhere!=null && listStatusesWhere.isNotEmpty ? listStatusesWhere.first : mapEntry['TaskStatusID'].toString(), alignment: DataAlignment.center));
           columns.add(DataEntryCell('User', mapEntry['UserID'], alignment: DataAlignment.center));
           columns.add(DataEntryCell('Time Taken', timeElapsedParsed(mapEntry['ElapsedTime'].toString()), alignment: DataAlignment.center));
 
@@ -63,8 +63,8 @@ class ManagerViewPresenter{
           Iterable<TaskStatus> listStatusesWhere = listStatuses.where((TaskStatus ts) => ts.id == int.parse(mapEntry['TaskStatusID'].toString()));
 
           columns.add(DataEntryCell('Location', mapEntry['Location'], alignment: DataAlignment.center));
-          columns.add(DataEntryCell('Type', listTypeWhere!=null && listTypeWhere.length>0 ? listTypeWhere.first : mapEntry['TaskTypeID'].toString()));
-          columns.add(DataEntryCell('Status', listStatusesWhere!=null && listStatusesWhere.length>0 ? listStatusesWhere.first : mapEntry['TaskStatusID'].toString(), alignment: DataAlignment.center));
+          columns.add(DataEntryCell('Type', listTypeWhere!=null && listTypeWhere.isNotEmpty ? listTypeWhere.first : mapEntry['TaskTypeID'].toString()));
+          columns.add(DataEntryCell('Status', listStatusesWhere!=null && listStatusesWhere.isNotEmpty ? listStatusesWhere.first : mapEntry['TaskStatusID'].toString(), alignment: DataAlignment.center));
           columns.add(DataEntryCell('Time Taken', timeElapsedParsed(mapEntry['ElapsedTime'].toString()), alignment: DataAlignment.center));
 
           return DataEntry(mapEntry['_ID'].toString(), columns, onSwipeRightActionConditional: (){
@@ -75,11 +75,11 @@ class ManagerViewPresenter{
 
         //from ACT-1344
         //Assigned: UserID is not null AND TaskStatusID is not equal to 7 (reassigned)
-        Iterable<Map<String,dynamic>> assignedWhere = result.where((Map<String,dynamic> map)=> (map['UserID'] != null && map['UserID'].toString().length>0) && map['TaskStatusID'] != '7');
+        Iterable<Map<String,dynamic>> assignedWhere = result.where((Map<String,dynamic> map)=> (map['UserID'] != null && map['UserID'].toString().isNotEmpty) && map['TaskStatusID'] != '7');
         List<DataEntry> assignedList = assignedWhere != null ? assignedWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntry(d)).toList(): List<DataEntry>();
 
         //Unassigned: UserID is null OR TaskStatusID = 7 (reassigned)
-        Iterable<Map<String,dynamic>> unassignedWhere = result.where((Map<String,dynamic> map)=> (map['UserID'] == null || map['UserID'].toString().length==0) || map['TaskStatusID'] == '7');
+        Iterable<Map<String,dynamic>> unassignedWhere = result.where((Map<String,dynamic> map)=> (map['UserID'] == null || map['UserID'].toString().isEmpty) || map['TaskStatusID'] == '7');
         List<DataEntry> unassignedList = unassignedWhere != null ? unassignedWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntryForUnassigned(d)).toList(): List<DataEntry>();
 
         //Overdue: TaskUrgencyID is 3 (overdue)
@@ -87,13 +87,13 @@ class ManagerViewPresenter{
         List<DataEntry> overdueList = overdueWhere != null ? overdueWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntry(d)).toList(): List<DataEntry>();
 
         //Escalated: IsTechTask is 1 AND ParentID is not null (all escalated tasks are for technicians and have a parentID)
-        Iterable<Map<String,dynamic>> escalatedWhere = result.where((Map<String,dynamic> map)=> map['IsTechTask']  == '1' && (map['ParentID'] != null && map['ParentID'].toString().length>0));
+        Iterable<Map<String,dynamic>> escalatedWhere = result.where((Map<String,dynamic> map)=> map['IsTechTask']  == '1' && (map['ParentID'] != null && map['ParentID'].toString().isNotEmpty));
         List<DataEntry> escalatedList = escalatedWhere != null ? escalatedWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntry(d)).toList(): List<DataEntry>();
 
         List<DataEntryGroup> group = List<DataEntryGroup>();
         group.add(DataEntryGroup('Assigned', assignedList));
         group.add(DataEntryGroup('Unassigned', unassignedList));
-        group.add(DataEntryGroup('Overdue', overdueList, highlightedDecoration: (){ return overdueList.length > 0 ? Color(0xFFFF0000): null; }));
+        group.add(DataEntryGroup('Overdue', overdueList, highlightedDecoration: (){ return overdueList.isNotEmpty ? Color(0xFFFF0000): null; }));
         group.add(DataEntryGroup('Escalated', escalatedList));
 
         _view.onOpenTasksLoaded(group);
@@ -191,7 +191,7 @@ class ManagerViewPresenter{
       group.add(DataEntryGroup('Active Games', activeGamesList));
       group.add(DataEntryGroup('Head Count', headCountList));
       group.add(DataEntryGroup('Reserved', reservedList));
-      group.add(DataEntryGroup('Out of Service', outOfServiceList, highlightedDecoration: (){ return outOfServiceList.length > 0 ? Color(0xFFFF0000): null; }));
+      group.add(DataEntryGroup('Out of Service', outOfServiceList, highlightedDecoration: (){ return outOfServiceList.isNotEmpty ? Color(0xFFFF0000): null; }));
 
       _view.onSlotFloorSummaryLoaded(group);
     });

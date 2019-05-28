@@ -62,7 +62,7 @@ class SlotFloorRepository implements IRepository<SlotMachine> {
   }
 
   List<SlotMachine> filter(String key) {
-    if (key == null || key.length == 0)
+    if (key == null || key.isEmpty)
       return _cache.data;
 
     Iterable<SlotMachine> it = _cache.data.where((SlotMachine sm) => sm.standID.contains(key));

@@ -25,7 +25,7 @@ class VizSummaryHeader extends StatelessWidget {
     Radius defaultRadius = Radius.circular(3.0);
     bool isFirst = true;
 
-    if(entries==null || entries.length==0){
+    if(entries==null || entries.isEmpty){
         itensChildren.add(CircularProgressIndicator());
     }
     else{

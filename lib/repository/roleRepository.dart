@@ -12,7 +12,7 @@ class RoleRepository implements IRepository<Role>{
     LocalRepository localRepo = LocalRepository();
 
     String sqlQuery = "SELECT * FROM Role";
-    if(ids!=null || ids.length>0){
+    if(ids!=null || ids.isNotEmpty){
       sqlQuery += " WHERE UserRoleID IN (${ids.join(',')})";
     }
 

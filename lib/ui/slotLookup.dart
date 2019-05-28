@@ -212,7 +212,7 @@ class SlotFloorState extends State<SlotFloor> with WidgetsBindingObserver {
 
           var data = snapshot.data;
 
-          if (_searchKey != null && _searchKey.length > 0) {
+          if (_searchKey != null && _searchKey.isNotEmpty) {
             data = data.where((SlotMachine sm) => sm.standID.contains(_searchKey) || sm.machineTypeName.toLowerCase().contains(_searchKey.toLowerCase())).toList();
           }
 

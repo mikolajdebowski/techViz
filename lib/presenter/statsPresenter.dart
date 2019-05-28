@@ -48,7 +48,7 @@ class StatsPresenter {
       List<Widget> _chart5Children = data[5].map((ChartData cd)=> VizChart(GlobalKey(), [cd], ChartType.Pie)).toList();
       mapToReturn[5] = Column(children: <Widget>[Text('Percent of Tasks Escalated'), Expanded(child: GridView.count(childAspectRatio: 1.3, shrinkWrap: true, crossAxisCount: 2, children: _chart5Children),)]);
 
-      if (data[6] != null && data[6].length > 0) {
+      if (data[6] != null && data[6].isNotEmpty) {
         List<Widget> _children = [];
         data[6].forEach((ChartData chartData) {
           var rng = Random();

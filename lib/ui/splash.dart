@@ -23,7 +23,7 @@ class SplashState extends State<Splash> {
   void loadConfig() {
     SharedPreferences.getInstance().then((onValuePrefs) {
       SharedPreferences prefs = onValuePrefs;
-      if (!prefs.getKeys().contains(Config.SERVERURL) || prefs.getString(Config.SERVERURL).length == 0) {
+      if (!prefs.getKeys().contains(Config.SERVERURL) || prefs.getString(Config.SERVERURL).isEmpty) {
 
         Navigator.pushReplacement(context, MaterialPageRoute<Config>(builder: (BuildContext context) => Config()));
       } else {
