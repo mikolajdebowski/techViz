@@ -42,7 +42,7 @@ class TaskRepository implements IRepository<Task>{
 
     List<Map<String, dynamic>> queryResult = await localRepo.db.rawQuery(sql);
 
-    List<Task> list = List<Task>();
+    List<Task> list = <Task>[];
     queryResult.forEach((Map<String, dynamic> task) {
       list.add(_fromMap(task));
     });
@@ -110,7 +110,7 @@ class TaskRepository implements IRepository<Task>{
 
       dynamic task = jsonDecode(receivedTask.toString());
 
-      Map<String,dynamic> taskMapped = Map<String,dynamic>();
+      Map<String,dynamic> taskMapped = <String,dynamic>{};
       taskMapped['_ID'] = task['_ID'];
       taskMapped['_DIRTY'] = false;
       taskMapped['_VERSION'] =  task['_version'];

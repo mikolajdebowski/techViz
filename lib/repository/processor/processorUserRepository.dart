@@ -62,7 +62,7 @@ class ProcessorUserRepository implements IUserRepository{
     String url = ProcessorRepositoryConfig().GetURL(tag);
 
     SessionClient().get(url).then((String rawResult) async {
-      List<Map<String, dynamic>> listToReturn =  List<Map<String, dynamic>>();
+      List<Map<String, dynamic>> listToReturn =  <Map<String, dynamic>>[];
       dynamic decoded = json.decode(rawResult);
       List<dynamic> rows = decoded['Rows'] as List<dynamic>;
       List<String> _columnNames = (decoded['ColumnNames'] as String).split(',');
@@ -70,7 +70,7 @@ class ProcessorUserRepository implements IUserRepository{
 
         dynamic values = d['Values'];
 
-        Map<String, dynamic> mapEntry = Map<String, dynamic>();
+        Map<String, dynamic> mapEntry = <String, dynamic>{};
         mapEntry['UserID'] = values[_columnNames.indexOf("UserID")];
         mapEntry['UserName'] = values[_columnNames.indexOf("UserName")];
         mapEntry['SectionCount'] = values[_columnNames.indexOf("SectionCount")];

@@ -34,7 +34,7 @@ class ProcessorReservationTimeRepository implements IRemoteRepository<UserStatus
       rows.forEach((dynamic d) {
         dynamic values = d['Values'];
 
-        Map<String, dynamic> map = Map<String, dynamic>();
+        Map<String, dynamic> map = <String, dynamic>{};
         map['UserStatusID'] = values[_columnNames.indexOf("UserStatusID")];
         map['Description'] = values[_columnNames.indexOf("UserStatusName")];
         map['IsOnline'] = values[_columnNames.indexOf("IsOnline")];

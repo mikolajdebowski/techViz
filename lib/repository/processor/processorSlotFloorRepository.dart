@@ -21,7 +21,7 @@ class ProcessorSlotFloorRepository extends ProcessorLiveTable<SlotMachine> imple
       var _columnNames = livetableResult[0] as List<String>;
       var _rows = livetableResult[1] as List<dynamic>;
 
-      List<SlotMachine> listToReturn =  List<SlotMachine>();
+      List<SlotMachine> listToReturn =  <SlotMachine>[];
 
       _rows.forEach((dynamic d) {
         dynamic values = d['Values'];

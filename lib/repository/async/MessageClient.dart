@@ -41,7 +41,7 @@ class MessageClient {
 
     Completer<void> _completer = Completer<void>();
     _rabbitmqClient = null;
-    _mapStreamControllers = Map<String, List<StreamController<AmqpMessage>>>();
+    _mapStreamControllers = <String, List<StreamController<AmqpMessage>>>{};
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String host = prefs.getString(Config.SERVERURL);

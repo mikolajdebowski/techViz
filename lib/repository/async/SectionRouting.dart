@@ -19,7 +19,7 @@ class SectionRouting implements OldRouting {
   List<Section> parser(dynamic json){
     List<dynamic> sectionsStr = json['sections'] as List<dynamic>;
 
-    List<Section> listToReturn = List<Section>();
+    List<Section> listToReturn = <Section>[];
     sectionsStr.forEach((dynamic s){
       listToReturn.add(Section(s as String));
     });

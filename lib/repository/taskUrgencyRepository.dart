@@ -13,7 +13,7 @@ class TaskUrgencyRepository implements IRepository<TaskUrgency>{
 
     List<Map<String, dynamic>> queryResult = await localRepo.db.rawQuery('SELECT * FROM TaskUrgency');
 
-    List<TaskUrgency> toReturn = List<TaskUrgency>();
+    List<TaskUrgency> toReturn = <TaskUrgency>[];
     queryResult.forEach((Map<String, dynamic> task) {
       var t = TaskUrgency(
         id: task['ID'] as int,

@@ -32,7 +32,7 @@ class ProcessorRoleRepository extends IRemoteRepository<Role>{
       rows.forEach((dynamic d) {
         dynamic values = d['Values'];
 
-        Map<String, dynamic> map = Map<String, dynamic>();
+        Map<String, dynamic> map = <String, dynamic>{};
         map['UserRoleID'] = values[_columnNames.indexOf("UserRoleID")];
         map['UserRoleName'] = values[_columnNames.indexOf("UserRoleName")];
         map['IsAttendant'] = values[_columnNames.indexOf("IsAttendant")];

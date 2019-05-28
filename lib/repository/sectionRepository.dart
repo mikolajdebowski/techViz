@@ -16,7 +16,7 @@ class SectionRepository implements IRepository<Section> {
     String sqlQuery = "SELECT SectionID FROM Section";
     List<Map<String, dynamic>> queryResult = await localRepo.db.rawQuery(sqlQuery);
 
-    List<Section> toReturn = List<Section>();
+    List<Section> toReturn = <Section>[];
     queryResult.forEach((Map<String, dynamic> role) {
       var t = Section(role['SectionID'] as String);
       toReturn.add(t);

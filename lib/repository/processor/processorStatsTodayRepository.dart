@@ -95,7 +95,7 @@ class ProcessorStatsTodayRepository extends ProcessorLiveTable<dynamic> implemen
         chartTasksByType.add(chart);
       });
 
-      Map<int,List<ChartData>> mapToReturn = Map<int,List<ChartData>>();
+      Map<int,List<ChartData>> mapToReturn = <int,List<ChartData>>{};
       mapToReturn[0] = chartTimeAvailable;
       mapToReturn[1] = tasksPerHourAvailable;
       mapToReturn[2] = avgRespTime;

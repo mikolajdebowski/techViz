@@ -33,7 +33,7 @@ class ProcessorTaskUrgencyRepository implements IRemoteRepository<TaskStatus>{
       rows.forEach((dynamic d) {
         dynamic values = d['Values'];
 
-        Map<String, dynamic> map = Map<String, dynamic>();
+        Map<String, dynamic> map = <String, dynamic>{};
         map['ID'] = values[_columnNames.indexOf("TaskUrgencyID")];
         map['Description'] = values[_columnNames.indexOf("TaskUrgencyDescription")];
         map['ColorHex'] = values[_columnNames.indexOf("UrgencyColorHex")];

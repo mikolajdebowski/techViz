@@ -38,7 +38,7 @@ class StatsPresenter {
         return '${timeAvailable.inHours} hr ${timeAvailable.inMinutes % 60} min ${timeAvailable.inSeconds % 60} sec';
       }
 
-      Map<int, Widget> mapToReturn = Map<int, Widget>();
+      Map<int, Widget> mapToReturn = <int, Widget>{};
       mapToReturn[0] = Column(children: <Widget>[Text('Time Available for Tasks'), Expanded(child: VizChart(GlobalKey(), data[0], ChartType.HorizontalBar, parser: convertToHours))]);
       mapToReturn[1] = Column(children: <Widget>[Text('Tasks per Logged in Hour'), Expanded(child: VizChart(GlobalKey(), data[1], ChartType.HorizontalBar ))]);
       mapToReturn[2] = Column(children: <Widget>[Text('Avg Response Time'), Expanded(child: VizChart(GlobalKey(), data[2], ChartType.HorizontalBar, parser: convertToHours))]);

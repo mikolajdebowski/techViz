@@ -65,7 +65,7 @@ class VizListViewState extends State<VizListView> {
       );
     }
 
-    List<Widget> header = List<Widget>();
+    List<Widget> header = <Widget>[];
     widget.data.first.columns.forEach((DataEntryCell dataCell) {
       header.add(Expanded(
           child: Text(

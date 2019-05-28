@@ -3,7 +3,7 @@ import 'package:techviz/viewmodel/reassignUsers.dart';
 
 void main(){
   test('fromMap Function', (){
-    Map<String,dynamic> map = Map<String,dynamic>();
+    Map<String,dynamic> map = <String,dynamic>{};
     map['UserID'] = 'tester1';
     map['UserName'] = 'tester';
     map['SectionCount'] = 10;

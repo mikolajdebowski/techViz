@@ -33,7 +33,7 @@ class ProcessorTaskStatusRepository implements IRemoteRepository<TaskStatus>{
       rows.forEach((dynamic d) {
         dynamic values = d['Values'];
 
-        Map<String, dynamic> map = Map<String, dynamic>();
+        Map<String, dynamic> map = <String, dynamic>{};
         map['TaskStatusID'] = values[_columnNames.indexOf("TaskStatusID")];
         map['TaskStatusDescription'] = values[_columnNames.indexOf("TaskStatusDescription")];
         localRepo.insert('TaskStatus', map);

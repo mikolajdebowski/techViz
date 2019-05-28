@@ -9,7 +9,7 @@ class MockSlotMachineRepository implements IRemoteRepository<SlotMachine> {
     var _completer = Completer<List<SlotMachine>>();
     Future.delayed(Duration(seconds: 1), (){
 
-      List<SlotMachine> listToReturn =  List<SlotMachine>();
+      List<SlotMachine> listToReturn =  <SlotMachine>[];
       for (int loop = 0; loop < 99; loop++) {
 
         var standPartID = '${loop.toString().padLeft(2, '0')}';

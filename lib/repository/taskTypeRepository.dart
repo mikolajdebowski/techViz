@@ -20,7 +20,7 @@ class TaskTypeRepository implements IRepository<TaskType>{
 
     List<Map<String, dynamic>> queryResult = await localRepo.db.rawQuery(query);
 
-    List<TaskType> toReturn = List<TaskType>();
+    List<TaskType> toReturn = <TaskType>[];
     queryResult.forEach((Map<String, dynamic> task) {
       var t = TaskType(
         taskTypeId: task['TaskTypeID'] as int,

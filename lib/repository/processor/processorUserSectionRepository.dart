@@ -32,7 +32,7 @@ class ProcessorUserSectionRepository implements IRemoteRepository<UserSection> {
         rows.forEach((dynamic d) {
           dynamic values = d['Values'];
 
-          Map<String, dynamic> map = Map<String, dynamic>();
+          Map<String, dynamic> map = <String, dynamic>{};
           map['SectionID'] = values[_columnNames.indexOf("SectionID")];
           map['UserID'] = values[_columnNames.indexOf("UserID")];
           localRepo.insert('UserSection', map);

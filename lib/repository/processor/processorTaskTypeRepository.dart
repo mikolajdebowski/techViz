@@ -33,7 +33,7 @@ class ProcessorTaskTypeRepository implements IRemoteRepository<TaskType>{
       rows.forEach((dynamic d) {
         dynamic values = d['Values'];
 
-        Map<String, dynamic> map = Map<String, dynamic>();
+        Map<String, dynamic> map = <String, dynamic>{};
         map['TaskTypeID'] = values[_columnNames.indexOf("TaskTypeID")];
         map['TaskTypeDescription'] = values[_columnNames.indexOf("TaskTypeDescription")];
         map['LookupName'] = values[_columnNames.indexOf("LookupName")];

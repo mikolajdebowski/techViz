@@ -13,7 +13,7 @@ class TaskStatusRepository implements IRepository<TaskStatus>{
 
     List<Map<String, dynamic>> queryResult = await localRepo.db.rawQuery('SELECT * FROM TaskStatus');
 
-    List<TaskStatus> toReturn = List<TaskStatus>();
+    List<TaskStatus> toReturn = <TaskStatus>[];
     queryResult.forEach((Map<String, dynamic> task) {
       var t = TaskStatus(
         id: task['TaskStatusID'] as int,

@@ -30,7 +30,7 @@ class ActionBar extends StatefulWidget implements PreferredSizeWidget {
 class ActionBarState extends State<ActionBar> {
   @override
   Widget build(BuildContext context) {
-    List<Widget> children = List<Widget>();
+    List<Widget> children = <Widget>[];
     SizedBox leadingContainer;
 
     //the backbutton when the view can pop

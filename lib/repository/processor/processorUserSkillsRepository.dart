@@ -29,7 +29,7 @@ class ProcessorUserSkillsRepository extends ProcessorLiveTable<dynamic> implemen
       rows.forEach((dynamic d) {
 
         dynamic values = d['Values'];
-        Map<String, dynamic> map = Map<String, dynamic>();
+        Map<String, dynamic> map = <String, dynamic>{};
         map['SiteID'] = values[_columnNames.indexOf("SiteID")];
         map['SkillDescription'] = values[_columnNames.indexOf("SkillDescription")];
         map['UserID'] = values[_columnNames.indexOf("UserID")];

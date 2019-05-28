@@ -138,7 +138,7 @@ class EscalationFormState extends State<EscalationForm>
       );
     }
 
-    List<Widget> items = List<Widget>();
+    List<Widget> items = <Widget>[];
 
     //ESCALATION PATH
     FormField<EscalationPath> escalationPathFormField = FormField<EscalationPath>(

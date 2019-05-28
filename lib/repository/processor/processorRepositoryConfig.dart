@@ -39,7 +39,7 @@ class ProcessorRepositoryConfig {
     //filter only livetables where tags property length is > 0
     liveTableslist = liveTableslist.where((dynamic lt)=> (lt['tags'] as String).isNotEmpty).toList();
 
-    _liveTables = List<LiveTable>();
+    _liveTables = <LiveTable>[];
     for(dynamic liveTable in liveTableslist){
       String _liveTableTag = liveTable['tags'] as String;
       _liveTables.add(LiveTable(liveTable['ID'].toString(), _liveTableTag));

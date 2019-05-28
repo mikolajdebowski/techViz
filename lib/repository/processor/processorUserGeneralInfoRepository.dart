@@ -33,7 +33,7 @@ class ProcessorUserGeneralInfoRepository implements IRemoteRepository<dynamic>{
       rows.forEach((dynamic d) {
         dynamic values = d['Values'];
 
-        Map<String, dynamic> map = Map<String, dynamic>();
+        Map<String, dynamic> map = <String, dynamic>{};
         map['Name'] = values[_columnNames.indexOf("Name")];
         map['StaffID'] = values[_columnNames.indexOf("StaffID")];
         map['UserName'] = values[_columnNames.indexOf("UserName")];

@@ -35,7 +35,7 @@ class HomeAttendantState extends State<HomeAttendant> with WidgetsBindingObserve
   void initState() {
     super.initState();
 
-    _taskList = List<Task>();
+    _taskList = <Task>[];
     _taskPresenter = TaskListPresenter(this);
     _taskListStatusIcon = "assets/images/ic_processing.png";
 
@@ -583,7 +583,7 @@ class HomeAttendantState extends State<HomeAttendant> with WidgetsBindingObserve
       ),
     );
 
-    List<VizTaskActionButton> rightActionWidgets = List<VizTaskActionButton>();
+    List<VizTaskActionButton> rightActionWidgets = <VizTaskActionButton>[];
     if (_selectedTask != null) {
       bool enableButtons = _selectedTask.dirty == false;
       if (_selectedTask.taskStatus.id == 2 || _selectedTask.taskStatus.id == 3) {

@@ -18,7 +18,7 @@ class ProcessorEscalationPathRepository extends ProcessorLiveTable<dynamic> impl
       var _columnNames = livetableResult[0] as List<String>;
       var _rows = livetableResult[1] as List<dynamic>;
 
-      List<Map<String, dynamic>> toInsert = List<Map<String, dynamic>>();
+      List<Map<String, dynamic>> toInsert = <Map<String, dynamic>>[];
       _rows.forEach((dynamic d) {
         dynamic values = d['Values'];
 
@@ -26,7 +26,7 @@ class ProcessorEscalationPathRepository extends ProcessorLiveTable<dynamic> impl
         String _description = values[_columnNames.indexOf("IsSubscribedDescription")] as String;
         String _lookupName = values[_columnNames.indexOf("LookupName")] as String;
 
-        Map<String,dynamic> entry = Map<String,dynamic>();
+        Map<String,dynamic> entry = <String,dynamic>{};
         entry['EscalationPathId'] = _id;
         entry['Description'] = _description;
         entry['LookupName'] = _lookupName;

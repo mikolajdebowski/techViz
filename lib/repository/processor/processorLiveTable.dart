@@ -53,7 +53,7 @@ class ProcessorLiveTable<T> implements IRemoteRepository<T>{
 
     SessionClient().get(url).then((String rawResult) async {
 
-      List<Map<String, dynamic>> listToReturn =  List<Map<String, dynamic>>();
+      List<Map<String, dynamic>> listToReturn =  <Map<String, dynamic>>[];
 
       dynamic decoded = json.decode(rawResult);
       List<dynamic> rows = decoded['Rows'] as List<dynamic>;

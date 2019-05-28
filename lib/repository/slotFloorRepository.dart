@@ -107,7 +107,7 @@ class SlotFloorRepository implements IRepository<SlotMachine> {
   Future<List<SlotMachine>> slotFloorSummary(){
     Completer<List<SlotMachine>> _completer = Completer<List<SlotMachine>>();
     this.remoteRepository.slotFloorSummary().then((dynamic result){
-      List<SlotMachine> listToReturn = List<SlotMachine>();
+      List<SlotMachine> listToReturn = <SlotMachine>[];
 
       SlotMachine parser(Map<String,dynamic> map){
         return SlotMachine(

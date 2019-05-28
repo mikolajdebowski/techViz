@@ -9,7 +9,7 @@ class VizLoadingIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    List<Widget> widgetList = List<Widget>();
+    List<Widget> widgetList = <Widget>[];
 
     if(isLoading){
       widgetList.add(

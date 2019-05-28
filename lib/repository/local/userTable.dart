@@ -20,7 +20,7 @@ class UserTable{
   static Future<int> update(String userID, {String statusID, String roleID}) async {
     LocalRepository localRepo = LocalRepository();
 
-    Map<String,dynamic> values = Map<String,dynamic>();
+    Map<String,dynamic> values = <String,dynamic>{};
     if(statusID!=null){
       values['UserStatusID'] = statusID;
     }

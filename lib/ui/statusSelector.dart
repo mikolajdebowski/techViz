@@ -26,7 +26,7 @@ class StatusSelector extends StatefulWidget {
 }
 
 class StatusSelectorState extends State<StatusSelector> implements IStatusListPresenter<UserStatus> {
-  List<UserStatus> statusList = List<UserStatus>();
+  List<UserStatus> statusList = <UserStatus>[];
   StatusListPresenter roleListPresenter;
   UserStatus selectedStatus;
   Flushbar _loadingBar;

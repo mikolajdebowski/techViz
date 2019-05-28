@@ -92,7 +92,7 @@ class VizListViewRowState extends State<VizListViewRow> {
         color: bgRowColor,
         border: Border(bottom: BorderSide(color: Colors.black, width: 1.0)));
 
-    List<Widget> columns = List<Widget>();
+    List<Widget> columns = <Widget>[];
 
     widget.dataEntry.columns.forEach((DataEntryCell dataCell) {
       String text = dataCell.toString();

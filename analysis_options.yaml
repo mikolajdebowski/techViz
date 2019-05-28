@@ -85,7 +85,7 @@ linter:
     - recursive_getters
     - prefer_is_empty
     - prefer_is_not_empty
-
+    - prefer_collection_literals
 #PENDING REFACTORING
 #   - unnecessary_this
 #   - prefer_single_quotes

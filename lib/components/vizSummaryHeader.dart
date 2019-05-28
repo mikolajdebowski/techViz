@@ -20,7 +20,7 @@ class VizSummaryHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> itensChildren = List<Widget>();
+    List<Widget> itensChildren = <Widget>[];
 
     Radius defaultRadius = Radius.circular(3.0);
     bool isFirst = true;

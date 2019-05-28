@@ -33,7 +33,7 @@ class ProcessorUserRoleRepository implements IRemoteRepository<UserRole>{
       rows.forEach((dynamic d) {
         dynamic values = d['Values'];
 
-        Map<String, dynamic> map = Map<String, dynamic>();
+        Map<String, dynamic> map = <String, dynamic>{};
         map['UserID'] = values[_columnNames.indexOf("UserID")];
         map['UserRoleID'] = values[_columnNames.indexOf("UserRoleID")];
         localRepo.insert('UserRole', map);

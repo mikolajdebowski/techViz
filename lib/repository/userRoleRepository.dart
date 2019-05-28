@@ -15,7 +15,7 @@ class UserRoleRepository implements IRepository<UserRole>{
 
     List<Map<String, dynamic>> queryResult = await localRepo.db.rawQuery(sql);
 
-    List<UserRole> toReturn = List<UserRole>();
+    List<UserRole> toReturn = <UserRole>[];
     queryResult.forEach((Map<String, dynamic> role) {
       UserRole ur = UserRole(
         userID: role['UserID'] as String,

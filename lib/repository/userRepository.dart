@@ -22,7 +22,7 @@ class UserRepository implements IRepository<User>{
 
   Future Update(String userID, {String roleID, String statusID}){
 
-    Map<String,dynamic> toSend = Map<String,dynamic>();
+    Map<String,dynamic> toSend = <String,dynamic>{};
     toSend['userID'] = userID;
     if(roleID!=null){
       toSend['userRoleID'] = roleID;

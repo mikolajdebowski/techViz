@@ -8,7 +8,7 @@ class MockOpenTasksRepository implements IRemoteRepository<dynamic> {
     Completer<List<dynamic>> _completer = Completer<List<dynamic>>();
     Future.delayed(Duration(seconds: 1), (){
 
-      List<dynamic> listToReturn =  List<dynamic>();
+      List<dynamic> listToReturn =  <dynamic>[];
       for (int loop = 0; loop < 99; loop++) {
         listToReturn.add(loop);
       }

@@ -15,7 +15,7 @@ class UserStatusRepository implements IRepository<UserStatus> {
     String sql = "SELECT UserStatusID, Description, IsOnline FROM UserStatus";
     List<Map<String, dynamic>> queryResult = await localRepo.db.rawQuery(sql);
 
-    List<UserStatus> toReturn = List<UserStatus>();
+    List<UserStatus> toReturn = <UserStatus>[];
     queryResult.forEach((Map<String, dynamic> status) {
       var t = UserStatus(
         id: status['UserStatusID'] as String,

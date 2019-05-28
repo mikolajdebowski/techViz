@@ -40,7 +40,7 @@ class LocalTable{
 
     List<Map<String, dynamic>> queryResult = await localRepo.db.rawQuery('SELECT * FROM $tableName');
 
-    List<T> toReturn = List<T>();
+    List<T> toReturn = <T>[];
 
     queryResult.forEach((Map<String, dynamic> ep) {
       toReturn.add(parser(ep));

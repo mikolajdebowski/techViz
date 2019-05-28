@@ -26,12 +26,12 @@ class ProcessorTaskRepository implements ITaskRepository{
 
       List<String> _columnNames = (decoded['ColumnNames'] as String).split(',');
 
-      List<Map<String, dynamic>> listToReturn =  List<Map<String, dynamic>>();
+      List<Map<String, dynamic>> listToReturn =  <Map<String, dynamic>>[];
 
       rows.forEach((dynamic d) {
         dynamic values = d['Values'];
 
-        Map<String, dynamic> map = Map<String, dynamic>();
+        Map<String, dynamic> map = <String, dynamic>{};
         map['_ID'] = values[_columnNames.indexOf("_ID")] as String;
         map['_VERSION'] = values[_columnNames.indexOf("_Version")] as String;
         map['USERID'] = values[_columnNames.indexOf("UserID")] as String;
@@ -84,7 +84,7 @@ class ProcessorTaskRepository implements ITaskRepository{
 
     SessionClient().get(url).then((String rawResult) async {
 
-      List<Map<String, dynamic>> listToReturn =  List<Map<String, dynamic>>();
+      List<Map<String, dynamic>> listToReturn =  <Map<String, dynamic>>[];
 
       dynamic decoded = json.decode(rawResult);
       List<dynamic> rows = decoded['Rows'] as List<dynamic>;
@@ -92,7 +92,7 @@ class ProcessorTaskRepository implements ITaskRepository{
       rows.forEach((dynamic d) {
 
         dynamic values = d['Values'];
-        Map<String, dynamic> mapEntry = Map<String, dynamic>();
+        Map<String, dynamic> mapEntry = <String, dynamic>{};
         mapEntry['_ID'] = values[_columnNames.indexOf("_ID")];
         mapEntry['Location'] = values[_columnNames.indexOf("Location")];
         mapEntry['TaskTypeID'] = values[_columnNames.indexOf("TaskTypeID")];

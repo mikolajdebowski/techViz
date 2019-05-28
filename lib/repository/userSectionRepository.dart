@@ -16,7 +16,7 @@ class UserSectionRepository implements IRepository<UserSection> {
     String sql = "SELECT UserID, SectionID FROM UserSection WHERE UserID = '$userID'";
     List<Map<String, dynamic>> queryResult = await localRepo.db.rawQuery(sql);
 
-    List<UserSection> toReturn = List<UserSection>();
+    List<UserSection> toReturn = <UserSection>[];
     queryResult.forEach((Map<String, dynamic> section) {
       var s = UserSection(
         section['SectionID'] as String,
@@ -39,7 +39,7 @@ class UserSectionRepository implements IRepository<UserSection> {
       var batch = localRepo.db.batch();
 
       await Future.forEach(sections, (dynamic section) async{
-        Map<String, dynamic> map = Map<String, dynamic>();
+        Map<String, dynamic> map = <String, dynamic>{};
         map['SectionID'] = section;
         map['UserID'] = userID;
         await localRepo.insert('UserSection', map);

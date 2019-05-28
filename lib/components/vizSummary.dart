@@ -26,11 +26,11 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
   String _selectedEntryKey;
 
   Map<K, List<T>> groupBy<T, K>({K Function(T) keySelector, List<T> list}) {
-    Map<K, List<T>> destination = Map();
+    Map<K, List<T>> destination = {};
 
     for (T element in list) {
       final key = keySelector(element);
-      final value = destination[key] ?? List();
+      final value = destination[key] ?? [];
       value.add(element);
       destination[key] = value;
     }

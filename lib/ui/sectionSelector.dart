@@ -24,7 +24,7 @@ class SectionSelector extends StatefulWidget {
 
 class SectionSelectorState extends State<SectionSelector>
     implements ISectionListPresenter<SectionModelPresenter> {
-  List<SectionModelPresenter> sectionList = List<SectionModelPresenter>();
+  List<SectionModelPresenter> sectionList = <SectionModelPresenter>[];
   SectionListPresenter sectionPresenter;
   Flushbar _loadingBar;
 

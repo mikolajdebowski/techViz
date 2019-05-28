@@ -31,7 +31,7 @@ class ProcessorSectionRepository implements IRemoteRepository<Role> {
       rows.forEach((dynamic d) {
         dynamic values = d['Values'];
 
-        Map<String, dynamic> map = Map<String, dynamic>();
+        Map<String, dynamic> map = <String, dynamic>{};
         map['SectionID'] = values[_columnNames.indexOf("SectionID")];
         localRepo.insert('Section', map);
       });

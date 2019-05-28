@@ -26,7 +26,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   GlobalKey<dynamic> homeChildKey;
   bool initialLoading = false;
 
-  List<UserSection> currentSections = List<UserSection>();
+  List<UserSection> currentSections = <UserSection>[];
   UserStatus currentUserStatus;
 
   String _userStatusText;
