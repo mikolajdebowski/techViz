@@ -13,6 +13,7 @@ import 'package:techviz/ui/home.dart';
 import 'package:techviz/ui/reassignTask.dart';
 
 import 'machineReservation.dart';
+import 'dart:async';
 
 class HomeManager extends StatefulWidget {
   HomeManager(Key key) : super(key: key);
@@ -29,11 +30,21 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
   List<DataEntryGroup> _slotFloorList;
   ScrollController _mainController;
 
+  final GlobalKey _containerKey = GlobalKey();
+  final GlobalKey _openTasksKey = GlobalKey();
+  final GlobalKey _teamAvaKey = GlobalKey();
+  final GlobalKey _slotFloorKey = GlobalKey();
+
+
   bool _openTasksLoading;
   bool _slotFloorLoading;
 
+  bool initialLoadForSummary = true;
+  bool initialLoadForTeam = true;
+
   @override
   void initState() {
+
     super.initState();
 
     _presenter = ManagerViewPresenter(this);
@@ -48,6 +59,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
   Widget build(BuildContext context) {
 
     return Container(
+      key: _containerKey,
       constraints: BoxConstraints.expand(),
       decoration: BoxDecoration(gradient: LinearGradient(colors: [Color(0xFF586676), Color(0xFF8B9EA7)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
       child: SingleChildScrollView(
@@ -55,9 +67,30 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            VizSummary('OPEN TASKS', _openTasksList, onSwipeLeft: onOpenTasksSwipeLeft(), onSwipeRight: onOpenTasksSwipeRight(), onMetricTap: onOpenTasksMetricTap, isProcessing:  _openTasksLoading, onScroll: _onChildScroll),
-            VizSummary('TEAM AVAILABILITY', _teamAvailabilityList,onSwipeLeft: onTeamAvailiblitySwipeLeft(), onScroll: _onChildScroll),
-            VizSummary('SLOT FLOOR', _slotFloorList, onSwipeRight: onSlotFloorSwipeRight(), onSwipeLeft: onSlotFloorSwipeLeft(), onMetricTap: onSlotFloorMetricTap, isProcessing:  _slotFloorLoading, onScroll: _onChildScroll)
+            VizSummary('OPEN TASKS',
+                _openTasksList,
+                key: _openTasksKey,
+                onSwipeLeft: onOpenTasksSwipeLeft(),
+                onSwipeRight: onOpenTasksSwipeRight(),
+                onMetricTap: onOpenTasksMetricTap,
+                isProcessing:  _openTasksLoading,
+                onScroll: _onChildScroll),
+
+            VizSummary('TEAM AVAILABILITY',
+                _teamAvailabilityList,
+                key: _teamAvaKey,
+                onSwipeLeft: onTeamAvailiblitySwipeLeft(),
+                onScroll: _onChildScroll),
+
+            VizSummary('SLOT FLOOR',
+                _slotFloorList,
+                key: _slotFloorKey,
+                onSwipeRight: onSlotFloorSwipeRight(),
+                onSwipeLeft: onSlotFloorSwipeLeft(),
+                onMetricTap: onSlotFloorMetricTap,
+                isProcessing:
+                _slotFloorLoading,
+                onScroll: _onChildScroll)
           ],
         ),
       ),
@@ -233,6 +266,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
     }
   }
 
+
   @override
   void onSlotFloorSummaryLoaded(List<DataEntryGroup> list) {
     if (this.mounted) {
@@ -240,8 +274,24 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
         _slotFloorLoading = false;
         _slotFloorList = list;
       });
+
+
+      if(initialLoadForSummary == true){
+        initialLoadForSummary = false;
+      } else if(initialLoadForSummary == false){
+        RenderBox openTasksBox = _openTasksKey.currentContext.findRenderObject();
+        double openTasksHeight = openTasksBox.size.height;
+
+        RenderBox teamAvaBox = _teamAvaKey.currentContext.findRenderObject();
+        double teamAvaBoxHeight = teamAvaBox.size.height;
+
+        double offset = openTasksHeight + teamAvaBoxHeight + 4;
+        _mainController.animateTo(offset, curve: Curves.linear, duration: Duration(milliseconds: 300));
+      }
     }
+
   }
+
 
   @override
   void onTeamAvailabilityLoaded(List<DataEntryGroup> list) {
@@ -249,6 +299,16 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
       setState(() {
         _teamAvailabilityList = list;
       });
+
+      if(initialLoadForTeam == true){
+        initialLoadForTeam = false;
+      } else if(initialLoadForTeam == false){
+        RenderBox openTasksBox = _openTasksKey.currentContext.findRenderObject();
+        double openTasksHeight = openTasksBox.size.height;
+
+        double offset = openTasksHeight + 4;
+        _mainController.animateTo(offset, curve: Curves.linear, duration: Duration(milliseconds: 300));
+      }
     }
   }
 
