@@ -13,7 +13,7 @@ class S implements WidgetsLocalizations {
   const S();
 
   static const GeneratedLocalizationsDelegate delegate =
-      const GeneratedLocalizationsDelegate();
+       GeneratedLocalizationsDelegate();
 
   static S of(BuildContext context) =>
       Localizations.of<S>(context, WidgetsLocalizations);

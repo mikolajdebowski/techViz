@@ -76,29 +76,27 @@ linter:
     - unnecessary_null_in_if_null_operators
     - unnecessary_null_aware_assignments
     - unnecessary_new
+    - unnecessary_getters_setters
+    - type_init_formals
+    - throw_in_finally
+    - test_types_in_equals
+    - sort_unnamed_constructors_first
+    - sort_pub_dependencies
+    - recursive_getters
 
-
-      
 #PENDING REFACTORING
-    # - unnecessary_this
-  #   - prefer_single_quotes
-  #   - prefer_is_empty
-  #   - prefer_is_not_empty
-  #   - prefer_collection_literals
-  #   - prefer_const_constructors
-  #   - prefer_const_literals_to_create_immutables
-  #   - file_names # not yet tested
-  #   - non_constant_identifier_names
-  #   - prefer_final_locals
-  #    - recursive_getters
-  #    - slash_for_doc_comments
-  #    - sort_constructors_first
-  #    - sort_pub_dependencies
-  #    - sort_unnamed_constructors_first
-  #    - test_types_in_equals
-  #    - throw_in_finally
-  #    - type_init_formals
-  #    - unnecessary_brace_in_string_interps
-  #    - unnecessary_const
-  #    - unnecessary_getters_setters
+#   - unnecessary_this
+#   - prefer_single_quotes
+#   - prefer_is_empty
+#   - prefer_is_not_empty
+#   - prefer_collection_literals
+#   - prefer_const_constructors
+#   - prefer_const_literals_to_create_immutables
+#   - file_names # not yet tested
+#   - non_constant_identifier_names
+#   - prefer_final_locals
+#   - slash_for_doc_comments
+#   - unnecessary_brace_in_string_interps
+#   - sort_constructors_first (optional)
+
 
