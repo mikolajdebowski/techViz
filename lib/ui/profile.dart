@@ -67,7 +67,7 @@ class ProfileState extends State<Profile> implements IRoleListPresenter<Role>, I
     }
 
     return Container(
-      color: (index % 2 == 0 ? Color(0xFFeff4f5) : Color(0xFFffffff)),
+      color: index % 2 == 0 ? Color(0xFFeff4f5) : Color(0xFFffffff),
       child: ListTile(
         title: Text(_userInfo[index].columnName),
         subtitle: Padding(padding: EdgeInsets.only(left: 10.0, top: 5.0), child: subItem),

@@ -94,13 +94,13 @@ class TaskTable {
         }
         else if(value.runtimeType == bool){
           bool bValue = value as bool;
-          sql += " ${key} = ${(bValue) ? 1: 0},";
+          sql += " ${key} = ${bValue ? 1: 0},";
         }
         else {
           sql += " ${key} = ${value},";
         }
     });
-    sql = (sql.substring(0, sql.length - 1));
+    sql = sql.substring(0, sql.length - 1);
     sql += " WHERE _ID = '${row['_ID']}'; ";
 
     //print("UPDATING... " + sql);

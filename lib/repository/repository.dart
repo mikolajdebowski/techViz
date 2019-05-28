@@ -50,7 +50,7 @@ typedef fncOnMessage = void Function(String);
 class Repository{
   static Flavor _flavor;
 
-  static final Repository _singleton = new Repository._internal();
+  static final Repository _singleton = Repository._internal();
   factory Repository() {
     return _singleton;
   }

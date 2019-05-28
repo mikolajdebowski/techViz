@@ -53,7 +53,7 @@ class SectionSelectorState extends State<SectionSelector>
     SectionRouting().PublishMessage(toSubmit).then<List<Section>>((dynamic list) async{
       _loadingBar.dismiss();
 
-      var toUpdateLocally = (list as List<Section>);
+      var toUpdateLocally = list as List<Section>;
 
       await UserSectionRepository().update(session.user.userID, toUpdateLocally.map((Section s) => s.sectionID).toList());
 

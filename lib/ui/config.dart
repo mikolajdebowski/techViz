@@ -61,7 +61,7 @@ class ConfigState extends State<Config> {
 
     var textFieldBorder = OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(4.0)));
     var defaultPadding = EdgeInsets.all(6.0);
-    var textFieldContentPadding = new EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0);
+    var textFieldContentPadding = EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0);
 
     var backgroundDecoration = BoxDecoration(
         gradient: LinearGradient(

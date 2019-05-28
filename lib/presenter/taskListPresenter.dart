@@ -13,7 +13,7 @@ class TaskListPresenter{
   TaskRepository _repository;
 
   TaskListPresenter(this._view){
-   _repository = new Repository().taskRepository;
+   _repository = Repository().taskRepository;
   }
 
   void loadTaskList(String userID){

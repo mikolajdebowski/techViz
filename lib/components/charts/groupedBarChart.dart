@@ -10,20 +10,20 @@ class GroupedBarChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new charts.BarChart(
+    return charts.BarChart(
       seriesList,
       animate: animate,
       barGroupingType: charts.BarGroupingType.grouped,
-      primaryMeasureAxis: new charts.NumericAxisSpec(
-          renderSpec: new charts.GridlineRendererSpec(
+      primaryMeasureAxis: charts.NumericAxisSpec(
+          renderSpec: charts.GridlineRendererSpec(
 
             // Tick and Label styling here.
-              labelStyle: new charts.TextStyleSpec(
+              labelStyle:  charts.TextStyleSpec(
                   fontSize: 12, // size in Pts.
                   color: charts.MaterialPalette.black),
 
               // Change the line colors to match text color.
-              lineStyle: new charts.LineStyleSpec(
+              lineStyle: charts.LineStyleSpec(
                   color: charts.MaterialPalette.black))),
     );
   }

@@ -13,7 +13,7 @@ class MockSlotMachineRouting implements IRouting<SlotMachine> {
     final timer = Timer.periodic(Duration(milliseconds: 100), (Timer t){
       int min = 1;
       int max = 20;
-      Random rnd = new Random();
+      Random rnd = Random();
       num selection = min + rnd.nextInt(max - min);
 
       var standPartID = '${selection.toString().padLeft(2, '0')}';
@@ -21,7 +21,7 @@ class MockSlotMachineRouting implements IRouting<SlotMachine> {
 
       int minStatus = 0;
       int maxStatus = 3;
-      Random rndStatus = new Random();
+      Random rndStatus = Random();
       num selectionStatus = minStatus + rndStatus.nextInt(maxStatus - minStatus);
 
       _controller.add(SlotMachine(standID: _standID, machineStatusID: selectionStatus.toString()));

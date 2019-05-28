@@ -80,7 +80,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
   SwipeAction onOpenTasksSwipeLeft(){ //action of the right of the view
     return SwipeAction('Re-assign to others', (dynamic entry){
 
-      DataEntry dataEntry = (entry as DataEntry);
+      DataEntry dataEntry = entry as DataEntry;
       String location = dataEntry.columns.where((DataEntryCell dataCell)=> dataCell.column == 'Location').toString();
 
       ReassignTask reassignTaskView = ReassignTask(dataEntry.id, location);
@@ -103,7 +103,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
 
      Function reassignTaskCallback = (dynamic entry){
 
-        DataEntry dataEntry = (entry as DataEntry);
+        DataEntry dataEntry = entry as DataEntry;
         String location = dataEntry.columns.where((DataEntryCell cell) => cell.column == 'Location').first.value.toString();
 
         GlobalKey dialogKey = GlobalKey();
@@ -152,7 +152,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
   SwipeAction onSlotFloorSwipeRight(){
 
     Function onSlotActionButtonClickedCallback = (dynamic entry) {
-      DataEntry dataEntry = (entry as DataEntry);
+      DataEntry dataEntry = entry as DataEntry;
       String standID = dataEntry.id;
 
       MachineReservation machineReservationContent = MachineReservation(standID: standID);
@@ -173,7 +173,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
 
   SwipeAction onSlotFloorSwipeLeft(){
     Function onSlotActionButtonClickedCallback = (dynamic entry) {
-      DataEntry dataEntry = (entry as DataEntry);
+      DataEntry dataEntry = entry as DataEntry;
       String standID = dataEntry.id;
 
       showDialog<bool>(context: context, builder: (BuildContext context) {

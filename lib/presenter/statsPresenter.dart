@@ -34,7 +34,7 @@ class StatsPresenter {
       Map<int, List<ChartData>> data = dataReturned as Map<int, List<ChartData>>;
 
       String convertToHours(num original) {
-        Duration timeAvailable = new Duration(seconds: int.parse(original.round().toString()));
+        Duration timeAvailable = Duration(seconds: int.parse(original.round().toString()));
         return '${timeAvailable.inHours} hr ${timeAvailable.inMinutes % 60} min ${timeAvailable.inSeconds % 60} sec';
       }
 
@@ -51,7 +51,7 @@ class StatsPresenter {
       if (data[6] != null && data[6].length > 0) {
         List<Widget> _children = [];
         data[6].forEach((ChartData chartData) {
-          var rng = new Random();
+          var rng = Random();
           var fakeData = [chartData, ChartData('', rng.nextInt(6) + 1, '', color: charts_common.MaterialPalette.green.shadeDefault.darker)];
           var chart = VizChart(GlobalKey(), fakeData, ChartType.VerticalBar);
           //var chart = Text(chartData.label);

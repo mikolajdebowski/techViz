@@ -34,7 +34,7 @@ class VizButton extends StatelessWidget {
       innerWidget = customWidget;
     }
     else {
-      Text innerText = Text(title, style: TextStyle(color: (highlighted?txtHighlightColor:txtDefaultColor), fontSize: 20.0, fontWeight: FontWeight.w500));
+      Text innerText = Text(title, style: TextStyle(color: highlighted?txtHighlightColor:txtDefaultColor, fontSize: 20.0, fontWeight: FontWeight.w500));
       if(iconName==null){
         innerWidget = innerText;
       }
@@ -84,7 +84,7 @@ class VizButton extends StatelessWidget {
         boxShadow: [BoxShadow(color: Color(0xAA000000), offset: Offset(2.0, 2.0), blurRadius: 2.0)],
         border: Border.all(color: highlighted? Colors.transparent : Colors.white),
         gradient: LinearGradient(
-            colors: (enabled == false ? disabledBg: (highlighted ? highlightBg : defaultBg)),
+            colors: enabled == false ? disabledBg: (highlighted ? highlightBg : defaultBg),
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter),
         borderRadius: BorderRadius.circular(5.0));

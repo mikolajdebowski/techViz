@@ -4,7 +4,7 @@ import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 
 class ProcessorRepositoryConfig {
-  static final ProcessorRepositoryConfig _singleton = new ProcessorRepositoryConfig._internal();
+  static final ProcessorRepositoryConfig _singleton = ProcessorRepositoryConfig._internal();
   String _documentID;
   List<LiveTable> _liveTables;
 

@@ -12,7 +12,7 @@ class StatusListPresenter{
   UserStatusRepository _repository;
 
   StatusListPresenter(this._view){
-    _repository = new Repository().userStatusRepository;
+    _repository = Repository().userStatusRepository;
   }
 
   void loadUserRoles(String userID){

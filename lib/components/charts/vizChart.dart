@@ -93,7 +93,7 @@ class VizChart extends StatelessWidget {
   Widget buildPieChart(List<ChartData> data) {
 
     if(data.length == 1){
-      var chartData = new ChartData('', 100 - num.parse(data[0].value.toString()), '', color: MaterialPalette.green.shadeDefault.darker);
+      var chartData = ChartData('', 100 - num.parse(data[0].value.toString()), '', color: MaterialPalette.green.shadeDefault.darker);
       data.add(chartData);
     }
 

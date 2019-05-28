@@ -333,7 +333,7 @@ class HomeAttendantState extends State<HomeAttendant> with WidgetsBindingObserve
                   Padding(
                       padding: EdgeInsets.only(top: 5.0),
                       child: Text(
-                        (_selectedTask != null ? _selectedTask.location : ''),
+                        _selectedTask != null ? _selectedTask.location : '',
                         style: TextStyle(color: Colors.lightBlue, fontSize: 20.0),
                         softWrap: false,
                       ))
@@ -522,7 +522,7 @@ class HomeAttendantState extends State<HomeAttendant> with WidgetsBindingObserve
                           maxLines: 2,
                           textAlign: TextAlign.center,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(color: Color(0xFFFFFFFF), fontSize: (playerName.length > 20 ? 12.0 : 14.0), fontWeight: FontWeight.bold)))
+                          style: TextStyle(color: Color(0xFFFFFFFF), fontSize: playerName.length > 20 ? 12.0 : 14.0, fontWeight: FontWeight.bold)))
                 ],
               ));
 

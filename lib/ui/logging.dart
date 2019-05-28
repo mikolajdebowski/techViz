@@ -38,7 +38,7 @@ class LoggingState extends State<Logging> {
 
   void onCopyPressed(){
     Fluttertoast.showToast( msg: "Log copied");
-    Clipboard.setData(new ClipboardData(text: _controller.text));
+    Clipboard.setData(ClipboardData(text: _controller.text));
   }
 
   void onClearPressed(){

@@ -35,7 +35,7 @@ class VizSummaryHeader extends StatelessWidget {
 
         bool isNotHighlighted = selectedEntryKey == null || selectedEntryKey != dataEntryGroup.headerTitle;
 
-        BoxDecoration decorationEntryHeader = BoxDecoration(border: isFirst ? Border(top: borderSide) : Border(left: borderSide, top: borderSide), color: (isNotHighlighted ? Color(0xFFAAAAAA) : Color(0xFFFFFFFF)));
+        BoxDecoration decorationEntryHeader = BoxDecoration(border: isFirst ? Border(top: borderSide) : Border(left: borderSide, top: borderSide), color: isNotHighlighted ? Color(0xFFAAAAAA) : Color(0xFFFFFFFF));
         BoxDecoration decorationEntryValue = BoxDecoration(border: isFirst ? Border(top: borderSide, bottom: borderSide) : Border(left: borderSide, top: borderSide, bottom: borderSide), color: Color(0xFFFFFFFF));
 
         Container containerHeader = Container(decoration: decorationEntryHeader, child: Center(child: Text(dataEntryGroup.headerTitle, key: Key('headerItemTitle'),)));

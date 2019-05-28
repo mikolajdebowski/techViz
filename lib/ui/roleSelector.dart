@@ -30,7 +30,7 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
     super.initState();
 
     Session session = Session();
-    roleListPresenter = new RoleListPresenter(this);
+    roleListPresenter = RoleListPresenter(this);
     roleListPresenter.loadUserRoles(session.user.userID);
 
   }

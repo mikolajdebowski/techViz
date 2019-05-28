@@ -11,40 +11,40 @@ class StackedHorizontalBarChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // For horizontal bar charts, set the [vertical] flag to false.
-    return new charts.BarChart(
+    return charts.BarChart(
       seriesList,
       animate: animate,
       barGroupingType: charts.BarGroupingType.stacked,
       vertical: false,
 
-      domainAxis: new charts.OrdinalAxisSpec(
-          renderSpec: new charts.SmallTickRendererSpec(
+      domainAxis: charts.OrdinalAxisSpec(
+          renderSpec: charts.SmallTickRendererSpec(
 
             // Tick and Label styling here.
-              labelStyle: new charts.TextStyleSpec(
+              labelStyle: charts.TextStyleSpec(
                   fontSize: 18, // size in Pts.
                   color: charts.MaterialPalette.black),
 
               // Change the line colors to match text color.
-              lineStyle: new charts.LineStyleSpec(
+              lineStyle: charts.LineStyleSpec(
                   color: charts.MaterialPalette.black))),
 
-    barRendererDecorator: new charts.BarLabelDecorator<String>(
-        insideLabelStyleSpec: new charts.TextStyleSpec(fontSize: 12, // size in Pts.
+    barRendererDecorator: charts.BarLabelDecorator<String>(
+        insideLabelStyleSpec: charts.TextStyleSpec(fontSize: 12, // size in Pts.
                   color: charts.MaterialPalette.black)),
 
 
       /// Assign a custom style for the measure axis.
-      primaryMeasureAxis: new charts.NumericAxisSpec(
-          renderSpec: new charts.GridlineRendererSpec(
+      primaryMeasureAxis: charts.NumericAxisSpec(
+          renderSpec: charts.GridlineRendererSpec(
 
             // Tick and Label styling here.
-              labelStyle: new charts.TextStyleSpec(
+              labelStyle: charts.TextStyleSpec(
                   fontSize: 0, // size in Pts.
                   color: charts.MaterialPalette.black),
 
               // Change the line colors to match text color.
-              lineStyle: new charts.LineStyleSpec(
+              lineStyle: charts.LineStyleSpec(
                   color: charts.MaterialPalette.black))),
     );
   }

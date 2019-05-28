@@ -13,7 +13,7 @@ class LocalRepository {
   Database db;
   String path;
 
-  static final LocalRepository _singleton = new LocalRepository._internal();
+  static final LocalRepository _singleton = LocalRepository._internal();
   factory LocalRepository() {
     return _singleton;
   }

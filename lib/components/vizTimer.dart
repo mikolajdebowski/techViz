@@ -53,9 +53,9 @@ class VizTimerState extends State<VizTimer> {
           var _difference = now.difference(widget.timeStarted);
 
 
-          var hours = (_difference.inHours);
-          var mins = (_difference.inMinutes - (_difference.inHours * 60));
-          var secs = (_difference.inSeconds - (_difference.inMinutes * 60));
+          var hours = _difference.inHours;
+          var mins = _difference.inMinutes - (_difference.inHours * 60);
+          var secs = _difference.inSeconds - (_difference.inMinutes * 60);
 
           String format = 'mm:ss';
           String timeStr = '${mins}:${secs}';

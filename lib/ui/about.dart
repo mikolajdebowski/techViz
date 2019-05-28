@@ -8,15 +8,8 @@ class About extends StatefulWidget {
 }
 
 class AboutState extends State<About> {
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
   void callbackLeft(dynamic obj){
     print(obj);
-
   }
 
   void callbackRight(dynamic obj){
@@ -27,8 +20,4 @@ class AboutState extends State<About> {
   Widget build(BuildContext context) {
     return Scaffold(backgroundColor: Colors.black, appBar: ActionBar(title: 'About'));
   }
-
 }
-
-
-

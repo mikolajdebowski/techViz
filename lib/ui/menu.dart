@@ -21,12 +21,6 @@ class _MenuState extends State<Menu> {
     _loadingBar = VizDialog.LoadingBar(message: 'Sending request...');
   }
 
-  @override
-  void dispose(){
-    //print('_MenuState dispose');
-    super.dispose();
-  }
-
   void goToMyProfile(Object tag){
     Navigator.pushReplacementNamed(context, '/profile');
   }

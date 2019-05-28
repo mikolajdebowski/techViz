@@ -164,7 +164,7 @@ class LoginState extends State<Login> {
         Navigator.pushReplacement(context, MaterialPageRoute<RoleSelector>(builder: (BuildContext context) => RoleSelector()));
       });
     }).catchError((dynamic error) {
-      final Logger log = new Logger(this.toStringShort());
+      final Logger log = Logger(this.toStringShort());
       log.info(error.toString());
 
       setState(() {
@@ -188,7 +188,7 @@ class LoginState extends State<Login> {
 
     var textFieldBorder = OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(4.0)));
     var defaultPadding = EdgeInsets.all(6.0);
-    var textFieldContentPadding = new EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0);
+    var textFieldContentPadding = EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0);
 
     var backgroundDecoration = BoxDecoration(
         gradient: LinearGradient(
