@@ -15,7 +15,7 @@ class VizTaskActionButton extends StatelessWidget{
     var defaultBg = [Color(0xFFB2C7CF),  Color(0xFFE4EDEF)];
 
     double fontSize = 16.0;
-    if(this.title.length>10){
+    if(title.length>10){
       fontSize = 12.0;
     }
     return Expanded(

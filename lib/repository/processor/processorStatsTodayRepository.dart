@@ -26,7 +26,7 @@ class ProcessorStatsTodayRepository extends ProcessorLiveTable<dynamic> implemen
   // TODO(rmathias): just mock data for demo
   @override
   Future fetch() async {
-    print('Fetching '+this.toString());
+    print('Fetching '+ toString());
 
     Completer<Map<int,List<ChartData>>> _completer = Completer<Map<int,List<ChartData>>>();
 

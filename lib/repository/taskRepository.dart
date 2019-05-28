@@ -92,10 +92,10 @@ class TaskRepository implements IRepository<Task>{
 
   @override
   Future<dynamic> fetch() {
-    assert(this.remoteRepository!=null);
+    assert(remoteRepository!=null);
 
     Completer _completer = Completer<bool>();
-    this.remoteRepository.fetch().then((Object result) async{
+    remoteRepository.fetch().then((Object result) async{
       await TaskTable.cleanUp();
       await TaskTable.insertOrUpdate(result);
       _completer.complete(true);

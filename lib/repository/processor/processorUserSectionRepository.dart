@@ -10,7 +10,7 @@ import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 class ProcessorUserSectionRepository implements IRemoteRepository<UserSection> {
   @override
   Future fetch() {
-    print('Fetching '+this.toString());
+    print('Fetching '+ toString());
 
     Completer _completer = Completer<void>();
     SessionClient client = SessionClient();

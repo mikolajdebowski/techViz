@@ -92,7 +92,7 @@ class LocalRepository {
 
 
   Future dropDatabase() async {
-    await this.close();
+    await close();
     await deleteDatabase(path);
   }
 }

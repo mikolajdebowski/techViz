@@ -24,7 +24,7 @@ class VizElevated extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return VizElevatedState(selected: this.selected);
+    return VizElevatedState(selected: selected);
   }
 }
 

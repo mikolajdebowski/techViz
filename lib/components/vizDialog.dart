@@ -43,8 +43,6 @@ class VizDialog {
   }
 }
 
-
-
 class VizDialogButton extends StatelessWidget {
   final String title;
   final Function action;
@@ -56,24 +54,24 @@ class VizDialogButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (this.highlighted) {
+    if (highlighted) {
       return RaisedButton(
           elevation: 5,
-          child: this.processing ? Center(child: SizedBox(
+          child: processing ? Center(child: SizedBox(
             child: CircularProgressIndicator(),
             height: 25.0,
             width: 25.0,
           )) : Text(title, style: TextStyle(color: Colors.white)),
           onPressed: () {
-            if (!this.disabled)
+            if (!disabled)
               action();
           });
     }
     else {
       return FlatButton(
-          child: Text(title, style: TextStyle(color: this.disabled ? Colors.grey : Colors.black)),
+          child: Text(title, style: TextStyle(color: disabled ? Colors.grey : Colors.black)),
           onPressed: () {
-            if (!this.disabled)
+            if (!disabled)
               action();
           });
     }

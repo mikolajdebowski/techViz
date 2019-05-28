@@ -16,8 +16,8 @@ class UserRepository implements IRepository<User>{
 
   @override
   Future fetch() {
-    assert(this.remoteRepository!=null);
-    return this.remoteRepository.fetch();
+    assert(remoteRepository!=null);
+    return remoteRepository.fetch();
   }
 
   Future Update(String userID, {String roleID, String statusID}){
@@ -48,7 +48,7 @@ class UserRepository implements IRepository<User>{
   }
 
   Future<List<Map>> usersBySectionsByTaskCount(){
-    return this.remoteRepository.usersBySectionsByTaskCount();
+    return remoteRepository.usersBySectionsByTaskCount();
   }
 
 }

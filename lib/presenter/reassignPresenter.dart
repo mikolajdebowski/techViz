@@ -20,7 +20,7 @@ class ReassignPresenter {
     _repository.usersBySectionsByTaskCount().then((List<Map> list){
 
       List<ReassignUser> toReturn = list.map((Map map) => ReassignUser.fromMap(map)).toList();
-      this._view.onUserLoaded(toReturn);
+      _view.onUserLoaded(toReturn);
 
     });
   }

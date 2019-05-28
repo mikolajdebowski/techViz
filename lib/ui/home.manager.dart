@@ -227,7 +227,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
 
   @override
   void onOpenTasksLoaded(List<DataEntryGroup> list) {
-    if (this.mounted) {
+    if (mounted) {
       setState(() {
         _openTasksLoading = false;
         _openTasksList = list;
@@ -237,7 +237,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
 
   @override
   void onSlotFloorSummaryLoaded(List<DataEntryGroup> list) {
-    if (this.mounted) {
+    if (mounted) {
       setState(() {
         _slotFloorLoading = false;
         _slotFloorList = list;
@@ -247,7 +247,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
 
   @override
   void onTeamAvailabilityLoaded(List<DataEntryGroup> list) {
-    if (this.mounted) {
+    if (mounted) {
       setState(() {
         _teamAvailabilityList = list;
       });

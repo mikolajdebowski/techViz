@@ -15,8 +15,8 @@ class EscalationPathRepository implements IRepository<EscalationPath> {
 
   @override
   Future fetch() {
-    assert(this.remoteRepository != null);
-    return this.remoteRepository.fetch();
+    assert(remoteRepository != null);
+    return remoteRepository.fetch();
   }
 
   Future<List<EscalationPath>> getAll() async {

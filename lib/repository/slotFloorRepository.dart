@@ -28,8 +28,8 @@ class SlotFloorRepository implements IRepository<SlotMachine> {
   }
 
   SlotFloorRepository({this.remoteRepository, this.remoteRouting}) {
-    assert(this.remoteRepository != null);
-    assert(this.remoteRouting != null);
+    assert(remoteRepository != null);
+    assert(remoteRouting != null);
 
     _remoteSlotMachineController = StreamController<List<SlotMachine>>();
   }
@@ -37,9 +37,9 @@ class SlotFloorRepository implements IRepository<SlotMachine> {
   @override
   Future fetch() {
     print('fetch');
-    assert(this.remoteRepository != null);
+    assert(remoteRepository != null);
     Completer _completer = Completer<void>();
-    this.remoteRepository.fetch().then((dynamic data) {
+    remoteRepository.fetch().then((dynamic data) {
       print('remoteRepository fetched');
       _cache.data = (data as List<SlotMachine>).toList();
       _remoteSlotMachineController.add(_cache.data);
@@ -106,7 +106,7 @@ class SlotFloorRepository implements IRepository<SlotMachine> {
 
   Future<List<SlotMachine>> slotFloorSummary(){
     Completer<List<SlotMachine>> _completer = Completer<List<SlotMachine>>();
-    this.remoteRepository.slotFloorSummary().then((dynamic result){
+    remoteRepository.slotFloorSummary().then((dynamic result){
       List<SlotMachine> listToReturn = <SlotMachine>[];
 
       SlotMachine parser(Map<String,dynamic> map){

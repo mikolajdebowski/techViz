@@ -11,7 +11,7 @@ class ProcessorUserSkillsRepository extends ProcessorLiveTable<dynamic> implemen
   @override
   Future fetch() async {
 
-    print('Fetching '+this.toString());
+    print('Fetching '+ toString());
 
     Completer _completer = Completer<void>();
     SessionClient client = SessionClient();

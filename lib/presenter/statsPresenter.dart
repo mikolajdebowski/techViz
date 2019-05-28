@@ -16,7 +16,7 @@ class StatsPresenter {
   IStatsPresenter _view;
 
   StatsPresenter(IStatsPresenter view) {
-    this._view = view;
+    _view = view;
   }
 
   void load(StatsView view) {

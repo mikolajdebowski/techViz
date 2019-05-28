@@ -21,15 +21,15 @@ class VizTaskItem extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
 
-    var urgencyColorStart = this.urgencyHEXColor!= null ? Color(int.parse("0xFF${this.urgencyHEXColor}")) : Color(0xFF45505D);
-    var urgencyColorEnd = this.urgencyHEXColor!= null ? Color(int.parse("0xAA${this.urgencyHEXColor}")) : Color(0xFF45505D);
+    Color urgencyColorStart = urgencyHEXColor!= null ? Color(int.parse("0xFF${urgencyHEXColor}")) : Color(0xFF45505D);
+    Color urgencyColorEnd = urgencyHEXColor!= null ? Color(int.parse("0xAA${urgencyHEXColor}")) : Color(0xFF45505D);
 
-    var mainBackgroundColor = this.selected ? [Color(0xFF65b1d9), Color(0xFF0268a2)] : [Color(0xFFB2C7CF), Color(0xFFE4EDEF)];
-    var locationColor =  this.selected ? Colors.white : Colors.black45;
+    List<Color> mainBackgroundColor = selected ? [Color(0xFF65b1d9), Color(0xFF0268a2)] : [Color(0xFFB2C7CF), Color(0xFFE4EDEF)];
+    Color locationColor =  selected ? Colors.white : Colors.black45;
 
     return GestureDetector(
         onTap: () {
-          this.itemTapCallback(this.id);
+          this.itemTapCallback(id);
         },
         child: Row(
           children: <Widget>[
@@ -43,7 +43,7 @@ class VizTaskItem extends StatelessWidget{
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         tileMode: TileMode.repeated)),
-                child: Center(child: Text(this.index.toString(), style: TextStyle(color: Colors.white))),
+                child: Center(child: Text(index.toString(), style: TextStyle(color: Colors.white))),
               ),
             ),
             Expanded(
@@ -54,7 +54,7 @@ class VizTaskItem extends StatelessWidget{
                 BoxDecoration(gradient: LinearGradient(colors: mainBackgroundColor, begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
                 child: Center(
                     child: Text(
-                      this.title,
+                      title,
                       style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15.0, color: locationColor),
                     )),
               ),

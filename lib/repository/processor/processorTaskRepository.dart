@@ -11,7 +11,7 @@ class ProcessorTaskRepository implements ITaskRepository{
    */
   @override
   Future<dynamic> fetch()  {
-    print('Fetching '+this.toString());
+    print('Fetching '+ toString());
 
     Completer _completer = Completer<List<Map<String, dynamic>>>();
     SessionClient client = SessionClient();

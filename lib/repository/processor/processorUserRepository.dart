@@ -10,7 +10,7 @@ class ProcessorUserRepository implements IUserRepository{
 
   @override
   Future fetch() {
-    print('Fetching '+this.toString());
+    print('Fetching '+ toString());
 
     Completer _completer = Completer<void>();
     SessionClient client = SessionClient();

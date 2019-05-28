@@ -164,7 +164,7 @@ class LoginState extends State<Login> {
         Navigator.pushReplacement(context, MaterialPageRoute<RoleSelector>(builder: (BuildContext context) => RoleSelector()));
       });
     }).catchError((dynamic error) {
-      final Logger log = Logger(this.toStringShort());
+      final Logger log = Logger(toStringShort());
       log.info(error.toString());
 
       setState(() {

@@ -9,7 +9,7 @@ class StatsMonthRepository implements IRepository<dynamic> {
 
   @override
   Future fetch() {
-    assert(this.remoteRepository != null);
-    return this.remoteRepository.fetch();
+    assert(remoteRepository != null);
+    return remoteRepository.fetch();
   }
 }

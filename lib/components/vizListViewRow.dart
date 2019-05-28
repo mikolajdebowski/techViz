@@ -182,7 +182,7 @@ class VizListViewRowState extends State<VizListViewRow> {
           SlidableState slidableState = _slidableKey.currentState;
           slidableState.close();
           setState(() {
-            this.isBeingPressed = false;
+            isBeingPressed = false;
           });
         });
 
@@ -190,12 +190,12 @@ class VizListViewRowState extends State<VizListViewRow> {
       child: gestureDetector,
       onPointerDown: (PointerDownEvent event) {
         setState(() {
-          this.isBeingPressed = true;
+          isBeingPressed = true;
         });
       },
       onPointerUp: (PointerUpEvent event) {
         setState(() {
-          this.isBeingPressed = false;
+          isBeingPressed = false;
         });
       },
     );

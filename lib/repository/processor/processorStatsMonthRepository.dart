@@ -25,7 +25,7 @@ class ProcessoStatsMonthRepository extends IRemoteRepository<dynamic>{
 
   @override
   Future fetch() async {
-    print('Fetching '+this.toString());
+    print('Fetching '+ toString());
 
     Completer<Map<int,List<ChartData>>> _completer = Completer<Map<int,List<ChartData>>>();
 

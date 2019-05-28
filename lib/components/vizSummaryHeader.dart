@@ -87,7 +87,7 @@ class VizSummaryHeader extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text(headerTitle, key: Key('headerTitle'), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                Opacity(opacity: this.isProcessing ? 1.0 : 0.0, child: Padding(child: SizedBox(child: CircularProgressIndicator(strokeWidth: 2), width: 10, height: 10), padding: EdgeInsets.only(left: 5)))
+                Opacity(opacity: isProcessing ? 1.0 : 0.0, child: Padding(child: SizedBox(child: CircularProgressIndicator(strokeWidth: 2), width: 10, height: 10), padding: EdgeInsets.only(left: 5)))
               ],
             )),
           ),

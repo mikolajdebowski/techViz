@@ -2,8 +2,8 @@ import 'package:techviz/repository/local/localTable.dart';
 
 class RoleTable extends LocalTable {
   RoleTable() {
-    this.tableName = 'Role';
-    this.createSQL = '''
+    tableName = 'Role';
+    createSQL = '''
               CREATE TABLE $tableName ( 
                   UserRoleID INT NOT NULL,
                   UserRoleName TEXT NOT NULL,
