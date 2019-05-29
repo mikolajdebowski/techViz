@@ -49,7 +49,10 @@ class VizListViewState extends State<VizListView> {
       });
     }
     else if(_lastRowkey!=null && _lastRowkey.hashCode != key.hashCode){
-      _lastRowkey.currentState.close();
+      if(_lastRowkey.currentState != null){
+        _lastRowkey.currentState.close();
+      }
+
       setState(() {
         _lastRowkey = key;
       });
