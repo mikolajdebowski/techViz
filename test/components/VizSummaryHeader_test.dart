@@ -1,20 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
 import 'package:techviz/components/dataEntry/dataEntry.dart';
 import 'package:techviz/components/dataEntry/dataEntryGroup.dart';
 import 'package:techviz/components/vizSummaryHeader.dart';
 
-void main(){
+class ClassForVizSummaryHeaderActions extends Mock implements VizSummaryHeaderActions{
+  @override
+  void onItemTap(String headerKey) {
+    print(headerKey);
+  }
+}
 
-   group('VizSummaryHeader', (){
+void main(){
+  group('VizSummaryHeader', (){
 
     testWidgets('header title should contains \'header title\' text', (WidgetTester tester) async {
 
       VizSummaryHeader header = VizSummaryHeader(headerTitle:'header title');
+
       await tester.pumpWidget(MaterialApp(home: header));
 
       Finder headerTitleWidget = find.byKey(Key('headerTitle'));
-      expect(headerTitleWidget, findsOneWidget, reason: 'expects findsOneWidget');
 
       Text text = tester.widget<Text>(headerTitleWidget);
       expect(text.data, 'header title', reason: 'expects data should be \'header title\'');
@@ -64,6 +71,25 @@ void main(){
 
       Text textWidget = tester.widget(headerItemValueFinder);
       expect(textWidget.style.color, Colors.red, reason: 'color property should be Red');
+    });
+
+    testWidgets('should tap', (WidgetTester tester) async {
+
+      List<DataEntryGroup> listEntries = <DataEntryGroup>[];
+      listEntries.add(DataEntryGroup('tappable header item', <DataEntry>[]));
+
+      ClassForVizSummaryHeaderActions actionImplementation = ClassForVizSummaryHeaderActions();
+
+      VizSummaryHeader header = VizSummaryHeader(headerTitle:'header title', entries: listEntries, actions: actionImplementation);
+      await tester.pumpWidget(MaterialApp(home: header));
+
+      Finder headerItemValueFinder = find.byKey(Key('headerItemValue'));
+
+      await tester.tap(headerItemValueFinder);
+
+      await untilCalled(actionImplementation.onItemTap("a"));
+
+      //List<dynamic> a = verify(actionImplementation.onItemTap(any)).captured;
     });
   });
 }
