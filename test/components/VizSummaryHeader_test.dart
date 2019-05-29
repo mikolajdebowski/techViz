@@ -51,5 +51,19 @@ void main(){
       Finder headerItemValueFinder = find.descendant(of: rowContainerFinder, matching: find.byKey(Key('headerItemValue')));
       expect(headerItemValueFinder, findsNWidgets(3), reason: 'expects 3 value widgets');
     });
+
+    testWidgets('should have one column with the text font highlighted in red', (WidgetTester tester) async {
+
+      List<DataEntryGroup> listEntries = <DataEntryGroup>[];
+      listEntries.add(DataEntryGroup('highlighted in red', <DataEntry>[], highlightedDecoration: (){ return Colors.red;}));
+
+      VizSummaryHeader header = VizSummaryHeader(headerTitle:'header title', entries: listEntries);
+      await tester.pumpWidget(MaterialApp(home: header));
+
+      Finder headerItemValueFinder = find.byKey(Key('headerItemValue'));
+
+      Text textWidget = tester.widget(headerItemValueFinder);
+      expect(textWidget.style.color, Colors.red, reason: 'color property should be Red');
+    });
   });
 }

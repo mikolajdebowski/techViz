@@ -1,9 +1,8 @@
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:charts_flutter/flutter.dart';
 import 'package:flutter/material.dart';
-import 'IVizChart.dart';
 
-class SimplePieChart extends StatelessWidget implements IVizChart{
+class SimplePieChart extends StatelessWidget{
   final List<charts.Series> seriesList;
   final bool animate;
 
@@ -29,17 +28,4 @@ class SimplePieChart extends StatelessWidget implements IVizChart{
         layoutConfig: _defaultLayoutConfig,
       );
   }
-
-  @override
-  void load() {
-    // TODO(rmathias): implement load
-  }
-
-}
-
-/// Sample linear data type.
-class LinearSales {
-  final num percent;
-
-  LinearSales(this.percent);
 }
