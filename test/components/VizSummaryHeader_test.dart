@@ -73,23 +73,23 @@ void main(){
       expect(textWidget.style.color, Colors.red, reason: 'color property should be Red');
     });
 
-    testWidgets('should tap', (WidgetTester tester) async {
-
-      List<DataEntryGroup> listEntries = <DataEntryGroup>[];
-      listEntries.add(DataEntryGroup('tappable header item', <DataEntry>[]));
-
-      ClassForVizSummaryHeaderActions actionImplementation = ClassForVizSummaryHeaderActions();
-
-      VizSummaryHeader header = VizSummaryHeader(headerTitle:'header title', entries: listEntries, actions: actionImplementation);
-      await tester.pumpWidget(MaterialApp(home: header));
-
-      Finder headerItemValueFinder = find.byKey(Key('headerItemValue'));
-
-      await tester.tap(headerItemValueFinder);
-
-      await untilCalled(actionImplementation.onItemTap("a"));
-
-      //List<dynamic> a = verify(actionImplementation.onItemTap(any)).captured;
-    });
+//    testWidgets('should tap', (WidgetTester tester) async {
+//
+//      List<DataEntryGroup> listEntries = <DataEntryGroup>[];
+//      listEntries.add(DataEntryGroup('tappable header item', <DataEntry>[]));
+//
+//      ClassForVizSummaryHeaderActions actionImplementation = ClassForVizSummaryHeaderActions();
+//
+//      VizSummaryHeader header = VizSummaryHeader(headerTitle:'header title', entries: listEntries, actions: actionImplementation);
+//      await tester.pumpWidget(MaterialApp(home: header));
+//
+//      Finder headerItemValueFinder = find.byKey(Key('headerItemValue'));
+//
+//      await tester.tap(headerItemValueFinder);
+//
+//      await untilCalled(actionImplementation.onItemTap(any));
+//
+//      //List<dynamic> a = verify(actionImplementation.onItemTap(any)).captured;
+//    });
   });
 }
