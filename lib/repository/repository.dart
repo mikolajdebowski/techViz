@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:techviz/repository/async/UserRouting.dart';
 import 'package:techviz/repository/slotFloorRepository.dart';
 import 'package:techviz/repository/async/SlotMachineRouting.dart';
 import 'package:techviz/repository/escalationPathRepository.dart';
@@ -39,6 +40,8 @@ import 'package:techviz/repository/userSkillsRepository.dart';
 import 'package:techviz/repository/userStatusRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
+import 'local/userTable.dart';
+
 enum Flavor {
   MOCK,
   PROCESSOR,
@@ -48,6 +51,7 @@ enum Flavor {
 typedef fncOnMessage = void Function(String);
 
 class Repository{
+  ILocalRepository _localRepository;
   static Flavor _flavor;
 
   static final Repository _singleton = Repository._internal();
@@ -60,11 +64,17 @@ class Repository{
   Future<void> configure(Flavor flavor, {String configJSON}) async {
     _flavor = flavor;
 
+    _localRepository ??= LocalRepository();
+
     if(_flavor == Flavor.PROCESSOR){
       SessionClient client = SessionClient();
       var config = ProcessorRepositoryConfig();
       await config.Setup(client);
     }
+  }
+
+  void setLocalDatabase(ILocalRepository localRepository){
+    _localRepository = localRepository;
   }
 
   Future<void> preFetch(fncOnMessage onMessage) async{
@@ -122,7 +132,7 @@ class Repository{
 
   UserRepository get userRepository {
     switch(_flavor) {
-      default: return UserRepository(remoteRepository: ProcessorUserRepository());
+      default: return UserRepository(ProcessorUserRepository(), UserRouting(), UserTable(_localRepository));
     }
   }
 

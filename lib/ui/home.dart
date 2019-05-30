@@ -98,19 +98,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     homeChildKey.currentState.onUserSectionsChanged(currentSections);
   }
 
-  void onMyStatusSelectorCallbackOK(UserStatus userStatusSelected) {
-    if (userStatusSelected.isOnline) {
-      Session().UpdateConnectionStatus(ConnectionStatus.Online);
-    } else {
-      Session().UpdateConnectionStatus(ConnectionStatus.Offline);
-    }
-
-    _userStatusText = userStatusSelected.description;
-    _isOnline = userStatusSelected.isOnline;
-
-    homeChildKey.currentState.onUserStatusChanged(userStatusSelected); // TODO(rmathias): NULL?
-  }
-
   void goToSectionSelector() {
     var selector = SectionSelector(onUserSectionsChanged: onUserSectionsChangedCallback);
 
@@ -121,11 +108,24 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   }
 
   void goToStatusSelector() {
-    var selector = StatusSelector(onTapOK: onMyStatusSelectorCallbackOK, preSelectedID: Session().user.userStatusID);
-    Navigator.push<VizSelector>(
+    StatusSelector selector = StatusSelector();
+    Navigator.push<UserStatus>(
       context,
       MaterialPageRoute(builder: (context) => selector),
-    );
+    ).then((UserStatus userStatusSelected){
+      if(userStatusSelected!=null){
+        if (userStatusSelected.isOnline) {
+          Session().UpdateConnectionStatus(ConnectionStatus.Online);
+        } else {
+          Session().UpdateConnectionStatus(ConnectionStatus.Offline);
+        }
+
+        _userStatusText = userStatusSelected.description;
+        _isOnline = userStatusSelected.isOnline;
+
+        homeChildKey.currentState.onUserStatusChanged(userStatusSelected); // TODO(rmathias): NULL?
+      }
+    });
   }
 
   void goToSearchSelector() {

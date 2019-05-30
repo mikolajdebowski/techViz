@@ -42,7 +42,7 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
     Session session = Session();
     UserRepository userRepository = Repository().userRepository;
 
-    await userRepository.Update(session.user.userID, roleID: selectedRoleID);
+    await userRepository.update(session.user.userID, roleID: selectedRoleID);
 
     session.role = (await RoleRepository().getAll(ids: [selectedRoleID])).first;
     session.user.userRoleID =  session.role.id;

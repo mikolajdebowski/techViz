@@ -12,8 +12,8 @@ class User extends PropertyChangeNotifier {
   User.fromMap(Map map){
     userID = map['UserID'] as String;
     userName = map['UserName'] as String;
-    userRoleID = int.parse(map['UserRoleID'].toString());
-    userStatusID = int.parse(map['UserStatusID'].toString());
+    userRoleID = map['UserRoleID'] == null ? 0: int.parse(map['UserRoleID'].toString());
+    userStatusID = map['UserStatusID'] == null ? 0: int.parse(map['UserStatusID'].toString());
     staffID = map['StaffID'] as String;
   }
 }

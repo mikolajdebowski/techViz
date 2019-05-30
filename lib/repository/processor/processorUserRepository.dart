@@ -6,13 +6,13 @@ import 'package:techviz/repository/processor/processorRepositoryConfig.dart';
 import 'package:techviz/repository/userRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
-class ProcessorUserRepository implements IUserRepository{
+class ProcessorUserRepository implements IUserRemoteRepository{
 
   @override
-  Future fetch() {
+  Future<Map> fetch() {
     print('Fetching '+ toString());
 
-    Completer _completer = Completer<void>();
+    Completer _completer = Completer<Map>();
     SessionClient client = SessionClient();
 
     var config = ProcessorRepositoryConfig();
@@ -20,11 +20,10 @@ class ProcessorUserRepository implements IUserRepository{
     String url = 'live/${config.DocumentID}/$liveTableID/select.json';
 
     client.get(url).then((String rawResult) async {
-
+      Map<String, dynamic> map = <String, dynamic>{};
       dynamic decoded = json.decode(rawResult);
       List<dynamic> rows = decoded['Rows'] as List<dynamic>;
-
-      var _columnNames = (decoded['ColumnNames'] as String).split(',');
+      List<String> _columnNames = (decoded['ColumnNames'] as String).split(',');
 
       LocalRepository localRepo = LocalRepository();
       await localRepo.open();
@@ -32,7 +31,6 @@ class ProcessorUserRepository implements IUserRepository{
       rows.forEach((dynamic d) {
         dynamic values = d['Values'];
 
-        Map<String, dynamic> map = <String, dynamic>{};
         map['UserID'] = values[_columnNames.indexOf("UserID")];
         map['UserRoleID'] = values[_columnNames.indexOf("UserRoleID")];
         map['UserName'] = values[_columnNames.indexOf("UserName")];
@@ -42,14 +40,12 @@ class ProcessorUserRepository implements IUserRepository{
         localRepo.insert('User', map);
       });
 
-      _completer.complete();
+      _completer.complete(map);
 
     }).catchError((dynamic e){
       print(e.toString());
       _completer.completeError(e);
     });
-
-
     return _completer.future;
   }
 

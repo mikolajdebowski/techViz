@@ -2,25 +2,31 @@ import 'dart:async';
 import 'package:techviz/model/user.dart';
 import 'package:techviz/repository/async/MessageClient.dart';
 
-class UserRouting {
+abstract class IUserRouting{
+  void listenQueue(Function callback, {Function callbackError});
+  Future publishMessage(dynamic message);
+}
+
+class UserRouting implements IUserRouting {
   String routingPattern = "mobile.user";
 
-  void ListenQueue(Function callback, {Function callbackError}) {
+  @override
+  void listenQueue(Function callback, {Function callbackError}) {
     throw UnimplementedError();
   }
 
-  Future PublishMessage(dynamic message) {
+  @override
+  Future publishMessage(dynamic message) {
+
+    User parser(dynamic json){
+      Map<String,dynamic> map = <String,dynamic>{};
+      map['UserID'] = json["userID"];
+      map['userRoleID'] = json["userRoleID"] != null?int.parse(json["userRoleID"].toString()) : 0;
+      map['userStatusID'] = json["userStatusID"] != null?int.parse(json["userStatusID"].toString()) : 0;
+
+      return User.fromMap(map);
+    }
+
     return MessageClient().PublishMessage(message, routingPattern, parser: parser, wait: true);
-  }
-
-  User parser(dynamic json){
-    String userID = json["userID"];
-    int statusID = json["userStatusID"] != null?int.parse(json["userStatusID"].toString()):0;
-    int roleID = json["userRoleID"] != null?int.parse(json["userRoleID"].toString()):0;
-
-    return User(
-        userID: userID,
-        userStatusID: statusID,
-        userRoleID: roleID);
   }
 }

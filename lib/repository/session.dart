@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:techviz/model/role.dart';
 import 'package:techviz/model/user.dart';
 import 'package:techviz/repository/async/UserRouting.dart';
-import 'package:techviz/repository/local/userTable.dart';
 import 'package:observable/observable.dart';
+import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/roleRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
@@ -27,7 +27,7 @@ class Session extends PropertyChangeNotifier {
   Session._internal();
 
   Future init(String userID) async {
-    user = await UserTable.getUser(userID);
+    user = await Repository().userRepository.getUser(userID);
     role = (await RoleRepository().getAll(ids: [user.userRoleID.toString()])).first;
 
     user.changes.listen((List<ChangeRecord> changes) {
@@ -44,7 +44,7 @@ class Session extends PropertyChangeNotifier {
     Session session = Session();
 
     var toSend = {'userStatusID': '10', 'userID': session.user.userID, 'deviceID': info.DeviceID};
-    await UserRouting().PublishMessage(toSend);
+    await UserRouting().publishMessage(toSend);
   }
 
   void UpdateConnectionStatus(ConnectionStatus newStatus){

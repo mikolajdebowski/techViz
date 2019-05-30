@@ -7,11 +7,10 @@ import 'package:techviz/components/VizAlert.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizLoadingIndicator.dart';
 import 'package:techviz/components/vizRainbow.dart';
+import 'package:techviz/repository/userRepository.dart';
 import 'package:techviz/ui/config.dart';
 import 'package:techviz/repository/async/DeviceRouting.dart';
 import 'package:techviz/repository/async/MessageClient.dart';
-import 'package:techviz/repository/async/UserRouting.dart';
-import 'package:techviz/repository/local/userTable.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/session.dart';
 import 'package:techviz/ui/roleSelector.dart';
@@ -97,27 +96,23 @@ class LoginState extends State<Login> {
   }
 
   Future setupUser(String userID) async{
-    Completer<void> _completer = Completer<void>();
+    Completer _completer = Completer<void>();
     DeviceInfo deviceInfo = await Utils.deviceInfo;
 
     setState(() {
       _loadingMessage = 'Updating user and device info...';
     });
 
-    Session session = Session();
     await MessageClient().Init();
 
-    var toSendUserStatus = {'userStatusID': 10, 'userID': userID, 'deviceID': deviceInfo.DeviceID }; //FORCE OFF-SHIFT REMOTE
-    var toSendDeviceDetails = {'userID': userID, 'deviceID': deviceInfo.DeviceID, 'model': deviceInfo.Model, 'OSName': deviceInfo.OSName, 'OSVersion': deviceInfo.OSVersion };
-
-    var userUpdateFuture = UserRouting().PublishMessage(toSendUserStatus).then<dynamic>((dynamic user) async{
-      await UserTable.updateStatusID(userID, "10"); //FORCE OFF-SHIFT LOCALLY
-      await session.init(userID);
-
-      return Future<dynamic>.value(user);
+    UserRepository userRepository = Repository().userRepository;
+    Future userUpdateFuture = userRepository.update(userID, statusID: "10").then<int>((int result) async { //FORCE OFF-SHIFT LOCALLY
+      await Session().init(userID);
+      return result; // TODO(rmathias): DOES IT IS NECESSARY?
     });
 
-    var deviceUpdateFuture = DeviceRouting().PublishMessage(toSendDeviceDetails);
+    dynamic toSendDeviceDetails = {'userID': userID, 'deviceID': deviceInfo.DeviceID, 'model': deviceInfo.Model, 'OSName': deviceInfo.OSName, 'OSVersion': deviceInfo.OSVersion };
+    Future deviceUpdateFuture = DeviceRouting().PublishMessage(toSendDeviceDetails);
 
     Future.wait<void>([userUpdateFuture, deviceUpdateFuture]).then((List<dynamic> l){
       _completer.complete();
