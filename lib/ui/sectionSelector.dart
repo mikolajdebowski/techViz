@@ -8,6 +8,7 @@ import 'package:techviz/model/section.dart';
 import 'package:techviz/model/userSection.dart';
 import 'package:techviz/presenter/sectionListPresenter.dart';
 import 'package:techviz/repository/async/SectionRouting.dart';
+import 'package:techviz/repository/repository.dart';
 import 'package:techviz/session.dart';
 import 'package:techviz/repository/userSectionRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
@@ -48,19 +49,18 @@ class SectionSelectorState extends State<SectionSelector>
     List<String> sections = sectionList.where((SectionModelPresenter s) => s.selected).map((SectionModelPresenter s)=>s.sectionID).toList();
 
     DeviceInfo info = await Utils.deviceInfo;
-    var toSubmit = {'userID': session.user.userID, 'sections': sections, 'deviceID': info.DeviceID};
+    dynamic toSubmit = {'userID': session.user.userID, 'sections': sections, 'deviceID': info.DeviceID};
 
     SectionRouting().PublishMessage(toSubmit).then<List<Section>>((dynamic list) async{
       _loadingBar.dismiss();
 
-      var toUpdateLocally = list as List<Section>;
+      List<Section> toUpdateLocally = list as List<Section>;
 
-      await UserSectionRepository().update(session.user.userID, toUpdateLocally.map((Section s) => s.sectionID).toList());
+      UserSectionRepository userSectionRepo = Repository().userSectionRepository;
+      await userSectionRepo.update(session.user.userID, toUpdateLocally.map((Section s) => s.sectionID).toList());
 
-      print('');
-      UserSectionRepository().getUserSection(session.user.userID).then((List<UserSection> sectionToMain){
-        backToMain(sectionToMain);
-      });
+      List<UserSection> sectionToMain = await userSectionRepo.getUserSection(session.user.userID);
+      backToMain(sectionToMain);
 
     }).catchError((dynamic error){
       _loadingBar.dismiss();

@@ -41,6 +41,7 @@ import 'package:techviz/repository/userStatusRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 import 'async/MessageClient.dart';
+import 'local/userSectionTable.dart';
 import 'local/userTable.dart';
 
 enum Flavor {
@@ -51,7 +52,12 @@ enum Flavor {
 
 typedef fncOnMessage = void Function(String);
 
-class Repository{
+class Repository {
+  UserRepository _userRepository;
+  UserSectionRepository _userSectionRepository;
+
+
+
   ILocalRepository _localRepository;
   static Flavor _flavor;
 
@@ -60,7 +66,6 @@ class Repository{
     return _singleton;
   }
   Repository._internal();
-
 
   Future<void> configure(Flavor flavor, {String configJSON}) async {
     _flavor = flavor;
@@ -78,7 +83,7 @@ class Repository{
     _localRepository = localRepository;
   }
 
-  Future<void> preFetch(fncOnMessage onMessage) async{
+  Future<void> preFetch(fncOnMessage onMessage) async {
     onMessage('Cleaning up local database...');
 
 
@@ -87,7 +92,7 @@ class Repository{
     await localRepo.dropDatabase();
   }
 
-  Future<void> initialFetch(fncOnMessage onMessage) async{
+  Future<void> initialFetch(fncOnMessage onMessage) async {
 
     LocalRepository localRepo = LocalRepository();
     await localRepo.open();
@@ -119,23 +124,39 @@ class Repository{
     await userSectionRepository.fetch();
   }
 
-  UserSectionRepository get userSectionRepository {
-    switch(_flavor) {
-      default: return UserSectionRepository(remoteRepository: ProcessorUserSectionRepository());
+  //USER
+  UserRepository get userRepository {
+    IUserTable userTableImpl = UserTable(_localRepository);
+    if(_userRepository==null){
+      IUserRouting userRouting = UserRouting(MessageClient());
+      return UserRepository(ProcessorUserRepository(),userRouting, userTableImpl);
     }
+    assert(_userRepository!=null);
+
+    return _userRepository;
   }
+  set userRepository(UserRepository userRepository){
+    _userRepository = userRepository;
+  }
+
+
+  //USERSECTION
+  UserSectionRepository get userSectionRepository {
+    IUserSectionTable userSectionTable = UserSectionTable(_localRepository);
+    if(_userSectionRepository==null){
+      return UserSectionRepository(ProcessorUserSectionRepository(), userSectionTable);
+    }
+    assert(_userSectionRepository!=null);
+    return _userSectionRepository;
+  }
+  set userSectionRepository(UserSectionRepository userSectionRepository){
+    _userSectionRepository = userSectionRepository;
+  }
+
 
   SectionRepository get sectionRepository {
     switch(_flavor) {
       default: return SectionRepository(remoteRepository: ProcessorSectionRepository());
-    }
-  }
-
-  UserRepository get userRepository {
-    IUserTable userTableImpl = UserTable(_localRepository);
-    IUserRouting userRouting = UserRouting(MessageClient());
-    switch(_flavor) {
-      default: return UserRepository(ProcessorUserRepository(),userRouting, userTableImpl);
     }
   }
 

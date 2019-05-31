@@ -16,9 +16,9 @@ enum ConnectionStatus{
 }
 
 abstract class ISession{
-  User user;
-  Role role;
-  ConnectionStatus connectionStatus;
+  User get user;
+  Role get role;
+  ConnectionStatus get connectionStatus;
   Future init(String userID);
   Future logOut();
   void UpdateConnectionStatus(ConnectionStatus newStatus);
@@ -49,7 +49,6 @@ class Session extends PropertyChangeNotifier implements ISession{
     user.changes.listen((List<ChangeRecord> changes) {
       print('changes from User: ');
       print(changes[0]);
-
       notifyChange(changes[0]);
     });
   }
@@ -57,7 +56,6 @@ class Session extends PropertyChangeNotifier implements ISession{
   @override
   Future logOut() async  {
     Session session = Session();
-
     UserRepository _repo = Repository().userRepository;
     await _repo.update(session.user.userID, statusID: '10');
   }

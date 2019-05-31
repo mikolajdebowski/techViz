@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:techviz/repository/repository.dart';
 import 'package:techviz/ui/home.attendant.dart';
 import 'package:techviz/common/slideRightRoute.dart';
 import 'package:techviz/components/VizButton.dart';
@@ -78,7 +79,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   }
 
   void loadDefaultSections() {
-    UserSectionRepository userSectionRepo = UserSectionRepository();
+    UserSectionRepository userSectionRepo = Repository().userSectionRepository;
     ISession session = Session();
     userSectionRepo.getUserSection(session.user.userID).then((List<UserSection> list) {
       setState(() {

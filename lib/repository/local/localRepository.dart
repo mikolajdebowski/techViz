@@ -9,6 +9,8 @@ import 'package:techviz/repository/local/taskTypeTable.dart';
 import 'package:techviz/repository/local/taskUrgencyTable.dart';
 import 'package:techviz/repository/local/userTable.dart';
 
+import 'userSectionTable.dart';
+
 abstract class ILocalRepository{
   Database get db;
 }
@@ -38,16 +40,15 @@ class LocalRepository implements ILocalRepository{
     db = await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
 
-          TaskTable.create(db);
+          UserTable(this).create(db);
+          UserSectionTable(this).create(db);
 
+          // TODO(rmathias): from here and bellow should be revised
+          TaskTable.create(db);
           TaskUrgencyTable.create(db);
 
-          UserTable(this).create(db);
-
           EscalationPathTable().create(db);
-
           TaskTypeTable().create(db);
-
           RoleTable().create(db);
 
           await db.execute('''
@@ -78,14 +79,6 @@ class LocalRepository implements ILocalRepository{
                 SectionID TEXT NOT NULL
                 )
             ''');
-
-          await db.execute('''
-            create table UserSection ( 
-                SectionID TEXT NOT NULL,
-                UserID TEXT NOT NULL
-                )
-            ''');
-
         });
   }
 

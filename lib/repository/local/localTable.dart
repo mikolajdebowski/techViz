@@ -10,19 +10,16 @@ class LocalTable{
   String tableName;
   String createSQL;
 
-  @deprecated
   Future<void> create(DatabaseExecutor db) async {
     return db.execute(createSQL);
   }
 
-  @deprecated
   Future<int> cleanUp() async {
     LocalRepository localRepo = LocalRepository();
       await localRepo.open();
     return await localRepo.db.delete(tableName);
   }
 
-  @deprecated
   Future<int> insert(dynamic toInsert) async {
     Completer<int> _completer = Completer<int>();
 
@@ -39,7 +36,6 @@ class LocalTable{
     return _completer.future;
   }
 
-  @deprecated
   Future<List<T>> defaultGetAll<T>(Function parser) async {
     LocalRepository localRepo = LocalRepository();
     if (localRepo.db.isOpen == false)
