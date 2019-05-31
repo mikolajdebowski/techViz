@@ -10,7 +10,7 @@ import 'package:techviz/components/vizSummary.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/managerViewPresenter.dart';
 import 'package:techviz/repository/repository.dart';
-import 'package:techviz/repository/session.dart';
+import 'package:techviz/session.dart';
 import 'package:techviz/ui/home.dart';
 import 'package:techviz/ui/reassignTask.dart';
 

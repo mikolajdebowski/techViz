@@ -6,7 +6,7 @@ import 'package:techviz/model/slotMachine.dart';
 import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/model/taskType.dart';
 import 'package:techviz/repository/repository.dart';
-import 'package:techviz/repository/session.dart';
+import 'package:techviz/session.dart';
 import 'package:techviz/repository/taskRepository.dart';
 
 abstract class IManagerViewPresenter {

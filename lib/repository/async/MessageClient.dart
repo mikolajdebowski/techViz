@@ -6,7 +6,21 @@ import 'package:techviz/ui/config.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
-class MessageClient {
+
+abstract class IMessageClient{
+  Future Init();
+  void ResetChannel();
+  Future _bindQueue(String routingKey);
+  void _addRoutingKeyListener(String routingKey, StreamController<AmqpMessage> subscription);
+  void _removeRoutingKeyListener(String routingKey);
+  Future<Exchange> _getDefaultExchange(Channel channel);
+  Future<Exchange> _getExchange(Channel _channel);
+  Future PublishMessage(dynamic object, String routingKeyPattern, {bool wait = false, Function parser});
+  StreamController ListenQueue(String routingKeyPattern, Function onData, {Function onError, bool timeOutEnabled = true, Function parser, bool appendDeviceID = true});
+  Future Close();
+}
+
+class MessageClient implements IMessageClient{
   static final MessageClient _instance = MessageClient._internal();
   Client _rabbitmqClient;
   String _exchangeName;
@@ -23,6 +37,7 @@ class MessageClient {
 
   MessageClient._internal();
 
+  @override
   Future Init() async {
     print('MessageClient: Init');
     if(_exchangeName==null){
@@ -91,11 +106,13 @@ class MessageClient {
     return _completer.future;
   }
 
+  @override
   void ResetChannel() async{
     Channel channel = await _rabbitmqClient.channel();
     _exchange = await _getExchange(channel);
   }
 
+  @override
   Future _bindQueue(String routingKey) async{
     try{
       return _consumer.queue.bind(_exchange, routingKey);
@@ -110,6 +127,7 @@ class MessageClient {
     }
   }
 
+  @override
   void _addRoutingKeyListener(String routingKey, StreamController<AmqpMessage> subscription) async{
     print('_addRoutingKeyListener  $routingKey');
     await _bindQueue(routingKey);
@@ -120,6 +138,7 @@ class MessageClient {
     _mapStreamControllers[routingKey].add(subscription);
   }
 
+  @override
   void _removeRoutingKeyListener(String routingKey){
     print('_removeRoutingKeyListener  $routingKey');
     _consumer.queue.unbind(_exchange, routingKey);
@@ -128,10 +147,12 @@ class MessageClient {
     }
   }
 
+  @override
   Future<Exchange> _getDefaultExchange(Channel channel){
     return channel.exchange(_exchangeName, ExchangeType.TOPIC, durable: true);
   }
 
+  @override
   Future<Exchange> _getExchange(Channel _channel)  {
     return _getDefaultExchange(_channel).timeout(_timeoutDuration).then((Exchange exchange) {
       print('channel OK');
@@ -155,6 +176,7 @@ class MessageClient {
     });
   }
 
+  @override
   Future PublishMessage(dynamic object, String routingKeyPattern, {bool wait = false, Function parser}) async {
     Completer<void> _completer = Completer<void>();
     _completer.future.timeout(_timeoutDuration, onTimeout: (){
@@ -193,6 +215,7 @@ class MessageClient {
     return _completer.future;
   }
 
+  @override
   StreamController ListenQueue(String routingKeyPattern, Function onData, {Function onError, bool timeOutEnabled = true, Function parser, bool appendDeviceID = true}) {
     String routingKey = '$routingKeyPattern';
     if(appendDeviceID!=null && appendDeviceID){
@@ -211,6 +234,7 @@ class MessageClient {
     return sc;
   }
 
+  @override
   Future Close(){
     if(_rabbitmqClient!=null){
       return _rabbitmqClient.close();

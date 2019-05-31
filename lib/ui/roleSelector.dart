@@ -8,7 +8,7 @@ import 'package:techviz/repository/userRepository.dart';
 import 'package:techviz/ui/home.dart';
 import 'package:techviz/model/role.dart';
 import 'package:techviz/presenter/roleListPresenter.dart';
-import 'package:techviz/repository/session.dart';
+import 'package:techviz/session.dart';
 
 class RoleSelector extends StatefulWidget {
   RoleSelector({Key key}) : super(key: key);

@@ -40,6 +40,7 @@ import 'package:techviz/repository/userSkillsRepository.dart';
 import 'package:techviz/repository/userStatusRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
+import 'async/MessageClient.dart';
 import 'local/userTable.dart';
 
 enum Flavor {
@@ -131,8 +132,10 @@ class Repository{
   }
 
   UserRepository get userRepository {
+    IUserTable userTableImpl = UserTable(_localRepository);
+    IUserRouting userRouting = UserRouting(MessageClient());
     switch(_flavor) {
-      default: return UserRepository(ProcessorUserRepository(), UserRouting(), UserTable(_localRepository));
+      default: return UserRepository(ProcessorUserRepository(),userRouting, userTableImpl);
     }
   }
 

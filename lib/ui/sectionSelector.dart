@@ -8,7 +8,7 @@ import 'package:techviz/model/section.dart';
 import 'package:techviz/model/userSection.dart';
 import 'package:techviz/presenter/sectionListPresenter.dart';
 import 'package:techviz/repository/async/SectionRouting.dart';
-import 'package:techviz/repository/session.dart';
+import 'package:techviz/session.dart';
 import 'package:techviz/repository/userSectionRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 

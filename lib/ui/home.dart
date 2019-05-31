@@ -8,7 +8,7 @@ import 'package:techviz/ui/home.manager.dart';
 import 'package:techviz/ui/menu.dart';
 import 'package:techviz/model/userSection.dart';
 import 'package:techviz/model/userStatus.dart';
-import 'package:techviz/repository/session.dart';
+import 'package:techviz/session.dart';
 import 'package:techviz/repository/userSectionRepository.dart';
 import 'package:techviz/ui/sectionSelector.dart';
 import 'package:techviz/ui/slotLookup.dart';
@@ -31,7 +31,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
   String _userStatusText;
   bool _isOnline = false;
-
 
   String get getSectionsText {
     String sections = "";
@@ -56,15 +55,13 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     loadDefaultSections();
 
-    Session session = Session();
+    ISession session = Session();
     if(session.role.isManager || session.role.isSupervisor){
       homeChildKey = GlobalKey<HomeManagerState>();
     }
     else if(session.role.isAttendant){
       homeChildKey = GlobalKey<HomeAttendantState>();
     }
-
-
   }
 
   @override
@@ -82,7 +79,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
   void loadDefaultSections() {
     UserSectionRepository userSectionRepo = UserSectionRepository();
-    Session session = Session();
+    ISession session = Session();
     userSectionRepo.getUserSection(session.user.userID).then((List<UserSection> list) {
       setState(() {
         currentSections = list;

@@ -12,7 +12,7 @@ import 'package:techviz/model/task.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/taskListPresenter.dart';
 import 'package:techviz/repository/repository.dart';
-import 'package:techviz/repository/session.dart';
+import 'package:techviz/session.dart';
 import 'package:techviz/repository/taskRepository.dart';
 
 class HomeAttendant extends StatefulWidget {

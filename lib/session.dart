@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'package:techviz/model/role.dart';
 import 'package:techviz/model/user.dart';
-import 'package:techviz/repository/async/UserRouting.dart';
 import 'package:observable/observable.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/roleRepository.dart';
-import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
+import 'package:techviz/repository/userRepository.dart';
+
+
 
 enum ConnectionStatus{
   Offline,
@@ -14,9 +15,23 @@ enum ConnectionStatus{
   Errored
 }
 
-class Session extends PropertyChangeNotifier {
+abstract class ISession{
   User user;
   Role role;
+  ConnectionStatus connectionStatus;
+  Future init(String userID);
+  Future logOut();
+  void UpdateConnectionStatus(ConnectionStatus newStatus);
+}
+
+class Session extends PropertyChangeNotifier implements ISession{
+  @override
+  User user;
+
+  @override
+  Role role;
+
+  @override
   ConnectionStatus connectionStatus;
 
   static final Session _singleton = Session._internal();
@@ -26,6 +41,7 @@ class Session extends PropertyChangeNotifier {
 
   Session._internal();
 
+  @override
   Future init(String userID) async {
     user = await Repository().userRepository.getUser(userID);
     role = (await RoleRepository().getAll(ids: [user.userRoleID.toString()])).first;
@@ -38,15 +54,15 @@ class Session extends PropertyChangeNotifier {
     });
   }
 
+  @override
   Future logOut() async  {
-    DeviceInfo info = await Utils.deviceInfo;
-
     Session session = Session();
 
-    var toSend = {'userStatusID': '10', 'userID': session.user.userID, 'deviceID': info.DeviceID};
-    await UserRouting().publishMessage(toSend);
+    UserRepository _repo = Repository().userRepository;
+    await _repo.update(session.user.userID, statusID: '10');
   }
 
+  @override
   void UpdateConnectionStatus(ConnectionStatus newStatus){
     ConnectionStatus oldValue = connectionStatus;
     connectionStatus = newStatus;

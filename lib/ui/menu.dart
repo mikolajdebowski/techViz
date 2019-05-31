@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizDialog.dart';
-import 'package:techviz/repository/session.dart';
+import 'package:techviz/session.dart';
 
 class Menu extends StatefulWidget {
   Menu({Key key}) : super(key: key);

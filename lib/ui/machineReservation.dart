@@ -8,7 +8,7 @@ import 'package:techviz/model/reservationTime.dart';
 import 'package:techviz/repository/slotFloorRepository.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/reservationTimeRepository.dart';
-import 'package:techviz/repository/session.dart';
+import 'package:techviz/session.dart';
 
 typedef OnMachineReservationResult = void Function(bool result);
 

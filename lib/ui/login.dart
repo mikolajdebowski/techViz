@@ -12,7 +12,7 @@ import 'package:techviz/ui/config.dart';
 import 'package:techviz/repository/async/DeviceRouting.dart';
 import 'package:techviz/repository/async/MessageClient.dart';
 import 'package:techviz/repository/repository.dart';
-import 'package:techviz/repository/session.dart';
+import 'package:techviz/session.dart';
 import 'package:techviz/ui/roleSelector.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 import 'package:logging/logging.dart';

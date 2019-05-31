@@ -7,7 +7,7 @@ import 'package:techviz/model/user.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/statusListPresenter.dart';
 import 'package:techviz/repository/repository.dart';
-import 'package:techviz/repository/session.dart';
+import 'package:techviz/session.dart';
 import 'package:techviz/repository/userRepository.dart';
 import 'package:flushbar/flushbar.dart';
 

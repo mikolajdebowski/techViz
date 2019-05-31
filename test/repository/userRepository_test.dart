@@ -1,8 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 import 'package:techviz/model/user.dart';
 import 'package:techviz/repository/async/UserRouting.dart';
-import 'package:techviz/repository/local/localRepository.dart';
 import 'package:techviz/repository/local/userTable.dart';
 import 'package:techviz/repository/userRepository.dart';
 
@@ -35,6 +33,11 @@ class UserRoutingMock implements IUserRouting{
   Future publishMessage(dynamic message) {
     return Future<int>.value(1);
   }
+
+  @override
+  User parser(dynamic dynamic) {
+    return null;
+  }
 }
 
 class UserTableMock implements IUserTable{
@@ -44,7 +47,7 @@ class UserTableMock implements IUserTable{
       return Future<User>.value(User());
     }
     else
-      throw 'User not found';
+      return null;
   }
 
   @override
@@ -53,6 +56,7 @@ class UserTableMock implements IUserTable{
   }
 }
 
+
 void main(){
   UserRepository mockRepository;
 
@@ -60,34 +64,28 @@ void main(){
     mockRepository = UserRepository(UserRemoteRepositoryMock(), UserRoutingMock(), UserTableMock());
   });
 
-  group('fechting remote user', (){
-    test('should fetch just one user', () async {
-      expect(await mockRepository.fetch(), isInstanceOf<Map<String,dynamic>>());
-    });
+  test('fetch should return an user map', () async {
+    expect(await mockRepository.fetch(), isInstanceOf<Map>(), reason: 'not a Map');
+
   });
 
-  group('local user', (){
-    test('find local user by ID', () async {
-      expect(await mockRepository.getUser("1"), isInstanceOf<User>());
-    });
-
-//    test('unable to find local user by ID', () async {
-//      expect(await mockRepository.getUser("2"), isInstanceOf<Exception>());
-//    });
+  test('getUser should ', () async {
+    expect(await mockRepository.getUser("1"), isInstanceOf<User>());
   });
 
-  group('updating user', (){
-    test('should update roleID', () async {
-      expect(await mockRepository.update("1", roleID: "1"), 1);
-    });
+  test('unable to find local user by ID', () async {
+    expect(await mockRepository.getUser("2"), null);
+  });
 
-    test('should update statusID', () async {
-      expect(await mockRepository.update("1", statusID: "1"), 1);
-    });
+  test('should update roleID', () async {
+    expect(await mockRepository.update("1", roleID: "1"), 1);
+  });
+
+  test('should update statusID', () async {
+    expect(await mockRepository.update("1", statusID: "1"), 1);
   });
 
   test('usersBySectionsByTaskCount', () async {
     expect(await mockRepository.usersBySectionsByTaskCount(), isInstanceOf<List<Map>>());
   });
-
 }
