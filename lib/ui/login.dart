@@ -4,8 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techviz/common/LowerCaseTextFormatter.dart';
 import 'package:techviz/components/VizAlert.dart';
-import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizLoadingIndicator.dart';
+import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizRainbow.dart';
 import 'package:techviz/ui/config.dart';
 import 'package:techviz/repository/async/DeviceRouting.dart';
@@ -29,6 +29,7 @@ class Login extends StatefulWidget {
 
 class LoginState extends State<Login> {
   bool _isLoading = false;
+  bool _loginEnabled = false;
   String _loadingMessage = '...';
   AppInfo appInfo;
 
@@ -47,8 +48,12 @@ class LoginState extends State<Login> {
 
   SharedPreferences prefs;
 
+
   @override
   void initState() {
+
+    usernameAddressController.addListener(_printUsernameValue);
+    passwordAddressController.addListener(_printPasswordValue);
 
     SharedPreferences.getInstance().then((onValue) {
       prefs = onValue;
@@ -128,7 +133,7 @@ class LoginState extends State<Login> {
     return _completer.future;
   }
 
-  void loginTap() async {
+  void loginTap(dynamic args) async {
     if(_isLoading)
       return;
 
@@ -207,11 +212,7 @@ class LoginState extends State<Login> {
             _formData['username'] = value;
             //print('saving username: $value');
           },
-          validator: (String value) {
-            if (value.isEmpty) {
-              return 'Username is required';
-            }
-          },
+          validator: UsernameFieldValidator.validate,
           onEditingComplete: (){
             FocusScope.of(context).requestFocus(txtPwdFocusNode);
           },
@@ -235,13 +236,9 @@ class LoginState extends State<Login> {
             _formData['password'] = value;
           },
           autocorrect: false,
-          validator: (String value) {
-            if (value.isEmpty) {
-              return 'Password is required';
-            }
-          },
+          validator: PasswordFieldValidator.validate,
           onEditingComplete: (){
-            loginTap();
+            loginTap(null);
           },
           obscureText: true,
           decoration: InputDecoration(
@@ -254,14 +251,11 @@ class LoginState extends State<Login> {
           style: textFieldStyle),
     );
 
-    final btnLogin = VizButton(title: 'Login', onTap: loginTap, highlighted: false);
+    final btnLogin = VizOptionButton('Login', onTap: loginTap, enabled: _loginEnabled, selected: true);
 
     var btnBox = Padding(
         padding: defaultPadding,
-        child: SizedBox(
-            height: 45.0,
-            width: 100.0,
-            child: Flex(direction: Axis.horizontal, children: <Widget>[btnLogin])));
+        child: btnLogin);
 
     var loginForm = Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -327,5 +321,42 @@ class LoginState extends State<Login> {
       backgroundColor: Colors.black,
       body: SafeArea(child: container),
     );
+  }
+
+  void _printUsernameValue() {
+    _checkIfLoginEnable();
+  }
+
+  void _printPasswordValue() {
+    _checkIfLoginEnable();
+  }
+
+  void _checkIfLoginEnable() {
+    if(usernameAddressController.text.isNotEmpty && passwordAddressController.text.isNotEmpty){
+      setState(() {
+        _loginEnabled = true;
+      });
+    } else{
+      setState(() {
+        _loginEnabled = false;
+      });
+    }
+
+  }
+
+}
+
+
+
+class UsernameFieldValidator {
+  static String validate(String value){
+    return value.isEmpty ? 'Username is required' : null;
+  }
+}
+
+
+class PasswordFieldValidator {
+  static String validate(String value){
+    return value.isEmpty ? 'Password is required' : null;
   }
 }

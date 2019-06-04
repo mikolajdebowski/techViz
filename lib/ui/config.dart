@@ -1,7 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:techviz/common/LowerCaseTextFormatter.dart';
-import 'package:techviz/components/VizButton.dart';
+import 'package:techviz/components/VizOptionButton.dart';
 import 'package:flutter/services.dart';
 import 'package:techviz/components/vizRainbow.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
@@ -17,14 +17,29 @@ class ConfigState extends State<Config> {
   SharedPreferences prefs;
   final serverAddressController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _nextEnabled = false;
 
   var default_url_options = {
     'protocols': ['Http', 'http', 'Https', 'https'],
     'require_protocol': false,
   };
 
+  void _printUrlValue() {
+    if(serverAddressController.text.isNotEmpty){
+      setState(() {
+        _nextEnabled = true;
+      });
+    } else{
+      setState(() {
+        _nextEnabled = false;
+      });
+    }
+
+  }
+
   @override
   void initState() {
+    serverAddressController.addListener(_printUrlValue);
     SharedPreferences.getInstance().then((onValue) {
       prefs = onValue;
       if (prefs.getKeys().contains(Config.SERVERURL)) {
@@ -35,7 +50,7 @@ class ConfigState extends State<Config> {
     super.initState();
   }
 
-  void onNextTap() async {
+  void onNextTap(dynamic args) async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
 
@@ -93,14 +108,7 @@ class ConfigState extends State<Config> {
                 contentPadding: textFieldContentPadding),
             style: textFieldStyle));
 
-    var btnNext = VizButton(title: 'Next', onTap: onNextTap, highlighted: true);
-
-    var btnBox = Padding(
-        padding: defaultPadding,
-        child: SizedBox(
-            height: 45.0,
-            width: 100.0,
-            child: Flex(direction: Axis.horizontal, children: <Widget>[btnNext])));
+    var btnNext = VizOptionButton('Next', onTap: onNextTap, enabled: _nextEnabled, selected: true);
 
     var formColumn = Expanded(
       child: Column(
@@ -120,14 +128,13 @@ class ConfigState extends State<Config> {
     );
 
     var row = Row(
-      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Container(
-          width: 40.0,
-        ),
         formColumn,
-        btnBox
+        Flexible(
+          child: Container(width: 80.0, height: 55.0, child: btnNext),
+        ),
       ],
     );
 
