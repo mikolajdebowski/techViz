@@ -6,7 +6,8 @@ import 'localTable.dart';
 
 
 abstract class IUserTable {
-  Future<int> update(String userID, {String statusID, String roleID});
+  Future<int> insertUser(Map map);
+  Future<int> updateUser(String userID, {String statusID, String roleID});
   Future<User> getUser(String userID);
 }
 
@@ -24,7 +25,12 @@ class UserTable extends LocalTable implements IUserTable{
   }
 
   @override
-  Future<int> update(String userID, {String statusID, String roleID}) {
+  Future<int> insertUser(Map map){
+    return localRepo.db.insert('User', map);
+  }
+
+  @override
+  Future<int> updateUser(String userID, {String statusID, String roleID}) {
     Map<String,dynamic> values = <String,dynamic>{};
     if(statusID!=null){
       values['UserStatusID'] = statusID;

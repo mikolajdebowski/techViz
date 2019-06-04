@@ -144,7 +144,7 @@ class LoginState extends State<Login> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String serverUrl = prefs.get(Config.SERVERURL) as String;
 
-    client.init(ClientType.PROCESSOR, serverUrl);
+    client.init(ProcessorClient(serverUrl));
 
     Future<String> authResponse = client.auth(_formData['username'], _formData['password']);
     authResponse.then((String response) async {

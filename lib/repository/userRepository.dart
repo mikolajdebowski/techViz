@@ -21,9 +21,10 @@ class UserRepository {
     assert(localTable!=null);
   }
 
-  Future fetch() {
+  Future fetch() async {
     assert(remoteRepository!=null);
-    return remoteRepository.fetch();
+    Map user = await remoteRepository.fetch();
+    return localTable.insertUser(user);
   }
 
   Future<User> getUser(String userID){
@@ -43,7 +44,7 @@ class UserRepository {
     Completer _completer = Completer<int>();
 
     userRouting.publishMessage(toSend).then((dynamic r) {
-      localTable.update(userID, statusID: statusID, roleID: roleID).then((int result) {
+      localTable.updateUser(userID, statusID: statusID, roleID: roleID).then((int result) {
         _completer.complete(result);
       }).catchError((dynamic error) {
         _completer.completeError(error);

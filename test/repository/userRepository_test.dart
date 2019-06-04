@@ -51,7 +51,12 @@ class UserTableMock implements IUserTable{
   }
 
   @override
-  Future<int> update(String userID, {String statusID, String roleID}) {
+  Future<int> insertUser(Map map) {
+    return Future<int>.value(1);
+  }
+
+  @override
+  Future<int> updateUser(String userID, {String statusID, String roleID}) {
     return Future<int>.value(1);
   }
 }
@@ -64,9 +69,8 @@ void main(){
     mockRepository = UserRepository(UserRemoteRepositoryMock(), UserRoutingMock(), UserTableMock());
   });
 
-  test('fetch should return an user map', () async {
-    expect(await mockRepository.fetch(), isInstanceOf<Map>(), reason: 'not a Map');
-
+  test('fetch should 1, which means one user has been inserted in the local database', () async {
+    expect(await mockRepository.fetch(), 1);
   });
 
   test('getUser should ', () async {

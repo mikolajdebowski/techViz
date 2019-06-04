@@ -129,7 +129,7 @@ class Repository {
     IUserTable userTableImpl = UserTable(_localRepository);
     if(_userRepository==null){
       IUserRouting userRouting = UserRouting(MessageClient());
-      return UserRepository(ProcessorUserRepository(),userRouting, userTableImpl);
+      return UserRepository(ProcessorUserRepository(ProcessorRepositoryConfig()),userRouting, userTableImpl);
     }
     assert(_userRepository!=null);
 
