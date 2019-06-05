@@ -9,6 +9,7 @@ abstract class IUserTable {
   Future<int> insertUser(Map map);
   Future<int> updateUser(String userID, {String statusID, String roleID});
   Future<User> getUser(String userID);
+
 }
 
 class UserTable extends LocalTable implements IUserTable{
@@ -44,8 +45,6 @@ class UserTable extends LocalTable implements IUserTable{
 
   @override
   Future<User> getUser(String userID) async {
-    LocalRepository localRepo = LocalRepository();
-
     String sql = "SELECT UserID, UserName, UserRoleID, UserStatusID, StaffID FROM User WHERE UserID = ?";
     List<Map<String, dynamic>> queryResult = await localRepo.db.rawQuery(sql, [userID].toList());
 

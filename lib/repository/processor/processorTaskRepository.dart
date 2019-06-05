@@ -4,22 +4,22 @@ import 'package:techviz/repository/processor/processorRepositoryConfig.dart';
 import 'package:techviz/repository/taskRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
-class ProcessorTaskRepository implements ITaskRepository{
+import 'exception/invalidResponseException.dart';
 
-  ///fetch data from rest VizProcessor endpoint and store locally
+class ProcessorTaskRepository implements ITaskRemoteRepository{
+  IProcessorRepositoryConfig config;
+
+  ProcessorTaskRepository(this.config);
 
   @override
   Future<dynamic> fetch()  {
-    print('Fetching '+ toString());
+    const String tag = 'TECHVIZ_MOBILE_TASK';
+    print('Fetching '+ tag);
 
     Completer _completer = Completer<List<Map<String, dynamic>>>();
-    SessionClient client = SessionClient();
+    String url = config.GetURL(tag);
 
-    ProcessorRepositoryConfig config = ProcessorRepositoryConfig();
-    String liveTableID = config.GetLiveTable(LiveTableType.TECHVIZ_MOBILE_TASK.toString()).id;
-    String url = 'live/${config.DocumentID}/$liveTableID/select.json';
-
-    client.get(url).then((String rawResult) async{
+    SessionClient().get(url).then((String rawResult) async{
       dynamic decoded = json.decode(rawResult);
       List<dynamic> rows = decoded['Rows'] as List<dynamic>;
 
@@ -41,14 +41,10 @@ class ProcessorTaskRepository implements ITaskRepository{
         map['TASKTYPEID'] = values[_columnNames.indexOf("TaskTypeID")];
         map['TASKURGENCYID'] = values[_columnNames.indexOf("TaskUrgencyID")];
 
-
-
         DateTime dateCreated = DateTime.parse(values[_columnNames.indexOf("TaskCreated")].toString());
-        //var utcCreated = DateTime.utc(dateCreated.year, dateCreated.month, dateCreated.day, dateCreated.hour, dateCreated.minute, dateCreated.second, dateCreated.millisecond);
         map['TASKCREATED'] = dateCreated.toString();
 
         DateTime dateAssigned = DateTime.parse(values[_columnNames.indexOf("TaskAssigned")].toString());
-        //var utcAssigned = DateTime.utc(dateAssigned.year, dateAssigned.month, dateAssigned.day, dateAssigned.hour, dateAssigned.minute, dateAssigned.second, dateAssigned.millisecond);
         map['TASKASSIGNED'] = dateAssigned.toString();
 
         map['PLAYERID'] = values[_columnNames.indexOf("PlayerID")];
@@ -64,22 +60,18 @@ class ProcessorTaskRepository implements ITaskRepository{
       _completer.complete(listToReturn);
 
     }).catchError((dynamic onError){
-      print(onError.toString());
-      _completer.completeError(onError);
+      _completer.completeError(InvalidResponseException(onError));
     });
-
     return _completer.future;
   }
 
-
   @override
   Future openTasksSummary() async {
-    String tag = 'TECHVIZ_MOBILE_TASK_SUMMARY';
-
+    const String tag = 'TECHVIZ_MOBILE_TASK_SUMMARY';
     print('Fetching $tag');
 
     Completer<dynamic> _completer = Completer<dynamic>();
-    String url = ProcessorRepositoryConfig().GetURL(tag);
+    String url = config.GetURL(tag);
 
     SessionClient().get(url).then((String rawResult) async {
 
@@ -109,11 +101,8 @@ class ProcessorTaskRepository implements ITaskRepository{
       _completer.complete(listToReturn);
 
     }).catchError((dynamic e){
-      print(e.toString());
-      _completer.completeError(e);
+      _completer.completeError(InvalidResponseException(e));
     });
-
-
     return _completer.future;
   }
 }

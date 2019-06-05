@@ -47,7 +47,6 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
   void initState() {
 
     super.initState();
-
     _presenter = ManagerViewPresenter(this);
     _presenter.loadOpenTasks();
     _presenter.loadTeamAvailability();

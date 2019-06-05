@@ -72,6 +72,9 @@ class SlotFloorState extends State<SlotFloor> with WidgetsBindingObserver {
     MachineReservation content = MachineReservation(standID: slot.standID);
 
     Navigator.push<dynamic>(context, MaterialPageRoute<dynamic>(builder: (BuildContext context) => content)).then((dynamic result){
+      if(result==null)
+        return;
+
       SlotMachine slotToPush = SlotMachine(
         standID: slot.standID,
         denom: slot.denom,
