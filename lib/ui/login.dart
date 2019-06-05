@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techviz/common/LowerCaseTextFormatter.dart';
+import 'package:techviz/common/slideRightRoute.dart';
 import 'package:techviz/components/VizAlert.dart';
+import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizLoadingIndicator.dart';
 import 'package:techviz/components/VizOptionButton.dart';
+import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizRainbow.dart';
 import 'package:techviz/ui/config.dart';
 import 'package:techviz/repository/async/DeviceRouting.dart';
@@ -297,7 +300,11 @@ class LoginState extends State<Login> {
     var configBtn = IconButton(
       icon: Icon(Icons.settings),
       onPressed: () {
-        Navigator.pushReplacementNamed(context, '/config');
+//        Navigator.pushReplacementNamed(context, '/config');
+        Navigator.push<Login>(
+          context,
+          SlideRightRoute(widget: Config()),
+        );
       },
     );
 
@@ -309,8 +316,8 @@ class LoginState extends State<Login> {
     );
 
     var topActions = Row(mainAxisAlignment: MainAxisAlignment.end,children: <Widget>[
-          loggingBtn, configBtn,
-          ]);
+        configBtn, loggingBtn,
+    ]);
 
     var container = Container(
         decoration: backgroundDecoration,
@@ -326,10 +333,8 @@ class LoginState extends State<Login> {
           ],
         ));
 
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: SafeArea(child: container),
-    );
+    var safe = SafeArea(child: container);
+    return Scaffold(backgroundColor: Colors.black, body: safe);
   }
 
   void _printUsernameValue() {

@@ -1,9 +1,13 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:techviz/common/LowerCaseTextFormatter.dart';
+import 'package:techviz/common/slideRightRoute.dart';
+import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizOptionButton.dart';
 import 'package:flutter/services.dart';
+import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizRainbow.dart';
+import 'package:techviz/ui/login.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 class Config extends StatefulWidget {
@@ -59,7 +63,13 @@ class ConfigState extends State<Config> {
       }
 
       await prefs.setString(Config.SERVERURL, serverAddressController.text);
-      Navigator.pushReplacementNamed(context, '/login');
+
+      if(Navigator.of(context).canPop()){
+        Navigator.pop(context);
+      }else{
+        Navigator.pushReplacementNamed(context, '/login');
+      }
+
     }
   }
 
@@ -114,12 +124,6 @@ class ConfigState extends State<Config> {
                 contentPadding: textFieldContentPadding),
             style: textFieldStyle));
 
-    var btnNext = VizOptionButton('Next', onTap: onNextTap, enabled: _nextEnabled, selected: true);
-
-    var btnBox = Padding(
-        padding: defaultPadding,
-        child: btnNext);
-
     var formColumn = Container(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -143,10 +147,7 @@ class ConfigState extends State<Config> {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Expanded(child: formColumn, flex: 4),
-        Expanded(
-          child: Container(width: 80.0, child: btnBox),
-        ),
+        Expanded(child: formColumn),
       ],
     );
 
@@ -167,6 +168,7 @@ class ConfigState extends State<Config> {
           ],
         ));
 
-    return Scaffold(backgroundColor: Colors.black, body: SafeArea(child: container));
+    VizButton okBtn = VizButton(title: 'OK', highlighted: true, onTap: () => onNextTap(context), enabled: _nextEnabled);
+    return Scaffold(backgroundColor: Colors.black, appBar: ActionBar(title: 'Server configuration', tailWidget: okBtn), body: SafeArea(child: container), );
   }
 }
