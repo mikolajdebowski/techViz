@@ -191,6 +191,12 @@ class LoginState extends State<Login> {
         fontWeight: FontWeight.w500,
         fontFamily: "Roboto");
 
+    var hintTextFieldStyle = TextStyle(fontStyle: FontStyle.italic,
+        fontSize: 20.0,
+        color: Color(0xFFE0E0E0),
+        fontWeight: FontWeight.w500,
+        fontFamily: "Roboto");
+
     var textFieldBorder = OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(4.0)));
     var defaultPadding = EdgeInsets.all(6.0);
     var textFieldContentPadding = EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0);
@@ -219,7 +225,7 @@ class LoginState extends State<Login> {
           decoration: InputDecoration(
               fillColor: Colors.black87,
               filled: true,
-              hintStyle: textFieldStyle,
+              hintStyle: hintTextFieldStyle,
               hintText: 'Username',
               border: textFieldBorder,
               contentPadding: textFieldContentPadding),
@@ -245,7 +251,7 @@ class LoginState extends State<Login> {
               fillColor: Colors.black87,
               filled: true,
               hintText: 'Password',
-              hintStyle: textFieldStyle,
+              hintStyle: hintTextFieldStyle,
               border: textFieldBorder,
               contentPadding: textFieldContentPadding),
           style: textFieldStyle),
@@ -311,7 +317,10 @@ class LoginState extends State<Login> {
         child: Stack(
           children: <Widget>[
             topActions,
-            Align(alignment: Alignment.center, child: loginForm),
+            Align(alignment: Alignment.center, child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: loginForm,
+            )),
             Align(alignment: Alignment.bottomCenter, child: VizRainbow()),
             VizLoadingIndicator(message: _loadingMessage, isLoading: _isLoading)
           ],

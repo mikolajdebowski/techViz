@@ -78,6 +78,12 @@ class ConfigState extends State<Config> {
     var defaultPadding = EdgeInsets.all(6.0);
     var textFieldContentPadding = EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0);
 
+    var hintTextFieldStyle = TextStyle(fontStyle: FontStyle.italic,
+        fontSize: 20.0,
+        color: Color(0xFFE0E0E0),
+        fontWeight: FontWeight.w500,
+        fontFamily: "Roboto");
+
     var backgroundDecoration = BoxDecoration(
         gradient: LinearGradient(
             colors: const [Color(0xFFd6dfe3), Color(0xFFb1c2cb)],
@@ -102,7 +108,7 @@ class ConfigState extends State<Config> {
             decoration: InputDecoration(
                 fillColor: Colors.black87,
                 filled: true,
-                hintStyle: textFieldStyle,
+                hintStyle: hintTextFieldStyle,
                 hintText: 'Server Address',
                 border: textFieldBorder,
                 contentPadding: textFieldContentPadding),
@@ -110,10 +116,16 @@ class ConfigState extends State<Config> {
 
     var btnNext = VizOptionButton('Next', onTap: onNextTap, enabled: _nextEnabled, selected: true);
 
-    var formColumn = Expanded(
+    var btnBox = Padding(
+        padding: defaultPadding,
+        child: btnNext);
+
+    var formColumn = Container(
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Flexible(
+          Container(
               child: Form(
             key: _formKey,
             child: textField,
@@ -128,12 +140,12 @@ class ConfigState extends State<Config> {
     );
 
     var row = Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        formColumn,
-        Flexible(
-          child: Container(width: 80.0, height: 55.0, child: btnNext),
+        Expanded(child: formColumn, flex: 4),
+        Expanded(
+          child: Container(width: 80.0, child: btnBox),
         ),
       ],
     );
@@ -144,9 +156,12 @@ class ConfigState extends State<Config> {
           children: <Widget>[
             Align(
                 alignment: Alignment.center,
-                child: Container(
-                  height: 110.0,
-                  child: row,
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Container(
+                    height: 110.0,
+                    child: row,
+                  ),
                 )),
             Align(alignment: Alignment.bottomCenter, child: VizRainbow()),
           ],
