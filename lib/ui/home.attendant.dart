@@ -45,14 +45,12 @@ class HomeAttendantState extends State<HomeAttendant> with WidgetsBindingObserve
       reloadTasks();
       bindTaskListener();
     });
-
-
   }
 
   void bindTaskListener() async {
     await unTaskBindListener();
 
-    streamController = TaskRepository().listenQueue((Task task){
+    streamController = Repository().taskRepository.listenQueue((Task task){
 
       if (task == null) {
         return;
@@ -207,7 +205,7 @@ class HomeAttendantState extends State<HomeAttendant> with WidgetsBindingObserve
                       btnEnbled = false;
 
                       loadingBar.show(context);
-                      TaskRepository().update(taskID, taskStatusID: '12', cancellationReason: _cancellationController.text, callBack: (String result){
+                      Repository().taskRepository.update(taskID, taskStatusID: '12', cancellationReason: _cancellationController.text, callBack: (String result){
                         loadingBar.dismiss();
                         Navigator.of(context).pop(true);
                       }).catchError((dynamic error){
@@ -383,7 +381,7 @@ class HomeAttendantState extends State<HomeAttendant> with WidgetsBindingObserve
 
     void updateTaskStatus(String statusID) {
       loadingBar.show(context);
-      TaskRepository().update(_selectedTask.id, taskStatusID: statusID, callBack: taskUpdateCallback);
+      Repository().taskRepository.update(_selectedTask.id, taskStatusID: statusID, callBack: taskUpdateCallback);
     }
 
 

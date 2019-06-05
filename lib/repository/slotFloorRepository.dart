@@ -2,16 +2,15 @@ import 'dart:async';
 import 'package:techviz/model/slotMachine.dart';
 import 'package:techviz/repository/async/IRouting.dart';
 import 'package:techviz/repository/cache/slotMachineCache.dart';
-import 'package:techviz/repository/common/IRepository.dart';
-import 'package:techviz/repository/remoteRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
-abstract class ISlotFloorRepository extends IRemoteRepository<SlotMachine>{
-  Future slotFloorSummary();
+abstract class ISlotFloorRemoteRepository {
+  Future<List<Map>> fetch();
+  Future<List<Map>> slotFloorSummary();
 }
 
-class SlotFloorRepository implements IRepository<SlotMachine> {
-  ISlotFloorRepository remoteRepository;
+class SlotFloorRepository {
+  ISlotFloorRemoteRepository remoteRepository;
   IRouting<SlotMachine> remoteRouting;
 
   StreamController<SlotMachine> _slotMachineController;
@@ -22,30 +21,37 @@ class SlotFloorRepository implements IRepository<SlotMachine> {
     return _remoteSlotMachineController;
   }
 
-  void pushToController(SlotMachine received, String from) async {
-    await _cache.updateEntry(received, from);
-    _remoteSlotMachineController.add(_cache.data);
-  }
-
-  SlotFloorRepository({this.remoteRepository, this.remoteRouting}) {
-    assert(remoteRepository != null);
-    assert(remoteRouting != null);
-
+  SlotFloorRepository(this.remoteRepository, this.remoteRouting) {
     _remoteSlotMachineController = StreamController<List<SlotMachine>>();
   }
 
-  @override
   Future fetch() {
-    print('fetch');
     assert(remoteRepository != null);
     Completer _completer = Completer<void>();
-    remoteRepository.fetch().then((dynamic data) {
-      print('remoteRepository fetched');
-      _cache.data = (data as List<SlotMachine>).toList();
+    remoteRepository.fetch().then((List<Map> data) {
+
+      SlotMachine parser(Map<dynamic,dynamic> map){
+        return SlotMachine(
+          standID: map['StandID'].toString(),
+          machineTypeName: map['MachineTypeName'].toString(),
+          machineStatusID: map['MachineStatusID'].toString(),
+          machineStatusDescription: map['StatusDescription'].toString(),
+          denom: double.parse(map['Denom'].toString()),
+          updatedAt: DateTime.now().toUtc()
+        );
+      }
+
+      List<SlotMachine> parsed = data.map<SlotMachine>((Map<dynamic,dynamic> map) => parser(map)).toList();
+      _cache.data = parsed;
       _remoteSlotMachineController.add(_cache.data);
       _completer.complete();
     });
     return _completer.future;
+  }
+
+  void pushToController(SlotMachine received, String from) async {
+    await _cache.updateEntry(received, from);
+    _remoteSlotMachineController.add(_cache.data);
   }
 
   void listenAsync() {
@@ -106,10 +112,10 @@ class SlotFloorRepository implements IRepository<SlotMachine> {
 
   Future<List<SlotMachine>> slotFloorSummary(){
     Completer<List<SlotMachine>> _completer = Completer<List<SlotMachine>>();
-    remoteRepository.slotFloorSummary().then((dynamic result){
+    remoteRepository.slotFloorSummary().then((List<Map> result){
       List<SlotMachine> listToReturn = <SlotMachine>[];
 
-      SlotMachine parser(Map<String,dynamic> map){
+      SlotMachine parser(Map<dynamic,dynamic> map){
         return SlotMachine(
           standID: map['StandID'].toString(),
           denom: double.parse( map['Denom'].toString()),
@@ -120,10 +126,7 @@ class SlotFloorRepository implements IRepository<SlotMachine> {
           playerID: map['PlayerID'].toString(),
         );
       }
-
-      List<Map<String,dynamic>> listMap = result as List<Map<String,dynamic>>;
-      listToReturn = listMap.map((Map<String,dynamic> map)=> parser(map)).toList();
-
+      listToReturn = result.map((Map<dynamic,dynamic> map)=> parser(map)).toList();
       _completer.complete(listToReturn);
     });
 

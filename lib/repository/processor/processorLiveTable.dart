@@ -12,7 +12,10 @@ class ProcessorResponseParseError extends FormatException{
 }
 
 class ProcessorLiveTable<T> implements IRemoteRepository<T>{
+  IProcessorRepositoryConfig config;
   String tableID;
+
+  ProcessorLiveTable({this.config});
 
   @override
   Future fetch() {
@@ -49,11 +52,11 @@ class ProcessorLiveTable<T> implements IRemoteRepository<T>{
     print('Fetching $tagID');
 
     Completer<dynamic> _completer = Completer<dynamic>();
-    String url = ProcessorRepositoryConfig().GetURL(tagID);
+    String url = config.GetURL(tagID);
 
     SessionClient().get(url).then((String rawResult) async {
 
-      List<Map<String, dynamic>> listToReturn =  <Map<String, dynamic>>[];
+      List<Map> listToReturn = <Map>[];
 
       dynamic decoded = json.decode(rawResult);
       List<dynamic> rows = decoded['Rows'] as List<dynamic>;
@@ -61,8 +64,7 @@ class ProcessorLiveTable<T> implements IRemoteRepository<T>{
       rows.forEach((dynamic d) {
         dynamic values = d['Values'];
         dynamic mapResult = _columnNames.map((String columnName)=> MapEntry<String,dynamic>(columnName, values[_columnNames.indexOf(columnName)]));
-        Map<String,dynamic> converted = Map<String,dynamic>.fromEntries(mapResult);
-
+        Map converted = Map<String,dynamic>.fromEntries(mapResult);
         listToReturn.add(converted);
       });
       _completer.complete(listToReturn);

@@ -25,7 +25,7 @@ class ManagerViewPresenter{
   }
 
   void loadOpenTasks(){
-      Repository().taskRepository.openTasksSummary().then((dynamic result) async {
+      Repository().taskRepository.openTasksSummary().then((dynamic openTasksList) async {
 
         List<TaskStatus> listStatuses = await Repository().taskStatusRepository.getAll();
         List<TaskType> listTypes = await Repository().taskTypeRepository.getAll();
@@ -75,19 +75,19 @@ class ManagerViewPresenter{
 
         //from ACT-1344
         //Assigned: UserID is not null AND TaskStatusID is not equal to 7 (reassigned)
-        Iterable<Map<String,dynamic>> assignedWhere = result.where((Map<String,dynamic> map)=> (map['UserID'] != null && map['UserID'].toString().isNotEmpty) && map['TaskStatusID'] != '7');
+        Iterable<Map<String,dynamic>> assignedWhere = openTasksList.where((Map<String,dynamic> map)=> (map['UserID'] != null && map['UserID'].toString().isNotEmpty) && map['TaskStatusID'] != '7');
         List<DataEntry> assignedList = assignedWhere != null ? assignedWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntry(d)).toList(): <DataEntry>[];
 
         //Unassigned: UserID is null OR TaskStatusID = 7 (reassigned)
-        Iterable<Map<String,dynamic>> unassignedWhere = result.where((Map<String,dynamic> map)=> (map['UserID'] == null || map['UserID'].toString().isEmpty) || map['TaskStatusID'] == '7');
+        Iterable<Map<String,dynamic>> unassignedWhere = openTasksList.where((Map<String,dynamic> map)=> (map['UserID'] == null || map['UserID'].toString().isEmpty) || map['TaskStatusID'] == '7');
         List<DataEntry> unassignedList = unassignedWhere != null ? unassignedWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntryForUnassigned(d)).toList(): <DataEntry>[];
 
         //Overdue: TaskUrgencyID is 3 (overdue)
-        Iterable<Map<String,dynamic>> overdueWhere = result.where((Map<String,dynamic> map)=> map['TaskUrgencyID'] == '3');
+        Iterable<Map<String,dynamic>> overdueWhere = openTasksList.where((Map<String,dynamic> map)=> map['TaskUrgencyID'] == '3');
         List<DataEntry> overdueList = overdueWhere != null ? overdueWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntry(d)).toList(): <DataEntry>[];
 
         //Escalated: IsTechTask is 1 AND ParentID is not null (all escalated tasks are for technicians and have a parentID)
-        Iterable<Map<String,dynamic>> escalatedWhere = result.where((Map<String,dynamic> map)=> map['IsTechTask']  == '1' && (map['ParentID'] != null && map['ParentID'].toString().isNotEmpty));
+        Iterable<Map<String,dynamic>> escalatedWhere = openTasksList.where((Map<String,dynamic> map)=> map['IsTechTask']  == '1' && (map['ParentID'] != null && map['ParentID'].toString().isNotEmpty));
         List<DataEntry> escalatedList = escalatedWhere != null ? escalatedWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntry(d)).toList(): <DataEntry>[];
 
         List<DataEntryGroup> group = <DataEntryGroup>[];
@@ -114,9 +114,7 @@ class ManagerViewPresenter{
   }
 
   void loadSlotFloorSummary(){
-    Repository().slotFloorRepository.slotFloorSummary().then((dynamic result) async {
-
-      List<SlotMachine> slotMachineList = result as List<SlotMachine>;
+    Repository().slotFloorRepository.slotFloorSummary().then((List<SlotMachine> slotMachineList) async {
 
       bool allowToReserve(dynamic statusID){
         return statusID == '3';

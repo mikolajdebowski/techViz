@@ -41,6 +41,8 @@ import 'package:techviz/repository/userStatusRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 import 'async/MessageClient.dart';
+import 'local/taskStatusTable.dart';
+import 'local/taskTypeTable.dart';
 import 'local/userSectionTable.dart';
 import 'local/userTable.dart';
 
@@ -55,8 +57,10 @@ typedef fncOnMessage = void Function(String);
 class Repository {
   UserRepository _userRepository;
   UserSectionRepository _userSectionRepository;
-
-
+  TaskRepository _taskRepository;
+  TaskTypeRepository _taskTypeRepository;
+  TaskStatusRepository _taskStatusRepository;
+  SlotFloorRepository _slotFloorRepository;
 
   ILocalRepository _localRepository;
   static Flavor _flavor;
@@ -124,7 +128,7 @@ class Repository {
     await userSectionRepository.fetch();
   }
 
-  //USER
+  //USERS
   UserRepository get userRepository {
     IUserTable userTableImpl = UserTable(_localRepository);
     if(_userRepository==null){
@@ -132,28 +136,70 @@ class Repository {
       return UserRepository(ProcessorUserRepository(ProcessorRepositoryConfig()),userRouting, userTableImpl);
     }
     assert(_userRepository!=null);
-
     return _userRepository;
   }
   set userRepository(UserRepository userRepository){
     _userRepository = userRepository;
   }
 
-
-  //USERSECTION
+  //USERSECTIONS
   UserSectionRepository get userSectionRepository {
     IUserSectionTable userSectionTable = UserSectionTable(_localRepository);
-    if(_userSectionRepository==null){
-      return UserSectionRepository(ProcessorUserSectionRepository(), userSectionTable);
+    if(_userSectionRepository!=null){
+      return _userSectionRepository;
     }
-    assert(_userSectionRepository!=null);
-    return _userSectionRepository;
+    return _userSectionRepository = UserSectionRepository(ProcessorUserSectionRepository(), userSectionTable);
   }
   set userSectionRepository(UserSectionRepository userSectionRepository){
     _userSectionRepository = userSectionRepository;
   }
 
+  //TASKS
+  TaskRepository get taskRepository {
+    if(_taskRepository != null){
+      return _taskRepository;
+    }
+    return _taskRepository = TaskRepository(ProcessorTaskRepository(ProcessorRepositoryConfig()), _localRepository);
+  }
+  set taskRepository(TaskRepository taskRepository){
+    _taskRepository = taskRepository;
+  }
 
+
+  TaskTypeRepository get taskTypeRepository {
+    if(_taskTypeRepository!=null){
+      return _taskTypeRepository;
+    }
+    return _taskTypeRepository = TaskTypeRepository(ProcessorTaskTypeRepository(ProcessorRepositoryConfig()), TaskTypeTable(_localRepository));
+  }
+  set taskTypeRepository(TaskTypeRepository taskTypeRepository){
+    _taskTypeRepository = taskTypeRepository;
+  }
+
+
+  TaskStatusRepository get taskStatusRepository {
+    if(_taskStatusRepository!=null){
+      return _taskStatusRepository;
+    }
+    return _taskStatusRepository = TaskStatusRepository(ProcessorTaskStatusRepository(ProcessorRepositoryConfig()), TaskStatusTable(_localRepository));
+  }
+  set taskStatusRepository(TaskStatusRepository taskStatusRepository){
+    _taskStatusRepository = taskStatusRepository;
+  }
+
+
+  SlotFloorRepository get slotFloorRepository {
+    if(_slotFloorRepository!=null){
+      return _slotFloorRepository;
+    }
+    return _slotFloorRepository = SlotFloorRepository(ProcessorSlotFloorRepository(ProcessorRepositoryConfig()), SlotMachineRouting());
+  }
+  set slotFloorRepository(SlotFloorRepository slotFloorRepository){
+    _slotFloorRepository = slotFloorRepository;
+  }
+
+
+// TODO(rmathias): ABOVE MUST BE REVISED
   SectionRepository get sectionRepository {
     switch(_flavor) {
       default: return SectionRepository(remoteRepository: ProcessorSectionRepository());
@@ -178,34 +224,9 @@ class Repository {
     }
   }
 
-  TaskTypeRepository get taskTypeRepository {
-    switch(_flavor) {
-      default: return TaskTypeRepository(remoteRepository: ProcessorTaskTypeRepository());
-    }
-  }
-
-  TaskStatusRepository get taskStatusRepository {
-    switch(_flavor) {
-      default: return TaskStatusRepository(remoteRepository: ProcessorTaskStatusRepository());
-    }
-  }
-
   TaskUrgencyRepository get taskUrgencyRepository {
     switch(_flavor) {
       default: return TaskUrgencyRepository(remoteRepository: ProcessorTaskUrgencyRepository());
-    }
-  }
-
-  TaskRepository get taskRepository {
-    switch(_flavor) {
-     default:return TaskRepository(remoteRepository: ProcessorTaskRepository());
-    }
-  }
-
-  //SLOTMACHINE
-  SlotFloorRepository get slotFloorRepository {
-    switch(_flavor) {
-      default:return SlotFloorRepository(remoteRepository: ProcessorSlotFloorRepository(), remoteRouting: SlotMachineRouting());
     }
   }
 

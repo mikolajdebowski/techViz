@@ -1,3 +1,5 @@
+
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:techviz/model/taskStatus.dart';
@@ -6,9 +8,11 @@ import 'package:techviz/presenter/managerViewPresenter.dart';
 import 'package:techviz/repository/local/taskStatusTable.dart';
 import 'package:techviz/repository/local/taskTypeTable.dart';
 import 'package:techviz/repository/repository.dart';
+import 'package:techviz/repository/slotFloorRepository.dart';
 import 'package:techviz/repository/taskRepository.dart';
 import 'package:techviz/repository/taskStatusRepository.dart';
 import 'package:techviz/repository/taskTypeRepository.dart';
+import 'package:techviz/ui/home.manager.dart';
 
 import '../repository/mock/localRepositoryMock.dart';
 
@@ -67,23 +71,39 @@ class TaskStatusTableMock implements ITaskStatusTable{
   }
 }
 
-void main(){
+class SlotFloorRemoteRepositoryMock implements ISlotFloorRemoteRepository{
+  @override
+  Future<List<Map>> fetch() {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<Map>> slotFloorSummary() {
+    List<Map<String,dynamic>> listToReturn = <Map<String,dynamic>>[];
+
+    for(int i =0; i< 100; i++){
+      Map<String,dynamic> mapEntry = <String,dynamic>{};
+      mapEntry['StandID'] = i.toString();
+    }
+    return Future<List<Map<String,dynamic>>>.value(listToReturn);
+  }
+}
+
+
+void main() {
+
   setUp((){
     Repository().taskRepository = TaskRepository(TaskRemoteRepositoryMock(), LocalRepositoryMock());
     Repository().taskTypeRepository = TaskTypeRepository(null, TaskTypeTableMock());
     Repository().taskStatusRepository = TaskStatusRepository(null, TaskStatusTableMock());
+    Repository().slotFloorRepository = SlotFloorRepository(SlotFloorRemoteRepositoryMock(), null);
   });
 
-  test('loadOpenTasks should call back onOpenTasksLoaded', () async{
-    IManagerViewPresenter view = IManagerViewPresenterView();
+  testWidgets('Manager view pump', (WidgetTester tester) async {
+    await tester.runAsync(() async {
+      await tester.pumpWidget(MaterialApp(home: HomeManager(GlobalKey())));
+    });
 
-    ManagerViewPresenter presenter = ManagerViewPresenter(view);
-    presenter.loadOpenTasks();
-
-    await untilCalled(view.onOpenTasksLoaded(any));
-
-    VerificationResult result = verify(view.onOpenTasksLoaded(captureAny));//.callCount;
-    expect(result.callCount, 1, reason: 'not called once');
-    // TODO(rmathias): check the captured value ////// (result.captured, <DataEntryGroup>[], reason: 'not a list');
   });
 }
+

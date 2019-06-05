@@ -1,6 +1,9 @@
 import 'package:sqflite/sqlite_api.dart';
 
 class DatabaseMock implements Database{
+  List<Map<String,dynamic>> values;
+  DatabaseMock(this.values);
+
   @override
   Batch batch() {
     throw UnimplementedError();
@@ -38,7 +41,7 @@ class DatabaseMock implements Database{
 
   @override
   Future<int> insert(String table, Map<String, dynamic> values, {String nullColumnHack, ConflictAlgorithm conflictAlgorithm}) {
-    throw UnimplementedError();
+    return Future<int>.value(1);
   }
 
   @override
@@ -49,7 +52,7 @@ class DatabaseMock implements Database{
 
   @override
   Future<List<Map<String, dynamic>>> query(String table, {bool distinct, List<String> columns, String where, List whereArgs, String groupBy, String having, String orderBy, int limit, int offset}) {
-    throw UnimplementedError();
+    return Future<List<Map<String,dynamic>>>.value([]);
   }
 
   @override
@@ -59,17 +62,21 @@ class DatabaseMock implements Database{
 
   @override
   Future<int> rawInsert(String sql, [List arguments]) {
-    throw UnimplementedError();
+    return Future<int>.value(1);
   }
 
   @override
   Future<List<Map<String, dynamic>>> rawQuery(String sql, [List arguments]) {
-    throw UnimplementedError();
+    if(values==null){
+      return Future<List<Map<String,dynamic>>>.value([]);
+    }
+    List<Map<String,dynamic>> output = values.where((Map<String,dynamic> map) => map['UserID'] == arguments[0].toString()).toList();
+    return Future<List<Map<String,dynamic>>>.value(output);
   }
 
   @override
   Future<int> rawUpdate(String sql, [List arguments]) {
-    throw UnimplementedError();
+    return Future<int>.value(1);
   }
 
   @override
@@ -84,6 +91,6 @@ class DatabaseMock implements Database{
 
   @override
   Future<int> update(String table, Map<String, dynamic> values, {String where, List whereArgs, ConflictAlgorithm conflictAlgorithm}) {
-    throw UnimplementedError();
+    return Future<int>.value(1);
   }
 }
