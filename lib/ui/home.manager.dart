@@ -37,11 +37,12 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
   final GlobalKey _slotFloorKey = GlobalKey();
 
 
-  bool _openTasksLoading;
-  bool _slotFloorLoading;
+  bool _openTasksLoading = true;
+  bool _slotFloorLoading = true;
+  bool _teamAvailabilityLoading = true;
 
-  bool initialLoadForSummary = true;
-  bool initialLoadForTeam = true;
+  bool initialLoadSlotFloorSummary = true;
+  bool initialLoadTeamAvailability = true;
 
   @override
   void initState() {
@@ -79,7 +80,9 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
             VizSummary('TEAM AVAILABILITY',
                 _teamAvailabilityList,
                 key: _teamAvaKey,
+                isProcessing: _teamAvailabilityLoading,
                 onSwipeLeft: onTeamAvailiblitySwipeLeft(),
+                onMetricTap: onTeamAvailiblityMetricTap,
                 onScroll: _onChildScroll),
 
             VizSummary('SLOT FLOOR',
@@ -88,8 +91,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
                 onSwipeRight: onSlotFloorSwipeRight(),
                 onSwipeLeft: onSlotFloorSwipeLeft(),
                 onMetricTap: onSlotFloorMetricTap,
-                isProcessing:
-                _slotFloorLoading,
+                isProcessing: _slotFloorLoading,
                 onScroll: _onChildScroll)
           ],
         ),
@@ -176,10 +178,20 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
       VizDialog.Alert(context, 'Change user\' status', 'Opens Change user\' status');
     });
   }
+  void onTeamAvailiblityMetricTap() {
+    setState(() {
+      _teamAvailabilityLoading = true;
+    });
+    _presenter.loadTeamAvailability();
+  }
 
 
 
-  //SlotFloor
+
+
+
+
+  //SlotFloor SECTION
   SwipeAction onSlotFloorSwipeRight(){
 
     Function onSlotActionButtonClickedCallback = (dynamic entry) {
@@ -266,7 +278,6 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
     }
   }
 
-
   @override
   void onSlotFloorSummaryLoaded(List<DataEntryGroup> list) {
     if (mounted) {
@@ -275,10 +286,9 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
         _slotFloorList = list;
       });
 
-
-      if(initialLoadForSummary == true){
-        initialLoadForSummary = false;
-      } else if(initialLoadForSummary == false){
+      if(initialLoadSlotFloorSummary == true){
+        initialLoadSlotFloorSummary = false;
+      } else if(initialLoadSlotFloorSummary == false){
         RenderBox openTasksBox = _openTasksKey.currentContext.findRenderObject();
         double openTasksHeight = openTasksBox.size.height;
 
@@ -289,20 +299,19 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
         _mainController.animateTo(offset, curve: Curves.linear, duration: Duration(milliseconds: 300));
       }
     }
-
   }
-
 
   @override
   void onTeamAvailabilityLoaded(List<DataEntryGroup> list) {
     if (mounted) {
       setState(() {
+        _teamAvailabilityLoading = false;
         _teamAvailabilityList = list;
       });
 
-      if(initialLoadForTeam == true){
-        initialLoadForTeam = false;
-      } else if(initialLoadForTeam == false){
+      if(initialLoadTeamAvailability == true){
+        initialLoadTeamAvailability = false;
+      } else if(initialLoadTeamAvailability == false){
         RenderBox openTasksBox = _openTasksKey.currentContext.findRenderObject();
         double openTasksHeight = openTasksBox.size.height;
 
@@ -317,19 +326,15 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
     // TODO(rmathias): implement onLoadError
   }
 
-
-
-
-
   //MASTERVIEW EVENTS
   @override
   void onUserSectionsChanged(Object obj) {
-    // TODO(rmathias): implement onUserSectionsChanged
+    _presenter.loadTeamAvailability();
   }
 
   @override
   void onUserStatusChanged(UserStatus us) {
-    // TODO(rmathias): implement onUserStatusChanged
+    _presenter.loadTeamAvailability();
   }
 }
 

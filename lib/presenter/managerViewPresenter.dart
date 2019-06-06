@@ -102,12 +102,46 @@ class ManagerViewPresenter{
 
   void loadTeamAvailability(){
 
-    Future.delayed(Duration(milliseconds: 500), (){
+    Repository().userRepository.teamAvailabilitySummary().then((List<Map> listMap) {
+
+      DataEntry toAvailableDataEntryParser(Map map){
+        List<DataEntryCell> columns = <DataEntryCell>[];
+        columns.add(DataEntryCell('Attendant', map['UserName'], alignment: DataAlignment.left));
+        columns.add(DataEntryCell('Sections', map['SectionCount'], alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Task Count', map['TaskCount'], alignment: DataAlignment.center));
+        return DataEntry(map['UserID'], columns);
+      }
+
+      DataEntry toOnBreakDataEntryParser(Map map){
+        List<DataEntryCell> columns = <DataEntryCell>[];
+        columns.add(DataEntryCell('Attendant', map['UserName'], alignment: DataAlignment.left));
+        columns.add(DataEntryCell('Break', map['UserStatusName'], alignment: DataAlignment.center));
+        return DataEntry(map['UserID'], columns);
+      }
+
+      DataEntry toOtherDataEntryParser(Map map){
+        List<DataEntryCell> columns = <DataEntryCell>[];
+        columns.add(DataEntryCell('Attendant', map['UserName'], alignment: DataAlignment.left));
+        columns.add(DataEntryCell('Status', map['UserStatusName'], alignment: DataAlignment.center));
+        return DataEntry(map['UserID'], columns);
+      }
+
+      DataEntry toOffShiftDataEntryParser(Map map){
+        List<DataEntryCell> columns = <DataEntryCell>[];
+        columns.add(DataEntryCell('Attendant', map['UserName'], alignment: DataAlignment.left));
+        return DataEntry(map['UserID'], columns);
+      }
+
       List<DataEntryGroup> group = <DataEntryGroup>[];
-      group.add(DataEntryGroup('Available', <DataEntry>[]));
-      group.add(DataEntryGroup('On Break', <DataEntry>[]));
-      group.add(DataEntryGroup('Other', <DataEntry>[]));
-      group.add(DataEntryGroup('Off Shift', <DataEntry>[]));
+      List<DataEntry> availableList = listMap.where((Map map)=> ['20','30', '35'].contains(map['UserStatusID'])).map((Map map) => toAvailableDataEntryParser(map)).toList();
+      List<DataEntry> onBreakList = listMap.where((Map map)=> ['45','50','55'].contains(map['UserStatusID'])).map((Map map) => toOnBreakDataEntryParser(map)).toList();
+      List<DataEntry> otherList = listMap.where((Map map)=> ['70','75','80','90'].contains(map['UserStatusID'])).map((Map map) => toOtherDataEntryParser(map)).toList();
+      List<DataEntry> offShift = listMap.where((Map map)=> ['10'].contains(map['UserStatusID'])).map((Map map) => toOffShiftDataEntryParser(map)).toList();
+
+      group.add(DataEntryGroup('Available', availableList));
+      group.add(DataEntryGroup('On Break', onBreakList));
+      group.add(DataEntryGroup('Other', otherList));
+      group.add(DataEntryGroup('Off Shift', offShift));
 
       _view.onTeamAvailabilityLoaded(group);
     });

@@ -12,9 +12,11 @@ import 'package:techviz/repository/slotFloorRepository.dart';
 import 'package:techviz/repository/taskRepository.dart';
 import 'package:techviz/repository/taskStatusRepository.dart';
 import 'package:techviz/repository/taskTypeRepository.dart';
+import 'package:techviz/repository/userRepository.dart';
 import 'package:techviz/ui/home.manager.dart';
 
 import '../repository/mock/localRepositoryMock.dart';
+import '../repository/mock/slotFloorRemoteRepositoryMock.dart';
 
 class IManagerViewPresenterView extends Mock implements IManagerViewPresenter{
 
@@ -71,21 +73,20 @@ class TaskStatusTableMock implements ITaskStatusTable{
   }
 }
 
-class SlotFloorRemoteRepositoryMock implements ISlotFloorRemoteRepository{
+class UserRemoteRepositoryMock implements IUserRemoteRepository{
   @override
-  Future<List<Map>> fetch() {
+  Future<Map> fetch() {
     throw UnimplementedError();
   }
 
   @override
-  Future<List<Map>> slotFloorSummary() {
-    List<Map<String,dynamic>> listToReturn = <Map<String,dynamic>>[];
+  Future<List<Map>> teamAvailabilitySummary() {
+    return Future<List<Map>>.value([]);
+  }
 
-    for(int i =0; i< 100; i++){
-      Map<String,dynamic> mapEntry = <String,dynamic>{};
-      mapEntry['StandID'] = i.toString();
-    }
-    return Future<List<Map<String,dynamic>>>.value(listToReturn);
+  @override
+  Future<List<Map>> usersBySectionsByTaskCount() {
+    throw UnimplementedError();
   }
 }
 
@@ -97,6 +98,7 @@ void main() {
     Repository().taskTypeRepository = TaskTypeRepository(null, TaskTypeTableMock());
     Repository().taskStatusRepository = TaskStatusRepository(null, TaskStatusTableMock());
     Repository().slotFloorRepository = SlotFloorRepository(SlotFloorRemoteRepositoryMock(), null);
+    Repository().userRepository = UserRepository(UserRemoteRepositoryMock(), null, null);
   });
 
   testWidgets('Manager view pump', (WidgetTester tester) async {

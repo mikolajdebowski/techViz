@@ -7,6 +7,7 @@ import 'package:techviz/repository/local/userTable.dart';
 abstract class IUserRemoteRepository{
   Future<Map> fetch();
   Future<List<Map>> usersBySectionsByTaskCount();
+  Future<List<Map>> teamAvailabilitySummary();
 }
 
 class UserRepository {
@@ -17,8 +18,6 @@ class UserRepository {
 
   UserRepository(this.remoteRepository, this.userRouting, this.localTable){
     assert(remoteRepository!=null);
-    assert(userRouting!=null);
-    assert(localTable!=null);
   }
 
   Future fetch() async {
@@ -59,7 +58,7 @@ class UserRepository {
     return remoteRepository.usersBySectionsByTaskCount();
   }
 
-
-
-
+  Future<List<Map>> teamAvailabilitySummary(){
+    return remoteRepository.teamAvailabilitySummary();
+  }
 }
