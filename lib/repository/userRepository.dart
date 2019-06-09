@@ -31,18 +31,8 @@ class UserRepository {
   }
 
   Future<int> update(String userID, {String roleID, String statusID}) {
-    Map<String, dynamic> toSend = <String, dynamic>{};
-    toSend['userID'] = userID;
-    if (roleID != null) {
-      toSend['userRoleID'] = roleID;
-    }
-    if (statusID != null) {
-      toSend['userStatusID'] = statusID;
-    }
-
     Completer _completer = Completer<int>();
-
-    userRouting.publishMessage(toSend).then((dynamic r) {
+    updateRemote(userID, roleID: roleID, statusID: statusID).then((dynamic r) {
       localTable.updateUser(userID, statusID: statusID, roleID: roleID).then((int result) {
         _completer.complete(result);
       }).catchError((dynamic error) {
@@ -52,6 +42,18 @@ class UserRepository {
       _completer.completeError(publishError);
     });
     return _completer.future;
+  }
+
+  Future updateRemote(String userID, {String roleID, String statusID}){
+    Map<String, dynamic> toSend = <String, dynamic>{};
+    toSend['userID'] = userID;
+    if (roleID != null) {
+      toSend['userRoleID'] = roleID;
+    }
+    if (statusID != null) {
+      toSend['userStatusID'] = statusID;
+    }
+    return userRouting.publishMessage(toSend);
   }
 
   Future<List<Map>> usersBySectionsByTaskCount(){
