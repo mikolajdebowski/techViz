@@ -3,4 +3,9 @@ class UserStatus {
   final String description;
   final String id;
   final bool isOnline;
+
+  @override
+  String toString() {
+    return description;
+  }
 }

@@ -5,15 +5,17 @@ import 'package:techviz/components/dataEntry/dataEntryGroup.dart';
 import 'package:techviz/model/slotMachine.dart';
 import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/model/taskType.dart';
+import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/session.dart';
 import 'package:techviz/repository/taskRepository.dart';
+import 'package:techviz/viewmodel/managerViewUserStatus.dart';
 
 abstract class IManagerViewPresenter {
   void onOpenTasksLoaded(List<DataEntryGroup> list);
   void onTeamAvailabilityLoaded(List<DataEntryGroup> list);
   void onSlotFloorSummaryLoaded(List<DataEntryGroup> list);
-
+  void onUserStatusLoaded(List<ManagerViewUserStatus> list);
   void onLoadError(dynamic error);
 }
 
@@ -109,6 +111,7 @@ class ManagerViewPresenter{
         columns.add(DataEntryCell('Attendant', map['UserName'], alignment: DataAlignment.left));
         columns.add(DataEntryCell('Sections', map['SectionCount'], alignment: DataAlignment.center));
         columns.add(DataEntryCell('Task Count', map['TaskCount'], alignment: DataAlignment.center));
+        columns.add(DataEntryCell('StatusID', map['UserStatusID'], visible: false));
         return DataEntry(map['UserID'], columns);
       }
 
@@ -116,6 +119,7 @@ class ManagerViewPresenter{
         List<DataEntryCell> columns = <DataEntryCell>[];
         columns.add(DataEntryCell('Attendant', map['UserName'], alignment: DataAlignment.left));
         columns.add(DataEntryCell('Break', map['UserStatusName'], alignment: DataAlignment.center));
+        columns.add(DataEntryCell('StatusID', map['UserStatusID'], visible: false));
         return DataEntry(map['UserID'], columns);
       }
 
@@ -123,12 +127,14 @@ class ManagerViewPresenter{
         List<DataEntryCell> columns = <DataEntryCell>[];
         columns.add(DataEntryCell('Attendant', map['UserName'], alignment: DataAlignment.left));
         columns.add(DataEntryCell('Status', map['UserStatusName'], alignment: DataAlignment.center));
+        columns.add(DataEntryCell('StatusID', map['UserStatusID'], visible: false));
         return DataEntry(map['UserID'], columns);
       }
 
       DataEntry toOffShiftDataEntryParser(Map map){
         List<DataEntryCell> columns = <DataEntryCell>[];
         columns.add(DataEntryCell('Attendant', map['UserName'], alignment: DataAlignment.left));
+        columns.add(DataEntryCell('StatusID', map['UserStatusID'], visible: false));
         return DataEntry(map['UserID'], columns);
       }
 
@@ -226,6 +232,18 @@ class ManagerViewPresenter{
       group.add(DataEntryGroup('Out of Service', outOfServiceList, highlightedDecoration: (){ return outOfServiceList.isNotEmpty ? Color(0xFFFF0000): null; }));
 
       _view.onSlotFloorSummaryLoaded(group);
+    });
+  }
+
+  void loadUserStatusList(String currentUserStatusID){
+    Repository().userStatusRepository.getStatuses().then((List<UserStatus> list){
+      List<ManagerViewUserStatus> output = list.map((UserStatus userStatus) => ManagerViewUserStatus(
+        userStatus.id,
+        userStatus.description,
+        userStatus.id.toString() == currentUserStatusID
+      )).toList();
+
+      _view.onUserStatusLoaded(output);
     });
   }
 
