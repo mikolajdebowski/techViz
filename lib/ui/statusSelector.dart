@@ -11,8 +11,6 @@ import 'package:techviz/session.dart';
 import 'package:techviz/repository/userRepository.dart';
 import 'package:flushbar/flushbar.dart';
 
-typedef FncOnTapOK = void Function(UserStatus selected);
-
 class StatusSelector extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => StatusSelectorState();
@@ -30,10 +28,9 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
   void initState() {
     super.initState();
 
-    Session session = Session();
-    _preSelectedID = session.user.userStatusID;
+    _preSelectedID = Session().user.userStatusID;
     roleListPresenter = StatusListPresenter(this);
-    roleListPresenter.loadUserRoles(session.user.userID);
+    roleListPresenter.loadUserStatus();
 
     _loadingBar = VizDialog.LoadingBar(message: 'Sending request...');
   }

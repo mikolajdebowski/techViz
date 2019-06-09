@@ -29,7 +29,7 @@ class ProfileState extends State<Profile> implements IRoleListPresenter<Role>, I
     roleListPresenter.loadUserRoles(session.user.userID);
 
     statusListPresenter = StatusListPresenter(this);
-    statusListPresenter.loadUserRoles(session.user.userID);
+    statusListPresenter.loadUserStatus();
 
     _userInfo.add(ProfileItem(columnName: 'UserID', value: session.user.userID));
     _userInfo.add(ProfileItem(columnName: 'UserName', value: session.user.userName));
