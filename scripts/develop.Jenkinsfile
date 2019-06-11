@@ -13,6 +13,7 @@ pipeline{
     stages{
         stage('Setup'){
             steps{
+                sh 'echo ${env.PATH}'
                 sh 'flutter clean'
                 sh 'sed -i "s/\${APP_VERSION}/0.8.1/g" ios/Runner/Info.plist'
             }
