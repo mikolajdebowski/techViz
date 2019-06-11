@@ -8,32 +8,59 @@ pipeline{
     }
     triggers{}
     stages{
-        parallel {
-            stage('Lint') {
-                steps {
-                    sh 'flutter analyze'
-                }
+        stage('Setup'){
+            steps{
+                sh 'flutter clean'
+                sh 'sed -i "s/\${APP_VERSION}/0.8.1/g" ios/Runner/Info.plist'
             }
-            stage('Test'){
-                steps {
-                    sh 'flutter test --coverage'
+        }
+        stage('Get Packages'){
+            steps{
+                sshagent(['4230b7aa-33c5-4a34-94ae-9fb5b004d637']) {
+                    sh 'flutter packages get'
                 }
             }
         }
-        stage('Build'){
+        stage('Lint') {
             steps {
-                sh './scripts/release_ios.sh'
+                sh 'flutter analyze'
             }
         }
+        stage('Test'){
+            steps {
+                sh 'flutter test --coverage'
+            }
+        }
+        stage('Build IOS Dart Code'){
+            steps {
+                sh 'flutter build ios'
+            }
+        }
+        stage('XCode Build'){
+            steps{
+                sh '''
+             xcodebuild -workspace ios/Runner.xcworkspace \
+            -scheme Runner -sdk iphoneos \
+            -configuration Release archive \
+            -archivePath build/ios/Temp/temp.xcarchive
+            '''
+            }
+        }
+        stage('Archiving IPA file'){
+            steps{
+                sh '''
+            xcodebuild -exportArchive \
+            -archivePath build/ios/Temp/temp.xcarchive \
+            -exportOptionsPlist ios/Runner/exportOptionsAdHoc.plist \
+            -exportPath build/ios/Temp/
+            '''
+            }
+        }
+
 //        stage('Generate Report'){
 //            steps{
 //                sh 'genhtml coverage/lcov.info -o coverage'
 //            }
 //        }
-    }
-    post{
-        cleanUp{
-            cleanWS()
-        }
     }
 }
