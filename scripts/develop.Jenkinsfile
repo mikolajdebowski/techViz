@@ -9,7 +9,7 @@ pipeline{
         disableConcurrentBuilds() // not a requirement but good to have if your builds require a lot of resources
         // if your build DOES use a lot of resources and you do not have this, you will get a discussion
     }
-    triggers{}
+//    triggers{}
     stages{
         stage('Setup'){
             steps{
