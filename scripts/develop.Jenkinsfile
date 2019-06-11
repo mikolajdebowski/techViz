@@ -1,4 +1,7 @@
 pipeline{
+    agent{
+        label 'macOs'
+    }
     options{
         gitLabConnection 'git.internal.bis2.net'
         buildDiscarder(logRotator(numToKeepStr: '2', artifactNumToKeepStr: '10')) // discards old builds
