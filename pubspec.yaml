@@ -27,7 +27,7 @@ dependencies:
   mockito: ^4.0.0
 
   vizexplorer_mobile_common:
-    git: https://git.internal.bis2.net/Mobile/Plugins/common.git
+    git: git@git.internal.bis2.net:Mobile/Plugins/common.git
   #path: '../com.vizexplorer.mobile/common'
 
 dev_dependencies:
