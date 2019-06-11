@@ -1,0 +1,39 @@
+pipeline{
+    options{
+        gitLabConnection 'git.internal.bis2.net'
+        buildDiscarder(logRotator(numToKeepStr: '2', artifactNumToKeepStr: '10')) // discards old builds
+        timeout(activity:true, time:1, unit:'HOURS') // if no build activity for 1 hour, attempt to kill the build
+        disableConcurrentBuilds() // not a requirement but good to have if your builds require a lot of resources
+        // if your build DOES use a lot of resources and you do not have this, you will get a discussion
+    }
+    triggers{}
+    stages{
+        parallel {
+            stage('Lint') {
+                steps {
+                    sh 'flutter analyze'
+                }
+            }
+            stage('Test'){
+                steps {
+                    sh 'flutter test --coverage'
+                }
+            }
+        }
+        stage('Build'){
+            steps {
+                sh './scripts/release_ios.sh'
+            }
+        }
+//        stage('Generate Report'){
+//            steps{
+//                sh 'genhtml coverage/lcov.info -o coverage'
+//            }
+//        }
+    }
+    post{
+        cleanUp{
+            cleanWS()
+        }
+    }
+}

@@ -4,9 +4,8 @@
 ##IPA file will be in build/ios/Temp/Runner.ipa
 ##to change Runner/Info.plist first
 
-
-echo Performing clean
-flutter clean
+#echo Performing clean
+#flutter clean
 
 #echo Performing packages get
 #flutter packages get
