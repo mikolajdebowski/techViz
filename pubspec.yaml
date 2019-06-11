@@ -17,7 +17,7 @@ dependencies:
   flutter_is_emulator: ^1.0.0
   charts_flutter: 0.5.0
   observable: any
-  flushbar: ^1.2.0
+  flushbar: 1.5.3
   package_info: ^0.4.0
   fluttertoast: ^3.0.1
   swipedetector: ^1.2.0
@@ -27,7 +27,7 @@ dependencies:
   mockito: ^4.0.0
 
   vizexplorer_mobile_common:
-    git: git@git.colo.bis2.net:Mobile/Plugins/common.git
+    git: https://git.internal.bis2.net/Mobile/Plugins/common.git
   #path: '../com.vizexplorer.mobile/common'
 
 dev_dependencies:
