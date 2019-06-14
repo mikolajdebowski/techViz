@@ -21,6 +21,12 @@ class UserRemoteRepositoryMock implements IUserRemoteRepository{
     List<Map> map = <Map>[];
     return Future<List<Map>>.value(map);
   }
+
+  @override
+  Future<List<Map>> teamAvailabilitySummary() {
+    List<Map> map = <Map>[];
+    return Future<List<Map>>.value(map);
+  }
 }
 
 class UserRoutingMock implements IUserRouting{

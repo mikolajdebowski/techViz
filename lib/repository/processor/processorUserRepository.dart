@@ -72,4 +72,42 @@ class ProcessorUserRepository implements IUserRemoteRepository{
     });
     return _completer.future;
   }
+
+  @override
+  Future<List<Map>> teamAvailabilitySummary() {
+    const String tag = 'TECHVIZ_MOBILE_TEAMAVAILABILITY_SUMMARY';
+    print('Fetching $tag');
+
+    Completer _completer = Completer<List<Map>>();
+    String url = config.GetURL(tag);
+
+    SessionClient().get(url).then((String rawResult) async {
+      List<Map<String, dynamic>> listToReturn =  <Map<String, dynamic>>[];
+      dynamic decoded = json.decode(rawResult);
+      List<dynamic> rows = decoded['Rows'] as List<dynamic>;
+      List<String> _columnNames = (decoded['ColumnNames'] as String).split(',');
+      rows.forEach((dynamic d) {
+
+        dynamic values = d['Values'];
+        Map<String, dynamic> mapEntry = <String, dynamic>{};
+        mapEntry['UserID'] = values[_columnNames.indexOf("UserID")];
+        mapEntry['UserName'] = values[_columnNames.indexOf("UserName")];
+        mapEntry['UserStatusID'] = values[_columnNames.indexOf("UserStatusID")];
+        mapEntry['UserStatusName'] = values[_columnNames.indexOf("UserStatusName")];
+
+        String strTaskCount7 = values[_columnNames.indexOf("TaskCount7")];
+        String strSectionCount = values[_columnNames.indexOf("SectionCount")];
+
+        mapEntry['TaskCount'] = strTaskCount7.isEmpty ? 0 : int.parse(strTaskCount7);
+        mapEntry['SectionCount'] = strSectionCount.isEmpty ? 0 : int.parse(strSectionCount);
+
+        listToReturn.add(mapEntry);
+      });
+      _completer.complete(listToReturn);
+
+    }).catchError((dynamic e){
+      _completer.completeError(InvalidResponseException(e));
+    });
+    return _completer.future;
+  }
 }

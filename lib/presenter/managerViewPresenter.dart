@@ -5,15 +5,17 @@ import 'package:techviz/components/dataEntry/dataEntryGroup.dart';
 import 'package:techviz/model/slotMachine.dart';
 import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/model/taskType.dart';
+import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/session.dart';
 import 'package:techviz/repository/taskRepository.dart';
+import 'package:techviz/viewmodel/managerViewUserStatus.dart';
 
 abstract class IManagerViewPresenter {
   void onOpenTasksLoaded(List<DataEntryGroup> list);
   void onTeamAvailabilityLoaded(List<DataEntryGroup> list);
   void onSlotFloorSummaryLoaded(List<DataEntryGroup> list);
-
+  void onUserStatusLoaded(List<ManagerViewUserStatus> list);
   void onLoadError(dynamic error);
 }
 
@@ -102,12 +104,50 @@ class ManagerViewPresenter{
 
   void loadTeamAvailability(){
 
-    Future.delayed(Duration(milliseconds: 500), (){
+    Repository().userRepository.teamAvailabilitySummary().then((List<Map> listMap) {
+
+      DataEntry toAvailableDataEntryParser(Map map){
+        List<DataEntryCell> columns = <DataEntryCell>[];
+        columns.add(DataEntryCell('Attendant', map['UserName'], alignment: DataAlignment.left));
+        columns.add(DataEntryCell('Sections', map['SectionCount'], alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Task Count', map['TaskCount'], alignment: DataAlignment.center));
+        columns.add(DataEntryCell('StatusID', map['UserStatusID'], visible: false));
+        return DataEntry(map['UserID'], columns);
+      }
+
+      DataEntry toOnBreakDataEntryParser(Map map){
+        List<DataEntryCell> columns = <DataEntryCell>[];
+        columns.add(DataEntryCell('Attendant', map['UserName'], alignment: DataAlignment.left));
+        columns.add(DataEntryCell('Break', map['UserStatusName'], alignment: DataAlignment.center));
+        columns.add(DataEntryCell('StatusID', map['UserStatusID'], visible: false));
+        return DataEntry(map['UserID'], columns);
+      }
+
+      DataEntry toOtherDataEntryParser(Map map){
+        List<DataEntryCell> columns = <DataEntryCell>[];
+        columns.add(DataEntryCell('Attendant', map['UserName'], alignment: DataAlignment.left));
+        columns.add(DataEntryCell('Status', map['UserStatusName'], alignment: DataAlignment.center));
+        columns.add(DataEntryCell('StatusID', map['UserStatusID'], visible: false));
+        return DataEntry(map['UserID'], columns);
+      }
+
+      DataEntry toOffShiftDataEntryParser(Map map){
+        List<DataEntryCell> columns = <DataEntryCell>[];
+        columns.add(DataEntryCell('Attendant', map['UserName'], alignment: DataAlignment.left));
+        columns.add(DataEntryCell('StatusID', map['UserStatusID'], visible: false));
+        return DataEntry(map['UserID'], columns);
+      }
+
       List<DataEntryGroup> group = <DataEntryGroup>[];
-      group.add(DataEntryGroup('Available', <DataEntry>[]));
-      group.add(DataEntryGroup('On Break', <DataEntry>[]));
-      group.add(DataEntryGroup('Other', <DataEntry>[]));
-      group.add(DataEntryGroup('Off Shift', <DataEntry>[]));
+      List<DataEntry> availableList = listMap.where((Map map)=> ['20','30', '35'].contains(map['UserStatusID'])).map((Map map) => toAvailableDataEntryParser(map)).toList();
+      List<DataEntry> onBreakList = listMap.where((Map map)=> ['45','50','55'].contains(map['UserStatusID'])).map((Map map) => toOnBreakDataEntryParser(map)).toList();
+      List<DataEntry> otherList = listMap.where((Map map)=> ['70','75','80','90'].contains(map['UserStatusID'])).map((Map map) => toOtherDataEntryParser(map)).toList();
+      List<DataEntry> offShift = listMap.where((Map map)=> ['10'].contains(map['UserStatusID'])).map((Map map) => toOffShiftDataEntryParser(map)).toList();
+
+      group.add(DataEntryGroup('Available', availableList));
+      group.add(DataEntryGroup('On Break', onBreakList));
+      group.add(DataEntryGroup('Other', otherList));
+      group.add(DataEntryGroup('Off Shift', offShift));
 
       _view.onTeamAvailabilityLoaded(group);
     });
@@ -192,6 +232,18 @@ class ManagerViewPresenter{
       group.add(DataEntryGroup('Out of Service', outOfServiceList, highlightedDecoration: (){ return outOfServiceList.isNotEmpty ? Color(0xFFFF0000): null; }));
 
       _view.onSlotFloorSummaryLoaded(group);
+    });
+  }
+
+  void loadUserStatusList(String currentUserStatusID){
+    Repository().userStatusRepository.getStatuses().then((List<UserStatus> list){
+      List<ManagerViewUserStatus> output = list.map((UserStatus userStatus) => ManagerViewUserStatus(
+        userStatus.id,
+        userStatus.description,
+        userStatus.id.toString() == currentUserStatusID
+      )).toList();
+
+      _view.onUserStatusLoaded(output);
     });
   }
 

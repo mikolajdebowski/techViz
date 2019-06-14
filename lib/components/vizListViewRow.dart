@@ -95,6 +95,9 @@ class VizListViewRowState extends State<VizListViewRow> {
     List<Widget> columns = <Widget>[];
 
     widget.dataEntry.columns.forEach((DataEntryCell dataCell) {
+      if(!dataCell.visible)
+        return;
+
       String text = dataCell.toString();
       TextStyle style = TextStyle(fontSize: text.length >= 20 ? 10 : 12);
 
@@ -105,14 +108,14 @@ class VizListViewRowState extends State<VizListViewRow> {
               : TextAlign.center);
 
       columns.add(Expanded(
-          child: Text(
-        text,
-        textAlign: align,
-        style: style,
-        overflow: TextOverflow.ellipsis,
-        softWrap: true,
-        maxLines: 2,
-      )));
+          child: Padding(padding: EdgeInsets.only(left: 5, right: 5), child: Text(
+            text,
+            textAlign: align,
+            style: style,
+            overflow: TextOverflow.ellipsis,
+            softWrap: true,
+            maxLines: 2,
+          ))));
     });
 
     Row dataRow = Row(

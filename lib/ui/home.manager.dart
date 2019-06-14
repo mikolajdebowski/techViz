@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:techviz/components/dataEntry/dataEntry.dart';
@@ -6,6 +8,7 @@ import 'package:techviz/components/dataEntry/dataEntryGroup.dart';
 import 'package:techviz/components/vizDialog.dart';
 import 'package:techviz/components/vizListView.dart';
 import 'package:techviz/components/vizListViewRow.dart';
+import 'package:techviz/components/vizSelector.dart';
 import 'package:techviz/components/vizSummary.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/managerViewPresenter.dart';
@@ -13,6 +16,7 @@ import 'package:techviz/repository/repository.dart';
 import 'package:techviz/session.dart';
 import 'package:techviz/ui/home.dart';
 import 'package:techviz/ui/reassignTask.dart';
+import 'package:techviz/viewmodel/managerViewUserStatus.dart';
 
 import 'machineReservation.dart';
 
@@ -37,11 +41,14 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
   final GlobalKey _slotFloorKey = GlobalKey();
 
 
-  bool _openTasksLoading;
-  bool _slotFloorLoading;
+  bool _openTasksLoading = true;
+  bool _slotFloorLoading = true;
+  bool _teamAvailabilityLoading = true;
 
-  bool initialLoadForSummary = true;
-  bool initialLoadForTeam = true;
+  bool initialLoadSlotFloorSummary = true;
+  bool initialLoadTeamAvailability = true;
+
+  String teamAvailabilityCurrentUserSelected;
 
   @override
   void initState() {
@@ -79,7 +86,9 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
             VizSummary('TEAM AVAILABILITY',
                 _teamAvailabilityList,
                 key: _teamAvaKey,
+                isProcessing: _teamAvailabilityLoading,
                 onSwipeLeft: onTeamAvailiblitySwipeLeft(),
+                onMetricTap: onTeamAvailiblityMetricTap,
                 onScroll: _onChildScroll),
 
             VizSummary('SLOT FLOOR',
@@ -88,8 +97,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
                 onSwipeRight: onSlotFloorSwipeRight(),
                 onSwipeLeft: onSlotFloorSwipeLeft(),
                 onMetricTap: onSlotFloorMetricTap,
-                isProcessing:
-                _slotFloorLoading,
+                isProcessing: _slotFloorLoading,
                 onScroll: _onChildScroll)
           ],
         ),
@@ -173,13 +181,46 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
   //TeamAvailiblity
   SwipeAction onTeamAvailiblitySwipeLeft(){
     return SwipeAction('Change Status',(dynamic entry){
-      VizDialog.Alert(context, 'Change user\' status', 'Opens Change user\' status');
+      DataEntry dataEntry = entry as DataEntry;
+      setState(() {
+        teamAvailabilityCurrentUserSelected = dataEntry.id;
+      });
+      String currentUserStatusID = dataEntry.columns.where((DataEntryCell cell) => cell.column == 'StatusID').first.value;
+      _presenter.loadUserStatusList(currentUserStatusID);
     });
   }
 
+  void goToUserListSelector(List<IVizSelectorOption> list){
+    Future<bool> onTap(BuildContext context, List<IVizSelectorOption> selectedOptions){
+      Completer _completer = Completer<bool>();
 
+      Repository().userRepository.updateRemote(teamAvailabilityCurrentUserSelected, statusID: selectedOptions.first.id).then((dynamic result){
+        _completer.complete(true);
+      }).catchError((dynamic error){
+        _completer.completeError(error);
+      });
 
-  //SlotFloor
+      return _completer.future;
+    }
+
+    VizSelector selector = VizSelector('Select User\'s status', list, onTap);
+
+    Navigator.of(context).push<bool>(
+      MaterialPageRoute(builder: (context) => selector),
+    ).then((bool refresh){
+      _teamAvailabilityLoading = true;
+      _presenter.loadTeamAvailability();
+    });
+  }
+
+  void onTeamAvailiblityMetricTap() {
+    setState(() {
+      _teamAvailabilityLoading = true;
+    });
+    _presenter.loadTeamAvailability();
+  }
+
+  //SlotFloor SECTION
   SwipeAction onSlotFloorSwipeRight(){
 
     Function onSlotActionButtonClickedCallback = (dynamic entry) {
@@ -266,7 +307,6 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
     }
   }
 
-
   @override
   void onSlotFloorSummaryLoaded(List<DataEntryGroup> list) {
     if (mounted) {
@@ -275,10 +315,9 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
         _slotFloorList = list;
       });
 
-
-      if(initialLoadForSummary == true){
-        initialLoadForSummary = false;
-      } else if(initialLoadForSummary == false){
+      if(initialLoadSlotFloorSummary == true){
+        initialLoadSlotFloorSummary = false;
+      } else if(initialLoadSlotFloorSummary == false){
         RenderBox openTasksBox = _openTasksKey.currentContext.findRenderObject();
         double openTasksHeight = openTasksBox.size.height;
 
@@ -289,20 +328,19 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
         _mainController.animateTo(offset, curve: Curves.linear, duration: Duration(milliseconds: 300));
       }
     }
-
   }
-
 
   @override
   void onTeamAvailabilityLoaded(List<DataEntryGroup> list) {
     if (mounted) {
       setState(() {
+        _teamAvailabilityLoading = false;
         _teamAvailabilityList = list;
       });
 
-      if(initialLoadForTeam == true){
-        initialLoadForTeam = false;
-      } else if(initialLoadForTeam == false){
+      if(initialLoadTeamAvailability == true){
+        initialLoadTeamAvailability = false;
+      } else if(initialLoadTeamAvailability == false){
         RenderBox openTasksBox = _openTasksKey.currentContext.findRenderObject();
         double openTasksHeight = openTasksBox.size.height;
 
@@ -313,23 +351,24 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
   }
 
   @override
+  void onUserStatusLoaded(List<ManagerViewUserStatus> list) {
+    goToUserListSelector(list);
+  }
+
+  @override
   void onLoadError(dynamic error) {
     // TODO(rmathias): implement onLoadError
   }
 
-
-
-
-
   //MASTERVIEW EVENTS
   @override
   void onUserSectionsChanged(Object obj) {
-    // TODO(rmathias): implement onUserSectionsChanged
+    _presenter.loadTeamAvailability();
   }
 
   @override
   void onUserStatusChanged(UserStatus us) {
-    // TODO(rmathias): implement onUserStatusChanged
+    _presenter.loadTeamAvailability();
   }
 }
 

@@ -1,43 +1,10 @@
-import 'dart:convert';
-
-import 'package:http/src/response.dart';
 import 'package:techviz/repository/processor/exception/invalidResponseException.dart';
 import 'package:techviz/repository/processor/processorRepositoryConfig.dart';
 import 'package:techviz/repository/processor/processorUserRepository.dart';
 import 'package:test_api/test_api.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
-class ProcessorClientMock implements IHttpClient{
-  dynamic processorResponse;
-  ProcessorClientMock(this.processorResponse);
-
-  @override
-  Future<String> auth(String user, String pwd) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Response> disconnect() {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<String> get(String url) {
-
-    return Future<String>.value(jsonEncode(processorResponse));
-  }
-//
-//  map['UserID'] = values[_columnNames.indexOf("UserID")];
-//  map['UserRoleID'] = values[_columnNames.indexOf("UserRoleID")];
-//  map['UserName'] = values[_columnNames.indexOf("UserName")];
-//  map['UserStatusID'] = values[_columnNames.indexOf("UserStatusID")];
-//  map['StaffID'] = values[_columnNames.indexOf("StaffID")];
-
-  @override
-  Future<String> post(String url, String body, {Map<String, String> headers}) {
-    throw UnimplementedError();
-  }
-}
+import '../mock/processorClientMock.dart';
 
 class ProcessorRepositoryConfigMock implements IProcessorRepositoryConfig{
   @override
@@ -57,12 +24,12 @@ class ProcessorRepositoryConfigMock implements IProcessorRepositoryConfig{
 }
 
 void main(){
-  ProcessorUserRepository mockRepository;
+
 
   test('fetch return irina instance', () async {
     dynamic result = {'ColumnNames': 'UserID,UserRoleID,UserName,UserStatusID,StaffID', 'Rows': [{'Values' : ['1','36248','Irina','10','10']}]};
     SessionClient().init(ProcessorClientMock(result));
-    mockRepository = ProcessorUserRepository(ProcessorRepositoryConfigMock());
+    ProcessorUserRepository mockRepository = ProcessorUserRepository(ProcessorRepositoryConfigMock());
 
     dynamic expected = {
       'UserID': '1',
@@ -78,7 +45,7 @@ void main(){
   test('fetch should throw exception', () async {
     dynamic result = {'invalid json':'invalid json'};
     SessionClient().init(ProcessorClientMock(result));
-    mockRepository = ProcessorUserRepository(ProcessorRepositoryConfigMock());
+    ProcessorUserRepository mockRepository = ProcessorUserRepository(ProcessorRepositoryConfigMock());
 
     try{
       await mockRepository.fetch();
@@ -92,7 +59,7 @@ void main(){
   test('usersBySectionsByTaskCount should return list of users with sections count and tasks count', () async {
     dynamic result = {'ColumnNames': 'SectionCount,TaskCount7,UserID,UserName,UserStatusID', 'Rows': [{'Values' : ['1','1','irina','Irina','10']}]};
     SessionClient().init(ProcessorClientMock(result));
-    mockRepository = ProcessorUserRepository(ProcessorRepositoryConfigMock());
+    ProcessorUserRepository mockRepository = ProcessorUserRepository(ProcessorRepositoryConfigMock());
 
     dynamic expected = [{
       'UserID': 'irina',
@@ -104,17 +71,36 @@ void main(){
     expect(await mockRepository.usersBySectionsByTaskCount(), expected);
   });
 
-  test('usersBySectionsByTaskCount should throw exception due invalid json', () async {
-    dynamic result = {'invalid json':'invalid json'};
+  test('teamAvailabilitySummary should return two users', () async {
+    dynamic result = {
+        'ColumnNames': 'SectionCount,TaskCount7,UserID,UserName,UserStatusID,UserStatusName',
+        'Rows': [
+            {'Values' : ['4','2','irina','Irina','30', 'Working Task']},
+            {'Values' : ['1','0','asmith','Angus Smith','30', 'Available']}
+            ]
+    };
     SessionClient().init(ProcessorClientMock(result));
-    mockRepository = ProcessorUserRepository(ProcessorRepositoryConfigMock());
+    ProcessorUserRepository mockRepository = ProcessorUserRepository(ProcessorRepositoryConfigMock());
 
-    try{
-      await mockRepository.usersBySectionsByTaskCount();
-      fail("exception not thrown");
-    }
-    catch(e){
-      expect(e, isA<InvalidResponseException>());
-    }
+    dynamic expected = [
+      {
+        'UserID': 'irina',
+        'UserName': 'Irina',
+        'UserStatusID': '30',
+        'UserStatusName': 'Working Task',
+        'TaskCount': 2,
+        'SectionCount': 4
+      },
+      {
+        'UserID': 'asmith',
+        'UserName': 'Angus Smith',
+        'UserStatusID': '30',
+        'UserStatusName': 'Available',
+        'TaskCount': 0,
+        'SectionCount': 1
+      }
+    ];
+
+    expect(await mockRepository.teamAvailabilitySummary(), expected);
   });
 }
