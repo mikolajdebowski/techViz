@@ -1,6 +1,7 @@
 import 'package:techviz/model/task.dart';
-import 'package:techviz/repository/taskRepository.dart';
 import 'package:techviz/repository/repository.dart';
+import 'package:techviz/repository/taskRepository.dart';
+
 
 abstract class ITaskListPresenter<Task> {
   void onTaskListLoaded(List<Task> result);

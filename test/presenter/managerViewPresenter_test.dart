@@ -12,6 +12,7 @@ import 'package:techviz/repository/taskRepository.dart';
 import 'package:techviz/repository/taskStatusRepository.dart';
 import 'package:techviz/repository/taskTypeRepository.dart';
 import 'package:techviz/repository/userRepository.dart';
+import 'package:kiwi/kiwi.dart' as kiwi;
 
 import '../repository/mock/localRepositoryMock.dart';
 import '../repository/mock/slotFloorRemoteRepositoryMock.dart';
@@ -203,7 +204,9 @@ class UserRemoteRepositoryMock implements IUserRemoteRepository{
 
 void main(){
   setUp((){
-    Repository().taskRepository = TaskRepository(TaskRemoteRepositoryMock(), LocalRepositoryMock());
+    kiwi.Container().registerInstance(TaskRepository(TaskRemoteRepositoryMock(), LocalRepositoryMock()));
+
+
     Repository().taskTypeRepository = TaskTypeRepository(null, TaskTypeTableMock());
     Repository().taskStatusRepository = TaskStatusRepository(null, TaskStatusTableMock());
     Repository().userRepository = UserRepository(UserRemoteRepositoryMock(), null, null);

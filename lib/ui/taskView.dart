@@ -39,8 +39,6 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
       gradient: LinearGradient(
           colors: const [Color(0xFF4D4D4D), Color(0xFF000000)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated));
 
-  TaskViewState();
-
   @override
   void initState() {
     _loadingBar = VizDialog.LoadingBar(message: 'Sending request...');

@@ -16,6 +16,7 @@ import 'package:techviz/repository/userRepository.dart';
 import 'package:techviz/ui/managerView.dart';
 import '../repository/mock/localRepositoryMock.dart';
 import '../repository/mock/slotFloorRemoteRepositoryMock.dart';
+import 'package:kiwi/kiwi.dart' as kiwi;
 
 class IManagerViewPresenterView extends Mock implements IManagerViewPresenter{
 
@@ -93,7 +94,7 @@ class UserRemoteRepositoryMock implements IUserRemoteRepository{
 void main() {
 
   setUp((){
-    Repository().taskRepository = TaskRepository(TaskRemoteRepositoryMock(), LocalRepositoryMock());
+    kiwi.Container().registerInstance(TaskRepository(TaskRemoteRepositoryMock(), LocalRepositoryMock()));
     Repository().taskTypeRepository = TaskTypeRepository(null, TaskTypeTableMock());
     Repository().taskStatusRepository = TaskStatusRepository(null, TaskStatusTableMock());
     Repository().slotFloorRepository = SlotFloorRepository(SlotFloorRemoteRepositoryMock(), null);
