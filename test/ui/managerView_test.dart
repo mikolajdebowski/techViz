@@ -5,7 +5,6 @@ import 'package:mockito/mockito.dart';
 import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/model/taskType.dart';
 import 'package:techviz/presenter/managerViewPresenter.dart';
-import 'package:techviz/repository/async/TaskRouting.dart';
 import 'package:techviz/repository/local/taskStatusTable.dart';
 import 'package:techviz/repository/local/taskTypeTable.dart';
 import 'package:techviz/repository/repository.dart';
@@ -15,8 +14,6 @@ import 'package:techviz/repository/taskStatusRepository.dart';
 import 'package:techviz/repository/taskTypeRepository.dart';
 import 'package:techviz/repository/userRepository.dart';
 import 'package:techviz/ui/managerView.dart';
-
-import '../repository/async/messageClientMock.dart';
 import '../repository/mock/localRepositoryMock.dart';
 import '../repository/mock/slotFloorRemoteRepositoryMock.dart';
 
@@ -96,7 +93,7 @@ class UserRemoteRepositoryMock implements IUserRemoteRepository{
 void main() {
 
   setUp((){
-    Repository().taskRepository = TaskRepository(TaskRemoteRepositoryMock(), TaskRouting(MessageClientMock()), LocalRepositoryMock());
+    Repository().taskRepository = TaskRepository(TaskRemoteRepositoryMock(), LocalRepositoryMock());
     Repository().taskTypeRepository = TaskTypeRepository(null, TaskTypeTableMock());
     Repository().taskStatusRepository = TaskStatusRepository(null, TaskStatusTableMock());
     Repository().slotFloorRepository = SlotFloorRepository(SlotFloorRemoteRepositoryMock(), null);
