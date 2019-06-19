@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:techviz/repository/repository.dart';
-import 'package:techviz/ui/home.attendant.dart';
 import 'package:techviz/common/slideRightRoute.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizSelector.dart';
-import 'package:techviz/ui/home.manager.dart';
+import 'package:techviz/ui/managerView.dart';
 import 'package:techviz/ui/menu.dart';
 import 'package:techviz/model/userSection.dart';
 import 'package:techviz/model/userStatus.dart';
@@ -14,7 +13,7 @@ import 'package:techviz/repository/userSectionRepository.dart';
 import 'package:techviz/ui/sectionSelector.dart';
 import 'package:techviz/ui/slotLookup.dart';
 import 'package:techviz/ui/statusSelector.dart';
-
+import 'package:techviz/ui/taskView.dart';
 
 class Home extends StatefulWidget {
   Home({Key key}) : super(key: key);
@@ -53,16 +52,18 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+
     WidgetsBinding.instance.addObserver(this);
     loadDefaultSections();
 
     ISession session = Session();
-    if(session.role.isManager || session.role.isSupervisor){
-      homeChildKey = GlobalKey<HomeManagerState>();
+    if (session.role.isManager || session.role.isSupervisor) {
+      homeChildKey = GlobalKey<ManagerViewState>();
+    } else if (session.role.isAttendant) {
+      homeChildKey = GlobalKey<TaskViewState>();
     }
-    else if(session.role.isAttendant){
-      homeChildKey = GlobalKey<HomeAttendantState>();
-    }
+
+    assert(homeChildKey!=null);
   }
 
   @override
@@ -97,7 +98,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   }
 
   void goToSectionSelector() {
-    var selector = SectionSelector(onUserSectionsChanged: onUserSectionsChangedCallback);
+    SectionSelector selector = SectionSelector(onUserSectionsChanged: onUserSectionsChangedCallback);
 
     Navigator.push<VizSelector>(
       context,
@@ -110,8 +111,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     Navigator.push<UserStatus>(
       context,
       MaterialPageRoute(builder: (context) => selector),
-    ).then((UserStatus userStatusSelected){
-      if(userStatusSelected!=null){
+    ).then((UserStatus userStatusSelected) {
+      if (userStatusSelected != null) {
         if (userStatusSelected.isOnline) {
           Session().UpdateConnectionStatus(ConnectionStatus.Online);
         } else {
@@ -163,53 +164,24 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
     VizButton sectionsWidgetBtn = VizButton(customWidget: sectionsInnerWidget, flex: 3, onTap: goToSectionSelector);
 
-    //NOTIFICATIONS
-//    var notificationInnerWidget = Column(
-//      crossAxisAlignment: CrossAxisAlignment.center,
-//      mainAxisAlignment: MainAxisAlignment.center,
-//      children: <Widget>[
-//        Text('Offline', style: TextStyle(color: Color(0xFF566474), fontSize: 13.0)),
-//        Row(
-//          mainAxisAlignment: MainAxisAlignment.center,
-//          children: <Widget>[
-//            Text('7', style: TextStyle(color: Colors.black, fontSize: 18.0), overflow: TextOverflow.ellipsis),
-//            ImageIcon(AssetImage("assets/images/ic_alert.png"), size: 15.0, color: Color(0xFFCD0000))
-//          ],
-//        )
-//      ],
-//    );
-
-    //var notificationWidgetBtn = VizButton(customWidget: notificationInnerWidget, flex: 3);
     Spacer notificationWidgetBtn = Spacer(flex: 3);
-
-    //SEARCH
     VizButton searchIconWidget = VizButton(customWidget: ImageIcon(AssetImage("assets/images/ic_search.png"), size: 30.0), onTap: goToSearchSelector, flex: 1);
-
-    //
     List<Widget> actionBarCentralWidgets = <Widget>[statusWidgetBtn, sectionsWidgetBtn, notificationWidgetBtn, searchIconWidget];
-
-    Widget view;
-
-    Session session = Session();
-    if(session.role.isManager || session.role.isSupervisor){
-      view = HomeManager(homeChildKey);
-    }
-    else if(session.role.isAttendant){
-      view = HomeAttendant(homeChildKey);
-    }
 
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       backgroundColor: Colors.black,
       appBar: ActionBar(title: 'TechViz', leadingWidget: leadingMenuButton, centralWidgets: actionBarCentralWidgets),
-      body: SafeArea(child: view), // This trailing comma makes auto-formatting nicer for build methods.
+      body: SafeArea(child: bodyWidget), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  Widget get bodyWidget{
+    return homeChildKey.runtimeType == ManagerViewState ? ManagerView(homeChildKey) : TaskView(homeChildKey);
   }
 }
 
-
-abstract class TechVizHome{
+abstract class TechVizHome {
   void onUserStatusChanged(UserStatus us);
-  void onUserSectionsChanged(Object obj);
+  void onUserSectionsChanged(List<UserSection> sections);
 }
-
