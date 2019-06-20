@@ -42,6 +42,7 @@ import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 import 'package:kiwi/kiwi.dart' as kiwi;
 
 import 'async/MessageClient.dart';
+import 'async/TaskRouting.dart';
 import 'local/taskStatusTable.dart';
 import 'local/taskTypeTable.dart';
 import 'local/userSectionTable.dart';
@@ -133,7 +134,7 @@ class Repository {
 
   void _configureInjector(){
     kiwi.Container container = kiwi.Container();
-    container.registerInstance(TaskRepository(ProcessorTaskRepository(ProcessorRepositoryConfig()), _localRepository));
+    container.registerInstance(TaskRepository(ProcessorTaskRepository(ProcessorRepositoryConfig()), _localRepository, TaskRouting()));
   }
 
   //TASKS

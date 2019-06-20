@@ -2,18 +2,17 @@ import 'package:techviz/model/task.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/taskRepository.dart';
 
-
-abstract class ITaskListPresenter<Task> {
+abstract class ITaskViewPresenter<Task> {
   void onTaskListLoaded(List<Task> result);
   void onLoadError(dynamic error);
 }
 
-class TaskListPresenter{
+class TaskViewPresenter{
 
-  ITaskListPresenter<Task> _view;
+  ITaskViewPresenter<Task> _view;
   TaskRepository _repository;
 
-  TaskListPresenter(this._view){
+  TaskViewPresenter(this._view){
    _repository = Repository().taskRepository;
   }
 

@@ -1,21 +1,15 @@
 import 'dart:async';
-
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:techviz/components/taskList/VizTaskItem.dart';
-import 'package:techviz/components/vizDialog.dart';
+import 'package:techviz/bloc/taskViewBloc.dart';
 import 'package:techviz/components/vizTaskActionButton.dart';
 import 'package:techviz/components/vizTimer.dart';
 import 'package:techviz/model/task.dart';
 import 'package:techviz/model/userSection.dart';
 import 'package:techviz/model/userStatus.dart';
-import 'package:techviz/presenter/taskListPresenter.dart';
-import 'package:techviz/repository/repository.dart';
-import 'package:techviz/repository/taskRepository.dart';
 import 'package:techviz/ui/home.dart';
-
-import '../session.dart';
 import 'escalation.dart';
 
 class TaskView extends StatefulWidget {
@@ -25,241 +19,113 @@ class TaskView extends StatefulWidget {
   State<StatefulWidget> createState() => TaskViewState();
 }
 
-class TaskViewState extends State<TaskView> with WidgetsBindingObserver implements TechVizHome, ITaskListPresenter<Task> {
-  String _taskListStatusIcon = "assets/images/ic_processing.png";
-  Flushbar _loadingBar;
-  List<Task> _taskList = <Task>[];
-  Task _selectedTask;
-  TaskListPresenter _taskPresenter;
+class TaskViewState extends State<TaskView> with WidgetsBindingObserver implements TechVizHome {
   bool _isLoadingTasks = false;
-  StreamController _streamController;
+  String _taskListStatusIcon = "assets/images/ic_processing.png";
+
+  Task _selectedTask;
+  //Observable<Task> _taskList;// = [];
+  StreamSubscription<List<Task>> streamSubscription;
+  StreamConsumer<Task> consumer = StreamConsumer<Task>();
 
   final defaultHeaderDecoration = BoxDecoration(
       border: Border.all(color: Colors.black, width: 0.5),
       gradient: LinearGradient(
-          colors: const [Color(0xFF4D4D4D), Color(0xFF000000)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated));
+          colors: const [Color(0xFF4D4D4D), Color(0xFF000000)],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          tileMode: TileMode.repeated));
 
   @override
   void initState() {
-    _loadingBar = VizDialog.LoadingBar(message: 'Sending request...');
-    _taskListStatusIcon = "assets/images/ic_processing.png";
-    _taskPresenter = TaskListPresenter(this);
+    streamSubscription = TaskViewBloc().stream..listen(onTaskReceived, onError: onTaskListenError);
 
-    reloadTasks();
-    bindTaskListener();
+    Timer.periodic(Duration(milliseconds: 500), (Timer timer) {
+      String tick = timer.tick.toString();
+      Task task = Task(id: tick, location: tick);
+      TaskViewBloc().update(task);
+    });
+
+
+    Future.delayed(Duration(seconds: 10), (){
+      streamSubscription?.cancel();
+    });
+
+    Future.delayed(Duration(seconds: 20), (){
+      setState(() {
+        streamSubscription = TaskViewBloc().stream.listen(onTaskReceived, onError: onTaskListenError);
+      });
+    });
 
     super.initState();
   }
 
-  void bindTaskListener() async {
-    await unTaskBindListener();
-
-    _streamController = Repository().taskRepository.listenQueue((Task task) {
-      if (task == null) {
-        return;
-      }
-
-      Session session = Session();
-      if ([1, 2, 3].toList().contains(task.taskStatus.id) && task.userID == session.user.userID) {
-        //update the view
-        if (_selectedTask != null && _selectedTask.id == task.id) {
-          setState(() {
-            _selectedTask = task;
-          });
-        }
-      } else {
-        //remove from the view
-        if (_selectedTask != null && _selectedTask.id == task.id) {
-          setState(() {
-            _selectedTask = null;
-          });
-        }
-      }
-      _taskPresenter.loadTaskList(session.user.userID);
-    }, (dynamic error) {
-      print(error);
-    });
-  }
-
-  Future unTaskBindListener() async {
-    if (_streamController == null || !_streamController.isClosed) {
-      return;
-    }
-    await _streamController.close();
-  }
-
-  void onTaskItemTapCallback(String taskID) {
-    if (!mounted) return;
-
+  void onTaskReceived(Task task) {
     setState(() {
-      _selectedTask = _taskList.where((Task task) => task.id == taskID).first;
+      streamSubscription.on
+      print(task.id);
     });
   }
 
-  void reloadTasks() {
-    if (!mounted) return;
-
-    setState(() {
-      _isLoadingTasks = true;
-      _selectedTask = null;
-    });
-
-    Repository().taskRepository.fetch().then((dynamic b) {
-      Session session = Session();
-      _taskPresenter.loadTaskList(session.user.userID);
-    });
+  void onTaskListenError(dynamic error) {
+    print('onError' + error.toString());
   }
 
-  void _showCancellationDialog(final String taskID) {
-    final TextEditingController _cancellationController = TextEditingController();
-
-    bool btnEnbled = true;
-    double _width = MediaQuery.of(context).size.width / 100 * 80;
-    String location = _selectedTask.location.toString();
-
-    Container container = Container(
-      width: _width,
-      decoration: BoxDecoration(shape: BoxShape.rectangle),
-      child: SingleChildScrollView(
-        child: Form(
-          key: _cancellationFormKey,
-          child: Column(
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                child: Text('Cancel Task $location'),
-              ),
-              Divider(
-                color: Colors.grey,
-                height: 4.0,
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 20.0, right: 20.0),
-                child: TextFormField(
-                  controller: _cancellationController,
-                  maxLength: 4000,
-                  textInputAction: TextInputAction.done,
-                  decoration: InputDecoration(
-                    hintText: "Cancellation reason",
-                    border: InputBorder.none,
-                  ),
-                  maxLines: 6,
-                  validator: (String value) {
-                    if (value.isEmpty) return 'Please inform the cancellation reason';
-                  },
-                ),
-              ),
-              Divider(
-                color: Colors.grey,
-                height: 4.0,
-              ),
-              Stack(
-                children: <Widget>[
-                  Align(
-                      alignment: Alignment.centerLeft,
-                      child: FlatButton(
-                        onPressed: () {
-                          Navigator.of(context).pop(false);
-                        },
-                        child: Text(
-                          "Dismiss",
-                        ),
-                      )),
-                  Align(
-                      alignment: Alignment.centerRight,
-                      child: FlatButton(
-                        onPressed: () {
-                          if (!btnEnbled) return;
-
-                          if (!_cancellationFormKey.currentState.validate()) {
-                            return;
-                          }
-
-                          btnEnbled = false;
-
-                          _loadingBar.show(context);
-                          Repository().taskRepository.update(taskID, taskStatusID: '12', cancellationReason: _cancellationController.text,
-                              callBack: (String result) {
-                            _loadingBar.dismiss();
-                            Navigator.of(context).pop(true);
-                          }).catchError((dynamic error) {
-                            _loadingBar.dismiss();
-
-                            VizDialog.Alert(context, "Error", error.toString()).then((bool dialogResult) {
-                              if (error.runtimeType == TaskNotAvailableException) {
-                                Navigator.of(context).pop(false);
-                              }
-                            });
-                            btnEnbled = true;
-                          });
-                        },
-                        child: Text(
-                          "Cancel this task",
-                          style: TextStyle(color: Colors.redAccent),
-                        ),
-                      ))
-                ],
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-
-    showDialog<bool>(
-        barrierDismissible: false,
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            child: container,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10.0))),
-          );
-        }).then((bool canceled) {
-      if (canceled) reloadTasks();
-    });
+  @override
+  void dispose() {
+    streamSubscription?.cancel();
+    super.dispose();
   }
 
-  void _goToEscalationPathView() {
-    if (_selectedTask == null) return;
+  List<Widget> get taskItems {
+    List<VizTaskItem> output = [];
 
-    String id = _selectedTask.id;
-    String location = _selectedTask.location;
+//    _taskList.asMap().forEach((int i, Task task) {
+//      output.add(
+//          VizTaskItem(task.id, task.location, i, onTaskItemTapCallback, _selectedTask != null && _selectedTask.id == task.id, task.urgencyHEXColor));
+//    });
 
-    EscalationForm escalationForm = EscalationForm(id, location, (bool result) {
-      if (result) reloadTasks();
-    });
-
-    MaterialPageRoute<bool> mpr = MaterialPageRoute<bool>(builder: (BuildContext context) => escalationForm);
-    Navigator.of(context).push(mpr);
+    return output;
   }
 
-  final GlobalKey<FormState> _cancellationFormKey = GlobalKey<FormState>();
+
+
+
+
+
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
-    //LEFT PANEL WIDGETS
-    List<Widget> listTasks = <Widget>[];
-    for (int i = 1; i <= _taskList.length; i++) {
-      Task task = _taskList[i - 1];
 
-      VizTaskItem taskItem =
-          VizTaskItem(task.id, task.location, i, onTaskItemTapCallback, _selectedTask != null && _selectedTask.id == task.id, task.urgencyHEXColor);
-      listTasks.add(taskItem);
-    }
 
-    String taskTextStr = listTasks.isEmpty ? 'No tasks' : (listTasks.length == 1 ? '1 Task' : '${listTasks.length} Tasks');
+    String taskTextStr = 'No tasks';//_taskList.isEmpty ? 'No tasks' : (_taskList.length == 1 ? '1 Task' : '${_taskList.length} Tasks');
 
-    Widget listContainer = Center(child: null);
-    if (_isLoadingTasks) {
-      listContainer = Center(child: CircularProgressIndicator());
-    } else if (listTasks != null && listTasks.isNotEmpty) {
-      //list container
-      listContainer = ListView(
-        children: listTasks,
-      );
-    }
+    int idx = 1;
+    StreamBuilder<Task>(
+        stream: TaskViewBloc().stream,
+        builder: (context, AsyncSnapshot<Task> snapshot){
+          if(snapshot.hasData==false){
+            return Container();
+          }
+          if(snapshot.hasData){
+            Task task = snapshot.data;
+            return VizTaskItem(task.id, task.location, idx++, onTaskItemTapCallback, _selectedTask != null && _selectedTask.id == task.id, task.urgencyHEXColor);
+          }
+    });
 
-    Flexible leftPanel = Flexible(
+
+    Widget listContainer = _taskList.isEmpty
+        ? Container()
+        : ListView(
+            children: taskItems,
+          );
+
+    //TASK PANEL
+    Flexible tasksPanel = Flexible(
       flex: 1,
       child: Column(
         children: <Widget>[
@@ -293,7 +159,10 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
             ),
           ),
           Expanded(
-            child: listContainer,
+            child: Container(
+              decoration: BoxDecoration(border: Border(right: BorderSide(color: Color(0x33000000)))),
+              child: listContainer,
+            ),
           )
         ],
       ),
@@ -358,19 +227,12 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
         borderRadius: BorderRadius.circular(6.0),
         border: Border.all(color: Color(0xFFFFFFFF)),
         gradient: LinearGradient(
-            colors: const [Color(0xFF81919D), Color(0xFFAAB7BD)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated));
+            colors: const [Color(0xFF81919D), Color(0xFFAAB7BD)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            tileMode: TileMode.repeated));
 
     Widget taskBody;
-
-    void taskUpdateCallback(String taskID) {
-      _loadingBar.dismiss();
-      _taskPresenter.loadTaskList(Session().user.userID);
-    }
-
-    void updateTaskStatus(String statusID) {
-      _loadingBar.show(context);
-      Repository().taskRepository.update(_selectedTask.id, taskStatusID: statusID, callBack: taskUpdateCallback);
-    }
 
     if (_selectedTask != null) {
       String mainActionImageSource;
@@ -402,7 +264,8 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
       ImageIcon mainActionIcon = ImageIcon(AssetImage(mainActionImageSource), size: 60.0, color: btnEnabled ? Colors.white : Colors.white30);
       Center mainActionText = Center(
           child: Text(mainActionTextSource,
-              style: TextStyle(color: btnEnabled ? Colors.white : Colors.white30, fontStyle: FontStyle.italic, fontSize: 20.0, fontWeight: FontWeight.bold)));
+              style: TextStyle(
+                  color: btnEnabled ? Colors.white : Colors.white30, fontStyle: FontStyle.italic, fontSize: 20.0, fontWeight: FontWeight.bold)));
 
       Padding requiredAction = Padding(
           padding: EdgeInsets.all(2.0),
@@ -544,7 +407,7 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
                   ? taskBody
                   : Center(
                       child: Text(
-                      (_isLoadingTasks || _taskList.isEmpty) ? '' : 'Select a Task',
+                      _taskList..isEmpty ? taskTextStr : 'Select a Task',
                       style: TextStyle(color: Colors.white, fontStyle: FontStyle.italic),
                     )))
         ],
@@ -573,7 +436,8 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
       }
 
       if (_selectedTask.taskStatus.id == 3) {
-        rightActionWidgets.add(VizTaskActionButton('Escalate', const [Color(0xFF1356ab), Color(0xFF23ABE7)], enabled: enableButtons, onTapCallback: () {
+        rightActionWidgets
+            .add(VizTaskActionButton('Escalate', const [Color(0xFF1356ab), Color(0xFF23ABE7)], enabled: enableButtons, onTapCallback: () {
           _goToEscalationPathView();
         }));
       }
@@ -602,32 +466,209 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
         body: Container(
           decoration: BoxDecoration(
               gradient: LinearGradient(
-                  colors: const [Color(0xFF586676), Color(0xFF8B9EA7)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
+                  colors: const [Color(0xFF586676), Color(0xFF8B9EA7)],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  tileMode: TileMode.repeated)),
           child: Row(
-            children: <Widget>[leftPanel, centerPanel, rightPanel],
+            children: <Widget>[tasksPanel, centerPanel, rightPanel],
           ),
         ));
   }
 
-  @override
-  void onLoadError(dynamic error) {
-    // TODO(rmathias): implement onLoadError
+  void taskUpdateCallback(String taskID) {
+    //_loadingBar.dismiss();
+    //_taskViewPresenter.loadTaskList(Session().user.userID);
   }
 
-  @override
-  void onTaskListLoaded(List<Task> result) {
+  void updateTaskStatus(String statusID) {
+    //_loadingBar.show(context);
+    //Repository().taskRepository.update(_selectedTask.id, taskStatusID: statusID, callBack: taskUpdateCallback);
+  }
+
+  void bindTaskListener() async {
+    await unTaskBindListener();
+
+//    _streamController = Repository().taskRepository.listenQueue((Task task) {
+//      if (task == null) {
+//        return;
+//      }
+//
+//      Session session = Session();
+//      if ([1, 2, 3].toList().contains(task.taskStatus.id) && task.userID == session.user.userID) {
+//        //update the view
+//        if (_selectedTask != null && _selectedTask.id == task.id) {
+//          setState(() {
+//            _selectedTask = task;
+//          });
+//        }
+//      } else {
+//        //remove from the view
+//        if (_selectedTask != null && _selectedTask.id == task.id) {
+//          setState(() {
+//            _selectedTask = null;
+//          });
+//        }
+//      }
+//      //_taskViewPresenter.loadTaskList(session.user.userID);
+//    }, (dynamic error) {
+//      print(error);
+//    });
+  }
+
+  Future unTaskBindListener() async {
+    //if (_streamController == null || !_streamController.isClosed) {
+    //   return;
+    //}
+    //await _streamController.close();
+  }
+
+  void onTaskItemTapCallback(String taskID) {
     if (!mounted) return;
 
     setState(() {
-      _taskList = result;
-      _taskListStatusIcon = null;
-      _isLoadingTasks = false;
+      //  _selectedTask = _taskList.where((Task task) => task.id == taskID).first;
+    });
+  }
+
+  void reloadTasks() {
+    if (!mounted) return;
+
+    setState(() {
+      _isLoadingTasks = true;
+      _selectedTask = null;
     });
 
-    if (_selectedTask != null) {
-      onTaskItemTapCallback(_selectedTask.id);
-    }
+//    Repository().taskRepository.fetch().then((dynamic b) {
+//      Session session = Session();
+//      _taskViewPresenter.loadTaskList(session.user.userID);
+//    });
   }
+
+  void _showCancellationDialog(final String taskID) {
+    final TextEditingController _cancellationController = TextEditingController();
+
+    bool btnEnbled = true;
+    double _width = MediaQuery.of(context).size.width / 100 * 80;
+    String location = _selectedTask.location.toString();
+
+    Container container = Container(
+      width: _width,
+      decoration: BoxDecoration(shape: BoxShape.rectangle),
+      child: SingleChildScrollView(
+        child: Form(
+          key: _cancellationFormKey,
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                child: Text('Cancel Task $location'),
+              ),
+              Divider(
+                color: Colors.grey,
+                height: 4.0,
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 20.0, right: 20.0),
+                child: TextFormField(
+                  controller: _cancellationController,
+                  maxLength: 4000,
+                  textInputAction: TextInputAction.done,
+                  decoration: InputDecoration(
+                    hintText: "Cancellation reason",
+                    border: InputBorder.none,
+                  ),
+                  maxLines: 6,
+                  validator: (String value) {
+                    if (value.isEmpty) return 'Please inform the cancellation reason';
+                  },
+                ),
+              ),
+              Divider(
+                color: Colors.grey,
+                height: 4.0,
+              ),
+              Stack(
+                children: <Widget>[
+                  Align(
+                      alignment: Alignment.centerLeft,
+                      child: FlatButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(false);
+                        },
+                        child: Text(
+                          "Dismiss",
+                        ),
+                      )),
+                  Align(
+                      alignment: Alignment.centerRight,
+                      child: FlatButton(
+                        onPressed: () {
+                          if (!btnEnbled) return;
+
+                          if (!_cancellationFormKey.currentState.validate()) {
+                            return;
+                          }
+
+                          btnEnbled = false;
+
+                          //_loadingBar.show(context);
+//                          Repository().taskRepository.update(taskID, taskStatusID: '12', cancellationReason: _cancellationController.text,
+//                              callBack: (String result) {
+//                            _loadingBar.dismiss();
+//                            Navigator.of(context).pop(true);
+//                          }).catchError((dynamic error) {
+//                            _loadingBar.dismiss();
+//
+//                            VizDialog.Alert(context, "Error", error.toString()).then((bool dialogResult) {
+//                              if (error.runtimeType == TaskNotAvailableException) {
+//                                Navigator.of(context).pop(false);
+//                              }
+//                            });
+//                            btnEnbled = true;
+//                          });
+                        },
+                        child: Text(
+                          "Cancel this task",
+                          style: TextStyle(color: Colors.redAccent),
+                        ),
+                      ))
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+
+    showDialog<bool>(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            child: container,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10.0))),
+          );
+        }).then((bool canceled) {
+      if (canceled) reloadTasks();
+    });
+  }
+
+  void _goToEscalationPathView() {
+    if (_selectedTask == null) return;
+
+    String id = _selectedTask.id;
+    String location = _selectedTask.location;
+
+    EscalationForm escalationForm = EscalationForm(id, location, (bool result) {
+      if (result) reloadTasks();
+    });
+
+    MaterialPageRoute<bool> mpr = MaterialPageRoute<bool>(builder: (BuildContext context) => escalationForm);
+    Navigator.of(context).push(mpr);
+  }
+
+  final GlobalKey<FormState> _cancellationFormKey = GlobalKey<FormState>();
 
   @override
   void onUserStatusChanged(UserStatus us) {
@@ -642,8 +683,8 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      bindTaskListener();
-      reloadTasks();
+      //bindTaskListener();
+      //reloadTasks();
     }
   }
 }
