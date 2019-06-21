@@ -1,18 +1,17 @@
 
 import 'package:flutter/material.dart';
+import 'package:techviz/model/task.dart';
 
-typedef VizTaskListItemCallback = void Function(String id);
+typedef VizTaskListItemCallback = void Function(Task task);
 
 class VizTaskItem extends StatelessWidget{
-  final String id;
-  final String title;
+  final Task task;
   final VizTaskListItemCallback itemTapCallback;
   final int index;
   final bool selected;
   final String urgencyHEXColor;
 
-  const VizTaskItem(this.id,
-      this.title,
+  const VizTaskItem(this.task,
       this.index,
       this.itemTapCallback,
       this.selected,
@@ -29,7 +28,7 @@ class VizTaskItem extends StatelessWidget{
 
     return GestureDetector(
         onTap: () {
-          this.itemTapCallback(id);
+          this.itemTapCallback(task);
         },
         child: Row(
           children: <Widget>[
@@ -54,7 +53,7 @@ class VizTaskItem extends StatelessWidget{
                 BoxDecoration(gradient: LinearGradient(colors: mainBackgroundColor, begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
                 child: Center(
                     child: Text(
-                      title,
+                      task.location,
                       style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15.0, color: locationColor),
                     )),
               ),

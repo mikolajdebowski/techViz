@@ -47,6 +47,7 @@ import 'local/taskStatusTable.dart';
 import 'local/taskTypeTable.dart';
 import 'local/userSectionTable.dart';
 import 'local/userTable.dart';
+import 'service/taskService.dart';
 
 
 enum Flavor {
@@ -85,6 +86,7 @@ class Repository {
     }
 
 		_configureInjector();
+    startServices();
   }
 
   void setLocalDatabase(ILocalRepository localRepository){
@@ -134,7 +136,12 @@ class Repository {
 
   void _configureInjector(){
     kiwi.Container container = kiwi.Container();
+    container.clear();
     container.registerInstance(TaskRepository(ProcessorTaskRepository(ProcessorRepositoryConfig()), _localRepository, TaskRouting()));
+  }
+
+  void startServices(){
+    TaskService().listen();
   }
 
   //TASKS

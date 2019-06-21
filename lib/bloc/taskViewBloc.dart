@@ -1,24 +1,31 @@
+import 'dart:core';
+
 import 'package:rxdart/rxdart.dart';
+import 'package:synchronized/synchronized.dart';
 import 'package:techviz/model/task.dart';
 import 'package:rxdart/subjects.dart';
 
-
-class TaskViewBloc{
+class TaskViewBloc {
   static final TaskViewBloc _instance = TaskViewBloc._();
   factory TaskViewBloc() => _instance;
+  TaskViewBloc._();
 
-  final ReplaySubject<List<Task>> _taskController = ReplaySubject<List<Task>>();
-  Stream<List<Task>> get stream => _taskController.stream;
-  List<Task> get openTasks {
-    print(_taskController.values.length);
-    return _taskController.values.take(4).toList();
-  }
+  final BehaviorSubject<List<Task>> _openTasksController = BehaviorSubject<List<Task>>();
+  final List<Task> _taskList = [];
+  final _lock = Lock();
 
-  void update (Task task){
-    _taskController.sink.add(task);
+  Stream<List<Task>> get openTasks => _openTasksController.stream;
+
+  void update(Task task) async{
+    await _lock.synchronized(() async {
+      int idx = _taskList.indexWhere((Task _task) => task.id == _task.id);
+      if(idx<0) _taskList.add(task);
+      else _taskList[idx] = task;
+      _openTasksController.add(_taskList);
+    });
   }
 
   void dispose(){
-    _taskController?.close();
+    _openTasksController?.close();
   }
 }

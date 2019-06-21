@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:techviz/components/taskList/VizTaskItem.dart';
 import 'package:techviz/bloc/taskViewBloc.dart';
 import 'package:techviz/components/vizTaskActionButton.dart';
@@ -21,49 +20,43 @@ class TaskView extends StatefulWidget {
 
 class TaskViewState extends State<TaskView> with WidgetsBindingObserver implements TechVizHome {
   bool _isLoadingTasks = false;
-  String _taskListStatusIcon = "assets/images/ic_processing.png";
-
+  final String _taskListStatusIcon = "assets/images/ic_processing.png";
   Task _selectedTask;
-  //Observable<Task> _taskList;// = [];
-  StreamSubscription<List<Task>> streamSubscription;
-  StreamConsumer<Task> consumer = StreamConsumer<Task>();
+  int _openTasksCount = 0;
+  StreamSubscription<List<Task>> _streamSubscription;
 
   final defaultHeaderDecoration = BoxDecoration(
       border: Border.all(color: Colors.black, width: 0.5),
       gradient: LinearGradient(
-          colors: const [Color(0xFF4D4D4D), Color(0xFF000000)],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          tileMode: TileMode.repeated));
+          colors: const [Color(0xFF4D4D4D), Color(0xFF000000)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated));
 
   @override
   void initState() {
-    streamSubscription = TaskViewBloc().stream..listen(onTaskReceived, onError: onTaskListenError);
+    _streamSubscription = TaskViewBloc().openTasks.listen(onTaskListReceived, onError: onTaskListenError);
 
-    Timer.periodic(Duration(milliseconds: 500), (Timer timer) {
-      String tick = timer.tick.toString();
-      Task task = Task(id: tick, location: tick);
-      TaskViewBloc().update(task);
+    Future.delayed(Duration(seconds: 5), () {
+      _streamSubscription?.pause();
     });
 
-
-    Future.delayed(Duration(seconds: 10), (){
-      streamSubscription?.cancel();
-    });
-
-    Future.delayed(Duration(seconds: 20), (){
-      setState(() {
-        streamSubscription = TaskViewBloc().stream.listen(onTaskReceived, onError: onTaskListenError);
-      });
+    Future.delayed(Duration(seconds: 10), () {
+      _streamSubscription?.resume();
     });
 
     super.initState();
   }
 
-  void onTaskReceived(Task task) {
+  void onTaskListReceived(List<Task> list) {
     setState(() {
-      streamSubscription.on
-      print(task.id);
+      _openTasksCount = list.length;
+
+      if (_selectedTask != null && _openTasksCount > 0) {
+        Iterable<Task> exists = list.where((Task _task) => _task.id == _selectedTask.id);
+        if (exists != null && exists.isNotEmpty) {
+          _selectedTask = exists.first;
+        }
+      } else {
+        _selectedTask = null;
+      }
     });
   }
 
@@ -73,56 +66,43 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
 
   @override
   void dispose() {
-    streamSubscription?.cancel();
+    _streamSubscription?.cancel();
     super.dispose();
   }
 
-  List<Widget> get taskItems {
-    List<VizTaskItem> output = [];
+  void onTaskItemTapCallback(Task task) {
+    if (!mounted) return;
 
-//    _taskList.asMap().forEach((int i, Task task) {
-//      output.add(
-//          VizTaskItem(task.id, task.location, i, onTaskItemTapCallback, _selectedTask != null && _selectedTask.id == task.id, task.urgencyHEXColor));
-//    });
-
-    return output;
+    setState(() {
+      _selectedTask = task;
+    });
   }
 
+  void updateTaskStatus(Task task, String statusID) {
+    //_loadingBar.show(context);
+    //Repository().taskRepository.update(_selectedTask.id, taskStatusID: statusID, callBack: taskUpdateCallback);
 
-
-
-
-
-
-
-
-
+    task.dirty = true;
+    TaskViewBloc().update(task);
+  }
 
   @override
   Widget build(BuildContext context) {
+    Widget buildBody(Task task, int index) {
+      bool selected = _selectedTask != null && _selectedTask.id == task.id;
+      return VizTaskItem(task, index + 1, onTaskItemTapCallback, selected, task.urgencyHEXColor);
+    }
 
-
-    String taskTextStr = 'No tasks';//_taskList.isEmpty ? 'No tasks' : (_taskList.length == 1 ? '1 Task' : '${_taskList.length} Tasks');
-
-    int idx = 1;
-    StreamBuilder<Task>(
-        stream: TaskViewBloc().stream,
-        builder: (context, AsyncSnapshot<Task> snapshot){
-          if(snapshot.hasData==false){
+    StreamBuilder streamBuilderListView = StreamBuilder<List<Task>>(
+        stream: TaskViewBloc().openTasks,
+        builder: (context, AsyncSnapshot<List<Task>> snapshot) {
+          if (!snapshot.hasData) {
             return Container();
+          } else {
+            return ListView.builder(
+                itemBuilder: (BuildContext builderCtx, int index) => buildBody(snapshot.data[index], index), itemCount: snapshot.data.length);
           }
-          if(snapshot.hasData){
-            Task task = snapshot.data;
-            return VizTaskItem(task.id, task.location, idx++, onTaskItemTapCallback, _selectedTask != null && _selectedTask.id == task.id, task.urgencyHEXColor);
-          }
-    });
-
-
-    Widget listContainer = _taskList.isEmpty
-        ? Container()
-        : ListView(
-            children: taskItems,
-          );
+        });
 
     //TASK PANEL
     Flexible tasksPanel = Flexible(
@@ -139,7 +119,7 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text(taskTextStr, style: TextStyle(color: Colors.white)),
+                      Text('$_openTasksCount task(s)' , style: TextStyle(color: Colors.white)),
                       Padding(
                         padding: EdgeInsets.only(left: 10.0),
                         child: _taskListStatusIcon != null ? ImageIcon(AssetImage(_taskListStatusIcon), size: 15.0, color: Colors.blueGrey) : null,
@@ -161,7 +141,7 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
           Expanded(
             child: Container(
               decoration: BoxDecoration(border: Border(right: BorderSide(color: Color(0x33000000)))),
-              child: listContainer,
+              child: streamBuilderListView,
             ),
           )
         ],
@@ -227,10 +207,7 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
         borderRadius: BorderRadius.circular(6.0),
         border: Border.all(color: Color(0xFFFFFFFF)),
         gradient: LinearGradient(
-            colors: const [Color(0xFF81919D), Color(0xFFAAB7BD)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            tileMode: TileMode.repeated));
+            colors: const [Color(0xFF81919D), Color(0xFFAAB7BD)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated));
 
     Widget taskBody;
 
@@ -239,34 +216,32 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
       String mainActionTextSource;
       VoidCallback actionCallBack;
 
-      bool btnEnabled = _selectedTask.dirty == false;
+      bool btnEnabled = _selectedTask?.dirty == false;
 
       if (_selectedTask.taskStatus.id == 1) {
         mainActionImageSource = "assets/images/ic_acknowledge.png";
         mainActionTextSource = 'Acknowledge';
         actionCallBack = () {
-          if (btnEnabled) updateTaskStatus("2");
+          if (btnEnabled) updateTaskStatus(_selectedTask, "2");
         };
       } else if (_selectedTask.taskStatus.id == 2) {
         mainActionImageSource = "assets/images/ic_cardin.png";
         mainActionTextSource = 'Card in';
         actionCallBack = () {
-          if (btnEnabled) updateTaskStatus("3");
+          if (btnEnabled) updateTaskStatus(_selectedTask, "3");
         };
       } else if (_selectedTask.taskStatus.id == 3) {
         mainActionImageSource = "assets/images/ic_complete.png";
         mainActionTextSource = 'Complete';
         actionCallBack = () {
-          if (btnEnabled) updateTaskStatus("13");
+          if (btnEnabled) updateTaskStatus(_selectedTask, "13");
         };
       }
 
       ImageIcon mainActionIcon = ImageIcon(AssetImage(mainActionImageSource), size: 60.0, color: btnEnabled ? Colors.white : Colors.white30);
       Center mainActionText = Center(
           child: Text(mainActionTextSource,
-              style: TextStyle(
-                  color: btnEnabled ? Colors.white : Colors.white30, fontStyle: FontStyle.italic, fontSize: 20.0, fontWeight: FontWeight.bold)));
-
+              style: TextStyle(color: btnEnabled ? Colors.white : Colors.white30, fontStyle: FontStyle.italic, fontSize: 20.0, fontWeight: FontWeight.bold)));
       Padding requiredAction = Padding(
           padding: EdgeInsets.all(2.0),
           child: GestureDetector(
@@ -407,7 +382,7 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
                   ? taskBody
                   : Center(
                       child: Text(
-                      _taskList..isEmpty ? taskTextStr : 'Select a Task',
+                      _openTasksCount == 0 ? 'No tasks' : 'Select a Task',
                       style: TextStyle(color: Colors.white, fontStyle: FontStyle.italic),
                     )))
         ],
@@ -436,8 +411,7 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
       }
 
       if (_selectedTask.taskStatus.id == 3) {
-        rightActionWidgets
-            .add(VizTaskActionButton('Escalate', const [Color(0xFF1356ab), Color(0xFF23ABE7)], enabled: enableButtons, onTapCallback: () {
+        rightActionWidgets.add(VizTaskActionButton('Escalate', const [Color(0xFF1356ab), Color(0xFF23ABE7)], enabled: enableButtons, onTapCallback: () {
           _goToEscalationPathView();
         }));
       }
@@ -466,10 +440,7 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
         body: Container(
           decoration: BoxDecoration(
               gradient: LinearGradient(
-                  colors: const [Color(0xFF586676), Color(0xFF8B9EA7)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  tileMode: TileMode.repeated)),
+                  colors: const [Color(0xFF586676), Color(0xFF8B9EA7)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
           child: Row(
             children: <Widget>[tasksPanel, centerPanel, rightPanel],
           ),
@@ -479,11 +450,6 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
   void taskUpdateCallback(String taskID) {
     //_loadingBar.dismiss();
     //_taskViewPresenter.loadTaskList(Session().user.userID);
-  }
-
-  void updateTaskStatus(String statusID) {
-    //_loadingBar.show(context);
-    //Repository().taskRepository.update(_selectedTask.id, taskStatusID: statusID, callBack: taskUpdateCallback);
   }
 
   void bindTaskListener() async {
@@ -521,14 +487,6 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
     //   return;
     //}
     //await _streamController.close();
-  }
-
-  void onTaskItemTapCallback(String taskID) {
-    if (!mounted) return;
-
-    setState(() {
-      //  _selectedTask = _taskList.where((Task task) => task.id == taskID).first;
-    });
   }
 
   void reloadTasks() {
