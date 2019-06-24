@@ -178,7 +178,7 @@ class MessageClient implements IMessageClient{
 
   @override
   Future PublishMessage(dynamic object, String routingKeyPattern, {bool wait = false, Function parser}) async {
-    Completer<void> _completer = Completer<void>();
+    Completer<dynamic> _completer = Completer<dynamic>();
     _completer.future.timeout(_timeoutDuration, onTimeout: (){
       _completer.completeError(TimeoutException('Max connect timeout reached after ${_timeoutDuration.inSeconds} seconds.'));
     });
@@ -228,7 +228,7 @@ class MessageClient implements IMessageClient{
 
     StreamController<AmqpMessage> sc = StreamController<AmqpMessage>(onCancel: onCancel);
     sc.stream.listen((AmqpMessage message){
-      onData(parser!=null ? parser(message.payloadAsString): message.payloadAsString);
+      onData(parser!=null ? parser(message.payloadAsJson): message.payloadAsJson);
     });
     _addRoutingKeyListener(routingKey, sc);
     return sc;

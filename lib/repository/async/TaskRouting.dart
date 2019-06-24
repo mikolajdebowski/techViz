@@ -23,17 +23,19 @@ class TaskRouting implements ITaskRouting{
 
   @override
   Task parser(dynamic json){
+    print(json);
     return Task(
-      id: json['_ID'] as String,
+      id: json['_ID'],
       dirty: false,
       version: json['_version'] as int,
-      userID: json['userID'] as String,
-      location:  json['location'] as String,
-      taskAssigned: json['taskAssigned'] as DateTime,
-      taskCreated: json['taskAssigned'] as DateTime,
-      taskUrgencyID: int.parse(json['taskUrgencyID'] as String),
-      taskStatusID : int.parse(json['taskStatusID'] as String),
-      taskTypeID : int.parse(json['taskTypeID'] as String)
+      userID: json['userID'],
+      location:  json['location'],
+      taskAssigned: DateTime.parse(json['taskCreated'] as String),
+      taskCreated: DateTime.parse(json['taskAssigned'] as String),
+      taskUrgencyID: json['taskUrgencyID'],
+      taskStatusID : json['taskStatusID'],
+      taskTypeID : json['taskTypeID'],
+      eventDesc: json['eventDesc'],
     );
   }
 }

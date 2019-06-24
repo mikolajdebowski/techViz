@@ -49,6 +49,10 @@ class TaskRepository{
     return remoteRepository.openTasksSummary();
   }
 
+  Future insertOrUpdate(Map map){
+    return TaskTable(localRepository).insertOrUpdate([map]);
+  }
+
   StreamController listenQueue(Function onData, Function onError)  {
     return taskRouting.ListenQueue((dynamic receivedTask) async{
       dynamic task = jsonDecode(receivedTask.toString());

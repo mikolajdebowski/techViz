@@ -29,7 +29,7 @@ dependencies:
   rxdart: ^0.22.0
 
   vizexplorer_mobile_common:
-    git: git@git.internal.bis2.net:Mobile/Plugins/common.git
+    git: https://git.internal.bis2.net/Mobile/Plugins/common.git
   #path: '../com.vizexplorer.mobile/common'
 
 dev_dependencies:

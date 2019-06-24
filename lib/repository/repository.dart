@@ -86,7 +86,6 @@ class Repository {
     }
 
 		_configureInjector();
-    startServices();
   }
 
   void setLocalDatabase(ILocalRepository localRepository){
@@ -141,7 +140,7 @@ class Repository {
   }
 
   void startServices(){
-    TaskService().listen();
+    TaskService().listenRemote();
   }
 
   //TASKS
