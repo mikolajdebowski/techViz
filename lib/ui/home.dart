@@ -177,7 +177,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   }
 
   Widget get bodyWidget{
-    return homeChildKey.runtimeType == ManagerViewState ? ManagerView(homeChildKey) : TaskView(homeChildKey);
+    return homeChildKey is LabeledGlobalKey<ManagerViewState> ? ManagerView(homeChildKey) : TaskView(homeChildKey);
   }
 }
 
