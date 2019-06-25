@@ -141,6 +141,7 @@ class Repository {
 
   void startServices(){
     TaskService().listenRemote();
+    TaskService().listenLocal();
   }
 
   //TASKS

@@ -14,8 +14,13 @@ class TaskService{
 	StreamSubscription<List<Task>> _streamSubscriptionLocal;
 	TaskRouting taskRouting = TaskRouting();
 
+
+	/*
+	* this method listens to the rabbitmq service for tasks and push them into the stream
+	* */
 	void listenRemote(){
 		taskRouting.ListenQueue((dynamic receivedTask) async {
+			print(receivedTask);
 			TaskRepository repo = Repository().taskRepository;
 
 			dynamic mapped = {
@@ -43,37 +48,54 @@ class TaskService{
 			await repo.insertOrUpdate(mapped);
 			Task taskOutput = await repo.getTask(receivedTask['_ID'].toString());
 
-			//only tasks with status 1,2,3 should be considered opentasks
-			if([1,2,3].contains(taskOutput.taskStatus.id)){
-				TaskViewBloc().update(taskOutput);
-			}
-
+			TaskViewBloc().update(taskOutput);
 		});
-
-//		Timer.periodic(Duration(milliseconds: 500), (Timer timer) {
-//			int randon = 111111 + Random().nextInt(999999 - 111111);
-//			String randonHEX = randon.toString().padLeft(6);
-//			int randonTaskID = 1 + Random().nextInt(5 - 1);
-//			Task task = Task(
-//					id: '${randonTaskID.toString()}' ,
-//					location: randonTaskID.toString(),
-//					urgencyHEXColor: randonHEX,
-//					eventDesc: 'desc',
-//					taskType: TaskType(description: 'type$randonTaskID', taskTypeId: 1),
-//					taskStatus: TaskStatus(description: 'status$randonTaskID', id: 1),
-//					amount: 0,
-//					dirty: false
-//			);
-//
-//			TaskViewBloc().update(task);
-//		});
 	}
 
-	void listenLocal(){
-		void onTaskListReceived(List<Task> event) {
-			event.forEach((Task task) {
-				if(task.dirty){
 
+	/*
+	* this method listens to the local stream for tasks modified by the user and send these tasks to the rabbitmq service
+	* */
+	void listenLocal(){
+
+		Future updateStatus(Task task){
+			return Repository().taskRepository.update(
+					task.id,
+					taskStatusID: task.taskStatusID.toString(),
+					cancellationReason: task.cancellationReason
+			);
+		}
+
+		Future escalate(Task task){
+			return Repository().taskRepository.escalateTask(
+					task.id, task.escalationPath, escalationTaskType: task.escalationTaskType, notes: task.notes
+			);
+		}
+
+		void onTaskListReceived(List<Task> event) {
+			Future.forEach(event, (Task task){
+				if(task.dirty == 1){
+					print('Sending ${task.location} status ${task.taskStatusID} due dirty == 1\n');
+
+					Future futureAction;
+					switch(task.taskStatusID){
+						case 2:
+						case 3:
+						case 12:
+						case 13:
+							futureAction = updateStatus(task);
+							break;
+						case 5:
+							futureAction = escalate(task);
+					}
+
+					futureAction.then((dynamic result){
+						print('Sent! output: $result');
+						task.dirty = 2;
+						TaskViewBloc().update(task);
+					}).catchError((dynamic error){
+						throw error;
+					});
 				}
 			});
 		}

@@ -19,7 +19,6 @@ class TaskView extends StatefulWidget {
 }
 
 class TaskViewState extends State<TaskView> with WidgetsBindingObserver implements TechVizHome {
-  bool _isLoadingTasks = false;
   final String _taskListStatusIcon = "assets/images/ic_processing.png";
   Task _selectedTask;
   int _openTasksCount = 0;
@@ -54,6 +53,9 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
         if (exists != null && exists.isNotEmpty) {
           _selectedTask = exists.first;
         }
+        else{
+          _selectedTask = null;
+        }
       } else {
         _selectedTask = null;
       }
@@ -78,19 +80,18 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
     });
   }
 
-  void updateTaskStatus(Task task, String statusID) {
-    //_loadingBar.show(context);
-    //Repository().taskRepository.update(_selectedTask.id, taskStatusID: statusID, callBack: taskUpdateCallback);
-
-    task.dirty = true;
+  void updateTaskStatus(Task task, int statusID) {
+    task.taskStatusID = statusID;
+    task.dirty = task.dirty == 0 ? 1: task.dirty;
     TaskViewBloc().update(task);
   }
 
   @override
   Widget build(BuildContext context) {
-    Widget buildBody(Task task, int index) {
+
+    VizTaskItem buildTaskItemBody(Task task, int index) {
       bool selected = _selectedTask != null && _selectedTask.id == task.id;
-      return VizTaskItem(task, index + 1, onTaskItemTapCallback, selected, task.urgencyHEXColor);
+      return VizTaskItem(task, index + 1, onTaskItemTapCallback, selected, key: Key(task.id));
     }
 
     StreamBuilder streamBuilderListView = StreamBuilder<List<Task>>(
@@ -100,7 +101,7 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
             return Container();
           } else {
             return ListView.builder(
-                itemBuilder: (BuildContext builderCtx, int index) => buildBody(snapshot.data[index], index), itemCount: snapshot.data.length);
+                itemBuilder: (BuildContext builderCtx, int index) => buildTaskItemBody(snapshot.data[index], index), itemCount: snapshot.data.length);
           }
         });
 
@@ -216,26 +217,26 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
       String mainActionTextSource;
       VoidCallback actionCallBack;
 
-      bool btnEnabled = _selectedTask?.dirty == false;
+      bool btnEnabled = _selectedTask?.dirty == 0;
 
-      if (_selectedTask.taskStatus.id == 1) {
-        mainActionImageSource = "assets/images/ic_acknowledge.png";
-        mainActionTextSource = 'Acknowledge';
-        actionCallBack = () {
-          if (btnEnabled) updateTaskStatus(_selectedTask, "2");
-        };
-      } else if (_selectedTask.taskStatus.id == 2) {
-        mainActionImageSource = "assets/images/ic_cardin.png";
-        mainActionTextSource = 'Card in';
-        actionCallBack = () {
-          if (btnEnabled) updateTaskStatus(_selectedTask, "3");
-        };
-      } else if (_selectedTask.taskStatus.id == 3) {
-        mainActionImageSource = "assets/images/ic_complete.png";
-        mainActionTextSource = 'Complete';
-        actionCallBack = () {
-          if (btnEnabled) updateTaskStatus(_selectedTask, "13");
-        };
+      switch(_selectedTask.taskStatus.id){
+
+        case 1:
+          mainActionImageSource = "assets/images/ic_acknowledge.png";
+          mainActionTextSource = 'Acknowledge';
+          actionCallBack = () => updateTaskStatus(_selectedTask, 2);
+          break;
+        case 2:
+          mainActionImageSource = "assets/images/ic_cardin.png";
+          mainActionTextSource = 'Card in';
+          actionCallBack = () => updateTaskStatus(_selectedTask, 3);
+          break;
+        case 3:
+        case 5:
+          mainActionImageSource = "assets/images/ic_complete.png";
+          mainActionTextSource = 'Complete';
+          actionCallBack = () => updateTaskStatus(_selectedTask, 13);
+          break;
       }
 
       ImageIcon mainActionIcon = ImageIcon(AssetImage(mainActionImageSource), size: 60.0, color: btnEnabled ? Colors.white : Colors.white30);
@@ -245,7 +246,10 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
       Padding requiredAction = Padding(
           padding: EdgeInsets.all(2.0),
           child: GestureDetector(
-            onTap: actionCallBack,
+            onTap: (){
+              if(btnEnabled)
+                actionCallBack();
+            },
             child: Container(
                 decoration: actionBoxDecoration,
                 child: Column(
@@ -403,7 +407,7 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
 
     List<VizTaskActionButton> rightActionWidgets = <VizTaskActionButton>[];
     if (_selectedTask != null) {
-      bool enableButtons = _selectedTask.dirty == false;
+      bool enableButtons = _selectedTask.dirty == 0;
       if (_selectedTask.taskStatus.id == 2 || _selectedTask.taskStatus.id == 3) {
         rightActionWidgets.add(VizTaskActionButton('Cancel', const [Color(0xFF433177), Color(0xFFF2003C)], enabled: enableButtons, onTapCallback: () {
           _showCancellationDialog(_selectedTask.id);
@@ -447,68 +451,24 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
         ));
   }
 
-  void taskUpdateCallback(String taskID) {
-    //_loadingBar.dismiss();
-    //_taskViewPresenter.loadTaskList(Session().user.userID);
-  }
 
-  void bindTaskListener() async {
-    await unTaskBindListener();
 
-//    _streamController = Repository().taskRepository.listenQueue((Task task) {
-//      if (task == null) {
-//        return;
-//      }
-//
-//      Session session = Session();
-//      if ([1, 2, 3].toList().contains(task.taskStatus.id) && task.userID == session.user.userID) {
-//        //update the view
-//        if (_selectedTask != null && _selectedTask.id == task.id) {
-//          setState(() {
-//            _selectedTask = task;
-//          });
-//        }
-//      } else {
-//        //remove from the view
-//        if (_selectedTask != null && _selectedTask.id == task.id) {
-//          setState(() {
-//            _selectedTask = null;
-//          });
-//        }
-//      }
-//      //_taskViewPresenter.loadTaskList(session.user.userID);
-//    }, (dynamic error) {
-//      print(error);
-//    });
-  }
 
-  Future unTaskBindListener() async {
-    //if (_streamController == null || !_streamController.isClosed) {
-    //   return;
-    //}
-    //await _streamController.close();
-  }
 
-  void reloadTasks() {
-    if (!mounted) return;
 
-    setState(() {
-      _isLoadingTasks = true;
-      _selectedTask = null;
-    });
 
-//    Repository().taskRepository.fetch().then((dynamic b) {
-//      Session session = Session();
-//      _taskViewPresenter.loadTaskList(session.user.userID);
-//    });
-  }
 
+
+  /* Cancellation */
+  final GlobalKey<FormState> _cancellationFormKey = GlobalKey<FormState>();
   void _showCancellationDialog(final String taskID) {
     final TextEditingController _cancellationController = TextEditingController();
 
     bool btnEnbled = true;
     double _width = MediaQuery.of(context).size.width / 100 * 80;
     String location = _selectedTask.location.toString();
+
+
 
     Container container = Container(
       width: _width,
@@ -564,27 +524,13 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
                         onPressed: () {
                           if (!btnEnbled) return;
 
-                          if (!_cancellationFormKey.currentState.validate()) {
+                          if (!_cancellationFormKey.currentState.validate() || _selectedTask == null) {
                             return;
                           }
 
                           btnEnbled = false;
 
-                          //_loadingBar.show(context);
-//                          Repository().taskRepository.update(taskID, taskStatusID: '12', cancellationReason: _cancellationController.text,
-//                              callBack: (String result) {
-//                            _loadingBar.dismiss();
-//                            Navigator.of(context).pop(true);
-//                          }).catchError((dynamic error) {
-//                            _loadingBar.dismiss();
-//
-//                            VizDialog.Alert(context, "Error", error.toString()).then((bool dialogResult) {
-//                              if (error.runtimeType == TaskNotAvailableException) {
-//                                Navigator.of(context).pop(false);
-//                              }
-//                            });
-//                            btnEnbled = true;
-//                          });
+                          _onCancelTask(context, _selectedTask, _cancellationController.text);
                         },
                         child: Text(
                           "Cancel this task",
@@ -607,42 +553,40 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
             child: container,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10.0))),
           );
-        }).then((bool canceled) {
-      if (canceled) reloadTasks();
-    });
+        });
   }
 
+  void _onCancelTask(BuildContext context, Task task, String cancellationReason){
+    task.cancellationReason = cancellationReason;
+    task.taskStatusID = 12;
+    task.dirty = 1;
+    TaskViewBloc().update(task);
+    Navigator.of(context).pop(true);
+  }
+
+  /* EscalationPath */
   void _goToEscalationPathView() {
     if (_selectedTask == null) return;
 
-    String id = _selectedTask.id;
-    String location = _selectedTask.location;
-
-    EscalationForm escalationForm = EscalationForm(id, location, (bool result) {
-      if (result) reloadTasks();
-    });
-
+    EscalationForm escalationForm = EscalationForm(_selectedTask);
     MaterialPageRoute<bool> mpr = MaterialPageRoute<bool>(builder: (BuildContext context) => escalationForm);
     Navigator.of(context).push(mpr);
   }
 
-  final GlobalKey<FormState> _cancellationFormKey = GlobalKey<FormState>();
-
   @override
   void onUserStatusChanged(UserStatus us) {
-    reloadTasks();
+    // TODO(rmathias): FORCE RELOAD TASKS?
   }
 
   @override
   void onUserSectionsChanged(List<UserSection> sections) {
-    reloadTasks();
+    // TODO(rmathias): FORCE RELOAD TASKS?
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      //bindTaskListener();
-      //reloadTasks();
+      // TODO(rmathias): FORCE RELOAD TASKS?
     }
   }
 }

@@ -5,6 +5,8 @@ import 'package:synchronized/synchronized.dart';
 import 'package:techviz/model/task.dart';
 import 'package:rxdart/subjects.dart';
 
+import '../session.dart';
+
 class TaskViewBloc {
   static final TaskViewBloc _instance = TaskViewBloc._();
   factory TaskViewBloc() => _instance;
@@ -18,11 +20,48 @@ class TaskViewBloc {
 
   void update(Task task) async{
     await _lock.synchronized(() async {
-      int idx = _taskList.indexWhere((Task _task) => task.id == _task.id);
-      if(idx<0) _taskList.add(task);
-      else _taskList[idx] = task;
-      _openTasksController.add(_taskList);
+      if(task.dirty == 0){
+        _handleRemoteTask(task);
+      }
+      else {
+        _handleLocalTask(task);
+      }
     });
+  }
+
+  void _handleLocalTask(Task task){
+    print('STREAM: updating ${task.location} status ${task.taskStatus.id} dirty ${task.dirty}');
+    int idx = _taskList.indexWhere((Task _task) => task.id == _task.id);
+    if(idx>=0){
+      _taskList[idx] = task;
+      _openTasksController.add(_taskList);
+    }
+  }
+
+  //DATA BEING PUSHED BY SERVICE => FRESH DATA FROM THE SERVER
+  void _handleRemoteTask(Task task){
+    String userID = Session().user.userID;
+    List<int> openTasksIDs = [1,2,3];
+    int idx = _taskList.indexWhere((Task _task) => task.id == _task.id);
+
+    if(openTasksIDs.contains(task.taskStatus.id) && userID == task.userID){
+      if(idx<0){
+        print('STREAM: adding ${task.location} status ${task.taskStatus.id} userid ${task.userID}');
+        _taskList.add(task);
+      }
+      else{
+        print('STREAM: updating ${task.location} status ${task.taskStatus.id} userid ${task.userID}');
+        _taskList[idx] = task;
+      }
+    }
+    else if(idx>=0){
+      print('STREAM: removing ${task.location} status ${task.taskStatus.id} userid ${task.userID}');
+      _taskList.removeAt(idx);
+    }
+    else{
+      print('STREAM: ?????? ${task.location} status ${task.taskStatus.id} userid ${task.userID}');
+    }
+    _openTasksController.add(_taskList);
   }
 
   void dispose(){

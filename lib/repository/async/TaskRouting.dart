@@ -26,7 +26,7 @@ class TaskRouting implements ITaskRouting{
     print(json);
     return Task(
       id: json['_ID'],
-      dirty: false,
+      dirty: 0,
       version: json['_version'] as int,
       userID: json['userID'],
       location:  json['location'],

@@ -107,7 +107,9 @@ class TaskRepository{
     taskRouting.PublishMessage(message).then((dynamic d) async{
       await localRepository.db.rawUpdate('UPDATE TASK SET _DIRTY = 1 WHERE _ID = ?', [taskID].toList());
 
-      callBack(taskID);
+      if(callBack!=null)
+        callBack(taskID);
+
       _completer.complete(d);
     });
 
