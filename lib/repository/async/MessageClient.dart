@@ -24,12 +24,12 @@ class MessageClient implements IMessageClient{
   static final MessageClient _instance = MessageClient._internal();
   Client _rabbitmqClient;
   String _exchangeName;
-  final Duration _timeoutDuration = Duration(seconds: 10);
   Consumer _consumer;
   Exchange _exchange;
-
-  Map<String, List<StreamController<AmqpMessage>>> _mapStreamControllers;
   String _deviceID;
+
+  final Duration _timeoutDuration = Duration(seconds: 10);
+  final Map<String, List<StreamController<AmqpMessage>>> _mapStreamControllers = <String, List<StreamController<AmqpMessage>>>{};
 
   factory MessageClient() {
     return _instance;
@@ -56,7 +56,6 @@ class MessageClient implements IMessageClient{
 
     Completer<void> _completer = Completer<void>();
     _rabbitmqClient = null;
-    _mapStreamControllers = <String, List<StreamController<AmqpMessage>>>{};
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String host = prefs.getString(Config.SERVERURL);
@@ -81,12 +80,17 @@ class MessageClient implements IMessageClient{
       }).then((Consumer consumer){
         _consumer = consumer;
         _consumer.listen((AmqpMessage message){
-          //print('RoutingKey: ${message.routingKey}');
+          print('Received message for RoutingKey: ${message.routingKey}');
           //print('Payload: ${message.payloadAsString}');
           var mapEntry = _mapStreamControllers[message.routingKey];
           if(mapEntry!=null){
             mapEntry.forEach((StreamController ss){
-              ss.add(message);
+              if(ss.isClosed==false){
+                ss.add(message);
+              }
+              else{
+                print('StreamController closed, message ignored');
+              }
             });
           }
         });
@@ -178,7 +182,7 @@ class MessageClient implements IMessageClient{
 
   @override
   Future PublishMessage(dynamic object, String routingKeyPattern, {bool wait = false, Function parser}) async {
-    Completer<void> _completer = Completer<void>();
+    Completer<dynamic> _completer = Completer<dynamic>();
     _completer.future.timeout(_timeoutDuration, onTimeout: (){
       _completer.completeError(TimeoutException('Max connect timeout reached after ${_timeoutDuration.inSeconds} seconds.'));
     });
@@ -228,7 +232,7 @@ class MessageClient implements IMessageClient{
 
     StreamController<AmqpMessage> sc = StreamController<AmqpMessage>(onCancel: onCancel);
     sc.stream.listen((AmqpMessage message){
-      onData(parser!=null ? parser(message.payloadAsString): message.payloadAsString);
+      onData(parser!=null ? parser(message.payloadAsJson): message.payloadAsJson);
     });
     _addRoutingKeyListener(routingKey, sc);
     return sc;

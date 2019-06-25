@@ -1,29 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:techviz/bloc/taskViewBloc.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizDialog.dart';
 import 'package:techviz/model/escalationPath.dart';
+import 'package:techviz/model/task.dart';
 import 'package:techviz/model/taskType.dart';
 import 'package:techviz/presenter/escalationPathPresenter.dart';
 import 'package:techviz/repository/taskRepository.dart';
 
-typedef OnEscalationResult = void Function(bool result);
-
 class EscalationForm extends StatefulWidget {
-  final String _taskID;
-  final String _taskLocation;
-  final OnEscalationResult onEscalationResult;
+  final Task task;
 
-  const EscalationForm(this._taskID, this._taskLocation, this.onEscalationResult);
+  const EscalationForm(this.task);
 
   @override
-  State<StatefulWidget> createState() => EscalationFormState();
+  State<StatefulWidget> createState() => EscalationFormState(task);
 }
 
 class EscalationFormState extends State<EscalationForm>
     implements IEscalationPathPresenter {
+
+  Task _task;
   List<EscalationPath> _escalationPathList;
   List<TaskType> _taskTypeList;
 
@@ -36,7 +36,7 @@ class EscalationFormState extends State<EscalationForm>
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<FormFieldState> _formFieldTaskTypeKey = GlobalKey<FormFieldState>();
 
-
+  EscalationFormState(this._task);
 
   @override
   void initState() {
@@ -64,12 +64,6 @@ class EscalationFormState extends State<EscalationForm>
     setState(() {
       _taskTypeList = taskTypeList;
     });
-  }
-
-  @override
-  void onEscalated() {
-    widget.onEscalationResult(true);
-    Navigator.of(context).pop();
   }
 
   @override
@@ -112,16 +106,22 @@ class EscalationFormState extends State<EscalationForm>
             setState(() {
               _btnDisabled = true;
             });
-            _presenter.escalateTask(widget._taskID, _escalationPathSelected,
-                taskType: taskTypeRequired ? _taskTypeSelected : null,
-                notes: _notesController.text);
+
+            _task.dirty = 1;
+            _task.taskStatusID = 5;
+            _task.escalationPath = _escalationPathSelected;
+            _task.escalationTaskType = taskTypeRequired ? _taskTypeSelected : null;
+            _task.notes = _notesController.text;
+            TaskViewBloc().update(_task);
+
+            Navigator.of(context).pop(true);
           }
         });
     ActionBar ab = ActionBar(
-        title: 'Escalate Task ${widget._taskLocation}',
+        title: 'Escalate Task ${_task.location}',
         tailWidget: okBtn,
         onCustomBackButtonActionTapped: () {
-          widget.onEscalationResult(false);
+          Navigator.of(context).pop(false);
         });
     return Scaffold(
       backgroundColor: Colors.black,

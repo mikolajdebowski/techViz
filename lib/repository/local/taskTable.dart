@@ -45,29 +45,28 @@ class TaskTable extends LocalTable implements ITaskTable{
 
   @override
   Future<int> insertOrUpdate(dynamic toInsert) async {
-    var toInsertList = toInsert as List<Map<String, dynamic>>;
+    List<Map<dynamic, dynamic>> toInsertList = toInsert as List<Map<dynamic, dynamic>>;
 
     if(toInsertList.isEmpty)
       return Future.value(0);
-
 
     Completer<int> _completer = Completer<int>();
 
     int insertedRows = 0;
     int updatedRows = 0;
 
-    Future.forEach<Map<String, dynamic>>(toInsertList, (Map<String, dynamic> entry) async{
+    Future.forEach<Map<dynamic, dynamic>>(toInsertList, (Map<dynamic, dynamic> entry) async{
       localRepo.db.transaction((txn) async {
-        var batch = txn.batch();
+        Batch batch = txn.batch();
 
         List<Map<String,dynamic>> exists = await txn.rawQuery("SELECT _ID FROM TASK WHERE _ID = '${entry['_ID'].toString()}';");
         if(exists!=null && exists.isNotEmpty){
-          print('task ${entry['LOCATION'].toString()} EXISTS! UPDATING WITH STATUSID ${entry['TASKSTATUSID'].toString()}');
+          //print('task ${entry['LOCATION'].toString()} EXISTS! UPDATING WITH STATUSID ${entry['TASKSTATUSID'].toString()}');
           String sqlUpdate = _buildUpdateSQL(entry);
           updatedRows = await txn.rawUpdate(sqlUpdate);
         }
         else{
-          print('task ${entry['LOCATION'].toString()} DOES NOT exist! INSERTING WITH STATUSID ${entry['TASKSTATUSID'].toString()}');
+          //print('task ${entry['LOCATION'].toString()} DOES NOT exist! INSERTING WITH STATUSID ${entry['TASKSTATUSID'].toString()}');
           insertedRows += await txn.insert('Task', entry, conflictAlgorithm: ConflictAlgorithm.replace);
         }
 
@@ -150,15 +149,20 @@ class TaskTable extends LocalTable implements ITaskTable{
         ",ts.TaskStatusDescription "
         ",tt.TaskTypeDescription "
         ",tt.LookupName as TaskTypeLookupName "
-        "FROM TASK t INNER JOIN TaskStatus ts on t.TASKSTATUSID == ts.TaskStatusID INNER JOIN TaskType tt on t.TASKTYPEID == tt.TaskTypeID WHERE t._ID == '$taskID';";
+        ",tu.ColorHex "
+        "FROM TASK t "
+        "INNER JOIN TaskStatus ts on t.TASKSTATUSID == ts.TaskStatusID "
+        "INNER JOIN TaskType tt on t.TASKTYPEID == tt.TaskTypeID "
+        "INNER JOIN TaskUrgency tu on t.TaskUrgencyID == tu.ID "
+        "WHERE t._ID == '$taskID';";
 
     List<Map<String, dynamic>> queryResult = await LocalRepository().db.rawQuery(sql);
     return Future.value(queryResult.isNotEmpty? _fromMap(queryResult.first): null);
   }
 
   Task _fromMap(Map<String, dynamic> task){
-    var t = Task(
-        dirty: task['_DIRTY'] == 1,
+    Task t = Task(
+        dirty: task['_DIRTY'] as int,
         version: task['_VERSION'] as int,
         userID: task['USERID'] as String,
         id: task['_ID'] as String,

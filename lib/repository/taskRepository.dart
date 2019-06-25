@@ -19,7 +19,9 @@ class TaskRepository{
 
   ITaskRemoteRepository remoteRepository;
   ILocalRepository localRepository;
-  TaskRepository(this.remoteRepository, this.localRepository);
+  TaskRouting taskRouting;
+  TaskRepository(this.remoteRepository, this.localRepository, this.taskRouting);
+
 
   Future<List<Task>> getOpenTasks(String userID) async {
     return TaskTable(localRepository).getOpenTasks(userID);
@@ -47,8 +49,12 @@ class TaskRepository{
     return remoteRepository.openTasksSummary();
   }
 
+  Future insertOrUpdate(Map map){
+    return TaskTable(localRepository).insertOrUpdate([map]);
+  }
+
   StreamController listenQueue(Function onData, Function onError)  {
-    return TaskRouting().ListenQueue((dynamic receivedTask) async{
+    return taskRouting.ListenQueue((dynamic receivedTask) async{
       dynamic task = jsonDecode(receivedTask.toString());
 
       Map<String,dynamic> taskMapped = <String,dynamic>{};
@@ -83,10 +89,6 @@ class TaskRepository{
   }
 
   Future update(String taskID, {String taskStatusID, String cancellationReason, TaskUpdateCallBack callBack} ) async {
-    LocalRepository localRepo = LocalRepository();
-    if(!localRepo.db.isOpen)
-      await localRepo.open();
-
     List<dynamic> taskStatusCheck = await LocalRepository().db.rawQuery("SELECT TASKSTATUSID FROM TASK WHERE _ID = '$taskID';");
     if(taskStatusCheck.isEmpty || [1,2,3].contains(taskStatusCheck.first['TASKSTATUSID']) == false){
       throw TaskNotAvailableException();
@@ -102,15 +104,12 @@ class TaskRepository{
       message = {'taskID': taskID, 'taskStatusID': taskStatusID};
     }
 
-    TaskRouting().PublishMessage(message).then((dynamic d) async{
+    taskRouting.PublishMessage(message).then((dynamic d) async{
+      await localRepository.db.rawUpdate('UPDATE TASK SET _DIRTY = 1 WHERE _ID = ?', [taskID].toList());
 
-      LocalRepository localRepo = LocalRepository();
-      if(!localRepo.db.isOpen)
-        await localRepo.open();
+      if(callBack!=null)
+        callBack(taskID);
 
-      await  LocalRepository().db.rawUpdate('UPDATE TASK SET _DIRTY = 1 WHERE _ID = ?', [taskID].toList());
-
-      callBack(taskID);
       _completer.complete(d);
     });
 
@@ -119,10 +118,6 @@ class TaskRepository{
 
   Future escalateTask(String taskID, EscalationPath escalationPath, {TaskType escalationTaskType, String notes}) async {
     Completer<dynamic> _completer = Completer<dynamic>();
-
-    LocalRepository localRepo = LocalRepository();
-    if(!localRepo.db.isOpen)
-      await localRepo.open();
 
     List<dynamic> taskStatusCheck = await LocalRepository().db.rawQuery("SELECT TASKSTATUSID FROM TASK WHERE _ID = '$taskID';");
     if(taskStatusCheck.isEmpty || taskStatusCheck.first['TASKSTATUSID'] != 3){
@@ -137,15 +132,8 @@ class TaskRepository{
       message['tasknote'] = base64.encode(utf8.encode(notes));
     }
 
-    TaskRouting().PublishMessage(message).then((dynamic d) async{
-
-      //ONLY UPDATE LOCALLY AFTER CALLBACK RETURNS
-      LocalRepository localRepo = LocalRepository();
-      if(!localRepo.db.isOpen)
-        await localRepo.open();
-
-      await LocalRepository().db.rawUpdate('UPDATE TASK SET _DIRTY = 1 WHERE _ID = ?', [taskID].toList());
-
+    taskRouting.PublishMessage(message).then((dynamic d) async{
+      await localRepository.db.rawUpdate('UPDATE TASK SET _DIRTY = 1 WHERE _ID = ?', [taskID].toList());
       _completer.complete(d);
     }).catchError((dynamic error){
       _completer.completeError(error);
@@ -158,14 +146,8 @@ class TaskRepository{
     Completer<dynamic> _completer = Completer<dynamic>();
     dynamic message = {'taskID': taskID, 'userID': userID};
 
-    TaskRouting().PublishMessage(message).then((dynamic d) async{
-
-      LocalRepository localRepo = LocalRepository();
-      if(!localRepo.db.isOpen)
-        await localRepo.open();
-
-      await  LocalRepository().db.rawUpdate('UPDATE TASK SET _DIRTY = 1 WHERE _ID = ?', [taskID].toList());
-
+    taskRouting.PublishMessage(message).then((dynamic d) async{
+      await localRepository.db.rawUpdate('UPDATE TASK SET _DIRTY = 1 WHERE _ID = ?', [taskID].toList());
       _completer.complete(d);
     }).catchError((dynamic error){
       _completer.completeError(error);

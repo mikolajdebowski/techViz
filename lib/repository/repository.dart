@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:techviz/bloc/taskViewBloc.dart';
 import 'package:techviz/repository/async/UserRouting.dart';
 import 'package:techviz/repository/slotFloorRepository.dart';
 import 'package:techviz/repository/async/SlotMachineRouting.dart';
@@ -39,12 +40,16 @@ import 'package:techviz/repository/userSectionRepository.dart';
 import 'package:techviz/repository/userSkillsRepository.dart';
 import 'package:techviz/repository/userStatusRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
+import 'package:kiwi/kiwi.dart' as kiwi;
 
 import 'async/MessageClient.dart';
+import 'async/TaskRouting.dart';
 import 'local/taskStatusTable.dart';
 import 'local/taskTypeTable.dart';
 import 'local/userSectionTable.dart';
 import 'local/userTable.dart';
+import 'service/taskService.dart';
+
 
 enum Flavor {
   MOCK,
@@ -57,7 +62,6 @@ typedef fncOnMessage = void Function(String);
 class Repository {
   UserRepository _userRepository;
   UserSectionRepository _userSectionRepository;
-  TaskRepository _taskRepository;
   TaskTypeRepository _taskTypeRepository;
   TaskStatusRepository _taskStatusRepository;
   SlotFloorRepository _slotFloorRepository;
@@ -81,6 +85,8 @@ class Repository {
       var config = ProcessorRepositoryConfig();
       await config.Setup(client);
     }
+
+		_configureInjector();
   }
 
   void setLocalDatabase(ILocalRepository localRepository){
@@ -128,6 +134,29 @@ class Repository {
     await userSectionRepository.fetch();
   }
 
+  void _configureInjector(){
+    kiwi.Container container = kiwi.Container();
+    container.clear();
+    container.registerInstance(TaskRepository(ProcessorTaskRepository(ProcessorRepositoryConfig()), _localRepository, TaskRouting()));
+  }
+
+  void startServices(){
+    TaskService().listenRemote();
+    TaskService().listenLocal();
+  }
+
+  void stopServices(){
+    TaskService().shutdown();
+  }
+
+  void disposeBlocs(){
+    TaskViewBloc().dispose();
+  }
+
+  //TASKS
+  TaskRepository get taskRepository => kiwi.Container().resolve<TaskRepository>();
+
+
   //USERS
   UserRepository get userRepository {
     IUserTable userTableImpl = UserTable(_localRepository);
@@ -153,18 +182,6 @@ class Repository {
   set userSectionRepository(UserSectionRepository userSectionRepository){
     _userSectionRepository = userSectionRepository;
   }
-
-  //TASKS
-  TaskRepository get taskRepository {
-    if(_taskRepository != null){
-      return _taskRepository;
-    }
-    return _taskRepository = TaskRepository(ProcessorTaskRepository(ProcessorRepositoryConfig()), _localRepository);
-  }
-  set taskRepository(TaskRepository taskRepository){
-    _taskRepository = taskRepository;
-  }
-
 
   TaskTypeRepository get taskTypeRepository {
     if(_taskTypeRepository!=null){

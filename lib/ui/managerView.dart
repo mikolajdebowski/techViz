@@ -10,6 +10,7 @@ import 'package:techviz/components/vizListView.dart';
 import 'package:techviz/components/vizListViewRow.dart';
 import 'package:techviz/components/vizSelector.dart';
 import 'package:techviz/components/vizSummary.dart';
+import 'package:techviz/model/userSection.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/managerViewPresenter.dart';
 import 'package:techviz/repository/repository.dart';
@@ -20,14 +21,14 @@ import 'package:techviz/viewmodel/managerViewUserStatus.dart';
 
 import 'machineReservation.dart';
 
-class HomeManager extends StatefulWidget {
-  HomeManager(Key key) : super(key: key);
+class ManagerView extends StatefulWidget {
+  ManagerView(Key key) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => HomeManagerState();
+  State<StatefulWidget> createState() => ManagerViewState();
 }
 
-class HomeManagerState extends State<HomeManager> implements TechVizHome, IManagerViewPresenter {
+class ManagerViewState extends State<ManagerView> implements TechVizHome, IManagerViewPresenter {
   ManagerViewPresenter _presenter;
 
   List<DataEntryGroup> _openTasksList;
@@ -170,6 +171,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
     //action of the left of the view
     return SwipeAction('Re-assign to myself', reassignTaskCallback);
   }
+
   void onOpenTasksMetricTap(){
     setState(() {
       _openTasksLoading = true;
@@ -362,7 +364,7 @@ class HomeManagerState extends State<HomeManager> implements TechVizHome, IManag
 
   //MASTERVIEW EVENTS
   @override
-  void onUserSectionsChanged(Object obj) {
+  void onUserSectionsChanged(List<UserSection> sections) {
     _presenter.loadTeamAvailability();
   }
 

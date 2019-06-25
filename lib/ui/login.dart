@@ -155,6 +155,8 @@ class LoginState extends State<Login> {
       await loadInitialData();
       await setupUser(usernameAddressController.text);
 
+      Repository().startServices();
+
       Future.delayed( Duration(milliseconds:  200), () {
         Navigator.pushReplacement(context, MaterialPageRoute<RoleSelector>(builder: (BuildContext context) => RoleSelector()));
       });

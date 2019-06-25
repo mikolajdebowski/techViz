@@ -2,7 +2,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:techviz/model/user.dart';
 import 'package:techviz/repository/async/UserRouting.dart';
-import 'iMessageClientMock.dart';
+import 'mock/messageClientMock.dart';
 
 void main() {
 
