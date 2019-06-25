@@ -6,8 +6,10 @@ import 'package:techviz/model/task.dart';
 import 'package:rxdart/subjects.dart';
 
 import '../session.dart';
+import 'IViewBloc.dart';
 
-class TaskViewBloc {
+class TaskViewBloc implements IViewBloc{
+
   static final TaskViewBloc _instance = TaskViewBloc._();
   factory TaskViewBloc() => _instance;
   TaskViewBloc._();
@@ -17,6 +19,11 @@ class TaskViewBloc {
   final _lock = Lock();
 
   Stream<List<Task>> get openTasks => _openTasksController.stream;
+
+  @override
+  void dispose(){
+    _taskList.clear();
+  }
 
   void update(Task task) async{
     await _lock.synchronized(() async {
@@ -62,9 +69,5 @@ class TaskViewBloc {
       print('STREAM: ?????? ${task.location} status ${task.taskStatus.id} userid ${task.userID}');
     }
     _openTasksController.add(_taskList);
-  }
-
-  void dispose(){
-    _openTasksController?.close();
   }
 }

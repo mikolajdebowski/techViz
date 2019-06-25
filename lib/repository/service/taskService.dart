@@ -12,6 +12,7 @@ class TaskService{
 	TaskService._();
 
 	StreamSubscription<List<Task>> _streamSubscriptionLocal;
+	StreamController<dynamic> _streamControllerRemote;
 	TaskRouting taskRouting = TaskRouting();
 
 
@@ -19,8 +20,7 @@ class TaskService{
 	* this method listens to the rabbitmq service for tasks and push them into the stream
 	* */
 	void listenRemote(){
-		taskRouting.ListenQueue((dynamic receivedTask) async {
-			print(receivedTask);
+		_streamControllerRemote = taskRouting.ListenQueue((dynamic receivedTask) async {
 			TaskRepository repo = Repository().taskRepository;
 
 			dynamic mapped = {
@@ -109,5 +109,9 @@ class TaskService{
 
   void shutdown(){
 		_streamSubscriptionLocal?.cancel();
+		_streamControllerRemote.onCancel = (){
+			print('_streamControllerRemote cancelled');
+		};
+		_streamControllerRemote.close();
 	}
 }

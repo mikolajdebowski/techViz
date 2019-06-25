@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:techviz/bloc/taskViewBloc.dart';
 import 'package:techviz/repository/async/UserRouting.dart';
 import 'package:techviz/repository/slotFloorRepository.dart';
 import 'package:techviz/repository/async/SlotMachineRouting.dart';
@@ -142,6 +143,14 @@ class Repository {
   void startServices(){
     TaskService().listenRemote();
     TaskService().listenLocal();
+  }
+
+  void stopServices(){
+    TaskService().shutdown();
+  }
+
+  void disposeBlocs(){
+    TaskViewBloc().dispose();
   }
 
   //TASKS

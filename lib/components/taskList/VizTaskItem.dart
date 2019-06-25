@@ -29,8 +29,6 @@ class VizTaskItemState extends State<VizTaskItem>{
 
   @override
   Widget build(BuildContext context) {
-    print('${widget.task.location}        key: ${widget.key}            hashcode ${hashCode.toString()}                     userHasTapped $userHasTapped');
-
     Color urgencyColorStart = widget.task.urgencyHEXColor != null ? Color(int.parse("0xFF${widget.task.urgencyHEXColor}")) : Color(0xFF45505D);
     Color urgencyColorEnd = widget.task.urgencyHEXColor != null ? Color(int.parse("0xAA${widget.task.urgencyHEXColor}")) : Color(0xFF45505D);
 
