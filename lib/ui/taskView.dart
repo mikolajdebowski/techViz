@@ -32,15 +32,6 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
   @override
   void initState() {
     _streamSubscription = TaskViewBloc().openTasks.listen(onTaskListReceived, onError: onTaskListenError);
-
-    Future.delayed(Duration(seconds: 5), () {
-      _streamSubscription?.pause();
-    });
-
-    Future.delayed(Duration(seconds: 10), () {
-      _streamSubscription?.resume();
-    });
-
     super.initState();
   }
 
