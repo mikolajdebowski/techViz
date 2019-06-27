@@ -23,8 +23,6 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
   RoleListPresenter roleListPresenter;
   String selectedRoleID;
 
-  List<int> availableViews = [10, 20, 25]; //this is a temporary thing because the app doesnt support all kinds of roles
-
   @override
   void initState(){
     super.initState();
@@ -53,11 +51,11 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
   @override
   Widget build(BuildContext context) {
 
-    var defaultBgDeco = BoxDecoration(gradient: LinearGradient(colors: const [Color(0xFF636f7e), Color(0xFF9aa8b0)], begin: Alignment.topCenter, end: Alignment.bottomCenter));
+    BoxDecoration defaultBgDeco = BoxDecoration(gradient: LinearGradient(colors: const [Color(0xFF636f7e), Color(0xFF9aa8b0)], begin: Alignment.topCenter, end: Alignment.bottomCenter));
 
-    var okBtn = VizButton(title: 'OK', highlighted: true, onTap: () => validate(context), enabled: selectedRoleID != null);
+    VizButton okBtn = VizButton(title: 'OK', highlighted: true, onTap: () => validate(context), enabled: selectedRoleID != null);
 
-    var body = GridView.count(
+    GridView body = GridView.count(
       shrinkWrap: true,
       padding: EdgeInsets.all(4.0),
       childAspectRatio: 2.0,
@@ -66,18 +64,13 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
       children: roleList.map((Role role) {
         bool selected = selectedRoleID!= null && selectedRoleID ==  role.id.toString();
 
-        bool enabled = false;
-        var contains = availableViews.contains(role.id);
-        if(contains!=null && contains == true){
-          enabled = true;
-        }
 
         return  VizOptionButton(
             role.description,
             onTap: onOptionSelected,
             tag: role.id,
             selected: selected,
-        enabled: enabled);
+        );
      }).toList());
 
     var container = Container(
