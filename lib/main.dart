@@ -51,7 +51,7 @@ class TechVizAppState extends State<TechVizApp> with WidgetsBindingObserver {
     setState(() {
 
       if(_lastLifecycleState == AppLifecycleState.inactive && state == AppLifecycleState.resumed){
-        MessageClient().Init();
+        MessageClient().Connect();
       }
       _lastLifecycleState = state;
       print(_lastLifecycleState);

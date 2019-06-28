@@ -9,7 +9,7 @@ class MessageClientMock implements IMessageClient{
 	}
 
 	@override
-	Future Init() {
+	Future Connect() {
 		throw UnimplementedError();
 	}
 

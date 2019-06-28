@@ -21,6 +21,9 @@ void main() {
 
 		await tester.runAsync(() async {
 			await tester.pumpWidget(MaterialApp(home: TaskView(GlobalKey())));
+
+
+
 		});
 	});
 }

@@ -8,7 +8,7 @@ import 'package:flutter/services.dart' show rootBundle;
 
 
 abstract class IMessageClient{
-  Future Init();
+  Future Connect();
   void ResetChannel();
   Future _bindQueue(String routingKey);
   void _addRoutingKeyListener(String routingKey, StreamController<AmqpMessage> subscription);
@@ -38,8 +38,8 @@ class MessageClient implements IMessageClient{
   MessageClient._internal();
 
   @override
-  Future Init() async {
-    print('MessageClient: Init');
+  Future Connect() async {
+    print('MessageClient: Connect');
     if(_exchangeName==null){
       //CONFIGURATION
       String loadedConfig = await rootBundle.loadString('assets/json/config.json');
@@ -123,7 +123,7 @@ class MessageClient implements IMessageClient{
     }
     catch(e){
       if(e.runtimeType == StateError){
-        await Init();
+        await Connect();
         return await _bindQueue(routingKey);
       }
       else

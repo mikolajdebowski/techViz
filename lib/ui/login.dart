@@ -103,7 +103,7 @@ class LoginState extends State<Login> {
       _loadingMessage = 'Updating user and device info...';
     });
 
-    await MessageClient().Init();
+    await MessageClient().Connect();
 
     UserRepository userRepository = Repository().userRepository;
     Future userUpdateFuture = userRepository.update(userID, statusID: "10").then<int>((int result) async { //FORCE OFF-SHIFT LOCALLY
