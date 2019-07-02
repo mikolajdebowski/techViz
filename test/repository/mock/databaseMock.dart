@@ -70,7 +70,8 @@ class DatabaseMock implements Database{
     if(values==null){
       return Future<List<Map<String,dynamic>>>.value([]);
     }
-    List<Map<String,dynamic>> output = values.where((Map<String,dynamic> map) => map['UserID'] == arguments[0].toString()).toList();
+
+    List<Map<String,dynamic>> output = values.toList();
     return Future<List<Map<String,dynamic>>>.value(output);
   }
 

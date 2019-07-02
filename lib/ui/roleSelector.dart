@@ -11,26 +11,30 @@ import 'package:techviz/presenter/roleListPresenter.dart';
 import 'package:techviz/session.dart';
 
 class RoleSelector extends StatefulWidget {
-  RoleSelector({Key key}) : super(key: key);
+  final IRoleListPresenter roleListPresenter;
+
+  RoleSelector({this.roleListPresenter, Key key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => RoleSelectorState();
+  State<StatefulWidget> createState() => RoleSelectorState(roleListPresenter ?? RoleListPresenter.build());
 }
 
-class RoleSelectorState extends State<RoleSelector> implements IRoleListPresenter<Role> {
+class RoleSelectorState extends State<RoleSelector> implements IRoleListView<Role> {
   List<Role> roleList = <Role>[];
 
-  RoleListPresenter roleListPresenter;
+  IRoleListPresenter roleListPresenter;
   String selectedRoleID;
 
+  RoleSelectorState(this.roleListPresenter);
+
   @override
-  void initState(){
+  void initState() {
     super.initState();
 
     Session session = Session();
-    roleListPresenter = RoleListPresenter(this);
-    roleListPresenter.loadUserRoles(session.user.userID);
 
+    roleListPresenter.view(this);
+    roleListPresenter.loadUserRoles(session.user.userID);
   }
 
   void validate(BuildContext context) async {
@@ -42,7 +46,7 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
 
     await userRepository.update(session.user.userID, roleID: selectedRoleID);
 
-    session.role = (await RoleRepository().getAll(ids: [selectedRoleID])).first;
+    session.role = (await Repository().roleRepository.getAll(ids: [selectedRoleID])).first;
     session.user.userRoleID =  session.role.id;
 
     Navigator.pushReplacement(context, MaterialPageRoute<Home>(builder: (BuildContext context) => Home()));
@@ -55,25 +59,32 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
 
     VizButton okBtn = VizButton(title: 'OK', highlighted: true, onTap: () => validate(context), enabled: selectedRoleID != null);
 
-    GridView body = GridView.count(
-      shrinkWrap: true,
-      padding: EdgeInsets.all(4.0),
-      childAspectRatio: 2.0,
-      addAutomaticKeepAlives: false,
-      crossAxisCount: 3,
-      children: roleList.map((Role role) {
-        bool selected = selectedRoleID!= null && selectedRoleID ==  role.id.toString();
+    Widget body;
+
+    if(roleList.isNotEmpty){
+      body = GridView.count(
+          shrinkWrap: true,
+          padding: EdgeInsets.all(4.0),
+          childAspectRatio: 2.0,
+          addAutomaticKeepAlives: false,
+          crossAxisCount: 3,
+          children: roleList.map((Role role) {
+            bool selected = selectedRoleID!= null && selectedRoleID ==  role.id.toString();
+
+            return  VizOptionButton(
+              role.description,
+              onTap: onOptionSelected,
+              tag: role.id,
+              selected: selected,
+            );
+          }).toList());
+    }
+    else{
+      body = Center(child: Text('No roles available for the user'));
+    }
 
 
-        return  VizOptionButton(
-            role.description,
-            onTap: onOptionSelected,
-            tag: role.id,
-            selected: selected,
-        );
-     }).toList());
-
-    var container = Container(
+    Container container = Container(
       decoration: defaultBgDeco,
       constraints: BoxConstraints.expand(),
       child: body,
@@ -108,9 +119,12 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListPresente
 
       var defaultUserRoleID = Session().user.userRoleID;
       if(defaultUserRoleID!=null){
-        var defaultRole = roleList.where((Role r) => r.id == defaultUserRoleID);
-        if(defaultRole!=null){
+        Iterable<Role> defaultRole = roleList.where((Role r) => r.id == defaultUserRoleID);
+        if(defaultRole.isNotEmpty){
           selectedRoleID = defaultRole.first.id.toString();
+        }
+        else{
+          selectedRoleID = null;
         }
       }
     });

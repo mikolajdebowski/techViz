@@ -44,7 +44,7 @@ class Session extends PropertyChangeNotifier implements ISession{
   @override
   Future init(String userID) async {
     user = await Repository().userRepository.getUser(userID);
-    role = (await RoleRepository().getAll(ids: [user.userRoleID.toString()])).first;
+    role = (await Repository().roleRepository.getAll(ids: [user.userRoleID.toString()])).first;
 
     user.changes.listen((List<ChangeRecord> changes) {
       print('changes from User: ');
