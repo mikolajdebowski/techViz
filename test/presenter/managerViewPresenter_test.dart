@@ -19,7 +19,7 @@ import '../repository/mock/localRepositoryMock.dart';
 import '../repository/mock/slotFloorRemoteRepositoryMock.dart';
 import '../repository/processor/mock/TaskRemoteRepositoryMock.dart';
 
-class IManagerViewPresenterView extends Mock implements IManagerViewPresenter{}
+class ManagerViewPresenterViewImpl extends Mock implements IManagerViewPresenter{}
 
 class TaskTypeTableMock implements ITaskTypeTable{
   @override
@@ -129,7 +129,8 @@ class UserRemoteRepositoryMock implements IUserRemoteRepository{
 }
 
 void main(){
-  setUp((){
+
+  setUpAll((){
     kiwi.Container().registerInstance(TaskRepository(TaskRemoteRepositoryMock(), LocalRepositoryMock(), TaskRoutingMock()));
 
     Repository().taskTypeRepository = TaskTypeRepository(null, TaskTypeTableMock());
@@ -139,7 +140,7 @@ void main(){
   });
 
   test('loadOpenTasks should call back onOpenTasksLoaded', () async{
-    IManagerViewPresenter view = IManagerViewPresenterView();
+    IManagerViewPresenter view = ManagerViewPresenterViewImpl();
     ManagerViewPresenter presenter = ManagerViewPresenter(view);
     presenter.loadOpenTasks();
 
@@ -151,7 +152,7 @@ void main(){
   });
 
   test('loadSlotFloorSummary should call back onSlotFloorSummaryLoaded', () async{
-    IManagerViewPresenter view = IManagerViewPresenterView();
+    IManagerViewPresenter view = ManagerViewPresenterViewImpl();
     ManagerViewPresenter presenter = ManagerViewPresenter(view);
     presenter.loadSlotFloorSummary();
 
@@ -162,7 +163,7 @@ void main(){
   });
 
   test('loadTeamAvailability should call back onTeamAvailabilityLoaded', () async{
-    IManagerViewPresenter view = IManagerViewPresenterView();
+    IManagerViewPresenter view = ManagerViewPresenterViewImpl();
     ManagerViewPresenter presenter = ManagerViewPresenter(view);
     presenter.loadTeamAvailability();
 

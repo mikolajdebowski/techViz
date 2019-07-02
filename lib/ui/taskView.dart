@@ -32,19 +32,11 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
   @override
   void initState() {
     _streamSubscription = TaskViewBloc().openTasks.listen(onTaskListReceived, onError: onTaskListenError);
-
-    Future.delayed(Duration(seconds: 5), () {
-      _streamSubscription?.pause();
-    });
-
-    Future.delayed(Duration(seconds: 10), () {
-      _streamSubscription?.resume();
-    });
-
     super.initState();
   }
 
   void onTaskListReceived(List<Task> list) {
+    print(list);
     setState(() {
       _openTasksCount = list.length;
 
@@ -98,9 +90,10 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
         stream: TaskViewBloc().openTasks,
         builder: (context, AsyncSnapshot<List<Task>> snapshot) {
           if (!snapshot.hasData) {
-            return Container();
+            return Container(key: Key('taskViewEmptyContainer'));
           } else {
             return ListView.builder(
+              key: Key('taskViewListView'),
                 itemBuilder: (BuildContext builderCtx, int index) => buildTaskItemBody(snapshot.data[index], index), itemCount: snapshot.data.length);
           }
         });
