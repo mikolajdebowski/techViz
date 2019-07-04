@@ -15,7 +15,7 @@ class VizTaskActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     Color disabledColor = Color(0xFFAAAAAA);
     BoxDecoration boxDecoration = BoxDecoration(borderRadius: BorderRadius.circular(6.0), border: Border.all(color: Colors.white), color: enabled ? color : disabledColor);
-    AutoSizeText titleWidget = AutoSizeText(title,style: TextStyle(fontSize: height == 70 ? 18 : 26, color: enabled ? Colors.white : Colors.white30));
+    AutoSizeText titleWidget = AutoSizeText(title,style: TextStyle(fontSize: height == 70 ? 16 : 22, color: enabled ? Colors.white : Colors.white30));
 
     Widget centerWidget = icon==null ? titleWidget :  Column(
       mainAxisAlignment: MainAxisAlignment.center,

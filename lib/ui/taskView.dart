@@ -331,7 +331,7 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
           break;
       }
 
-      VizTaskActionButton primaryAction = VizTaskActionButton(primaryActionTextSource, Colors.green, enabled: canTakeActions, onTapCallback: primaryActionCallBack, height: 180, icon: primaryActionImageSource);
+      VizTaskActionButton primaryAction = VizTaskActionButton(primaryActionTextSource, Colors.green, enabled: canTakeActions, onTapCallback: primaryActionCallBack, height: 140, icon: primaryActionImageSource);
 
       taskBody = Column(
           children: <Widget>[
