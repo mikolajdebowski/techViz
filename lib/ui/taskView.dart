@@ -36,7 +36,6 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
   }
 
   void onTaskListReceived(List<Task> list) {
-    print(list);
     setState(() {
       _openTasksCount = list.length;
 
@@ -99,7 +98,7 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
         });
 
     //TASK PANEL
-    Flexible tasksPanel = Flexible(
+    Flexible tasksContainer = Flexible(
       flex: 1,
       child: Column(
         children: <Widget>[
@@ -204,53 +203,9 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
             colors: const [Color(0xFF81919D), Color(0xFFAAB7BD)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated));
 
     Widget taskBody;
+    bool canTakeActions = _selectedTask?.dirty == 0;
 
     if (_selectedTask != null) {
-      String mainActionImageSource;
-      String mainActionTextSource;
-      VoidCallback actionCallBack;
-
-      bool btnEnabled = _selectedTask?.dirty == 0;
-
-      switch(_selectedTask.taskStatus.id){
-
-        case 1:
-          mainActionImageSource = "assets/images/ic_acknowledge.png";
-          mainActionTextSource = 'Acknowledge';
-          actionCallBack = () => updateTaskStatus(_selectedTask, 2);
-          break;
-        case 2:
-          mainActionImageSource = "assets/images/ic_cardin.png";
-          mainActionTextSource = 'Card in';
-          actionCallBack = () => updateTaskStatus(_selectedTask, 3);
-          break;
-        case 3:
-        case 5:
-          mainActionImageSource = "assets/images/ic_complete.png";
-          mainActionTextSource = 'Complete';
-          actionCallBack = () => updateTaskStatus(_selectedTask, 13);
-          break;
-      }
-
-      ImageIcon mainActionIcon = ImageIcon(AssetImage(mainActionImageSource), size: 60.0, color: btnEnabled ? Colors.white : Colors.white30);
-      Center mainActionText = Center(
-          child: Text(mainActionTextSource,
-              style: TextStyle(color: btnEnabled ? Colors.white : Colors.white30, fontStyle: FontStyle.italic, fontSize: 20.0, fontWeight: FontWeight.bold)));
-      Padding requiredAction = Padding(
-          padding: EdgeInsets.all(2.0),
-          child: GestureDetector(
-            onTap: (){
-              if(btnEnabled)
-                actionCallBack();
-            },
-            child: Container(
-                decoration: actionBoxDecoration,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[mainActionIcon, mainActionText],
-                )),
-          ));
 
       String taskInfoDescription = '';
       if (_selectedTask != null) {
@@ -264,9 +219,9 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
       Expanded taskInfo = Expanded(
           flex: 2,
           child: Padding(
-              padding: EdgeInsets.all(2.0),
+              padding: EdgeInsets.all(5.0),
               child: Container(
-                  constraints: BoxConstraints.tightFor(height: 60.0),
+                  constraints: BoxConstraints.tightFor(height: 70.0),
                   decoration: actionBoxDecoration,
                   child: Column(
                     children: <Widget>[
@@ -286,86 +241,109 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
                     ],
                   ))));
 
-      List<Widget> taskDetailsHeader = <Widget>[];
-      if (_selectedTask != null) {
-        taskDetailsHeader.add(taskInfo);
+      List<Widget> taskDetailsHeader = <Widget>[taskInfo];
 
-        if (_selectedTask.playerID != null && _selectedTask.playerID.isNotEmpty) {
-          String playerName = '${_selectedTask.playerFirstName} ${_selectedTask.playerLastName}';
+      if (_selectedTask.playerID != null && _selectedTask.playerID.isNotEmpty) {
+        String playerName = '${_selectedTask.playerFirstName} ${_selectedTask.playerLastName}';
 
-          BoxDecoration boxDecoForTierWidget;
-          String tier = _selectedTask.playerTier;
-          String tierColorHexStr = _selectedTask.playerTierColorHEX;
-          if (tier != null && tierColorHexStr != null) {
-            tierColorHexStr = tierColorHexStr.replaceAll('#', '');
-            Color hexColor = Color(int.parse('0xFF$tierColorHexStr'));
-            boxDecoForTierWidget = BoxDecoration(borderRadius: BorderRadius.circular(6.0), color: hexColor);
-          } else {
-            boxDecoForTierWidget = BoxDecoration(borderRadius: BorderRadius.circular(6.0), border: Border.all(color: Colors.white));
-          }
-
-          Align playerTierWidget = Align(
-            alignment: Alignment.centerRight,
-            child: Container(
-              padding: EdgeInsets.all(2.0),
-              child: Container(
-                width: 10.0,
-                decoration: boxDecoForTierWidget,
-              ),
-            ),
-          );
-
-          Align playerDetailsWidget = Align(
-              alignment: Alignment.center,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Padding(
-                      padding: EdgeInsets.only(top: 5.0),
-                      child: Text('Customer',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Color(0xFF444444),
-                            fontSize: 14.0,
-                          ))),
-                  Padding(
-                      padding: EdgeInsets.only(top: 3.0),
-                      child: Text(playerName,
-                          maxLines: 2,
-                          textAlign: TextAlign.center,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(color: Color(0xFFFFFFFF), fontSize: playerName.length > 20 ? 12.0 : 14.0, fontWeight: FontWeight.bold)))
-                ],
-              ));
-
-          Expanded taskCustomer = Expanded(
-              flex: 3,
-              child: Container(
-                  margin: EdgeInsets.only(left: 2.0),
-                  constraints: BoxConstraints.tightFor(height: 60.0),
-                  decoration: actionBoxDecoration,
-                  child: Stack(
-                    children: <Widget>[playerDetailsWidget, playerTierWidget],
-                  )));
-
-          taskDetailsHeader.add(taskCustomer);
+        BoxDecoration boxDecoForTierWidget;
+        String tier = _selectedTask.playerTier;
+        String tierColorHexStr = _selectedTask.playerTierColorHEX;
+        if (tier != null && tierColorHexStr != null) {
+          tierColorHexStr = tierColorHexStr.replaceAll('#', '');
+          Color hexColor = Color(int.parse('0xFF$tierColorHexStr'));
+          boxDecoForTierWidget = BoxDecoration(borderRadius: BorderRadius.circular(6.0), color: hexColor);
+        } else {
+          boxDecoForTierWidget = BoxDecoration(borderRadius: BorderRadius.circular(6.0), border: Border.all(color: Colors.white));
         }
+
+        Align playerTierWidget = Align(
+          alignment: Alignment.centerRight,
+          child: Container(
+            padding: EdgeInsets.all(2.0),
+            child: Container(
+              width: 10.0,
+              decoration: boxDecoForTierWidget,
+            ),
+          ),
+        );
+
+        Align playerDetailsWidget = Align(
+            alignment: Alignment.center,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Padding(
+                    padding: EdgeInsets.only(top: 5.0),
+                    child: Text('Customer',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Color(0xFF444444),
+                          fontSize: 14.0,
+                        ))),
+                Padding(
+                    padding: EdgeInsets.only(top: 3.0),
+                    child: Text(playerName,
+                        maxLines: 2,
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(color: Color(0xFFFFFFFF), fontSize: playerName.length > 20 ? 12.0 : 14.0, fontWeight: FontWeight.bold)))
+              ],
+            ));
+
+        Expanded taskCustomer = Expanded(
+            flex: 3,
+            child: Container(
+                margin: EdgeInsets.only(left: 2.0),
+                constraints: BoxConstraints.tightFor(height: 60.0),
+                decoration: actionBoxDecoration,
+                child: Stack(
+                  children: <Widget>[playerDetailsWidget, playerTierWidget],
+                )));
+
+        taskDetailsHeader.add(taskCustomer);
       }
 
-      taskBody = Padding(
-        padding: EdgeInsets.only(left: 15.0, top: 5.0, right: 15.0, bottom: 5.0),
-        child: Column(
+
+
+      //primary action
+      String primaryActionImageSource;
+      String primaryActionTextSource;
+      VoidCallback primaryActionCallBack;
+
+      switch(_selectedTask.taskStatus.id){
+
+        case 1:
+          primaryActionImageSource = "assets/images/ic_task_acknowledge.png";
+          primaryActionTextSource = 'Acknowledge';
+          primaryActionCallBack = () => updateTaskStatus(_selectedTask, 2);
+          break;
+        case 2:
+          primaryActionImageSource = "assets/images/ic_task_cardin.png";
+          primaryActionTextSource = 'Card in';
+          primaryActionCallBack = () => updateTaskStatus(_selectedTask, 3);
+          break;
+        case 3:
+        case 5:
+          primaryActionImageSource = "assets/images/ic_task_complete.png";
+          primaryActionTextSource = 'Complete';
+          primaryActionCallBack = () => updateTaskStatus(_selectedTask, 13);
+          break;
+      }
+
+      VizTaskActionButton primaryAction = VizTaskActionButton(primaryActionTextSource, Colors.green, enabled: canTakeActions, onTapCallback: primaryActionCallBack, height: 140, icon: primaryActionImageSource);
+
+      taskBody = Column(
           children: <Widget>[
             Row(
               children: taskDetailsHeader,
             ),
-            Flexible(child: requiredAction)
-          ],
-        ),
+            Flexible(child: Padding(padding: EdgeInsets.only(left: 5, right: 5), child: primaryAction))
+          ]
       );
     }
 
-    Flexible centerPanel = Flexible(
+    Flexible centerContainer = Flexible(
       flex: 4,
       child: Column(
         children: <Widget>[
@@ -386,7 +364,8 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
       ),
     );
 
-    //RIGHT PANEL WIDGETS
+
+    //RIGHT CONTAINER WIDGETS
     Padding timerWidget = Padding(
       padding: EdgeInsets.only(top: 7.0),
       child: Column(
@@ -398,25 +377,32 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
       ),
     );
 
-    List<VizTaskActionButton> rightActionWidgets = <VizTaskActionButton>[];
+    List<Widget> rightActionWidgets = <Widget>[];
     if (_selectedTask != null) {
-      bool enableButtons = _selectedTask.dirty == 0;
       if (_selectedTask.taskStatus.id == 2 || _selectedTask.taskStatus.id == 3) {
-        rightActionWidgets.add(VizTaskActionButton('Cancel', const [Color(0xFF433177), Color(0xFFF2003C)], enabled: enableButtons, onTapCallback: () {
-          _showCancellationDialog(_selectedTask.id);
-        }));
+        Padding action = Padding(
+          padding: EdgeInsets.only(top: 5, right: 5),
+          child: VizTaskActionButton('Cancel', Colors.red, enabled: canTakeActions, icon: 'assets/images/ic_task_cancel.png' ,onTapCallback: () {
+            _showCancellationDialog(_selectedTask.id);
+          }),
+
+        );
+        rightActionWidgets.add(action);
       }
 
       if (_selectedTask.taskStatus.id == 3) {
-        rightActionWidgets.add(VizTaskActionButton('Escalate', const [Color(0xFF1356ab), Color(0xFF23ABE7)], enabled: enableButtons, onTapCallback: () {
-          _goToEscalationPathView();
-        }));
+        Padding action = Padding(
+          padding: EdgeInsets.only(top: 5, right: 5),
+          child: VizTaskActionButton('Escalate', Colors.orange, enabled: canTakeActions, icon: 'assets/images/ic_task_escalate.png' , onTapCallback: () {
+            _goToEscalationPathView();
+          }),
+        );
+        rightActionWidgets.add(action);
       }
     }
 
     Column rightActionsColumn = Column(children: rightActionWidgets);
-
-    Flexible rightPanel = Flexible(
+    Flexible rightContainer = Flexible(
       flex: 1,
       child: Column(
         children: <Widget>[
@@ -425,7 +411,7 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
             decoration: defaultHeaderDecoration,
             child: timerWidget,
           ),
-          Expanded(
+          SingleChildScrollView(
             child: rightActionsColumn,
           )
         ],
@@ -439,7 +425,7 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
               gradient: LinearGradient(
                   colors: const [Color(0xFF586676), Color(0xFF8B9EA7)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
           child: Row(
-            children: <Widget>[tasksPanel, centerPanel, rightPanel],
+            children: <Widget>[tasksContainer, centerContainer, rightContainer],
           ),
         ));
   }
