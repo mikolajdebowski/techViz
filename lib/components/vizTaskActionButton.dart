@@ -1,57 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
-class VizTaskActionButton extends StatelessWidget{
-
+class VizTaskActionButton extends StatelessWidget {
   final String title;
-  final List<Color> colors;
+  final Color color;
   final Function onTapCallback;
   final bool enabled;
+  final String icon;
+  final double height;
 
-  const VizTaskActionButton(this.title, this.colors, {this.onTapCallback, this.enabled = true});
+  const VizTaskActionButton(this.title, this.color, {this.onTapCallback, this.enabled = true, this.icon, this.height = 70});
 
   @override
   Widget build(BuildContext context) {
-    var disabled = [Color(0xFF666666), Color(0xFFD3D3D3)];
-    var defaultBg = [Color(0xFFB2C7CF),  Color(0xFFE4EDEF)];
+    Color disabledColor = Color(0xFFAAAAAA);
+    BoxDecoration boxDecoration = BoxDecoration(borderRadius: BorderRadius.circular(6.0), border: Border.all(color: Colors.white), color: enabled ? color : disabledColor);
+    AutoSizeText titleWidget = AutoSizeText(title,style: TextStyle(fontSize: height == 70 ? 18 : 26, color: enabled ? Colors.white : Colors.white30));
 
-    double fontSize = 16.0;
-    if(title.length>10){
-      fontSize = 12.0;
-    }
-    return Expanded(
-        child: GestureDetector(
-          onTap: (){
-            if(enabled)
-             onTapCallback();
-          },
-            child: Row(
-          children: <Widget>[
-            Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                          colors: defaultBg,
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          tileMode: TileMode.repeated)),
-                  child: Center(
-                      child: Text(
-                        title,
-                        style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.w600, color: enabled ? Colors.black : disabled[0]),
-                      )),
-                )),
-            Container(
-                width: 10.0,
-                decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        colors: enabled ? colors : disabled,
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        tileMode: TileMode.repeated)))
-          ],
-        )));
+    Widget centerWidget = icon==null ? titleWidget :  Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        ImageIcon(AssetImage(icon), size: height/3, color: enabled ? Colors.white : Colors.white30),
+        Padding(
+          padding: EdgeInsets.only(top: 5),
+          child: titleWidget,
+        )
+      ],
+    );
+
+    return GestureDetector(
+        onTap: () {
+          if (enabled) onTapCallback();
+        },
+        child: Container(
+            decoration: boxDecoration,
+            constraints: BoxConstraints.expand(height: height),
+            child: Center(
+              child: centerWidget,
+            )));
   }
-
-
-
 }

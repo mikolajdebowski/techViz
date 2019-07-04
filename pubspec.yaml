@@ -28,6 +28,7 @@ dependencies:
   kiwi: ^0.2.0
   rxdart: ^0.22.0
   animator: ^0.1.3
+  auto_size_text: ^2.0.1
 
   vizexplorer_mobile_common:
     git: git@git.internal.bis2.net:Mobile/Plugins/common.git
@@ -81,6 +82,14 @@ flutter:
     - assets/images/ic_machine_offline.png
     - assets/images/ic_machine_reserved.png
     - assets/images/ic_arrow_up.png
+
+    - assets/images/ic_task_complete.png
+    - assets/images/ic_task_acknowledge.png
+    - assets/images/ic_task_escalate.png
+    - assets/images/ic_task_cardin.png
+    - assets/images/ic_task_cancel.png
+
+    - assets/images/2.0x/ic_complete.png
     - assets/images/2.0x/ic_cardin.png
     - assets/images/2.0x/ic_acknowledge.png
     - assets/images/2.0x/ic_scan_machine.png
