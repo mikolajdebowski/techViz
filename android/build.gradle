@@ -29,3 +29,8 @@ subprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+ext {
+    appVersionCode = 1
+    appVersionName = '1.0.0'
+}
