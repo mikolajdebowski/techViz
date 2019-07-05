@@ -11,12 +11,6 @@ pipeline{
     }
 //    triggers{}
     stages{
-        stage('Setup'){
-            steps{
-                sh 'flutter clean'
-                sh 'sed -i .original "${APP_VERSION}/0.8.1/g" ios/Runner/Info.plist'
-            }
-        }
         stage('Get Packages'){
             steps{
                 sshagent(['4230b7aa-33c5-4a34-94ae-9fb5b004d637']) {
@@ -32,6 +26,13 @@ pipeline{
         stage('Test'){
             steps {
                 sh 'flutter test --coverage'
+            }
+        }
+        stage('Setup'){
+            steps{
+                sh 'flutter clean'
+                sh "sed -i .original 's/\${APP_VERSION}/0.8.1/g' ios/Runner/Info.plist"
+                sh "sed -i .original 's/\${APP_BUILD_NUMBER}/66/g' ios/Runner/Info.plist"
             }
         }
         stage('Unlocking keychain'){
@@ -61,6 +62,20 @@ pipeline{
             -archivePath build/ios/Temp/temp.xcarchive \
             -exportOptionsPlist ios/Runner/exportOptionsAdHoc.plist \
             -exportPath build/ios/Temp/
+            '''
+            }
+        }
+        stage('Pushing to hockeyapp'){
+            steps{
+                sh '''
+            curl \
+                      -F "status=2" \
+                      -F "notify=0" \
+                      -F "notes=jenkins release attempt" \
+                      -F "notes_type=0" \
+                      -F "ipa=@/opt/benkins/workspace/Mobile/Techviz/build/ios/Temp/Runner.ipa" \
+                      -H "X-HockeyAppToken: a14bddac17c24ce1b81a2791fc673272" \
+                      https://rink.hockeyapp.net/api/2/apps/upload
             '''
             }
         }
