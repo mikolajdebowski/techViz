@@ -31,8 +31,8 @@ pipeline{
         stage('Setup'){
             steps{
                 sh 'flutter clean'
-                sh "sed -i .original 's/\${APP_VERSION}/0.8.1/g' ios/Runner/Info.plist"
-                sh "sed -i .original 's/\${APP_BUILD_NUMBER}/66/g' ios/Runner/Info.plist"
+                sh "sed -i .original 's/\${APP_VERSION}/19.3.1/g' ios/Runner/Info.plist"
+                sh "sed -i .original 's/\${APP_BUILD_NUMBER}/${BUILD_NUMBER}/g' ios/Runner/Info.plist"
             }
         }
         stage('Unlocking keychain'){
