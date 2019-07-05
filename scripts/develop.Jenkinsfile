@@ -14,7 +14,7 @@ pipeline{
         stage('Setup'){
             steps{
                 sh 'flutter clean'
-                sh 'sed -i "s/\${APP_VERSION}/0.8.1/g" ios/Runner/Info.plist'
+                sh 'sed -i .original "${APP_VERSION}/0.8.1/g" ios/Runner/Info.plist'
             }
         }
         stage('Get Packages'){
@@ -32,6 +32,11 @@ pipeline{
         stage('Test'){
             steps {
                 sh 'flutter test --coverage'
+            }
+        }
+        stage('Unlocking keychain'){
+            steps {
+                sh 'security unlock-keychain -p !@#$%^ ~/Library/Keychains/login.keychain'
             }
         }
         stage('Build IOS Dart Code'){
