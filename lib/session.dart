@@ -3,7 +3,6 @@ import 'package:techviz/model/role.dart';
 import 'package:techviz/model/user.dart';
 import 'package:observable/observable.dart';
 import 'package:techviz/repository/repository.dart';
-import 'package:techviz/repository/roleRepository.dart';
 import 'package:techviz/repository/userRepository.dart';
 
 
