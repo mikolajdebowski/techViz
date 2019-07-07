@@ -111,7 +111,7 @@ class Repository {
     await userRepository.fetch();
 
     onMessage('Fetching Roles...');
-    await rolesRepository.fetch();
+    await roleRepository.fetch();
     await userRolesRepository.fetch();
 
     onMessage('Fetching User Status...');
@@ -138,6 +138,8 @@ class Repository {
     kiwi.Container container = kiwi.Container();
     container.clear();
     container.registerInstance(TaskRepository(ProcessorTaskRepository(ProcessorRepositoryConfig()), _localRepository, TaskRouting()));
+    container.registerInstance(UserRoleRepository(ProcessorUserRoleRepository(), _localRepository));
+    container.registerInstance(RoleRepository(ProcessorRoleRepository(), _localRepository));
   }
 
   void startServices(){
@@ -155,6 +157,8 @@ class Repository {
 
   //TASKS
   TaskRepository get taskRepository => kiwi.Container().resolve<TaskRepository>();
+  UserRoleRepository get userRolesRepository => kiwi.Container().resolve<UserRoleRepository>();
+  RoleRepository get roleRepository => kiwi.Container().resolve<RoleRepository>();
 
 
   //USERS
@@ -223,17 +227,6 @@ class Repository {
     }
   }
 
-  RoleRepository get rolesRepository {
-    switch(_flavor) {
-      default: return RoleRepository(remoteRepository: ProcessorRoleRepository());
-    }
-  }
-
-  UserRoleRepository get userRolesRepository {
-    switch(_flavor) {
-      default: return UserRoleRepository(remoteRepository: ProcessorUserRoleRepository());
-    }
-  }
 
   UserStatusRepository get userStatusRepository {
     switch(_flavor) {

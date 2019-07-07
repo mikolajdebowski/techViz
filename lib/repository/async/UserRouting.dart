@@ -28,8 +28,8 @@ class UserRouting implements IUserRouting {
   User parser(dynamic json){
     Map<String,dynamic> map = <String,dynamic>{};
     map['UserID'] = json["userID"];
-    map['userRoleID'] = json["userRoleID"] != null?int.parse(json["userRoleID"].toString()) : 0;
-    map['userStatusID'] = json["userStatusID"] != null?int.parse(json["userStatusID"].toString()) : 0;
+    map['UserRoleID'] = json["userRoleID"] != null?int.parse(json["userRoleID"].toString()) : 0;
+    map['UserStatusID'] = json["userStatusID"] != null?int.parse(json["userStatusID"].toString()) : 0;
     return User.fromMap(map);
   }
 }

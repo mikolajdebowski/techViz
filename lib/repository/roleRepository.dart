@@ -1,22 +1,20 @@
 import 'dart:async';
 import 'package:techviz/model/role.dart';
-import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/local/localRepository.dart';
 import 'package:techviz/repository/remoteRepository.dart';
 
-class RoleRepository implements IRepository<Role>{
+class RoleRepository {
   IRemoteRepository remoteRepository;
-  RoleRepository({this.remoteRepository});
+  ILocalRepository localRepository;
+  RoleRepository(this.remoteRepository, this.localRepository);
 
   Future<List<Role>> getAll({List<String> ids}) async {
-    LocalRepository localRepo = LocalRepository();
-
     String sqlQuery = "SELECT * FROM Role";
     if(ids!=null || ids.isNotEmpty){
       sqlQuery += " WHERE UserRoleID IN (${ids.join(',')})";
     }
 
-    List<Map<String, dynamic>> queryResult = await localRepo.db.rawQuery(sqlQuery);
+    List<Map<String, dynamic>> queryResult = await localRepository.db.rawQuery(sqlQuery);
 
     List<Role> toReturn = <Role>[];
     queryResult.forEach((Map<String, dynamic> role) {
@@ -36,7 +34,6 @@ class RoleRepository implements IRepository<Role>{
     return toReturn;
   }
 
-  @override
   Future fetch() {
     assert(remoteRepository!=null);
     return remoteRepository.fetch();

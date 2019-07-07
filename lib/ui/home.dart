@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:techviz/model/role.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/common/slideRightRoute.dart';
 import 'package:techviz/components/VizButton.dart';
@@ -55,15 +56,18 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
     WidgetsBinding.instance.addObserver(this);
     loadDefaultSections();
-
     ISession session = Session();
-    if (session.role.isManager || session.role.isSupervisor) {
-      homeChildKey = GlobalKey<ManagerViewState>();
-    } else if (session.role.isAttendant) {
-      homeChildKey = GlobalKey<TaskViewState>();
-    }
+    loadView(session.role);
 
     assert(homeChildKey!=null);
+  }
+
+  void loadView(Role role) {
+    if(role.isManager || role.isSupervisor || role.isTechSupervisor || role.isTechManager){
+      homeChildKey = GlobalKey<ManagerViewState>();
+    }else{
+      homeChildKey = GlobalKey<TaskViewState>();
+    }
   }
 
   @override
