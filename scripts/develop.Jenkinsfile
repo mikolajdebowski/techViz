@@ -89,7 +89,7 @@ pipeline{
                     stages{
                         stage('Setup build version'){
                             steps{
-                                sh "sed -i .original 's/appVersionName/19.3.1/g' android/app/build.gradle"
+                                sh "sed -i .original 's/appVersionName/\"19.3.1\"/g' android/app/build.gradle"
                                 sh "sed -i .original 's/appVersionCode.toInteger()/${BUILD_NUMBER}/g' android/app/build.gradle"
                             }
                         }
