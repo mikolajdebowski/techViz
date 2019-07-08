@@ -3,7 +3,6 @@ import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/repository/repository.dart';
-import 'package:techviz/repository/roleRepository.dart';
 import 'package:techviz/repository/userRepository.dart';
 import 'package:techviz/ui/home.dart';
 import 'package:techviz/model/role.dart';
