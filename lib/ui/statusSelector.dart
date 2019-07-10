@@ -43,12 +43,11 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
 
     Session session = Session();
     UserRepository userRepository = Repository().userRepository;
-    userRepository.update(session.user.userID, statusID: selectedStatus.id).then<int>((int result) {
+    userRepository.update(session.user.userID, statusID: selectedStatus.id).then((int result) {
       _loadingBar.dismiss();
 
       userRepository.getUser(session.user.userID).then((User user){
         Session().user = user;
-
         Navigator.of(context).pop<UserStatus>(selectedStatus);
       });
     }).catchError((dynamic error){

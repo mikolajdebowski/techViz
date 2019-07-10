@@ -143,8 +143,7 @@ class EscalationFormState extends State<EscalationForm>
     //ESCALATION PATH
     FormField<EscalationPath> escalationPathFormField = FormField<EscalationPath>(
       validator: (value) {
-        if (value == null)
-          return 'Select Escalation Path';
+        return value ?? 'Select Escalation Path';
       },
       builder: (FormFieldState<EscalationPath> state) {
         return InputDecorator(
@@ -208,6 +207,7 @@ class EscalationFormState extends State<EscalationForm>
         validator: (value) {
           if (taskTypeRequired && value == null)
             return 'Select Task Type';
+          return null;
         },
         builder: (FormFieldState<TaskType> state) {
           return InputDecorator(

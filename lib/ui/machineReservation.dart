@@ -68,6 +68,7 @@ class MachineReservationState extends State<MachineReservation> {
                       validator: (value) {
                         if (value.isEmpty)
                           return 'Please enter Player ID';
+                        return null;
                       },
                       inputFormatters: <TextInputFormatter>[WhitelistingTextInputFormatter(RegExp('[a-zA-Z0-9]'))],
                       decoration: const InputDecoration(
@@ -80,6 +81,7 @@ class MachineReservationState extends State<MachineReservation> {
                   validator: (String value) {
                     if (value == null)
                       return 'Select the time of reservation';
+                    return null;
                   },
                   builder: (FormFieldState<String> state) {
                     return InputDecorator(

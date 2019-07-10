@@ -51,7 +51,7 @@ class SectionSelectorState extends State<SectionSelector>
     DeviceInfo info = await Utils.deviceInfo;
     dynamic toSubmit = {'userID': session.user.userID, 'sections': sections, 'deviceID': info.DeviceID};
 
-    SectionRouting().PublishMessage(toSubmit).then<List<Section>>((dynamic list) async{
+    SectionRouting().PublishMessage(toSubmit).then((dynamic list) async{
       _loadingBar.dismiss();
 
       List<Section> toUpdateLocally = list as List<Section>;

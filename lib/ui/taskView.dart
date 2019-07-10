@@ -477,7 +477,9 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
                   ),
                   maxLines: 6,
                   validator: (String value) {
-                    if (value.isEmpty) return 'Please inform the cancellation reason';
+                    if (value.isEmpty)
+                      return 'Please inform the cancellation reason';
+                    return null;
                   },
                 ),
               ),

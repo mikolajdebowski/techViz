@@ -208,6 +208,7 @@ class LoginState extends State<Login> {
             if (value.isEmpty) {
               return 'Username is required';
             }
+            return null;
           },
           onEditingComplete: (){
             FocusScope.of(context).requestFocus(txtPwdFocusNode);
@@ -236,6 +237,7 @@ class LoginState extends State<Login> {
             if (value.isEmpty) {
               return 'Password is required';
             }
+            return null;
           },
           onEditingComplete: (){
             loginTap();

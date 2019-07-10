@@ -82,6 +82,7 @@ class ConfigState extends State<Config> {
               if (!Validator.isUrl(value, default_url_options)) {
                 return 'Please enter valid URL';
               }
+              return null;
             },
             controller: serverAddressController,
             decoration: InputDecoration(
