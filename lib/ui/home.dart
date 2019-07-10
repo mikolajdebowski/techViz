@@ -17,7 +17,7 @@ import 'package:techviz/ui/statusSelector.dart';
 import 'package:techviz/ui/taskView.dart';
 
 class Home extends StatefulWidget {
-  Home({Key key}) : super(key: key);
+  const Home({Key key}) : super(key: key);
 
   @override
   _HomeState createState() => _HomeState();

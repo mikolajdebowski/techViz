@@ -6,7 +6,7 @@ import 'package:techviz/components/vizDialog.dart';
 import 'package:techviz/session.dart';
 
 class Menu extends StatefulWidget {
-  Menu({Key key}) : super(key: key);
+  const Menu({Key key}) : super(key: key);
 
   @override
   _MenuState createState() => _MenuState();

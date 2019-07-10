@@ -6,7 +6,7 @@ import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizDialog.dart';
 
 class VizSelector extends StatefulWidget {
-  VizSelector(
+  const VizSelector(
       this.title,
       this.options,
       this.onOKTap,

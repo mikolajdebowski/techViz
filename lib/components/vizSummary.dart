@@ -15,7 +15,7 @@ class VizSummary extends StatefulWidget {
   final bool isProcessing;
   final OnScroll onScroll;
 
-  VizSummary(this.title, this.data, {Key key, this.onSwipeLeft, this.onSwipeRight, this.onMetricTap, this.isProcessing = false, this.onScroll}) : super(key: key);
+  const VizSummary(this.title, this.data, {Key key, this.onSwipeLeft, this.onSwipeRight, this.onMetricTap, this.isProcessing = false, this.onScroll}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => VizSummaryState();

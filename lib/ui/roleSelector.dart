@@ -12,7 +12,7 @@ import 'package:techviz/session.dart';
 class RoleSelector extends StatefulWidget {
   final IRoleListPresenter roleListPresenter;
 
-  RoleSelector({this.roleListPresenter, Key key}) : super(key: key);
+  const RoleSelector({this.roleListPresenter, Key key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => RoleSelectorState(roleListPresenter ?? RoleListPresenter.build());

@@ -22,7 +22,7 @@ import 'package:techviz/viewmodel/managerViewUserStatus.dart';
 import 'machineReservation.dart';
 
 class ManagerView extends StatefulWidget {
-  ManagerView(Key key) : super(key: key);
+  const ManagerView(Key key) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => ManagerViewState();

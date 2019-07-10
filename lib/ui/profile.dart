@@ -9,7 +9,7 @@ import 'package:techviz/ui/stats.dart';
 
 class Profile extends StatefulWidget {
   final IRoleListPresenter roleListPresenter;
-  Profile({this.roleListPresenter, Key key}) : super(key: key);
+  const Profile({this.roleListPresenter, Key key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => ProfileState(roleListPresenter ?? RoleListPresenter.build());

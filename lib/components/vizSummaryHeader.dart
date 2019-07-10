@@ -16,7 +16,7 @@ class VizSummaryHeader extends StatelessWidget {
   final bool isProcessing;
 
 
-  VizSummaryHeader({Key key, this.headerTitle, this.entries, this.selectedEntryKey, this.actions, this.isProcessing = false}) : super(key: key);
+  const VizSummaryHeader({Key key, this.headerTitle, this.entries, this.selectedEntryKey, this.actions, this.isProcessing = false}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

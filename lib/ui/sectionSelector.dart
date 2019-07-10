@@ -16,7 +16,7 @@ import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 typedef FncOnUserSectionsChanged = void Function(List<UserSection> sections);
 
 class SectionSelector extends StatefulWidget {
-  SectionSelector({Key key, @required this.onUserSectionsChanged}) : super(key: key);
+  const SectionSelector({Key key, @required this.onUserSectionsChanged}) : super(key: key);
   final FncOnUserSectionsChanged onUserSectionsChanged;
 
   @override
