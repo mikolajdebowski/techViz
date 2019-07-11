@@ -99,7 +99,8 @@ class VizListViewRowState extends State<VizListViewRow> {
         return;
 
       String text = dataCell.toString();
-      TextStyle style = TextStyle(fontSize: text.length >= 20 ? 10 : 12);
+      int numOfVisibleCols = widget.dataEntry.columns.where((DataEntryCell cell) => cell.visible).length;
+      TextStyle style = TextStyle(fontSize: (text.length >= 20 && numOfVisibleCols > 2) ? 10 : 12);
 
       TextAlign align = dataCell.alignment == DataAlignment.left
           ? TextAlign.left
