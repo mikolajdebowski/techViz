@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -99,8 +100,7 @@ class VizListViewRowState extends State<VizListViewRow> {
         return;
 
       String text = dataCell.toString();
-      int numOfVisibleCols = widget.dataEntry.columns.where((DataEntryCell cell) => cell.visible).length;
-      TextStyle style = TextStyle(fontSize: (text.length >= 20 && numOfVisibleCols > 2) ? 10 : 12);
+      TextStyle style = TextStyle(fontSize: 12);
 
       TextAlign align = dataCell.alignment == DataAlignment.left
           ? TextAlign.left
@@ -108,15 +108,18 @@ class VizListViewRowState extends State<VizListViewRow> {
               ? TextAlign.right
               : TextAlign.center);
 
+
+      AutoSizeText txtField = AutoSizeText(
+        text,
+        textAlign: align,
+        style: style,
+        overflow: TextOverflow.ellipsis,
+        softWrap: true,
+        maxLines: 2,
+      );
+
       columns.add(Expanded(
-          child: Padding(padding: EdgeInsets.only(left: 5, right: 5), child: Text(
-            text,
-            textAlign: align,
-            style: style,
-            overflow: TextOverflow.ellipsis,
-            softWrap: true,
-            maxLines: 2,
-          ))));
+          child: Padding(padding: EdgeInsets.only(left: 5, right: 5), child: txtField)));
     });
 
     Row dataRow = Row(
