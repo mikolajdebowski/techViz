@@ -108,8 +108,8 @@ class ManagerViewPresenter{
 
       DataEntry toAvailableDataEntryParser(Map map){
         List<DataEntryCell> columns = <DataEntryCell>[];
-        columns.add(DataEntryCell('Attendant', map['UserName'], alignment: DataAlignment.left));
         columns.add(DataEntryCell('Sections', map['SectionCount'], alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Attendant', map['UserName'], alignment: DataAlignment.left));
         columns.add(DataEntryCell('Task Count', map['TaskCount'], alignment: DataAlignment.center));
         columns.add(DataEntryCell('StatusID', map['UserStatusID'], visible: false));
         return DataEntry(map['UserID'], columns);
@@ -144,19 +144,27 @@ class ManagerViewPresenter{
       List<DataEntry> otherList = listMap.where((Map map)=> ['70','75','80','90'].contains(map['UserStatusID'])).map((Map map) => toOtherDataEntryParser(map)).toList();
       List<DataEntry> offShift = listMap.where((Map map)=> ['10'].contains(map['UserStatusID'])).map((Map map) => toOffShiftDataEntryParser(map)).toList();
 
-      group.add(DataEntryGroup('Available', sortCollection(availableList)));
-      group.add(DataEntryGroup('On Break', sortCollection(onBreakList)));
-      group.add(DataEntryGroup('Other', sortCollection(otherList)));
-      group.add(DataEntryGroup('Off Shift', sortCollection(offShift)));
+      List<DataEntry> sortAlphabeticallyByAttendantName(List<DataEntry> coll){
+        int compateTo(DataEntry a, DataEntry b){
+          DataEntryCell userNameA = a.columns.where((DataEntryCell cell) => cell.column == 'Attendant').first;
+          DataEntryCell userNameB = b.columns.where((DataEntryCell cell) => cell.column == 'Attendant').first;
+          return userNameA.value.toString().compareTo(userNameB.value.toString());
+        }
+
+        coll.sort((DataEntry a, DataEntry b) => compateTo(a,b));
+        return coll;
+      }
+
+      group.add(DataEntryGroup('Available', sortAlphabeticallyByAttendantName(availableList)));
+      group.add(DataEntryGroup('On Break', sortAlphabeticallyByAttendantName(onBreakList)));
+      group.add(DataEntryGroup('Other', sortAlphabeticallyByAttendantName(otherList)));
+      group.add(DataEntryGroup('Off Shift', sortAlphabeticallyByAttendantName(offShift)));
 
       _view.onTeamAvailabilityLoaded(group);
     });
   }
 
-  List<DataEntry> sortCollection(List<DataEntry> coll){
-    coll.sort((DataEntry a, DataEntry b) => a.columns.toString().toLowerCase().compareTo(b.columns.toString().toLowerCase()));
-    return coll;
-  }
+
 
   void loadSlotFloorSummary(){
     Repository().slotFloorRepository.slotFloorSummary().then((List<SlotMachine> slotMachineList) async {
