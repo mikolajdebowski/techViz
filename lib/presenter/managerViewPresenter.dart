@@ -144,13 +144,18 @@ class ManagerViewPresenter{
       List<DataEntry> otherList = listMap.where((Map map)=> ['70','75','80','90'].contains(map['UserStatusID'])).map((Map map) => toOtherDataEntryParser(map)).toList();
       List<DataEntry> offShift = listMap.where((Map map)=> ['10'].contains(map['UserStatusID'])).map((Map map) => toOffShiftDataEntryParser(map)).toList();
 
-      group.add(DataEntryGroup('Available', availableList));
-      group.add(DataEntryGroup('On Break', onBreakList));
-      group.add(DataEntryGroup('Other', otherList));
-      group.add(DataEntryGroup('Off Shift', offShift));
+      group.add(DataEntryGroup('Available', sortCollection(availableList)));
+      group.add(DataEntryGroup('On Break', sortCollection(onBreakList)));
+      group.add(DataEntryGroup('Other', sortCollection(otherList)));
+      group.add(DataEntryGroup('Off Shift', sortCollection(offShift)));
 
       _view.onTeamAvailabilityLoaded(group);
     });
+  }
+
+  List<DataEntry> sortCollection(List<DataEntry> coll){
+    coll.sort((DataEntry a, DataEntry b) => a.columns.toString().toLowerCase().compareTo(b.columns.toString().toLowerCase()));
+    return coll;
   }
 
   void loadSlotFloorSummary(){
