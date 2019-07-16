@@ -16,6 +16,8 @@ import 'package:techviz/ui/slotLookup.dart';
 import 'package:techviz/ui/statusSelector.dart';
 import 'package:techviz/ui/taskView.dart';
 
+import 'drawer.dart';
+
 class Home extends StatefulWidget {
   const Home({Key key}) : super(key: key);
 
@@ -24,6 +26,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> with WidgetsBindingObserver {
+  GlobalKey<ScaffoldState> scaffoldStateKey;
   GlobalKey<dynamic> homeChildKey;
   bool initialLoading = false;
 
@@ -60,6 +63,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     loadView(session.role);
 
     assert(homeChildKey!=null);
+
+    scaffoldStateKey = GlobalKey();
   }
 
   void loadView(Role role) {
@@ -77,10 +82,11 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   }
 
   void goToMenu() {
-    Navigator.push<Menu>(
-      context,
-      SlideRightRoute(widget: Menu()),
-    );
+//    Navigator.push<Menu>(
+//      context,
+//      SlideRightRoute(widget: Menu()),
+//    );
+    scaffoldStateKey.currentState.openDrawer();
   }
 
   void loadDefaultSections() {
@@ -140,7 +146,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    VizButton leadingMenuButton = VizButton(title: 'Menu', onTap: goToMenu);
+    VizButton leadingMenuButton = VizButton(title: 'Menu', onTap: (){ goToMenu(); });
 
     String statusText = _userStatusText == null ? "OFF SHIFT" : _userStatusText;
     Color statusTextColor = _isOnline == false ? Colors.red : Colors.black;
@@ -173,10 +179,12 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     List<Widget> actionBarCentralWidgets = <Widget>[statusWidgetBtn, sectionsWidgetBtn, notificationWidgetBtn, searchIconWidget];
 
     return Scaffold(
+      key: scaffoldStateKey,
       resizeToAvoidBottomPadding: false,
       backgroundColor: Colors.black,
       appBar: ActionBar(title: 'TechViz', leadingWidget: leadingMenuButton, centralWidgets: actionBarCentralWidgets),
-      body: SafeArea(child: bodyWidget), // This trailing comma makes auto-formatting nicer for build methods.
+      body: SafeArea(child: bodyWidget),
+      drawer: SafeArea(child: MenuDrawer()),
     );
   }
 
