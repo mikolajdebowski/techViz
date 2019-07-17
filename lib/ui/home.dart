@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:techviz/model/role.dart';
 import 'package:techviz/repository/repository.dart';
-import 'package:techviz/common/slideRightRoute.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizSelector.dart';
 import 'package:techviz/ui/managerView.dart';
-import 'package:techviz/ui/menu.dart';
 import 'package:techviz/model/userSection.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/session.dart';
@@ -18,14 +16,20 @@ import 'package:techviz/ui/taskView.dart';
 
 import 'drawer.dart';
 
+enum HomeViewType{
+  TaskView,ManagerView
+}
+
 class Home extends StatefulWidget {
-  const Home({Key key}) : super(key: key);
+  final HomeViewType homeViewType;
+  const Home(this.homeViewType);
 
   @override
   _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> with WidgetsBindingObserver {
+  HomeViewType homeViewType;
   GlobalKey<ScaffoldState> scaffoldStateKey;
   GlobalKey<dynamic> homeChildKey;
   bool initialLoading = false;
@@ -57,22 +61,22 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   void initState() {
     super.initState();
 
+    homeViewType = widget.homeViewType;
+    scaffoldStateKey = GlobalKey();
+
     WidgetsBinding.instance.addObserver(this);
     loadDefaultSections();
-    ISession session = Session();
-    loadView(session.role);
-
-    assert(homeChildKey!=null);
-
-    scaffoldStateKey = GlobalKey();
+    loadView();
   }
 
-  void loadView(Role role) {
-    if(role.isManager || role.isSupervisor || role.isTechSupervisor || role.isTechManager){
+  void loadView() {
+    assert(homeViewType!=null);
+    if(homeViewType == HomeViewType.ManagerView){
       homeChildKey = GlobalKey<ManagerViewState>();
-    }else{
+    }else if(homeViewType == HomeViewType.TaskView){
       homeChildKey = GlobalKey<TaskViewState>();
     }
+    assert(homeChildKey!=null);
   }
 
   @override
@@ -82,10 +86,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   }
 
   void goToMenu() {
-//    Navigator.push<Menu>(
-//      context,
-//      SlideRightRoute(widget: Menu()),
-//    );
     scaffoldStateKey.currentState.openDrawer();
   }
 

@@ -66,7 +66,6 @@ class TechVizAppState extends State<TechVizApp> with WidgetsBindingObserver {
       title: 'TechViz',
       home: Splash(),
       routes: <String, WidgetBuilder> {
-        '/home': (BuildContext context) => Home(),
         '/menu': (BuildContext context) => Menu(),
         '/login': (BuildContext context) => Login(),
         '/config': (BuildContext context) => Config(),

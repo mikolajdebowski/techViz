@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:techviz/components/vizSnackbar.dart';
 import '../session.dart';
+import 'home.dart';
 
 
 class MenuDrawer extends StatefulWidget {
@@ -42,15 +43,19 @@ class MenuDrawerState extends State<MenuDrawer> {
       ),
     ));
 
-
     bool hasAccessToTaskView = true;
     bool hasAccessToManagerView = true;
 
     if(hasAccessToTaskView){
-      menuChildren.add(MenuDrawerItem('My Tasks', (){}, selected: true));
+      menuChildren.add(MenuDrawerItem('My Tasks', (){
+        Navigator.pushReplacement(context, MaterialPageRoute<Home>(builder: (BuildContext context) => Home(HomeViewType.TaskView)));
+      }, selected: true));
     }
+
     if(hasAccessToManagerView){
-      menuChildren.add(MenuDrawerItem('Manager Summary', (){}, selected: false));
+      menuChildren.add(MenuDrawerItem('Manager Summary', (){
+        Navigator.pushReplacement(context, MaterialPageRoute<Home>(builder: (BuildContext context) => Home(HomeViewType.ManagerView)));
+      }, selected: false));
     }
 
     menuChildren.add(MenuDrawerItem('My Profile', (){
