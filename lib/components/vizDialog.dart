@@ -2,6 +2,7 @@ import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 
 class VizDialog {
+  @deprecated
   static Flushbar LoadingBar({String message = 'Wait...'}) {
     Flushbar fb = Flushbar(message: message, showProgressIndicator: true, animationDuration: Duration(milliseconds: 500));
     return fb;
