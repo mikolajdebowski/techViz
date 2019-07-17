@@ -10,10 +10,11 @@ class SlotMachineRouting implements IRouting<SlotMachine> {
   StreamController<SlotMachine> Listen() {
     StreamController<SlotMachine> _controller = StreamController<SlotMachine>();
     final StreamController<dynamic> _queueController = MessageClient().ListenQueue("mobile.machineStatus", (dynamic sm){
-      dynamic decoded = jsonDecode(sm.toString());
-      dynamic startedAt = decoded['startedAt'];
 
-      (decoded['data'] as List<dynamic>).forEach((dynamic entry){
+      String startedAt = sm['startedAt'] as String;
+      List<dynamic> data = sm['data'] as List<dynamic>;
+
+      data.forEach((dynamic entry){
         entry['startedAt'] = startedAt;
         _controller.add(parser(entry));
       });
