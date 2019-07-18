@@ -17,8 +17,8 @@ class SlotFloor extends StatefulWidget {
 }
 
 class SlotFloorState extends State<SlotFloor> with WidgetsBindingObserver {
-  bool loading = true;
-
+  bool _loading;
+  final double rowHeight = 45.0;
   final FocusNode _txtSearchFocusNode = FocusNode();
   final TextEditingController _txtSearchController = TextEditingController();
   final SlotFloorRepository _repository = Repository().slotFloorRepository;
@@ -31,22 +31,16 @@ class SlotFloorState extends State<SlotFloor> with WidgetsBindingObserver {
 
     _txtSearchController.addListener(_searchDispatch);
 
-    fetctData();
-  }
+    _loading = true;
 
-  void fetctData(){
-    setState(() {
-      loading = true;
-    });
-
-    _repository.fetch().then((dynamic fool) {
+    //this fetch pulls data from processor and pushs to the subject
+    _repository.fetch().then((dynamic d){
       setState(() {
-        loading = false;
+        _loading = false;
       });
       _repository.listenAsync();
-
     }).catchError((dynamic error) {
-      loading = false;
+      _loading = false;
       VizAlert.Show(context, error.toString());
     });
   }
@@ -83,9 +77,11 @@ class SlotFloorState extends State<SlotFloor> with WidgetsBindingObserver {
         updatedAt: result['updatedAt'],
         machineStatusID: result['reservationStatusId'] == '0' ? '1' : '3',
         machineStatusDescription: slot.machineStatusDescription,
-        playerID: slot.playerID
+        playerID: slot.playerID,
+        dirty: true
       );
-      _repository.pushToController(slotToPush, 'RESERVATION');
+
+      _repository.updateLocalCache([slotToPush], 'RESERVATION');
     });
   }
 
@@ -132,8 +128,9 @@ class SlotFloorState extends State<SlotFloor> with WidgetsBindingObserver {
       var copy = slotMachine;
       copy.machineStatusID = reservationStatusId == '0' ? '1' : '3';
       copy.updatedAt = DateTime.parse(result['sentAt'].toString());
+      copy.dirty = true;
 
-      _repository.pushToController(copy, 'CANCEL');
+      _repository.updateLocalCache([copy], 'CANCEL');
 
       _loadingBar.dismiss();
     }).catchError((dynamic error){
@@ -141,7 +138,10 @@ class SlotFloorState extends State<SlotFloor> with WidgetsBindingObserver {
     });
   }
 
-  Image getIconForMachineStatus(String statusID) {
+  Widget getIconForMachineStatus(String statusID, bool dirty) {
+    if(dirty)
+      return CircularProgressIndicator();
+
     String iconName;
     Color color;
     switch (statusID) {
@@ -162,12 +162,12 @@ class SlotFloorState extends State<SlotFloor> with WidgetsBindingObserver {
         color = Colors.red;
         break;
     }
-    return Image.asset("assets/images/ic_machine_$iconName.png", color: color);
+    return SizedBox(child: Image.asset("assets/images/ic_machine_$iconName.png", color: color), height: rowHeight*0.7,);
   }
 
   @override
   Widget build(BuildContext context) {
-    var searchComponent = Expanded(
+    Expanded searchComponent = Expanded(
         child: VizElevated(
             customWidget: Row(
       children: <Widget>[
@@ -186,12 +186,12 @@ class SlotFloorState extends State<SlotFloor> with WidgetsBindingObserver {
     )));
 
     //LOADING INDICATOR
-    var loadindIndicator = Center(child: Center(child: CircularProgressIndicator()));
-    var rowHeight = 45.0;
-    var borderColor = Border.all(color: Colors.white30, width: 0.5);
+    Center loadindIndicator = Center(child: Center(child: CircularProgressIndicator()));
+
+    Border borderColor = Border.all(color: Colors.white30, width: 0.5);
 
     //HEADER
-    var header = Row(
+    Row header = Row(
       children: <Widget>[
         headerColumn(1, 'StandID'),
         headerColumn(5, 'Theme'),
@@ -201,14 +201,14 @@ class SlotFloorState extends State<SlotFloor> with WidgetsBindingObserver {
     );
 
     //GRID STUFF
-    var txtStyle = TextStyle(color: Colors.black54);
-    var decorationEven = BoxDecoration(border: borderColor, color: Color(0xFFfafafa));
-    var decorationOdd = BoxDecoration(border: borderColor, color: Color(0xFFeef5f5));
+    TextStyle txtStyle = TextStyle(color: Colors.black54);
+    BoxDecoration decorationEven = BoxDecoration(border: borderColor, color: Color(0xFFfafafa));
+    BoxDecoration decorationOdd = BoxDecoration(border: borderColor, color: Color(0xFFeef5f5));
 
-    final formatCurrency = NumberFormat.simpleCurrency();
+    NumberFormat formatCurrency = NumberFormat.simpleCurrency();
 
-    var builder = StreamBuilder<List<SlotMachine>>(
-        stream: _repository.remoteSlotMachineController.stream,
+    StreamBuilder builder = StreamBuilder<List<SlotMachine>>(
+        stream: _repository.slotMachineSubject.stream,
         builder: (BuildContext context, AsyncSnapshot<List<SlotMachine>> snapshot) {
           if (!snapshot.hasData)
             return Center(child: CircularProgressIndicator());
@@ -271,22 +271,24 @@ class SlotFloorState extends State<SlotFloor> with WidgetsBindingObserver {
                       flex: 1,
                       child: GestureDetector(
                         onTap: () {
+                          if(slot.dirty)
+                            return;
+
                           if(slot.machineStatusID == '3')
                             _showReservationView(slot);
                           else if(slot.machineStatusID == '1')
-                          _showReservationCancelDialog(slot);
+                            _showReservationCancelDialog(slot);
                         },
-                        child:
-                            Container(height: rowHeight, padding: EdgeInsets.all(5.0), decoration: decorationCustom, child: getIconForMachineStatus(slot.machineStatusID)),
+                        child: Container(decoration: decorationCustom, constraints: BoxConstraints.expand(height: rowHeight), child: Center(child: getIconForMachineStatus(slot.machineStatusID, slot.dirty)),),
                       )),
                 ]);
               });
         });
 
-    var body = Container(
+    Container body = Container(
       decoration: BoxDecoration(gradient: LinearGradient(colors: const [Color(0xFF586676), Color(0xFF8B9EA7)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated)),
       child: Column(
-        children: <Widget>[header, Expanded(child: loading ? loadindIndicator : Container(child: builder, color: Colors.white))],
+        children: <Widget>[header, Expanded(child: _loading ? loadindIndicator : Container(child: builder, color: Colors.white))],
       ),
     );
 
@@ -294,9 +296,9 @@ class SlotFloorState extends State<SlotFloor> with WidgetsBindingObserver {
   }
 
   Expanded headerColumn(int flex, String title) {
-    var borderColor = Border.all(color: Colors.grey, width: 0.5);
-    var decorationHeader = BoxDecoration(border: borderColor, color: Color(0xFF505b6a));
-    var rowHeight = 25.0;
+    Border borderColor = Border.all(color: Colors.grey, width: 0.5);
+    BoxDecoration decorationHeader = BoxDecoration(border: borderColor, color: Color(0xFF505b6a));
+    double rowHeight = 25.0;
 
     return Expanded(
       flex: flex,
