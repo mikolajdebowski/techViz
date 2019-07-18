@@ -1,23 +1,34 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:techviz/model/slotMachine.dart';
-import 'package:techviz/repository/async/IRouting.dart';
 import 'package:techviz/repository/async/MessageClient.dart';
 
-class SlotMachineRouting implements IRouting<SlotMachine> {
+abstract class ISlotMachineRouting{
+  StreamController<List<SlotMachine>> Listen();
+  Future PublishMessage(dynamic message);
+  SlotMachine parser(dynamic json);
+}
+
+class SlotMachineRouting implements ISlotMachineRouting {
+  String listeningRoutingKey = "mobile.machineStatus";
+  String publishRoutingKey = "mobile.reservation";
 
   @override
-  StreamController<SlotMachine> Listen() {
-    StreamController<SlotMachine> _controller = StreamController<SlotMachine>();
-    final StreamController<dynamic> _queueController = MessageClient().ListenQueue("mobile.machineStatus", (dynamic sm){
+  StreamController<List<SlotMachine>> Listen() {
+    StreamController<List<SlotMachine>> _controller = StreamController<List<SlotMachine>>();
+    final StreamController<dynamic> _queueController = MessageClient().ListenQueue(listeningRoutingKey, (dynamic sm){
 
       String startedAt = sm['startedAt'] as String;
       List<dynamic> data = sm['data'] as List<dynamic>;
 
+      List<SlotMachine> outputList = [];
+
       data.forEach((dynamic entry){
         entry['startedAt'] = startedAt;
-        _controller.add(parser(entry));
+        outputList.add(parser(entry));
       });
+
+      _controller.add(outputList);
+
     },  appendDeviceID: false );
 
     _controller.onCancel = (){
@@ -29,11 +40,13 @@ class SlotMachineRouting implements IRouting<SlotMachine> {
 
   @override
   Future PublishMessage(dynamic message) {
-    return MessageClient().PublishMessage(message, "mobile.reservation", wait: true);
+    return MessageClient().PublishMessage(message, publishRoutingKey, wait: true);
   }
 
+  @override
   SlotMachine parser(dynamic json){
     return SlotMachine(
+      dirty: false,
       standID: json['standId'].toString(),
       machineStatusID:  json['statusId'].toString(),
       machineStatusDescription: json['statusDescription'].toString(),

@@ -1,8 +1,9 @@
 import 'dart:async';
+import 'package:rxdart/rxdart.dart';
 import 'package:techviz/model/slotMachine.dart';
-import 'package:techviz/repository/async/IRouting.dart';
-import 'package:techviz/repository/cache/slotMachineCache.dart';
+import 'package:synchronized/synchronized.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
+import 'async/SlotMachineRouting.dart';
 
 abstract class ISlotFloorRemoteRepository {
   Future<List<Map>> fetch();
@@ -11,18 +12,19 @@ abstract class ISlotFloorRemoteRepository {
 
 class SlotFloorRepository {
   ISlotFloorRemoteRepository remoteRepository;
-  IRouting<SlotMachine> remoteRouting;
+  ISlotMachineRouting remoteRouting;
 
-  StreamController<SlotMachine> _slotMachineController;
-  StreamController<List<SlotMachine>> _remoteSlotMachineController;
-  final SlotMachineCache _cache = SlotMachineCache();
+  List<SlotMachine> _cachedLocalData = [];
+  ReplaySubject<List<SlotMachine>> _slotMachineReplaySubject;
+  StreamController<List<SlotMachine>> _slotMachineRemoteStreamController;
 
-  StreamController<List<SlotMachine>> get remoteSlotMachineController{
-    return _remoteSlotMachineController;
-  }
 
   SlotFloorRepository(this.remoteRepository, this.remoteRouting) {
-    _remoteSlotMachineController = StreamController<List<SlotMachine>>();
+    _slotMachineReplaySubject = ReplaySubject<List<SlotMachine>>();
+  }
+
+  ReplaySubject<List<SlotMachine>> get slotMachineSubject{
+    return _slotMachineReplaySubject;
   }
 
   Future fetch() {
@@ -34,49 +36,82 @@ class SlotFloorRepository {
         return SlotMachine(
           standID: map['StandID'].toString(),
           machineTypeName: map['MachineTypeName'].toString(),
-          machineStatusID: map['MachineStatusID'].toString(),
+          machineStatusID: map['StatusID'].toString(),
           machineStatusDescription: map['StatusDescription'].toString(),
           denom: double.parse(map['Denom'].toString()),
-          updatedAt: DateTime.now().toUtc()
+          updatedAt: DateTime.now().toUtc(),
         );
       }
 
       List<SlotMachine> parsed = data.map<SlotMachine>((Map<dynamic,dynamic> map) => parser(map)).toList();
-      _cache.data = parsed;
-      _remoteSlotMachineController.add(_cache.data);
+      _cachedLocalData = parsed;
+      _slotMachineReplaySubject.add(_cachedLocalData);
       _completer.complete();
     });
     return _completer.future;
   }
 
-  void pushToController(SlotMachine received, String from) async {
-    await _cache.updateEntry(received, from);
-    _remoteSlotMachineController.add(_cache.data);
+  Future<void> _updateLocalDataEntry(SlotMachine received, String from){
+    return Lock().synchronized((){
+      int idx = _cachedLocalData.indexWhere((SlotMachine _sm) => _sm.standID == received.standID);
+      if (idx >= 0) {
+        if (received.updatedAt.compareTo(_cachedLocalData[idx].updatedAt) >= 0) {
+          _cachedLocalData[idx].machineStatusID = received.machineStatusID;
+          _cachedLocalData[idx].updatedAt = received.updatedAt;
+          _cachedLocalData[idx].dirty = received.dirty;
+        }
+      }
+      else{
+        _cachedLocalData.add(received);
+      }
+    });
+  }
+
+  void updateLocalCache(List<SlotMachine> received, String from) async {
+    Future.forEach(received, (SlotMachine slotMachine) async{
+      await _updateLocalDataEntry(slotMachine, from);
+    });
+    _slotMachineReplaySubject.add(_cachedLocalData);
   }
 
   void listenAsync() {
-    _slotMachineController = remoteRouting.Listen();
-    _slotMachineController.stream.listen((SlotMachine sm) {
-      pushToController(sm, 'EVENT');
+    _slotMachineRemoteStreamController = remoteRouting.Listen();
+    _slotMachineRemoteStreamController.stream.asBroadcastStream().listen((List<SlotMachine> fromRemote){
+      updateLocalCache(fromRemote, 'EVENT');
     });
   }
 
   void cancelAsync() {
-    if(_slotMachineController!=null && _slotMachineController.isClosed==false){
-      _slotMachineController.close();
+    if(_slotMachineRemoteStreamController!=null && _slotMachineRemoteStreamController.isClosed==false){
+      _slotMachineRemoteStreamController.close();
     }
   }
 
   List<SlotMachine> filter(String key) {
     if (key == null || key.isEmpty)
-      return _cache.data;
+      return _cachedLocalData;
 
-    Iterable<SlotMachine> it = _cache.data.where((SlotMachine sm) => sm.standID.contains(key));
+    Iterable<SlotMachine> it = _cachedLocalData.where((SlotMachine sm) => sm.standID.contains(key));
     if (it != null) {
       return it.toList();
     }
     return [];
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   Future setReservation(String userID, String standId, String playerID, String time) async {
     Completer _completer = Completer<void>();
@@ -109,6 +144,13 @@ class SlotFloorRepository {
 
     return _completer.future;
   }
+
+
+
+
+
+
+
 
   Future<List<SlotMachine>> slotFloorSummary(){
     Completer<List<SlotMachine>> _completer = Completer<List<SlotMachine>>();
