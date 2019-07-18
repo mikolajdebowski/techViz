@@ -50,10 +50,11 @@ class MenuDrawerState extends State<MenuDrawer> {
           children: <Widget>[
             Text(
               userName,
+              key: Key('userNameText'),
               style: TextStyle(fontSize: 20),
               textAlign: TextAlign.left,
             ),
-            Text('$userID')
+            Text('$userID', key: Key('userIDText'))
           ],
         ),
       ),
@@ -63,20 +64,21 @@ class MenuDrawerState extends State<MenuDrawer> {
     if(hasAccessToTaskView){
       menuChildren.add(MenuDrawerItem('My Tasks', (){
         Navigator.pushReplacement(context, MaterialPageRoute<Home>(builder: (BuildContext context) => Home(HomeViewType.TaskView)));
-      }, selected: widget.holderKey is LabeledGlobalKey<TaskViewState>));
+      }, selected: widget.holderKey is LabeledGlobalKey<TaskViewState>, key: Key('myTasksItemKey')));
     }
 
     if(hasAccessToManagerView){
       menuChildren.add(MenuDrawerItem('Manager Summary', (){
         Navigator.pushReplacement(context, MaterialPageRoute<Home>(builder: (BuildContext context) => Home(HomeViewType.ManagerView)));
-      }, selected: widget.holderKey is LabeledGlobalKey<ManagerViewState>));
+      }, selected: widget.holderKey is LabeledGlobalKey<ManagerViewState>, key: Key('managerSummaryItemKey')));
     }
 
     menuChildren.add(MenuDrawerItem('My Profile', (){
       Navigator.pushNamed(context, '/profile');
-    }));
-    menuChildren.add(MenuDrawerItem('Settings', (){}, disabled: true));
-    menuChildren.add(MenuDrawerItem('Help', (){}, disabled: true));
+    }, key: Key('myProfileItemKey')));
+    menuChildren.add(MenuDrawerItem('Settings', (){}, disabled: true, key: Key('settingsItemKey')));
+    menuChildren.add(MenuDrawerItem('Help', (){}, disabled: true, key: Key('helpItemKey')));
+    menuChildren.add(MenuDrawerItem('About', (){}, disabled: true, key: Key('aboutItemKey')));
 
     return Drawer(
       child: Container(
@@ -91,6 +93,7 @@ class MenuDrawerState extends State<MenuDrawer> {
               Align(
                 alignment: Alignment.bottomCenter,
                 child: InkWell(
+                  key: Key('logoutKey'),
                   onTap: logOut,
                   child: Padding(
                     padding: EdgeInsets.all(10),
@@ -107,22 +110,22 @@ class MenuDrawerState extends State<MenuDrawer> {
   void logOut(){
       final VizSnackbar _processingBar = VizSnackbar.Loading('Logging out...');
       _processingBar.show(context);
-
+      print('logout tapped');
       Session().logOut().then((dynamic d){
+        print('logOut session finished');
+
         _processingBar.dismiss();
         Navigator.pushReplacementNamed(context, '/login');
       }).catchError((dynamic error){
         VizSnackbar.Error(error.toString()).show(context);
       });
   }
-
-
 }
 
 
 
 class MenuDrawerItem extends StatelessWidget{
-  final Color bgColor = Color(0xFFEAEDF2);
+  final Color selectedBackgroundColor = Color(0xFFEAEDF2);
   final Color selectedFontColor = Color(0xFF415990);
 
   final String text;
@@ -130,7 +133,7 @@ class MenuDrawerItem extends StatelessWidget{
   final bool selected;
   final bool disabled;
 
-  MenuDrawerItem(this.text, this.onItemTap, {this.selected = false, this.disabled = false});
+  MenuDrawerItem(this.text, this.onItemTap, {this.selected = false, this.disabled = false, Key key}) : super(key : key);
 
   @override
   Widget build(BuildContext context) {
@@ -139,7 +142,7 @@ class MenuDrawerItem extends StatelessWidget{
       child: SizedBox(
         width: double.infinity,
         child: Material(
-            color: selected ? bgColor : Colors.white,
+            color: selected ? selectedBackgroundColor : Colors.white,
             borderRadius: BorderRadius.all(Radius.circular(3)),
             child: InkWell(
               onTap: onItemTap,

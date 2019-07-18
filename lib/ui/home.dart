@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:techviz/model/role.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
@@ -108,7 +107,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     }
     assert(homeChildKey!=null);
   }
-  
+
   //EVENTS
   void onUserSectionsChangedCallback(List<UserSection> sections) {
     print("onUserSectionsChangedCallback: ${sections.length.toString()}");
