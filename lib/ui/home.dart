@@ -4,6 +4,7 @@ import 'package:techviz/repository/repository.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizSelector.dart';
+import 'package:techviz/repository/userStatusRepository.dart';
 import 'package:techviz/ui/managerView.dart';
 import 'package:techviz/model/userSection.dart';
 import 'package:techviz/model/userStatus.dart';
@@ -37,9 +38,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   List<UserSection> currentSections = <UserSection>[];
   UserStatus currentUserStatus;
 
-  String _userStatusText;
-  bool _isOnline = false;
-
   String get getSectionsText {
     String sections = "";
     if (currentSections.isEmpty) {
@@ -66,17 +64,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
     WidgetsBinding.instance.addObserver(this);
     loadDefaultSections();
+    loadCurrentStatus();
     loadView();
-  }
-
-  void loadView() {
-    assert(homeViewType!=null);
-    if(homeViewType == HomeViewType.ManagerView){
-      homeChildKey = GlobalKey<ManagerViewState>();
-    }else if(homeViewType == HomeViewType.TaskView){
-      homeChildKey = GlobalKey<TaskViewState>();
-    }
-    assert(homeChildKey!=null);
   }
 
   @override
@@ -85,7 +74,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     super.dispose();
   }
 
-  void goToMenu() {
+  void openDrawer() {
     scaffoldStateKey.currentState.openDrawer();
   }
 
@@ -99,6 +88,28 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     });
   }
 
+  void loadCurrentStatus() {
+
+    UserStatusRepository userStatusRepo = Repository().userStatusRepository;
+    ISession session = Session();
+    userStatusRepo.getStatuses().then((List<UserStatus> list) {
+      setState(() {
+        currentUserStatus = list.where((UserStatus status)=> status.id == session.user.userStatusID.toString()).first;
+      });
+    });
+  }
+
+  void loadView() {
+    assert(homeViewType!=null);
+    if(homeViewType == HomeViewType.ManagerView){
+      homeChildKey = GlobalKey<ManagerViewState>();
+    }else if(homeViewType == HomeViewType.TaskView){
+      homeChildKey = GlobalKey<TaskViewState>();
+    }
+    assert(homeChildKey!=null);
+  }
+  
+  //EVENTS
   void onUserSectionsChangedCallback(List<UserSection> sections) {
     print("onUserSectionsChangedCallback: ${sections.length.toString()}");
     setState(() {
@@ -129,8 +140,9 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
           Session().UpdateConnectionStatus(ConnectionStatus.Offline);
         }
 
-        _userStatusText = userStatusSelected.description;
-        _isOnline = userStatusSelected.isOnline;
+        setState(() {
+          currentUserStatus = userStatusSelected;
+        });
 
         homeChildKey.currentState.onUserStatusChanged(userStatusSelected); // TODO(rmathias): NULL?
       }
@@ -146,17 +158,17 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    VizButton leadingMenuButton = VizButton(title: 'Menu', onTap: (){ goToMenu(); });
+    VizButton leadingMenuButton = VizButton(title: 'Menu', onTap: (){ openDrawer(); });
 
-    String statusText = _userStatusText == null ? "OFF SHIFT" : _userStatusText;
-    Color statusTextColor = _isOnline == false ? Colors.red : Colors.black;
+    String _statusText = currentUserStatus == null ? '-' : currentUserStatus.description;
+    Color _statusTextColor = currentUserStatus == null || currentUserStatus.isOnline == false ? Colors.red : Colors.black;
 
     Column statusInnerWidget = Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Text('My Status', style: TextStyle(color: Color(0xFF566474), fontSize: 13.0)),
-        Text(statusText, style: TextStyle(color: statusTextColor, fontSize: 16.0), overflow: TextOverflow.ellipsis)
+        Text(_statusText, style: TextStyle(color: _statusTextColor, fontSize: 16.0), overflow: TextOverflow.ellipsis)
       ],
     );
 
@@ -191,6 +203,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   Widget get bodyWidget{
     return homeChildKey is LabeledGlobalKey<ManagerViewState> ? ManagerView(homeChildKey) : TaskView(homeChildKey);
   }
+
+
 }
 
 abstract class TechVizHome {
