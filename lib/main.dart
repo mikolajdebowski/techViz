@@ -3,10 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
 import 'package:techviz/ui/about.dart';
 import 'package:techviz/ui/config.dart';
-import 'package:techviz/ui/home.dart';
 import 'package:techviz/ui/logging.dart';
 import 'package:techviz/ui/login.dart';
-import 'package:techviz/ui/menu.dart';
 import 'package:techviz/ui/profile.dart';
 import 'package:techviz/repository/async/MessageClient.dart';
 import 'package:techviz/ui/splash.dart';
@@ -66,7 +64,6 @@ class TechVizAppState extends State<TechVizApp> with WidgetsBindingObserver {
       title: 'TechViz',
       home: Splash(),
       routes: <String, WidgetBuilder> {
-        '/menu': (BuildContext context) => Menu(),
         '/login': (BuildContext context) => Login(),
         '/config': (BuildContext context) => Config(),
         '/profile': (BuildContext context) => Profile(),
