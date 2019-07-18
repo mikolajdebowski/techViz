@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:techviz/components/vizSnackbar.dart';
+import 'package:techviz/model/role.dart';
+import 'package:techviz/ui/taskView.dart';
 import '../session.dart';
 import 'home.dart';
+import 'managerView.dart';
 
 
 class MenuDrawer extends StatefulWidget {
+  final GlobalKey holderKey;
+  const MenuDrawer(this.holderKey);
+
   @override
   State<StatefulWidget> createState() => MenuDrawerState();
 }
@@ -15,9 +21,19 @@ class MenuDrawerState extends State<MenuDrawer> {
   final Color headerBorderColor = Color(0xFFCCCCCC);
   final Color selectedFontColor = Color(0xFF415990);
 
+
+  bool get hasAccessToManagerView{
+    Role role = Session().role;
+    return role.isManager || role.isSupervisor || role.isTechManager || role.isTechSupervisor;
+  }
+
+  bool get hasAccessToTaskView{
+    Role role = Session().role;
+    return role.isAttendant || role.isTechnician;
+  }
+
   @override
   Widget build(BuildContext context) {
-
     String userName = Session().user.userName;
     String userID = Session().user.userID;
 
@@ -43,24 +59,23 @@ class MenuDrawerState extends State<MenuDrawer> {
       ),
     ));
 
-    bool hasAccessToTaskView = true;
-    bool hasAccessToManagerView = true;
 
     if(hasAccessToTaskView){
       menuChildren.add(MenuDrawerItem('My Tasks', (){
         Navigator.pushReplacement(context, MaterialPageRoute<Home>(builder: (BuildContext context) => Home(HomeViewType.TaskView)));
-      }, selected: true));
+      }, selected: widget.holderKey is LabeledGlobalKey<TaskViewState>));
     }
 
     if(hasAccessToManagerView){
       menuChildren.add(MenuDrawerItem('Manager Summary', (){
         Navigator.pushReplacement(context, MaterialPageRoute<Home>(builder: (BuildContext context) => Home(HomeViewType.ManagerView)));
-      }, selected: false));
+      }, selected: widget.holderKey is LabeledGlobalKey<ManagerViewState>));
     }
 
     menuChildren.add(MenuDrawerItem('My Profile', (){
       Navigator.pushNamed(context, '/profile');
     }));
+    menuChildren.add(MenuDrawerItem('Settings', (){}, disabled: true));
     menuChildren.add(MenuDrawerItem('Help', (){}, disabled: true));
 
     return Drawer(
@@ -100,6 +115,8 @@ class MenuDrawerState extends State<MenuDrawer> {
         VizSnackbar.Error(error.toString()).show(context);
       });
   }
+
+
 }
 
 

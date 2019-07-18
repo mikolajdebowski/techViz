@@ -184,7 +184,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       backgroundColor: Colors.black,
       appBar: ActionBar(title: 'TechViz', leadingWidget: leadingMenuButton, centralWidgets: actionBarCentralWidgets),
       body: SafeArea(child: bodyWidget),
-      drawer: SafeArea(child: MenuDrawer()),
+      drawer: SafeArea(child: MenuDrawer(homeChildKey)),
     );
   }
 
