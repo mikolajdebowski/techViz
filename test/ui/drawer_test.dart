@@ -6,7 +6,6 @@ import 'package:techviz/model/role.dart';
 import 'package:techviz/model/user.dart';
 import 'package:techviz/session.dart';
 import 'package:techviz/ui/drawer.dart';
-import 'package:techviz/ui/login.dart';
 import 'package:techviz/ui/managerView.dart';
 import 'package:techviz/ui/taskView.dart';
 

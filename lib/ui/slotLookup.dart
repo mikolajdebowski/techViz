@@ -1,11 +1,10 @@
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:techviz/components/VizAlert.dart';
 import 'package:techviz/components/vizActionBar.dart';
-import 'package:techviz/components/vizDialog.dart';
 import 'package:techviz/components/vizElevated.dart';
+import 'package:techviz/components/vizSnackbar.dart';
 import 'package:techviz/ui/machineReservation.dart';
 import 'package:techviz/model/slotMachine.dart';
 import 'package:techviz/repository/slotFloorRepository.dart';
@@ -120,8 +119,8 @@ class SlotFloorState extends State<SlotFloor> with WidgetsBindingObserver {
   }
 
   void cancelReservation(SlotMachine slotMachine){
-    final Flushbar _loadingBar = VizDialog.LoadingBar(message: 'Cancelling reservation...');
-    _loadingBar.show(context);
+    final VizSnackbar _snackbar = VizSnackbar.Loading('Cancelling reservation...');
+    _snackbar.show(context);
 
     _repository.cancelReservation(slotMachine.standID).then((dynamic result) {
       var reservationStatusId = result['reservationStatusId'].toString();
@@ -132,9 +131,9 @@ class SlotFloorState extends State<SlotFloor> with WidgetsBindingObserver {
 
       _repository.updateLocalCache([copy], 'CANCEL');
 
-      _loadingBar.dismiss();
+      _snackbar.dismiss();
     }).catchError((dynamic error){
-      _loadingBar.dismiss();
+      _snackbar.dismiss();
     });
   }
 

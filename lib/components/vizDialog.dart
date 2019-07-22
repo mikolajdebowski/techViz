@@ -1,13 +1,6 @@
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 
 class VizDialog {
-  @deprecated
-  static Flushbar LoadingBar({String message = 'Wait...'}) {
-    Flushbar fb = Flushbar(message: message, showProgressIndicator: true, animationDuration: Duration(milliseconds: 500));
-    return fb;
-  }
-
   static RoundedRectangleBorder defaultBorder = RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5.0)));
 
   static Future<bool> Alert(BuildContext context, String title, String message) {
