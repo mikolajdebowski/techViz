@@ -80,28 +80,28 @@ class MenuDrawerState extends State<MenuDrawer> {
     menuChildren.add(MenuDrawerItem('Help', (){}, disabled: true, key: Key('helpItemKey')));
     menuChildren.add(MenuDrawerItem('About', (){}, disabled: true, key: Key('aboutItemKey')));
 
+
+    menuChildren.add(Align(
+      alignment: Alignment.bottomCenter,
+      child: InkWell(
+        key: Key('logoutKey'),
+        onTap: logOut,
+        child: Padding(
+          padding: EdgeInsets.all(10),
+          child: Text('LOG OUT', style: TextStyle(color: Colors.red)),
+        ),
+      ),
+    ));
+
+
+
     return Drawer(
       child: Container(
-          child: Stack(
-            children: <Widget>[
-              SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: menuChildren,
-                ),
-              ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: InkWell(
-                  key: Key('logoutKey'),
-                  onTap: logOut,
-                  child: Padding(
-                    padding: EdgeInsets.all(10),
-                    child: Text('LOG OUT', style: TextStyle(color: Colors.red)),
-                  ),
-                ),
-              )
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: menuChildren,
+            ),
           ),
           constraints: BoxConstraints.expand()),
     );
