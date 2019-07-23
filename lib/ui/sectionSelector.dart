@@ -1,9 +1,9 @@
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizDialog.dart';
+import 'package:techviz/components/vizSnackbar.dart';
 import 'package:techviz/model/section.dart';
 import 'package:techviz/model/userSection.dart';
 import 'package:techviz/presenter/sectionListPresenter.dart';
@@ -27,7 +27,6 @@ class SectionSelectorState extends State<SectionSelector>
     implements ISectionListPresenter<SectionModelPresenter> {
   List<SectionModelPresenter> sectionList = <SectionModelPresenter>[];
   SectionListPresenter sectionPresenter;
-  Flushbar _loadingBar;
 
   @override
   void initState() {
@@ -35,15 +34,12 @@ class SectionSelectorState extends State<SectionSelector>
 
     sectionPresenter = SectionListPresenter(this);
     sectionPresenter.loadSections();
-
-    _loadingBar = VizDialog.LoadingBar(message: 'Sending request...');
   }
 
   void onTap(BuildContext context) async {
-    if (_loadingBar.isShowing())
-      return;
 
-    _loadingBar.show(context);
+    final VizSnackbar _snackbar = VizSnackbar.Loading('Sending request...');
+    _snackbar.show(context);
 
     Session session = Session();
     List<String> sections = sectionList.where((SectionModelPresenter s) => s.selected).map((SectionModelPresenter s)=>s.sectionID).toList();
@@ -52,7 +48,7 @@ class SectionSelectorState extends State<SectionSelector>
     dynamic toSubmit = {'userID': session.user.userID, 'sections': sections, 'deviceID': info.DeviceID};
 
     SectionRouting().PublishMessage(toSubmit).then((dynamic list) async{
-      _loadingBar.dismiss();
+      _snackbar.dismiss();
 
       List<Section> toUpdateLocally = list as List<Section>;
 
@@ -63,7 +59,7 @@ class SectionSelectorState extends State<SectionSelector>
       backToMain(sectionToMain);
 
     }).catchError((dynamic error){
-      _loadingBar.dismiss();
+      _snackbar.dismiss();
       VizDialog.Alert(context, 'Error', error.toString());
     });
   }

@@ -3,14 +3,13 @@ import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizDialog.dart';
+import 'package:techviz/components/vizSnackbar.dart';
 import 'package:techviz/model/user.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/statusListPresenter.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/session.dart';
 import 'package:techviz/repository/userRepository.dart';
-import 'package:flushbar/flushbar.dart';
-
 class StatusSelector extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => StatusSelectorState();
@@ -20,8 +19,6 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
   List<UserStatus> statusList = <UserStatus>[];
   StatusListPresenter roleListPresenter;
   UserStatus selectedStatus;
-  Flushbar _loadingBar;
-
   int _preSelectedID;
 
   @override
@@ -31,27 +28,23 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
     _preSelectedID = Session().user.userStatusID;
     roleListPresenter = StatusListPresenter(this);
     roleListPresenter.loadUserStatus();
-
-    _loadingBar = VizDialog.LoadingBar(message: 'Sending request...');
   }
 
   void validate(BuildContext buildContext) async {
-    if (_loadingBar.isShowing())
-      return;
-
-    _loadingBar.show(buildContext);
+    final VizSnackbar _snackbar = VizSnackbar.Loading('Sending request...');
+    _snackbar.show(context);
 
     Session session = Session();
     UserRepository userRepository = Repository().userRepository;
     userRepository.update(session.user.userID, statusID: selectedStatus.id).then((int result) {
-      _loadingBar.dismiss();
+      _snackbar.dismiss();
 
       userRepository.getUser(session.user.userID).then((User user){
         Session().user = user;
         Navigator.of(context).pop<UserStatus>(selectedStatus);
       });
     }).catchError((dynamic error){
-      _loadingBar.dismiss();
+      _snackbar.dismiss();
       VizDialog.Alert(context, 'Error', error.toString());
     });
   }

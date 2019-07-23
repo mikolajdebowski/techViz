@@ -1,9 +1,10 @@
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizDialog.dart';
+
+import 'vizSnackbar.dart';
 
 class VizSelector extends StatefulWidget {
   const VizSelector(
@@ -27,28 +28,22 @@ class VizSelector extends StatefulWidget {
 }
 
 class VizSelectorState extends State<VizSelector> {
-  Flushbar _loadingBar;
   List<IVizSelectorOption> options;
 
   VizSelectorState(this.options);
 
-  @override
-  void initState() {
-    _loadingBar = VizDialog.LoadingBar(message: 'Sending request...');
-    super.initState();
-  }
-
   void onOkTap(BuildContext context){
-    _loadingBar.show(context);
+    final VizSnackbar snackbar = VizSnackbar.Loading('Sending request...');
+    snackbar.show(context);
 
     List<IVizSelectorOption> selectedOptions = options.where((IVizSelectorOption option) => option.selected).toList();
     widget.onOKTap(context, selectedOptions).then((bool done){
       if(done!=null && done){
-        _loadingBar.dismiss();
+        snackbar.dismiss();
         Navigator.of(context).maybePop(true);
       }
     }).catchError((dynamic error){
-      _loadingBar.dismiss();
+      snackbar.dismiss();
       VizDialog.Alert(context, 'Error', error.toString());
     });
   }

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:techviz/components/dataEntry/dataEntry.dart';
 import 'package:techviz/components/dataEntry/dataEntryCell.dart';
@@ -9,6 +8,7 @@ import 'package:techviz/components/vizDialog.dart';
 import 'package:techviz/components/vizListView.dart';
 import 'package:techviz/components/vizListViewRow.dart';
 import 'package:techviz/components/vizSelector.dart';
+import 'package:techviz/components/vizSnackbar.dart';
 import 'package:techviz/components/vizSummary.dart';
 import 'package:techviz/model/userSection.dart';
 import 'package:techviz/model/userStatus.dart';
@@ -272,8 +272,8 @@ class ManagerViewState extends State<ManagerView> implements TechVizHome, IManag
         );
       }).then((bool remove){
         if(remove !=null && remove){
-          final Flushbar _loadingBar = VizDialog.LoadingBar(message: 'Removing reservation...');
-          _loadingBar.show(context);
+          final VizSnackbar _snackbar = VizSnackbar.Loading('Removing reservation...');
+          _snackbar.show(context);
 
           Repository().slotFloorRepository.cancelReservation(standID).then((dynamic result) {
             setState(() {
@@ -282,9 +282,9 @@ class ManagerViewState extends State<ManagerView> implements TechVizHome, IManag
             });
             _presenter.loadSlotFloorSummary();
 
-            _loadingBar.dismiss();
+            _snackbar.dismiss();
           }).catchError((dynamic error){
-            _loadingBar.dismiss();
+            _snackbar.dismiss();
           });
         }
       });

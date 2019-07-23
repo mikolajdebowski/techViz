@@ -58,9 +58,8 @@ class Session extends PropertyChangeNotifier implements ISession{
     Repository().stopServices();
     Repository().disposeBlocs();
 
-    Session session = Session();
     UserRepository _repo = Repository().userRepository;
-    await _repo.update(session.user.userID, statusID: '10');
+    await _repo.update(user.userID, statusID: '10');
   }
 
   @override

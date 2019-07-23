@@ -1,9 +1,9 @@
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizDialog.dart';
+import 'package:techviz/components/vizSnackbar.dart';
 import 'package:techviz/model/reservationTime.dart';
 import 'package:techviz/repository/slotFloorRepository.dart';
 import 'package:techviz/repository/repository.dart';
@@ -133,14 +133,14 @@ class MachineReservationState extends State<MachineReservation> {
               _btnEnabled = false;
             });
 
-            final Flushbar _loadingBar = VizDialog.LoadingBar(message: 'Creating reservation...');
-            _loadingBar.show(context);
+            final VizSnackbar _snackbar = VizSnackbar.Loading('Creating reservation...');
+            _snackbar.show(context);
 
             Session session = Session();
             _slotMachineRepositoryRepo
                 .setReservation(session.user.userID, widget.standID, _txtControllerPlayerID.text, _ddbTimeReservation)
                 .then((dynamic result) {
-              _loadingBar.dismiss();
+              _snackbar.dismiss();
 
               String reservationStatusId = result['reservationStatusId'].toString();
 
@@ -156,7 +156,7 @@ class MachineReservationState extends State<MachineReservation> {
             }).catchError((dynamic error) {
               VizDialog.Alert(context, 'Error', error.toString());
             }).whenComplete(() {
-              _loadingBar.dismiss();
+              _snackbar.dismiss();
               _btnEnabled = true;
             });
           }

@@ -48,7 +48,19 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListView<Rol
     session.role = (await Repository().roleRepository.getAll(ids: [selectedRoleID])).first;
     session.user.userRoleID =  session.role.id;
 
-    Navigator.pushReplacement(context, MaterialPageRoute<Home>(builder: (BuildContext context) => Home()));
+    goToHomeGivingRole(session.role);
+  }
+
+  void goToHomeGivingRole(Role role){
+    HomeViewType homeViewType;
+    if(role.isManager || role.isSupervisor || role.isTechSupervisor || role.isTechManager){
+      homeViewType = HomeViewType.ManagerView;
+    }else if(role.isAttendant || role.isTechnician){
+      homeViewType = HomeViewType.TaskView;
+    }
+    assert(homeViewType!=null);
+
+    Navigator.pushReplacement(context, MaterialPageRoute<Home>(builder: (BuildContext context) => Home(homeViewType)));
   }
 
   @override
@@ -110,12 +122,12 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListView<Rol
   @override
   void onRoleListLoaded(List<Role> result) {
     if(result.length==1){
-      Navigator.pushReplacement(context, MaterialPageRoute<Home>(builder: (BuildContext context) => Home()));
+      goToHomeGivingRole(result[0]);
       return;
     }
+
     setState(() {
       roleList = result;
-
       var defaultUserRoleID = Session().user.userRoleID;
       if(defaultUserRoleID!=null){
         Iterable<Role> defaultRole = roleList.where((Role r) => r.id == defaultUserRoleID);
