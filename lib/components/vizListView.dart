@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -101,10 +102,13 @@ class VizListViewState extends State<VizListView> {
     );
 
     return SingleChildScrollView(
-        child: Padding(
-      padding: EdgeInsets.all(paddingValue),
-      child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [headerRow, listViewContainer]),
-    ));
+      child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Container(
+          decoration: BoxDecoration(color: Color(0xFFF1F1F1)),
+          child: Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: headerRow,
+          )), listViewContainer]),
+    );
   }
 }
 
@@ -117,12 +121,10 @@ class SwipeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(5),
-      child: FlatButton(
+    return FlatButton(
           color:  onPressed == null ? Color(0xFFC1C1C1): color,
           splashColor: onPressed == null ? Color(0xFFC1C1C1) : color,
-          child: Text(
+          child: AutoSizeText(
             text,
             maxLines: 1,
             style: TextStyle(color: onPressed == null ? Colors.grey[200]: Colors.white , fontSize: 10),
@@ -133,7 +135,7 @@ class SwipeButton extends StatelessWidget {
             }
           },
           materialTapTargetSize: MaterialTapTargetSize.padded,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3.0))),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero)
       );
   }
 }

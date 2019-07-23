@@ -47,8 +47,8 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
     BoxDecoration boxDecoration = BoxDecoration(
         borderRadius: BorderRadius.circular(4.0),
         border: Border.all(color: Color(0xFFFFFFFF)),
-        gradient: LinearGradient(
-            colors: const [Color(0xFF81919D), Color(0xFFAAB7BD)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated));
+        color: Color(0xFFFFFFFF)
+    );
 
 
     Container container;
@@ -93,8 +93,8 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
-              header,child
-
+              header,
+              child,
             ],
           ),
         );
