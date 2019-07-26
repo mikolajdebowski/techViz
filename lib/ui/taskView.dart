@@ -304,8 +304,6 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
         taskDetailsHeader.add(taskCustomer);
       }
 
-
-
       //primary action
       String primaryActionImageSource;
       String primaryActionTextSource;
@@ -314,19 +312,22 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
       switch(_selectedTask.taskStatus.id){
 
         case 1:
+        case 31:
           primaryActionImageSource = "assets/images/ic_task_acknowledge.png";
-          primaryActionTextSource = 'Acknowledge';
-          primaryActionCallBack = () => updateTaskStatus(_selectedTask, 2);
+          primaryActionTextSource = _selectedTask.isTechTask ? 'Tech Acknowledge' : 'Acknowledge';
+          primaryActionCallBack = () => updateTaskStatus(_selectedTask, _selectedTask.isTechTask == false ? 2 : 32);
           break;
         case 2:
+        case 32:
           primaryActionImageSource = "assets/images/ic_task_cardin.png";
-          primaryActionTextSource = 'Card in';
-          primaryActionCallBack = () => updateTaskStatus(_selectedTask, 3);
+          primaryActionTextSource = _selectedTask.isTechTask ? 'Tech Card in' : 'Tech Card';
+          primaryActionCallBack = () => updateTaskStatus(_selectedTask, _selectedTask.isTechTask == false ? 3 : 33);
           break;
         case 3:
+        case 33:
         case 5:
           primaryActionImageSource = "assets/images/ic_task_complete.png";
-          primaryActionTextSource = 'Complete';
+          primaryActionTextSource = _selectedTask.isTechTask ? 'Tech Complete' : 'Complete';
           primaryActionCallBack = () => updateTaskStatus(_selectedTask, 13);
           break;
       }
@@ -379,18 +380,17 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
 
     List<Widget> rightActionWidgets = <Widget>[];
     if (_selectedTask != null) {
-      if (_selectedTask.taskStatus.id == 2 || _selectedTask.taskStatus.id == 3) {
+      if ([2,3,32,33].contains(_selectedTask.taskStatus.id)) {
         Padding action = Padding(
           padding: EdgeInsets.only(top: 5, right: 5),
           child: VizTaskActionButton('Cancel', Colors.red, enabled: canTakeActions, icon: 'assets/images/ic_task_cancel.png' ,onTapCallback: () {
             _showCancellationDialog(_selectedTask.id);
           }),
-
         );
         rightActionWidgets.add(action);
       }
 
-      if (_selectedTask.taskStatus.id == 3) {
+      if ([3,33].contains(_selectedTask.taskStatus.id)) {
         Padding action = Padding(
           padding: EdgeInsets.only(top: 5, right: 5),
           child: VizTaskActionButton('Escalate', Colors.orange, enabled: canTakeActions, icon: 'assets/images/ic_task_escalate.png' , onTapCallback: () {

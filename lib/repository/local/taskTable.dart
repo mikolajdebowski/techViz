@@ -10,7 +10,6 @@ abstract class ITaskTable {
   Future<int> insertOrUpdate(dynamic toInsert);
   Future<int> invalidateTasks();
   Future<int> cleanUp();
-  Future<List<Task>> getOpenTasks(String userID);
   Future<Task> getTask(String taskID);
 }
 
@@ -39,7 +38,8 @@ class TaskTable extends LocalTable implements ITaskTable{
                   PLAYERFIRSTNAME TEXT,
                   PLAYERLASTNAME TEXT,
                   PLAYERTIER TEXT,
-                  PLAYERTIERCOLORHEX TEXT)
+                  PLAYERTIERCOLORHEX TEXT,
+                  ISTECHTASK INT)
               ''';
   }
 
@@ -79,6 +79,7 @@ class TaskTable extends LocalTable implements ITaskTable{
     return _completer.future;
   }
 
+  @deprecated
   @override
   Future<int> invalidateTasks() async
   {
@@ -119,30 +120,6 @@ class TaskTable extends LocalTable implements ITaskTable{
   }
 
   @override
-  Future<List<Task>> getOpenTasks(String userID) async {
-    String sql = "SELECT "
-        "t.*"
-        ", ts.TaskStatusDescription "
-        ", tt.TaskTypeDescription "
-        ", tu.ColorHex "
-        " FROM TASK t "
-        " INNER JOIN TaskStatus ts on t.TASKSTATUSID == ts.TaskStatusID "
-        " INNER JOIN TaskType tt on t.TASKTYPEID == tt.TaskTypeID "
-        " INNER JOIN TaskUrgency tu on t.TaskUrgencyID == tu.ID "
-        " WHERE t.TASKSTATUSID in (1,2,3) AND t.USERID = '$userID' "
-        " ORDER BY t.TASKCREATED ASC;";
-
-    List<Map<String, dynamic>> queryResult = await localRepo.db.rawQuery(sql);
-
-    List<Task> list = <Task>[];
-    queryResult.forEach((Map<String, dynamic> task) {
-      list.add(_fromMap(task));
-    });
-
-    return list;
-  }
-
-  @override
   Future<Task> getTask(String taskID) async {
     String sql = "SELECT "
         "t.* "
@@ -161,7 +138,8 @@ class TaskTable extends LocalTable implements ITaskTable{
   }
 
   Task _fromMap(Map<String, dynamic> task){
-    Task t = Task(
+
+    return Task(
         dirty: task['_DIRTY'] as int,
         version: task['_VERSION'] as int,
         userID: task['USERID'] as String,
@@ -177,9 +155,9 @@ class TaskTable extends LocalTable implements ITaskTable{
         playerTierColorHEX: task['PLAYERTIERCOLORHEX']!=null ? task['PLAYERTIERCOLORHEX'] as String : null,
         taskType: TaskType(taskTypeId: task['TASKTYPEID'] as int, description: task['TaskTypeDescription'].toString(), lookupName: task['TaskTypeLookupName'].toString()),
         taskStatus: TaskStatus(id: task['TASKSTATUSID'] as int, description: task['TaskStatusDescription'] as String),
-        urgencyHEXColor: task['ColorHex'] as String
+        urgencyHEXColor: task['ColorHex'] as String,
+        isTechTask: task['ISTECHTASK'] as int == 1
     );
 
-    return t;
   }
 }

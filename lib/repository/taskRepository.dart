@@ -22,11 +22,6 @@ class TaskRepository{
   TaskRouting taskRouting;
   TaskRepository(this.remoteRepository, this.localRepository, this.taskRouting);
 
-
-  Future<List<Task>> getOpenTasks(String userID) async {
-    return TaskTable(localRepository).getOpenTasks(userID);
-  }
-
   Future<Task> getTask(String taskID) async {
     return TaskTable(localRepository).getTask(taskID);
   }
@@ -89,8 +84,10 @@ class TaskRepository{
   }
 
   Future update(String taskID, {String taskStatusID, String cancellationReason, TaskUpdateCallBack callBack} ) async {
+    List<int> openTasksIDs = [1,2,3,31,32,33];
+
     List<dynamic> taskStatusCheck = await LocalRepository().db.rawQuery("SELECT TASKSTATUSID FROM TASK WHERE _ID = '$taskID';");
-    if(taskStatusCheck.isEmpty || [1,2,3].contains(taskStatusCheck.first['TASKSTATUSID']) == false){
+    if(taskStatusCheck.isEmpty || openTasksIDs.contains(taskStatusCheck.first['TASKSTATUSID']) == false){
       throw TaskNotAvailableException();
     }
 

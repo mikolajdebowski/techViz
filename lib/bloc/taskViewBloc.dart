@@ -10,6 +10,8 @@ import 'IViewBloc.dart';
 
 class TaskViewBloc implements IViewBloc{
 
+  List<int> openTasksIDs = [1,2,3,31,32,33];
+
   static final TaskViewBloc _instance = TaskViewBloc._();
   factory TaskViewBloc() => _instance;
   TaskViewBloc._();
@@ -48,9 +50,8 @@ class TaskViewBloc implements IViewBloc{
   //DATA BEING PUSHED BY SERVICE => FRESH DATA FROM THE SERVER
   void _handleRemoteTask(Task task){
     String userID = Session().user.userID;
-    List<int> openTasksIDs = [1,2,3];
-    int idx = _taskList.indexWhere((Task _task) => task.id == _task.id);
 
+    int idx = _taskList.indexWhere((Task _task) => task.id == _task.id);
     if(openTasksIDs.contains(task.taskStatus.id) && userID == task.userID){
       if(idx<0){
         print('STREAM: adding ${task.location} status ${task.taskStatus.id} userid ${task.userID}');
