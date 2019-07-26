@@ -23,6 +23,8 @@ class TaskService{
 		_streamControllerRemote = taskRouting.ListenQueue((dynamic receivedTask) async {
 			TaskRepository repo = Repository().taskRepository;
 
+			print(receivedTask);
+
 			dynamic mapped = {
 				'_ID': receivedTask['_ID'].toString(),
 				'_VERSION': receivedTask['_version'].toString(),
@@ -43,6 +45,7 @@ class TaskService{
 				'PLAYERLASTNAME': receivedTask['lastName'].toString(),
 				'PLAYERTIER': receivedTask['tier'].toString(),
 				'PLAYERTIERCOLORHEX': receivedTask['tierColorHex'].toString(),
+				'ISTECHTASK': int.parse(receivedTask['IsTechTask'].toString()),
 			};
 
 			await repo.insertOrUpdate(mapped);
@@ -83,6 +86,9 @@ class TaskService{
 						case 3:
 						case 12:
 						case 13:
+						case 31:
+						case 32:
+						case 33:
 							futureAction = updateStatus(task);
 							break;
 						case 5:

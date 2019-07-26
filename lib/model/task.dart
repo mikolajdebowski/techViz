@@ -31,9 +31,7 @@ class Task {
 
   String urgencyHEXColor;
 
-
-
-
+  bool isTechTask;
 
   String cancellationReason;
   EscalationPath escalationPath;
@@ -41,6 +39,6 @@ class Task {
   String notes;
 
   Task({this.id, this.version, this.userID, this.dirty, this.location, this.taskType, this.taskStatus, this.machineId, this.taskCreated, this.taskAssigned, this.amount, this.eventDesc, this.playerID,
-  this.playerFirstName, this.playerLastName, this.playerTier, this.playerTierColorHEX, this.urgencyHEXColor, this.taskTypeID, this.taskStatusID, this.taskUrgencyID});
+  this.playerFirstName, this.playerLastName, this.playerTier, this.playerTierColorHEX, this.urgencyHEXColor, this.taskTypeID, this.taskStatusID, this.taskUrgencyID, this.isTechTask = false});
 
 }
