@@ -98,21 +98,6 @@ class SlotFloorRepository {
     return [];
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   Future setReservation(String userID, String standId, String playerID, String time) async {
     Completer _completer = Completer<void>();
 
@@ -145,13 +130,6 @@ class SlotFloorRepository {
     return _completer.future;
   }
 
-
-
-
-
-
-
-
   Future<List<SlotMachine>> slotFloorSummary(){
     Completer<List<SlotMachine>> _completer = Completer<List<SlotMachine>>();
     remoteRepository.slotFloorSummary().then((List<Map> result){
@@ -170,9 +148,10 @@ class SlotFloorRepository {
       }
       listToReturn = result.map((Map<dynamic,dynamic> map)=> parser(map)).toList();
       _completer.complete(listToReturn);
+    }).catchError((dynamic error){
+      _completer.completeError(error);
     });
 
     return _completer.future;
-
   }
 }

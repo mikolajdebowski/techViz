@@ -90,8 +90,8 @@ class ManagerViewState extends State<ManagerView> implements TechVizHome, IManag
                 isProcessing: _teamAvailabilityLoading,
                 onSwipeLeft: onTeamAvailiblitySwipeLeft(),
                 onMetricTap: onTeamAvailiblityMetricTap,
-                onScroll: _onChildScroll),
-
+                onScroll: _onChildScroll
+            ),
             VizSummary('SLOT FLOOR',
                 _slotFloorList,
                 key: _slotFloorKey,
@@ -357,11 +357,6 @@ class ManagerViewState extends State<ManagerView> implements TechVizHome, IManag
     goToUserListSelector(list);
   }
 
-  @override
-  void onLoadError(dynamic error) {
-    // TODO(rmathias): implement onLoadError
-  }
-
   //MASTERVIEW EVENTS
   @override
   void onUserSectionsChanged(List<UserSection> sections) {
@@ -371,6 +366,27 @@ class ManagerViewState extends State<ManagerView> implements TechVizHome, IManag
   @override
   void onUserStatusChanged(UserStatus us) {
     _presenter.loadTeamAvailability();
+  }
+
+  @override
+  void onTeamAvailabilityError(dynamic error) {
+    if (mounted) {
+      VizDialog.Alert(context, 'Error', error.toString());
+    }
+  }
+
+  @override
+  void onOpenTasksError(dynamic error) {
+    if (mounted) {
+      VizDialog.Alert(context, 'Error', error.toString());
+    }
+  }
+
+  @override
+  void onSlotFloorError(dynamic error) {
+    if (mounted) {
+      VizDialog.Alert(context, 'Error', error.toString());
+    }
   }
 }
 

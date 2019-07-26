@@ -1,4 +1,3 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -69,7 +68,6 @@ class VizSummaryHeader extends StatelessWidget {
           height: 2,
           decoration: BoxDecoration(
             color: isNotHighlighted ? Color(0xFFdddddd) : Color(0xFF394f7d),
-//            boxShadow: const [BoxShadow(color: Color(0x8A000000), offset: Offset(1.0, 2.0), blurRadius: 2.0)]
           )
         );
 

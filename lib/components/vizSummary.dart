@@ -46,8 +46,8 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
   Widget build(BuildContext context) {
     BoxDecoration boxDecoration = BoxDecoration(
         borderRadius: BorderRadius.circular(4.0),
-        border: Border.all(color: Color(0xFFFFFFFF)),
-        color: Color(0xFFFFFFFF)
+        border: Border.all(color: Colors.white),
+        color: Colors.white
     );
 
 
