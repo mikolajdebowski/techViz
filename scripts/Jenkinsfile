@@ -1,0 +1,46 @@
+pipeline{
+    agent{
+        label 'macOs'
+    }
+    options{
+        gitLabConnection 'git.internal.bis2.net'
+        buildDiscarder(logRotator(numToKeepStr: '2', artifactNumToKeepStr: '10')) // discards old builds
+        timeout(activity:true, time:1, unit:'HOURS') // if no build activity for 1 hour, attempt to kill the build
+        disableConcurrentBuilds() // not a requirement but good to have if your builds require a lot of resources
+        gitlabBuilds(builds: ['1 - Dependencies', '2 - Lint', '3 - Test'])
+    }
+    triggers{
+        gitlab(triggerOnPush: true, triggerOnMergeRequest: true, branchFilterType: 'All')
+    }
+    stages{
+        stage('Flutter Get Packages'){
+            steps{
+                sshagent(['4230b7aa-33c5-4a34-94ae-9fb5b004d637']) {
+                    gitlabCommitStatus('1 - Dependencies'){
+                        sh 'flutter packages get'
+                    }
+                }
+            }
+        }
+        stage('Flutter Analyze/Lint') {
+            steps {
+                gitlabCommitStatus('2 - Lint'){
+                    sh 'flutter analyze'
+                }
+
+            }
+        }
+        stage('Flutter Tests'){
+            steps {
+                gitlabCommitStatus('3 - Test'){
+                    sh 'flutter test --coverage'
+                }
+            }
+        }
+    }
+    post{
+        cleanup{
+            cleanWs()
+        }
+    }
+}
