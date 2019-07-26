@@ -18,8 +18,8 @@ class EscalationPathPresenter{
 
   EscalationPathPresenter(this._view);
 
-  void loadEscalationPath(){
-    _escalationPathRepository.getAll().then((List<EscalationPath> list){
+  void loadEscalationPath(bool techPath){
+    _escalationPathRepository.getAll(techPath).then((List<EscalationPath> list){
       _view.onEscalationPathLoaded(list);
     });
   }

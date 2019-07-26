@@ -41,7 +41,7 @@ class EscalationFormState extends State<EscalationForm>
   @override
   void initState() {
     _presenter = EscalationPathPresenter(this);
-    _presenter.loadEscalationPath();
+    _presenter.loadEscalationPath(_task.isTechTask);
     _presenter.loadTaskType();
 
     _scrollController = ScrollController();
@@ -54,7 +54,6 @@ class EscalationFormState extends State<EscalationForm>
   @override
   void onEscalationPathLoaded(List<EscalationPath> escalationPathList) {
     setState(() {
-      print(escalationPathList.length);
       _escalationPathList = escalationPathList;
     });
   }
