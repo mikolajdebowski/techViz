@@ -106,7 +106,7 @@ class ProcessorUserRepository implements IUserRemoteRepository{
       _completer.complete(listToReturn);
 
     }).catchError((dynamic e){
-      _completer.completeError(InvalidResponseException(e));
+      _completer.completeError(e);
     });
     return _completer.future;
   }

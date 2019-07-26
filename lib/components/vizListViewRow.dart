@@ -91,7 +91,7 @@ class VizListViewRowState extends State<VizListViewRow> {
   Widget build(BuildContext context) {
     BoxDecoration decoration = BoxDecoration(
         color: bgRowColor,
-        border: Border(bottom: BorderSide(color: Colors.black, width: 1.0)));
+        border: Border(bottom: BorderSide(color: Color(0xFF898989), width: 1.0)));
 
     List<Widget> columns = <Widget>[];
 

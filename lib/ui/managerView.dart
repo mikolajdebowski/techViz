@@ -90,8 +90,8 @@ class ManagerViewState extends State<ManagerView> implements TechVizHome, IManag
                 isProcessing: _teamAvailabilityLoading,
                 onSwipeLeft: onTeamAvailiblitySwipeLeft(),
                 onMetricTap: onTeamAvailiblityMetricTap,
-                onScroll: _onChildScroll),
-
+                onScroll: _onChildScroll
+            ),
             VizSummary('SLOT FLOOR',
                 _slotFloorList,
                 key: _slotFloorKey,
@@ -118,7 +118,7 @@ class ManagerViewState extends State<ManagerView> implements TechVizHome, IManag
 
   //OpenTasks
   SwipeAction onOpenTasksSwipeLeft(){ //action of the right of the view
-    return SwipeAction('Re-assign to others', (dynamic entry){
+    return SwipeAction('Reassign', (dynamic entry){
 
       DataEntry dataEntry = entry as DataEntry;
       String location = dataEntry.columns.where((DataEntryCell dataCell)=> dataCell.column == 'Location').toString();
@@ -169,7 +169,7 @@ class ManagerViewState extends State<ManagerView> implements TechVizHome, IManag
     };
 
     //action of the left of the view
-    return SwipeAction('Re-assign to myself', reassignTaskCallback);
+    return SwipeAction('Take', reassignTaskCallback);
   }
 
   void onOpenTasksMetricTap(){
@@ -242,7 +242,7 @@ class ManagerViewState extends State<ManagerView> implements TechVizHome, IManag
       });
     };
 
-    return SwipeAction('Make a reservation', onSlotActionButtonClickedCallback);
+    return SwipeAction('Reserve', onSlotActionButtonClickedCallback);
   }
 
   SwipeAction onSlotFloorSwipeLeft(){
@@ -289,7 +289,7 @@ class ManagerViewState extends State<ManagerView> implements TechVizHome, IManag
         }
       });
     };
-    return SwipeAction('Remove reservation', onSlotActionButtonClickedCallback);
+    return SwipeAction('Unreserve', onSlotActionButtonClickedCallback);
   }
 
   void onSlotFloorMetricTap(){
@@ -357,11 +357,6 @@ class ManagerViewState extends State<ManagerView> implements TechVizHome, IManag
     goToUserListSelector(list);
   }
 
-  @override
-  void onLoadError(dynamic error) {
-    // TODO(rmathias): implement onLoadError
-  }
-
   //MASTERVIEW EVENTS
   @override
   void onUserSectionsChanged(List<UserSection> sections) {
@@ -371,6 +366,27 @@ class ManagerViewState extends State<ManagerView> implements TechVizHome, IManag
   @override
   void onUserStatusChanged(UserStatus us) {
     _presenter.loadTeamAvailability();
+  }
+
+  @override
+  void onTeamAvailabilityError(dynamic error) {
+    if (mounted) {
+      VizDialog.Alert(context, 'Error', error.toString());
+    }
+  }
+
+  @override
+  void onOpenTasksError(dynamic error) {
+    if (mounted) {
+      VizDialog.Alert(context, 'Error', error.toString());
+    }
+  }
+
+  @override
+  void onSlotFloorError(dynamic error) {
+    if (mounted) {
+      VizDialog.Alert(context, 'Error', error.toString());
+    }
   }
 }
 

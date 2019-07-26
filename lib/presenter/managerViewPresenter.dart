@@ -16,7 +16,10 @@ abstract class IManagerViewPresenter {
   void onTeamAvailabilityLoaded(List<DataEntryGroup> list);
   void onSlotFloorSummaryLoaded(List<DataEntryGroup> list);
   void onUserStatusLoaded(List<ManagerViewUserStatus> list);
-  void onLoadError(dynamic error);
+
+  void onTeamAvailabilityError(dynamic error);
+  void onSlotFloorError(dynamic error);
+  void onOpenTasksError(dynamic error);
 }
 
 class ManagerViewPresenter{
@@ -27,84 +30,91 @@ class ManagerViewPresenter{
   }
 
   void loadOpenTasks(){
-      Repository().taskRepository.openTasksSummary().then((dynamic openTasksList) async {
 
-        List<TaskStatus> listStatuses = await Repository().taskStatusRepository.getAll();
-        List<TaskType> listTypes = await Repository().taskTypeRepository.getAll();
+    void handleOpenTasksList(dynamic openTasksList) async {
+      List<TaskStatus> listStatuses = await Repository().taskStatusRepository.getAll();
+      List<TaskType> listTypes = await Repository().taskTypeRepository.getAll();
 
-        Function timeElapsedParsed = (String elapsedTimeInSeconds){
-          int elapsedTime = int.parse(elapsedTimeInSeconds);
-          int hours = (elapsedTime/60).floor();
-          int mins = (elapsedTime%60).ceil();
+      Function timeElapsedParsed = (String elapsedTimeInSeconds){
+        int elapsedTime = int.parse(elapsedTimeInSeconds);
+        int hours = (elapsedTime/60).floor();
+        int mins = (elapsedTime%60).ceil();
 
-          return '${hours.toString().padLeft(2, '0')}:${mins.toString().padLeft(2, '0')}';
-        };
+        return '${hours.toString().padLeft(2, '0')}:${mins.toString().padLeft(2, '0')}';
+      };
 
-        DataEntry mapToDataEntry(Map<String, dynamic> mapEntry){
+      DataEntry mapToDataEntry(Map<String, dynamic> mapEntry){
 
-          List<DataEntryCell> columns = <DataEntryCell>[];
-          Iterable<TaskType> listTypeWhere = listTypes.where((TaskType tt) => tt.taskTypeId == int.parse(mapEntry['TaskTypeID'].toString()));
-          Iterable<TaskStatus> listStatusesWhere = listStatuses.where((TaskStatus ts) => ts.id == int.parse(mapEntry['TaskStatusID'].toString()));
+        List<DataEntryCell> columns = <DataEntryCell>[];
+        Iterable<TaskType> listTypeWhere = listTypes.where((TaskType tt) => tt.taskTypeId == int.parse(mapEntry['TaskTypeID'].toString()));
+        Iterable<TaskStatus> listStatusesWhere = listStatuses.where((TaskStatus ts) => ts.id == int.parse(mapEntry['TaskStatusID'].toString()));
 
-          columns.add(DataEntryCell('Location', mapEntry['Location'], alignment: DataAlignment.center));
-          columns.add(DataEntryCell('Type', listTypeWhere!=null && listTypeWhere.isNotEmpty ? listTypeWhere.first : mapEntry['TaskTypeID'].toString()));
-          columns.add(DataEntryCell('Status', listStatusesWhere!=null && listStatusesWhere.isNotEmpty ? listStatusesWhere.first : mapEntry['TaskStatusID'].toString(), alignment: DataAlignment.center));
-          columns.add(DataEntryCell('User', mapEntry['UserID'], alignment: DataAlignment.center));
-          columns.add(DataEntryCell('Time Taken', timeElapsedParsed(mapEntry['ElapsedTime'].toString()), alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Location', mapEntry['Location'], alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Type', listTypeWhere!=null && listTypeWhere.isNotEmpty ? listTypeWhere.first : mapEntry['TaskTypeID'].toString()));
+        columns.add(DataEntryCell('Status', listStatusesWhere!=null && listStatusesWhere.isNotEmpty ? listStatusesWhere.first : mapEntry['TaskStatusID'].toString(), alignment: DataAlignment.center));
+        columns.add(DataEntryCell('User', mapEntry['UserID'], alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Time Taken', timeElapsedParsed(mapEntry['ElapsedTime'].toString()), alignment: DataAlignment.center));
 
-          return DataEntry(mapEntry['_ID'].toString(), columns, onSwipeRightActionConditional: (){
-            String userID = mapEntry['UserID'].toString();
-            return userID == null || userID != Session().user.userID.toString();
-          });
-        }
+        return DataEntry(mapEntry['_ID'].toString(), columns, onSwipeRightActionConditional: (){
+          String userID = mapEntry['UserID'].toString();
+          return userID == null || userID != Session().user.userID.toString();
+        });
+      }
 
-        DataEntry mapToDataEntryForUnassigned(Map<String, dynamic> mapEntry){
+      DataEntry mapToDataEntryForUnassigned(Map<String, dynamic> mapEntry){
 
-          List<DataEntryCell> columns = <DataEntryCell>[];
-          Iterable<TaskType> listTypeWhere = listTypes.where((TaskType tt) => tt.taskTypeId == int.parse(mapEntry['TaskTypeID'].toString()));
-          Iterable<TaskStatus> listStatusesWhere = listStatuses.where((TaskStatus ts) => ts.id == int.parse(mapEntry['TaskStatusID'].toString()));
+        List<DataEntryCell> columns = <DataEntryCell>[];
+        Iterable<TaskType> listTypeWhere = listTypes.where((TaskType tt) => tt.taskTypeId == int.parse(mapEntry['TaskTypeID'].toString()));
+        Iterable<TaskStatus> listStatusesWhere = listStatuses.where((TaskStatus ts) => ts.id == int.parse(mapEntry['TaskStatusID'].toString()));
 
-          columns.add(DataEntryCell('Location', mapEntry['Location'], alignment: DataAlignment.center));
-          columns.add(DataEntryCell('Type', listTypeWhere!=null && listTypeWhere.isNotEmpty ? listTypeWhere.first : mapEntry['TaskTypeID'].toString()));
-          columns.add(DataEntryCell('Status', listStatusesWhere!=null && listStatusesWhere.isNotEmpty ? listStatusesWhere.first : mapEntry['TaskStatusID'].toString(), alignment: DataAlignment.center));
-          columns.add(DataEntryCell('Time Taken', timeElapsedParsed(mapEntry['ElapsedTime'].toString()), alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Location', mapEntry['Location'], alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Type', listTypeWhere!=null && listTypeWhere.isNotEmpty ? listTypeWhere.first : mapEntry['TaskTypeID'].toString()));
+        columns.add(DataEntryCell('Status', listStatusesWhere!=null && listStatusesWhere.isNotEmpty ? listStatusesWhere.first : mapEntry['TaskStatusID'].toString(), alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Time Taken', timeElapsedParsed(mapEntry['ElapsedTime'].toString()), alignment: DataAlignment.center));
 
-          return DataEntry(mapEntry['_ID'].toString(), columns, onSwipeRightActionConditional: (){
-            String userID = mapEntry['UserID'].toString();
-            return userID == null || userID != Session().user.userID.toString();
-          });
-        }
+        return DataEntry(mapEntry['_ID'].toString(), columns, onSwipeRightActionConditional: (){
+          String userID = mapEntry['UserID'].toString();
+          return userID == null || userID != Session().user.userID.toString();
+        });
+      }
 
-        //from ACT-1344
-        //Assigned: UserID is not null AND TaskStatusID is not equal to 7 (reassigned)
-        Iterable<Map<String,dynamic>> assignedWhere = openTasksList.where((Map<String,dynamic> map)=> (map['UserID'] != null && map['UserID'].toString().isNotEmpty) && map['TaskStatusID'] != '7');
-        List<DataEntry> assignedList = assignedWhere != null ? assignedWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntry(d)).toList(): <DataEntry>[];
+      //from ACT-1344
+      //Assigned: UserID is not null AND TaskStatusID is not equal to 7 (reassigned)
+      Iterable<Map<String,dynamic>> assignedWhere = openTasksList.where((Map<String,dynamic> map)=> (map['UserID'] != null && map['UserID'].toString().isNotEmpty) && map['TaskStatusID'] != '7');
+      List<DataEntry> assignedList = assignedWhere != null ? assignedWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntry(d)).toList(): <DataEntry>[];
 
-        //Unassigned: UserID is null OR TaskStatusID = 7 (reassigned)
-        Iterable<Map<String,dynamic>> unassignedWhere = openTasksList.where((Map<String,dynamic> map)=> (map['UserID'] == null || map['UserID'].toString().isEmpty) || map['TaskStatusID'] == '7');
-        List<DataEntry> unassignedList = unassignedWhere != null ? unassignedWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntryForUnassigned(d)).toList(): <DataEntry>[];
+      //Unassigned: UserID is null OR TaskStatusID = 7 (reassigned)
+      Iterable<Map<String,dynamic>> unassignedWhere = openTasksList.where((Map<String,dynamic> map)=> (map['UserID'] == null || map['UserID'].toString().isEmpty) || map['TaskStatusID'] == '7');
+      List<DataEntry> unassignedList = unassignedWhere != null ? unassignedWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntryForUnassigned(d)).toList(): <DataEntry>[];
 
-        //Overdue: TaskUrgencyID is 3 (overdue)
-        Iterable<Map<String,dynamic>> overdueWhere = openTasksList.where((Map<String,dynamic> map)=> map['TaskUrgencyID'] == '3');
-        List<DataEntry> overdueList = overdueWhere != null ? overdueWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntry(d)).toList(): <DataEntry>[];
+      //Overdue: TaskUrgencyID is 3 (overdue)
+      Iterable<Map<String,dynamic>> overdueWhere = openTasksList.where((Map<String,dynamic> map)=> map['TaskUrgencyID'] == '3');
+      List<DataEntry> overdueList = overdueWhere != null ? overdueWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntry(d)).toList(): <DataEntry>[];
 
-        //Escalated: IsTechTask is 1 AND ParentID is not null (all escalated tasks are for technicians and have a parentID)
-        Iterable<Map<String,dynamic>> escalatedWhere = openTasksList.where((Map<String,dynamic> map)=> map['IsTechTask']  == '1' && (map['ParentID'] != null && map['ParentID'].toString().isNotEmpty));
-        List<DataEntry> escalatedList = escalatedWhere != null ? escalatedWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntry(d)).toList(): <DataEntry>[];
+      //Escalated: IsTechTask is 1 AND ParentID is not null (all escalated tasks are for technicians and have a parentID)
+      Iterable<Map<String,dynamic>> escalatedWhere = openTasksList.where((Map<String,dynamic> map)=> map['IsTechTask']  == '1' && (map['ParentID'] != null && map['ParentID'].toString().isNotEmpty));
+      List<DataEntry> escalatedList = escalatedWhere != null ? escalatedWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntry(d)).toList(): <DataEntry>[];
 
-        List<DataEntryGroup> group = <DataEntryGroup>[];
-        group.add(DataEntryGroup('Assigned', assignedList));
-        group.add(DataEntryGroup('Unassigned', unassignedList));
-        group.add(DataEntryGroup('Overdue', overdueList, highlightedDecoration: (){ return overdueList.isNotEmpty ? Color(0xFFFF0000): null; }));
-        group.add(DataEntryGroup('Escalated', escalatedList));
+      List<DataEntryGroup> group = <DataEntryGroup>[];
+      group.add(DataEntryGroup('Assigned', assignedList));
+      group.add(DataEntryGroup('Unassigned', unassignedList));
+      group.add(DataEntryGroup('Overdue', overdueList, highlightedDecoration: (){ return overdueList.isNotEmpty ? Color(0xFFFF0000): null; }));
+      group.add(DataEntryGroup('Escalated', escalatedList));
 
-        _view.onOpenTasksLoaded(group);
-      });
+      _view.onOpenTasksLoaded(group);
+
+    }
+
+    void handleOpenTasksError(dynamic error){
+      _view.onOpenTasksError(error);
+    }
+
+    Repository().taskRepository.openTasksSummary().then(handleOpenTasksList).catchError(handleOpenTasksError);
   }
 
   void loadTeamAvailability(){
 
-    Repository().userRepository.teamAvailabilitySummary().then((List<Map> listMap) {
+    void handleTeamAvailabilityList(List<Map> listMap) {
 
       DataEntry toAvailableDataEntryParser(Map map){
         List<DataEntryCell> columns = <DataEntryCell>[];
@@ -144,16 +154,6 @@ class ManagerViewPresenter{
       List<DataEntry> otherList = listMap.where((Map map)=> ['70','75','80','90'].contains(map['UserStatusID'])).map((Map map) => toOtherDataEntryParser(map)).toList();
       List<DataEntry> offShift = listMap.where((Map map)=> ['10'].contains(map['UserStatusID'])).map((Map map) => toOffShiftDataEntryParser(map)).toList();
 
-      List<DataEntry> sortAlphabeticallyByAttendantName(List<DataEntry> coll){
-        int compateTo(DataEntry a, DataEntry b){
-          DataEntryCell userNameA = a.columns.where((DataEntryCell cell) => cell.column == 'Attendant').first;
-          DataEntryCell userNameB = b.columns.where((DataEntryCell cell) => cell.column == 'Attendant').first;
-          return userNameA.value.toString().compareTo(userNameB.value.toString());
-        }
-
-        coll.sort((DataEntry a, DataEntry b) => compateTo(a,b));
-        return coll;
-      }
 
       group.add(DataEntryGroup('Available', sortAlphabeticallyByAttendantName(availableList)));
       group.add(DataEntryGroup('On Break', sortAlphabeticallyByAttendantName(onBreakList)));
@@ -161,13 +161,30 @@ class ManagerViewPresenter{
       group.add(DataEntryGroup('Off Shift', sortAlphabeticallyByAttendantName(offShift)));
 
       _view.onTeamAvailabilityLoaded(group);
-    });
+    }
+
+    void handleTeamAvailabilityError(dynamic error){
+      _view.onTeamAvailabilityError(error);
+    }
+
+    Repository().userRepository.teamAvailabilitySummary().then(handleTeamAvailabilityList).catchError(handleTeamAvailabilityError);
+  }
+
+  List<DataEntry> sortAlphabeticallyByAttendantName(List<DataEntry> coll){
+    int compateTo(DataEntry a, DataEntry b){
+      DataEntryCell userNameA = a.columns.where((DataEntryCell cell) => cell.column == 'Attendant').first;
+      DataEntryCell userNameB = b.columns.where((DataEntryCell cell) => cell.column == 'Attendant').first;
+      return userNameA.value.toString().compareTo(userNameB.value.toString());
+    }
+
+    coll.sort((DataEntry a, DataEntry b) => compateTo(a,b));
+    return coll;
   }
 
 
-
   void loadSlotFloorSummary(){
-    Repository().slotFloorRepository.slotFloorSummary().then((List<SlotMachine> slotMachineList) async {
+
+    void handleSlotFloorList(List<SlotMachine> slotMachineList) async {
 
       bool allowToReserve(dynamic statusID){
         return statusID == '3';
@@ -245,7 +262,15 @@ class ManagerViewPresenter{
       group.add(DataEntryGroup('Out of Service', outOfServiceList, highlightedDecoration: (){ return outOfServiceList.isNotEmpty ? Color(0xFFFF0000): null; }));
 
       _view.onSlotFloorSummaryLoaded(group);
-    });
+
+
+    }
+
+    void handleSlotFloorError(dynamic error){
+      _view.onSlotFloorError(error);
+    }
+
+    Repository().slotFloorRepository.slotFloorSummary().then(handleSlotFloorList).catchError(handleSlotFloorError);
   }
 
   void loadUserStatusList(String currentUserStatusID){

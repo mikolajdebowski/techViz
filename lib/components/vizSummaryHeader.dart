@@ -8,7 +8,7 @@ abstract class VizSummaryHeaderActions {
 }
 
 class VizSummaryHeader extends StatelessWidget {
-  final double height = 75;
+  final double height = 48;
   final String headerTitle;
   final String selectedEntryKey;
   final List<DataEntryGroup> entries;
@@ -20,13 +20,13 @@ class VizSummaryHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> itensChildren = <Widget>[];
+    List<Widget> itemsChildren = <Widget>[];
 
     Radius defaultRadius = Radius.circular(3.0);
     bool isFirst = true;
 
     if(entries==null || entries.isEmpty){
-        itensChildren.add(CircularProgressIndicator());
+      itemsChildren.add(CircularProgressIndicator());
     }
     else{
       entries.forEach((final DataEntryGroup dataEntryGroup) {
@@ -35,22 +35,49 @@ class VizSummaryHeader extends StatelessWidget {
 
         bool isNotHighlighted = selectedEntryKey == null || selectedEntryKey != dataEntryGroup.headerTitle;
 
-        BoxDecoration decorationEntryHeader = BoxDecoration(border: isFirst ? Border(top: borderSide) : Border(left: borderSide, top: borderSide), color: isNotHighlighted ? Color(0xFFAAAAAA) : Color(0xFFFFFFFF));
-        BoxDecoration decorationEntryValue = BoxDecoration(border: isFirst ? Border(top: borderSide, bottom: borderSide) : Border(left: borderSide, top: borderSide, bottom: borderSide), color: Color(0xFFFFFFFF));
+        BoxDecoration decorationEntryHeader = BoxDecoration(border: isFirst ? Border(top: borderSide) : Border(left: borderSide, top: borderSide));
 
-        Container containerHeader = Container(decoration: decorationEntryHeader, child: Center(child: Text(dataEntryGroup.headerTitle, key: Key('headerItemTitle'),)));
 
-        Color highlightedFontColor = Colors.black;
+        Color highlightedFontColor = Color(0xFF535353);
+
+        if(!isNotHighlighted){
+          highlightedFontColor = Color(0xFF394f7d);
+        }
+        else{
+          highlightedFontColor = Color(0xFF535353);
+        }
+
         if(dataEntryGroup.highlightedDecoration!=null){
           highlightedFontColor = dataEntryGroup.highlightedDecoration();
         }
 
-        Container containerValue = Container(decoration: decorationEntryValue, child: Center(child: Text(dataEntryGroup.entries.length.toString(), style: TextStyle(color: highlightedFontColor), key: Key('headerItemValue'))));
+        String title = dataEntryGroup.headerTitle.toUpperCase() + ' (' + dataEntryGroup.entries.length.toString() + ')';
+        TextStyle style = TextStyle(color: highlightedFontColor, fontWeight: FontWeight.w600);
+        Key key = Key('headerItemTitle');
+        Text txtField = Text(
+          title,
+          key: key,
+          textAlign: TextAlign.center,
+          style: style,
+          maxLines: 1,
+        );
+
+        Container containerHeader = Container(decoration: decorationEntryHeader, child: Center(child: txtField));
+
+        Container underline = Container(
+          height: 2,
+          decoration: BoxDecoration(
+            color: isNotHighlighted ? Color(0xFFdddddd) : Color(0xFF394f7d),
+          )
+        );
 
         Column column = Column(
           children: <Widget>[
-            Flexible(child: containerHeader),
-            Flexible(child: containerValue),
+           Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: containerHeader,
+            ),
+            underline,
           ],
         );
 
@@ -67,34 +94,36 @@ class VizSummaryHeader extends StatelessWidget {
           ),
         );
 
-        itensChildren.add(flexible);
+        itemsChildren.add(flexible);
       });
     }
 
 
     BorderRadiusGeometry borderGeoHeader = BorderRadius.only(topLeft: defaultRadius, topRight: defaultRadius);
     Border borderColor = Border.all(color: Colors.grey, width: 0.5);
-    BoxDecoration decorationHeader = BoxDecoration(border: borderColor, color: Color(0xFF505b6a), borderRadius: borderGeoHeader);
+    BoxDecoration decorationHeader = BoxDecoration(border: borderColor, color: Color(0xFFb7b7b7), borderRadius: borderGeoHeader);
+    Row titleRow = Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text(headerTitle, key: Key('headerTitle'), style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+      ],
+    );
+
+    Container container = Container(
+      decoration: decorationHeader,
+      padding: EdgeInsets.only(top: 1.0, bottom: 1.0),
+      child: Center(child: titleRow),
+    );
 
     return Container(
       height: height,
       child: Column(
         children: <Widget>[
-          Container(
-            decoration: decorationHeader,
-            padding: EdgeInsets.only(top: 1.0, bottom: 1.0),
-            child: Center(child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(headerTitle, key: Key('headerTitle'), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                Opacity(opacity: isProcessing ? 1.0 : 0.0, child: Padding(child: SizedBox(child: CircularProgressIndicator(strokeWidth: 2), width: 10, height: 10), padding: EdgeInsets.only(left: 5)))
-              ],
-            )),
-          ),
+          container,
           Expanded(
             child: Row(
               key: Key('rowContainer'),
-              children: itensChildren,
+              children: itemsChildren,
             ),
           )
         ],
