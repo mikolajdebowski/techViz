@@ -66,6 +66,8 @@ class VizListViewState extends State<VizListView> {
     }
   }
 
+
+  // ignore: unused_element
   Widget _buildHeadingCell({
     BuildContext context,
     Widget label,
