@@ -4,15 +4,18 @@ import 'package:techviz/model/role.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/roleListPresenter.dart';
 import 'package:techviz/presenter/statusListPresenter.dart';
-import 'package:techviz/repository/session.dart';
+import 'package:techviz/session.dart';
 import 'package:techviz/ui/stats.dart';
 
 class Profile extends StatefulWidget {
+  final IRoleListPresenter roleListPresenter;
+  const Profile({this.roleListPresenter, Key key}) : super(key: key);
+
   @override
-  State<StatefulWidget> createState() => ProfileState();
+  State<StatefulWidget> createState() => ProfileState(roleListPresenter ?? RoleListPresenter.build());
 }
 
-class ProfileState extends State<Profile> implements IRoleListPresenter<Role>, IStatusListPresenter<UserStatus> {
+class ProfileState extends State<Profile> implements IRoleListView<Role>, IStatusListPresenter<UserStatus> {
   final List<ProfileItem> _userInfo = [];
   RoleListPresenter roleListPresenter;
   StatusListPresenter statusListPresenter;
@@ -20,16 +23,18 @@ class ProfileState extends State<Profile> implements IRoleListPresenter<Role>, I
   List<UserStatus> _statuses;
   List<Role> _roles;
 
+  ProfileState(this.roleListPresenter);
+
   @override
   void initState(){
     super.initState();
 
     Session session = Session();
-    roleListPresenter = RoleListPresenter(this);
+    roleListPresenter.view(this);
     roleListPresenter.loadUserRoles(session.user.userID);
 
     statusListPresenter = StatusListPresenter(this);
-    statusListPresenter.loadUserRoles(session.user.userID);
+    statusListPresenter.loadUserStatus();
 
     _userInfo.add(ProfileItem(columnName: 'UserID', value: session.user.userID));
     _userInfo.add(ProfileItem(columnName: 'UserName', value: session.user.userName));

@@ -2,76 +2,90 @@ import 'package:flutter/material.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
+import 'package:techviz/components/vizDialog.dart';
+
+import 'vizSnackbar.dart';
 
 class VizSelector extends StatefulWidget {
-  VizSelector(
+  const VizSelector(
       this.title,
       this.options,
+      this.onOKTap,
       {Key key,
-      this.onOKTapTapped,
-      this.onBackTapped,
+      this.onBackTap,
       this.multiple = false,
       })
       : super(key: key);
 
   final String title;
   final bool multiple;
-  final void Function(BuildContext ctx, List<VizSelectorOption>) onOKTapTapped;
-  final VoidCallback onBackTapped;
-  final List<VizSelectorOption> options;
+  final Future<bool> Function(BuildContext ctx, List<IVizSelectorOption>) onOKTap;
+  final VoidCallback onBackTap;
+  final List<IVizSelectorOption> options;
 
   @override
-  State<StatefulWidget> createState() {
-    return VizSelectorState(options);
-  }
+  State<StatefulWidget> createState() => VizSelectorState(options);
 }
 
 class VizSelectorState extends State<VizSelector> {
-  List<VizSelectorOption> options;
+  List<IVizSelectorOption> options;
 
-  VizSelectorState(List<VizSelectorOption> options) {
-    if (this.options == null) {
-      this.options = options;
-    }
-  }
+  VizSelectorState(this.options);
 
-  void onOkTap(){
-    widget.onOKTapTapped(context, options);
-    Navigator.maybePop(context);
+  void onOkTap(BuildContext context){
+    final VizSnackbar snackbar = VizSnackbar.Loading('Sending request...');
+    snackbar.show(context);
+
+    List<IVizSelectorOption> selectedOptions = options.where((IVizSelectorOption option) => option.selected).toList();
+    widget.onOKTap(context, selectedOptions).then((bool done){
+      if(done!=null && done){
+        snackbar.dismiss();
+        Navigator.of(context).maybePop(true);
+      }
+    }).catchError((dynamic error){
+      snackbar.dismiss();
+      VizDialog.Alert(context, 'Error', error.toString());
+    });
   }
 
   void onBackTap(){
-    widget.onBackTapped();
-    Navigator.maybePop(context);
+    if(widget.onBackTap!=null)
+      widget.onBackTap();
+
+    Navigator.of(context).maybePop(false);
   }
 
   @override
   Widget build(BuildContext context) {
-    var defaultBgDeco = BoxDecoration(gradient: LinearGradient(colors: const [Color(0xFF636f7e), Color(0xFF9aa8b0)], begin: Alignment.topCenter, end: Alignment.bottomCenter));
+    BoxDecoration defaultBgDeco = BoxDecoration(gradient: LinearGradient(colors: const [Color(0xFF636f7e), Color(0xFF9aa8b0)], begin: Alignment.topCenter, end: Alignment.bottomCenter));
 
-    var actions = <Widget>[];
+    List<Widget> actions = <Widget>[];
     if (widget.multiple) {
       actions.add(VizButton(title: 'All', onTap: onSelectAllTapped));
       actions.add(VizButton(title: 'None', onTap: onSelectNoneTapped));
     }
 
-    var body = GridView.count(
+    GridView body = GridView.count(
         shrinkWrap: true,
         padding: EdgeInsets.all(4.0),
-        childAspectRatio: options.length > 4 ? 1.0 : 2.0,
+        childAspectRatio: 1.5,
         addAutomaticKeepAlives: false,
-        crossAxisCount: options.length > 6 ? 6 : options.length,
-        children: options.map((VizSelectorOption option) {
+        crossAxisCount: 4,
+        children: options.map((final IVizSelectorOption option) {
           return VizOptionButton(
               option.description,
-              //key: GlobalKey(),
-              selected: option.selected);
+              selected: option.selected,
+              onTap: (Object obj){
+                selectOption(option);
+              });
         }).toList());
 
     bool canPop = Navigator.canPop(context);
 
-    var leading = canPop ? VizButton(title: 'Back', onTap: onBackTap, highlighted: false) : null;
-    var tailing = widget.onOKTapTapped!=null ? VizButton(title: 'OK', onTap: onOkTap, highlighted: true) : null;
+    VizButton leading = canPop ? VizButton(title: 'Back', onTap: onBackTap, highlighted: false) : null;
+    VizButton tailing = widget.onOKTap!=null ? VizButton(title: 'OK', onTap: (){
+      onOkTap(context);
+    }, highlighted: true) : null;
 
     return Scaffold(
         backgroundColor: Colors.black,
@@ -84,31 +98,32 @@ class VizSelectorState extends State<VizSelector> {
     );
   }
 
+  void selectOption(IVizSelectorOption selectedOption){
+    //SELECT NONE OF THEM
+    setState(() {
+      options.forEach((IVizSelectorOption option) {
+        option.selected = false;
+      });
+
+      options.where((IVizSelectorOption option) => option.id == selectedOption.id).first.selected = true;
+
+    });
+  }
 
   void onSelectAllTapped() {
-    if (options != null) {
-      setState(() {
-        options.forEach((option) {
-          option.selected = true;
-        });
-      });
-    }
+    setState(() {
+      //widget.options.map((IVizSelectorOption option) => option.selected == true);
+    });
   }
 
   void onSelectNoneTapped() {
-    if (options != null) {
-      setState(() {
-        options.forEach((option) {
-          option.selected = false;
-        });
-      });
-    }
+    setState(() {
+      //widget.options.map((IVizSelectorOption option) => option.selected == false);
+    });
   }
 }
 
-class VizSelectorOption {
-  VizSelectorOption(this.id, this.description, {this.selected = false});
-
+abstract class IVizSelectorOption {
   Object id;
   String description;
   bool selected;

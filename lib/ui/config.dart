@@ -1,13 +1,10 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:techviz/common/LowerCaseTextFormatter.dart';
-import 'package:techviz/common/slideRightRoute.dart';
 import 'package:techviz/components/VizButton.dart';
-import 'package:techviz/components/VizOptionButton.dart';
 import 'package:flutter/services.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizRainbow.dart';
-import 'package:techviz/ui/login.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 class Config extends StatefulWidget {
@@ -113,6 +110,7 @@ class ConfigState extends State<Config> {
               if (!Validator.isUrl(value, default_url_options)) {
                 return 'Please enter valid URL';
               }
+              return null;
             },
             controller: serverAddressController,
             decoration: InputDecoration(

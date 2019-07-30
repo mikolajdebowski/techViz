@@ -1,33 +1,24 @@
 import 'dart:async';
 import 'package:techviz/model/taskStatus.dart';
-import 'package:techviz/repository/common/IRepository.dart';
-import 'package:techviz/repository/local/localRepository.dart';
-import 'package:techviz/repository/remoteRepository.dart';
 
-class TaskStatusRepository implements IRepository<TaskStatus>{
-  IRemoteRepository remoteRepository;
-  TaskStatusRepository({this.remoteRepository});
+import 'local/taskStatusTable.dart';
 
-  Future<List<TaskStatus>> getAll() async {
-    LocalRepository localRepo = LocalRepository();
+abstract class ITaskStatusRemoteRepository{
+  Future fetch();
+}
 
-    List<Map<String, dynamic>> queryResult = await localRepo.db.rawQuery('SELECT * FROM TaskStatus');
+class TaskStatusRepository{
+  ITaskStatusRemoteRepository remoteRepository;
+  ITaskStatusTable taskStatusTable;
+  TaskStatusRepository(this.remoteRepository, this.taskStatusTable);
 
-    List<TaskStatus> toReturn = <TaskStatus>[];
-    queryResult.forEach((Map<String, dynamic> task) {
-      var t = TaskStatus(
-        id: task['TaskStatusID'] as int,
-        description: task['TaskStatusDescription'] as String,
-      );
-      toReturn.add(t);
-    });
-
-    return toReturn;
+  Future fetch() async {
+    assert(remoteRepository!=null);
+    dynamic data = await remoteRepository.fetch();
+    return taskStatusTable.insertAll(data);
   }
 
-  @override
-  Future fetch() {
-    assert(remoteRepository!=null);
-    return remoteRepository.fetch();
+  Future<List<TaskStatus>> getAll() async {
+    return taskStatusTable.getAll();
   }
 }

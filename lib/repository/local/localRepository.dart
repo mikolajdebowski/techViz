@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:sqflite/sqlite_api.dart';
 import 'package:techviz/repository/local/escalationPathTable.dart';
 import 'package:techviz/repository/local/roleTable.dart';
 import 'package:techviz/repository/local/taskTable.dart';
@@ -8,9 +9,17 @@ import 'package:techviz/repository/local/taskTypeTable.dart';
 import 'package:techviz/repository/local/taskUrgencyTable.dart';
 import 'package:techviz/repository/local/userTable.dart';
 
-class LocalRepository {
+import 'taskStatusTable.dart';
+import 'userSectionTable.dart';
 
+abstract class ILocalRepository{
+  Database get db;
+}
+
+class LocalRepository implements ILocalRepository{
+  @override
   Database db;
+  
   String path;
 
   static final LocalRepository _singleton = LocalRepository._internal();
@@ -26,30 +35,25 @@ class LocalRepository {
 
   Future open() async {
 
-    var databasesPath = await getDatabasesPath();
+    String databasesPath = await getDatabasesPath();
     path = join(databasesPath, "techviz.db");
 
     db = await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
 
-          TaskTable.create(db);
+          UserTable(this).create(db);
+          UserSectionTable(this).create(db);
+          TaskTable(this).create(db);
+          TaskTypeTable(this).create(db);
+          TaskStatusTable(this).create(db);
 
+          // TODO(rmathias): from here and bellow should be revised
           TaskUrgencyTable.create(db);
-
-          UserTable.create(db);
 
           EscalationPathTable().create(db);
 
-          TaskTypeTable().create(db);
-
           RoleTable().create(db);
 
-          await db.execute('''
-            create table TaskStatus ( 
-                TaskStatusID INT PRIMARY KEY,
-                TaskStatusDescription TEXT NOT NULL
-                )
-            ''');
 
           await db.execute('''
             create table UserRole ( 
@@ -72,20 +76,11 @@ class LocalRepository {
                 SectionID TEXT NOT NULL
                 )
             ''');
-
-          await db.execute('''
-            create table UserSection ( 
-                SectionID TEXT NOT NULL,
-                UserID TEXT NOT NULL
-                )
-            ''');
-
         });
   }
 
-  Future<int> insert(String table, Map<String, dynamic> values) async {
-    int id = await db.insert(table, values);
-    return id;
+  Future<int> insert(String table, Map<String, dynamic> values) {
+    return db.insert(table, values);
   }
 
   Future close() async => db.close();
@@ -95,4 +90,6 @@ class LocalRepository {
     await close();
     await deleteDatabase(path);
   }
+
+
 }

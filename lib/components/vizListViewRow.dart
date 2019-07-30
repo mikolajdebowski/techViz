@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -90,13 +91,16 @@ class VizListViewRowState extends State<VizListViewRow> {
   Widget build(BuildContext context) {
     BoxDecoration decoration = BoxDecoration(
         color: bgRowColor,
-        border: Border(bottom: BorderSide(color: Colors.black, width: 1.0)));
+        border: Border(bottom: BorderSide(color: Color(0xFF898989), width: 1.0)));
 
     List<Widget> columns = <Widget>[];
 
     widget.dataEntry.columns.forEach((DataEntryCell dataCell) {
+      if(!dataCell.visible)
+        return;
+
       String text = dataCell.toString();
-      TextStyle style = TextStyle(fontSize: text.length >= 20 ? 10 : 12);
+      TextStyle style = TextStyle(fontSize: 12);
 
       TextAlign align = dataCell.alignment == DataAlignment.left
           ? TextAlign.left
@@ -104,15 +108,18 @@ class VizListViewRowState extends State<VizListViewRow> {
               ? TextAlign.right
               : TextAlign.center);
 
-      columns.add(Expanded(
-          child: Text(
+
+      AutoSizeText txtField = AutoSizeText(
         text,
         textAlign: align,
         style: style,
         overflow: TextOverflow.ellipsis,
         softWrap: true,
         maxLines: 2,
-      )));
+      );
+
+      columns.add(Expanded(
+          child: Padding(padding: EdgeInsets.only(left: 5, right: 5), child: txtField)));
     });
 
     Row dataRow = Row(

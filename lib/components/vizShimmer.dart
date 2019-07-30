@@ -7,7 +7,7 @@ class Shimmer extends StatefulWidget {
   final Gradient gradient;
   final String direction;
 
-  Shimmer({Key key, this.child, this.period, this.gradient, this.direction}): super(key: key);
+  const Shimmer({Key key, this.child, this.period, this.gradient, this.direction}): super(key: key);
 
   Shimmer.fromColors(
       {Key key,
@@ -81,7 +81,7 @@ class _Shimmer extends SingleChildRenderObjectWidget {
   final double percent;
   final String direction;
 
-  _Shimmer({Widget child, this.gradient, this.percent, this.direction})
+  const _Shimmer({Widget child, this.gradient, this.percent, this.direction})
       : super(child: child);
 
   @override

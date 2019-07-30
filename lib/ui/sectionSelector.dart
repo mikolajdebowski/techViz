@@ -1,21 +1,22 @@
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizDialog.dart';
+import 'package:techviz/components/vizSnackbar.dart';
 import 'package:techviz/model/section.dart';
 import 'package:techviz/model/userSection.dart';
 import 'package:techviz/presenter/sectionListPresenter.dart';
 import 'package:techviz/repository/async/SectionRouting.dart';
-import 'package:techviz/repository/session.dart';
+import 'package:techviz/repository/repository.dart';
+import 'package:techviz/session.dart';
 import 'package:techviz/repository/userSectionRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 typedef FncOnUserSectionsChanged = void Function(List<UserSection> sections);
 
 class SectionSelector extends StatefulWidget {
-  SectionSelector({Key key, @required this.onUserSectionsChanged}) : super(key: key);
+  const SectionSelector({Key key, @required this.onUserSectionsChanged}) : super(key: key);
   final FncOnUserSectionsChanged onUserSectionsChanged;
 
   @override
@@ -26,7 +27,6 @@ class SectionSelectorState extends State<SectionSelector>
     implements ISectionListPresenter<SectionModelPresenter> {
   List<SectionModelPresenter> sectionList = <SectionModelPresenter>[];
   SectionListPresenter sectionPresenter;
-  Flushbar _loadingBar;
 
   @override
   void initState() {
@@ -34,36 +34,32 @@ class SectionSelectorState extends State<SectionSelector>
 
     sectionPresenter = SectionListPresenter(this);
     sectionPresenter.loadSections();
-
-    _loadingBar = VizDialog.LoadingBar(message: 'Sending request...');
   }
 
   void onTap(BuildContext context) async {
-    if (_loadingBar.isShowing())
-      return;
 
-    _loadingBar.show(context);
+    final VizSnackbar _snackbar = VizSnackbar.Loading('Sending request...');
+    _snackbar.show(context);
 
     Session session = Session();
     List<String> sections = sectionList.where((SectionModelPresenter s) => s.selected).map((SectionModelPresenter s)=>s.sectionID).toList();
 
     DeviceInfo info = await Utils.deviceInfo;
-    var toSubmit = {'userID': session.user.userID, 'sections': sections, 'deviceID': info.DeviceID};
+    dynamic toSubmit = {'userID': session.user.userID, 'sections': sections, 'deviceID': info.DeviceID};
 
-    SectionRouting().PublishMessage(toSubmit).then<List<Section>>((dynamic list) async{
-      _loadingBar.dismiss();
+    SectionRouting().PublishMessage(toSubmit).then((dynamic list) async{
+      _snackbar.dismiss();
 
-      var toUpdateLocally = list as List<Section>;
+      List<Section> toUpdateLocally = list as List<Section>;
 
-      await UserSectionRepository().update(session.user.userID, toUpdateLocally.map((Section s) => s.sectionID).toList());
+      UserSectionRepository userSectionRepo = Repository().userSectionRepository;
+      await userSectionRepo.update(session.user.userID, toUpdateLocally.map((Section s) => s.sectionID).toList());
 
-      print('');
-      UserSectionRepository().getUserSection(session.user.userID).then((List<UserSection> sectionToMain){
-        backToMain(sectionToMain);
-      });
+      List<UserSection> sectionToMain = await userSectionRepo.getUserSection(session.user.userID);
+      backToMain(sectionToMain);
 
     }).catchError((dynamic error){
-      _loadingBar.dismiss();
+      _snackbar.dismiss();
       VizDialog.Alert(context, 'Error', error.toString());
     });
   }

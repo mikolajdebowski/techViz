@@ -15,7 +15,7 @@ class StatusListPresenter{
     _repository = Repository().userStatusRepository;
   }
 
-  void loadUserRoles(String userID){
+  void loadUserStatus(){
     assert(_view != null);
     _repository.getStatuses().then((List<UserStatus> list) {
       _view.onStatusListLoaded(list);

@@ -2,112 +2,54 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:techviz/model/escalationPath.dart';
 import 'package:techviz/model/task.dart';
-import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/model/taskType.dart';
 import 'package:techviz/repository/async/TaskRouting.dart';
-import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/local/localRepository.dart';
 import 'package:techviz/repository/local/taskTable.dart';
-import 'package:techviz/repository/remoteRepository.dart';
 
 typedef TaskUpdateCallBack = void Function(String taskID);
 typedef TaskSubmitallBack = void Function(String taskID);
 
-abstract class ITaskRepository extends IRemoteRepository<Task>{
+abstract class ITaskRemoteRepository {
+  Future fetch();
   Future openTasksSummary();
 }
 
-class TaskRepository implements IRepository<Task>{
+class TaskRepository{
 
-  ITaskRepository remoteRepository;
-  TaskRepository({this.remoteRepository});
-
-  Future<List<Task>> getOpenTasks(String userID) async {
-
-    LocalRepository localRepo = LocalRepository();
-    if(!localRepo.db.isOpen)
-      await localRepo.open();
-
-    String sql = "SELECT "
-        "t.*"
-        ", ts.TaskStatusDescription "
-        ", tt.TaskTypeDescription "
-        ", tu.ColorHex "
-        " FROM TASK t "
-        " INNER JOIN TaskStatus ts on t.TASKSTATUSID == ts.TaskStatusID "
-        " INNER JOIN TaskType tt on t.TASKTYPEID == tt.TaskTypeID "
-        " INNER JOIN TaskUrgency tu on t.TaskUrgencyID == tu.ID "
-        " WHERE t.TASKSTATUSID in (1,2,3) AND t.USERID = '$userID' "
-        " ORDER BY t.TASKCREATED ASC;";
-
-    List<Map<String, dynamic>> queryResult = await localRepo.db.rawQuery(sql);
-
-    List<Task> list = <Task>[];
-    queryResult.forEach((Map<String, dynamic> task) {
-      list.add(_fromMap(task));
-    });
-
-    return list;
-  }
+  ITaskRemoteRepository remoteRepository;
+  ILocalRepository localRepository;
+  TaskRouting taskRouting;
+  TaskRepository(this.remoteRepository, this.localRepository, this.taskRouting);
 
   Future<Task> getTask(String taskID) async {
-    LocalRepository localRepo = LocalRepository();
-    if(!localRepo.db.isOpen)
-      await localRepo.open();
-
-    String sql = "SELECT "
-        "t.* "
-        ",ts.TaskStatusDescription "
-        ",tt.TaskTypeDescription "
-        ",tt.LookupName as TaskTypeLookupName "
-        "FROM TASK t INNER JOIN TaskStatus ts on t.TASKSTATUSID == ts.TaskStatusID INNER JOIN TaskType tt on t.TASKTYPEID == tt.TaskTypeID WHERE t._ID == '$taskID';";
-
-    List<Map<String, dynamic>> queryResult = await LocalRepository().db.rawQuery(sql);
-
-    return Future.value(queryResult.isNotEmpty? _fromMap(queryResult.first): null);
+    return TaskTable(localRepository).getTask(taskID);
   }
 
-  Task _fromMap(Map<String, dynamic> task){
-    var t = Task(
-        dirty: task['_DIRTY'] == 1,
-        version: task['_VERSION'] as int,
-        userID: task['USERID'] as String,
-        id: task['_ID'] as String,
-        location: task['LOCATION'] as String,
-        amount: task['AMOUNT'] as double,
-        eventDesc: task['EVENTDESC'] as String,
-        taskCreated: DateTime.parse(task['TASKCREATED'] as String),
-        playerID: task['PLAYERID']!=null ? task['PlayerID'] as String : '',
-        playerFirstName: task['PLAYERFIRSTNAME']!=null ? task['PLAYERFIRSTNAME'] as String : '',
-        playerLastName: task['PLAYERLASTNAME']!=null ? task['PLAYERLASTNAME'] as String : '',
-        playerTier: task['PLAYERTIER']!=null ? task['PlayerTier'] as String : null,
-        playerTierColorHEX: task['PLAYERTIERCOLORHEX']!=null ? task['PLAYERTIERCOLORHEX'] as String : null,
-        taskType: TaskType(taskTypeId: task['TASKTYPEID'] as int, description: task['TaskTypeDescription'].toString(), lookupName: task['TaskTypeLookupName'].toString()),
-        taskStatus: TaskStatus(id: task['TASKSTATUSID'] as int, description: task['TaskStatusDescription'] as String),
-        urgencyHEXColor: task['ColorHex'] as String
-    );
-
-    return t;
-  }
-
-  @override
+  //REMOTE FETCH
   Future<dynamic> fetch() {
     assert(remoteRepository!=null);
 
     Completer _completer = Completer<bool>();
     remoteRepository.fetch().then((Object result) async{
-      await TaskTable.cleanUp();
-      await TaskTable.insertOrUpdate(result);
+      await TaskTable(localRepository).cleanUp();
+      await TaskTable(localRepository).insertOrUpdate(result);
       _completer.complete(true);
     });
 
     return _completer.future;
   }
 
+  Future openTasksSummary() async {
+    return remoteRepository.openTasksSummary();
+  }
+
+  Future insertOrUpdate(Map map){
+    return TaskTable(localRepository).insertOrUpdate([map]);
+  }
+
   StreamController listenQueue(Function onData, Function onError)  {
-
-    return TaskRouting().ListenQueue((dynamic receivedTask) async{
-
+    return taskRouting.ListenQueue((dynamic receivedTask) async{
       dynamic task = jsonDecode(receivedTask.toString());
 
       Map<String,dynamic> taskMapped = <String,dynamic>{};
@@ -132,10 +74,8 @@ class TaskRepository implements IRepository<Task>{
       taskMapped['PLAYERTIER'] = task['tier'];
       taskMapped['PLAYERTIERCOLORHEX'] = task['tierColorHex'];
 
-
-      await TaskTable.insertOrUpdate([taskMapped]);
-
-      Task taskUpdate = await TaskRepository().getTask(task['_ID'].toString());
+      await TaskTable(localRepository).insertOrUpdate([taskMapped]);
+      Task taskUpdate = await TaskTable(localRepository).getTask(task['_ID'].toString());
       onData(taskUpdate);
 
     }, onError: onError, onCancel: (){
@@ -144,12 +84,10 @@ class TaskRepository implements IRepository<Task>{
   }
 
   Future update(String taskID, {String taskStatusID, String cancellationReason, TaskUpdateCallBack callBack} ) async {
-    LocalRepository localRepo = LocalRepository();
-    if(!localRepo.db.isOpen)
-      await localRepo.open();
+    List<int> openTasksIDs = [1,2,3,31,32,33];
 
     List<dynamic> taskStatusCheck = await LocalRepository().db.rawQuery("SELECT TASKSTATUSID FROM TASK WHERE _ID = '$taskID';");
-    if(taskStatusCheck.isEmpty || [1,2,3].contains(taskStatusCheck.first['TASKSTATUSID']) == false){
+    if(taskStatusCheck.isEmpty || openTasksIDs.contains(taskStatusCheck.first['TASKSTATUSID']) == false){
       throw TaskNotAvailableException();
     }
 
@@ -163,15 +101,12 @@ class TaskRepository implements IRepository<Task>{
       message = {'taskID': taskID, 'taskStatusID': taskStatusID};
     }
 
-    TaskRouting().PublishMessage(message).then((dynamic d) async{
+    taskRouting.PublishMessage(message).then((dynamic d) async{
+      await localRepository.db.rawUpdate('UPDATE TASK SET _DIRTY = 1 WHERE _ID = ?', [taskID].toList());
 
-      LocalRepository localRepo = LocalRepository();
-      if(!localRepo.db.isOpen)
-        await localRepo.open();
+      if(callBack!=null)
+        callBack(taskID);
 
-      await  LocalRepository().db.rawUpdate('UPDATE TASK SET _DIRTY = 1 WHERE _ID = ?', [taskID].toList());
-
-      callBack(taskID);
       _completer.complete(d);
     });
 
@@ -180,10 +115,6 @@ class TaskRepository implements IRepository<Task>{
 
   Future escalateTask(String taskID, EscalationPath escalationPath, {TaskType escalationTaskType, String notes}) async {
     Completer<dynamic> _completer = Completer<dynamic>();
-
-    LocalRepository localRepo = LocalRepository();
-    if(!localRepo.db.isOpen)
-      await localRepo.open();
 
     List<dynamic> taskStatusCheck = await LocalRepository().db.rawQuery("SELECT TASKSTATUSID FROM TASK WHERE _ID = '$taskID';");
     if(taskStatusCheck.isEmpty || taskStatusCheck.first['TASKSTATUSID'] != 3){
@@ -198,15 +129,8 @@ class TaskRepository implements IRepository<Task>{
       message['tasknote'] = base64.encode(utf8.encode(notes));
     }
 
-    TaskRouting().PublishMessage(message).then((dynamic d) async{
-
-      //ONLY UPDATE LOCALLY AFTER CALLBACK RETURNS
-      LocalRepository localRepo = LocalRepository();
-      if(!localRepo.db.isOpen)
-        await localRepo.open();
-
-      await  LocalRepository().db.rawUpdate('UPDATE TASK SET _DIRTY = 1 WHERE _ID = ?', [taskID].toList());
-
+    taskRouting.PublishMessage(message).then((dynamic d) async{
+      await localRepository.db.rawUpdate('UPDATE TASK SET _DIRTY = 1 WHERE _ID = ?', [taskID].toList());
       _completer.complete(d);
     }).catchError((dynamic error){
       _completer.completeError(error);
@@ -219,25 +143,14 @@ class TaskRepository implements IRepository<Task>{
     Completer<dynamic> _completer = Completer<dynamic>();
     dynamic message = {'taskID': taskID, 'userID': userID};
 
-    TaskRouting().PublishMessage(message).then((dynamic d) async{
-
-      LocalRepository localRepo = LocalRepository();
-      if(!localRepo.db.isOpen)
-        await localRepo.open();
-
-      await  LocalRepository().db.rawUpdate('UPDATE TASK SET _DIRTY = 1 WHERE _ID = ?', [taskID].toList());
-
+    taskRouting.PublishMessage(message).then((dynamic d) async{
+      await localRepository.db.rawUpdate('UPDATE TASK SET _DIRTY = 1 WHERE _ID = ?', [taskID].toList());
       _completer.complete(d);
     }).catchError((dynamic error){
       _completer.completeError(error);
     });
 
     return _completer.future;
-
-  }
-
-  Future openTasksSummary() async {
-    return remoteRepository.openTasksSummary();
   }
 }
 

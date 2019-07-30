@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class VizButton extends StatelessWidget {
-  VizButton(
+  const VizButton(
     {Key key,
     this.title,
     this.onTap,

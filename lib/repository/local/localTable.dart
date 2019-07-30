@@ -4,10 +4,13 @@ import 'package:sqflite/sqflite.dart';
 import 'package:techviz/repository/local/localRepository.dart';
 
 class LocalTable{
+  LocalTable({this.localRepo});
+
+  ILocalRepository localRepo;
   String tableName;
   String createSQL;
 
-  Future<void> create(Database db) async {
+  Future<void> create(DatabaseExecutor db) async {
     return db.execute(createSQL);
   }
 

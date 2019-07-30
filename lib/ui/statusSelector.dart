@@ -3,24 +3,14 @@ import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizDialog.dart';
+import 'package:techviz/components/vizSnackbar.dart';
 import 'package:techviz/model/user.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/statusListPresenter.dart';
-import 'package:techviz/repository/async/UserRouting.dart';
-import 'package:techviz/repository/local/userTable.dart';
-import 'package:techviz/repository/session.dart';
-import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
-import 'package:flushbar/flushbar.dart';
-
-typedef FncOnTapOK = void Function(UserStatus selected);
-
+import 'package:techviz/repository/repository.dart';
+import 'package:techviz/session.dart';
+import 'package:techviz/repository/userRepository.dart';
 class StatusSelector extends StatefulWidget {
-  StatusSelector({Key key, @required this.onTapOK, this.preSelectedID}) : super(key: key) {
-    //print('preSelectedID: ${this.preSelectedID}');
-  }
-  final FncOnTapOK onTapOK;
-  final int preSelectedID;
-
   @override
   State<StatefulWidget> createState() => StatusSelectorState();
 }
@@ -29,53 +19,43 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
   List<UserStatus> statusList = <UserStatus>[];
   StatusListPresenter roleListPresenter;
   UserStatus selectedStatus;
-  Flushbar _loadingBar;
-
+  int _preSelectedID;
 
   @override
   void initState() {
     super.initState();
 
-    Session session = Session();
+    _preSelectedID = Session().user.userStatusID;
     roleListPresenter = StatusListPresenter(this);
-    roleListPresenter.loadUserRoles(session.user.userID);
-
-    _loadingBar = VizDialog.LoadingBar(message: 'Sending request...');
+    roleListPresenter.loadUserStatus();
   }
 
-  void validate(BuildContext context) async {
-    print(_loadingBar.isShowing());
-    if (_loadingBar.isShowing())
-      return;
+  void validate(BuildContext buildContext) async {
+    final VizSnackbar _snackbar = VizSnackbar.Loading('Sending request...');
+    _snackbar.show(context);
 
-    _loadingBar.show(context);
+    Session session = Session();
+    UserRepository userRepository = Repository().userRepository;
+    userRepository.update(session.user.userID, statusID: selectedStatus.id).then((int result) {
+      _snackbar.dismiss();
 
-    DeviceInfo deviceInfo = await Utils.deviceInfo;
-    var toSend = {'userStatusID': selectedStatus.id, 'userID': Session().user.userID, 'deviceID': deviceInfo.DeviceID};
-
-    UserRouting().PublishMessage(toSend).then((dynamic result){
-      _loadingBar.dismiss();
-
-      User returnedUser = result as User;
-      UserTable.updateStatusID(returnedUser.userID, returnedUser.userStatusID.toString()).then((User user) {
+      userRepository.getUser(session.user.userID).then((User user){
         Session().user = user;
-        widget.onTapOK(selectedStatus);
-        Navigator.of(context).pop();
+        Navigator.of(context).pop<UserStatus>(selectedStatus);
       });
-
     }).catchError((dynamic error){
-      _loadingBar.dismiss();
+      _snackbar.dismiss();
       VizDialog.Alert(context, 'Error', error.toString());
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    var defaultBgDeco = BoxDecoration(gradient: LinearGradient(colors: const [Color(0xFF636f7e), Color(0xFF9aa8b0)], begin: Alignment.topCenter, end: Alignment.bottomCenter));
+    BoxDecoration defaultBgDeco = BoxDecoration(gradient: LinearGradient(colors: const [Color(0xFF636f7e), Color(0xFF9aa8b0)], begin: Alignment.topCenter, end: Alignment.bottomCenter));
 
-    var okBtn = VizButton(title: 'OK', highlighted: true, onTap: () => validate(context));
+    VizButton okBtn = VizButton(title: 'OK', highlighted: true, onTap: () => validate(context));
 
-    var body = GridView.count(
+    GridView body = GridView.count(
         shrinkWrap: true,
         padding: EdgeInsets.all(4.0),
         childAspectRatio: 2.0,
@@ -87,7 +67,7 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
           return VizOptionButton(status.description, onTap: onOptionSelected, tag: status.id, selected: selected);
         }).toList());
 
-    var container = Container(
+    Container container = Container(
       decoration: defaultBgDeco,
       constraints: BoxConstraints.expand(),
       child: body,
@@ -115,10 +95,10 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusListPr
   void onStatusListLoaded(List<UserStatus> result) {
     setState(() {
       statusList = result;
-      if (widget.preSelectedID == null) {
+      if (_preSelectedID == null) {
         selectedStatus = statusList.where((UserStatus us) => us.isOnline == false).first;
       } else {
-        var where = statusList.where((UserStatus us) => us.id == widget.preSelectedID.toString());
+        Iterable<UserStatus> where = statusList.where((UserStatus us) => us.id == _preSelectedID.toString());
         selectedStatus = where.first;
       }
     });

@@ -7,7 +7,7 @@ class VizStepperButton extends StatelessWidget {
   final String title;
   final bool isActive;
 
-  VizStepperButton({Key key, this.onTap, this.title, this.isActive}) : super(key: key);
+  const VizStepperButton({Key key, this.onTap, this.title, this.isActive}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

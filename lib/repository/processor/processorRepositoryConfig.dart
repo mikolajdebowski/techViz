@@ -2,8 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
+abstract class IProcessorRepositoryConfig{
+  Future<void> Setup(SessionClient client);
+  LiveTable GetLiveTable(String tagID);
+  String GetURL(String livetableTagID);
+}
 
-class ProcessorRepositoryConfig {
+class ProcessorRepositoryConfig implements IProcessorRepositoryConfig{
   static final ProcessorRepositoryConfig _singleton = ProcessorRepositoryConfig._internal();
   String _documentID;
   List<LiveTable> _liveTables;
@@ -12,13 +17,12 @@ class ProcessorRepositoryConfig {
     return _documentID;
   }
 
-
   factory ProcessorRepositoryConfig() {
     return _singleton;
   }
   ProcessorRepositoryConfig._internal();
 
-
+  @override
   Future<void> Setup(SessionClient client) async{
     String documentListStr = await client.post("visualDocIndex/advancedSearch.json", advancedSearchXML);
     List<dynamic> documentList = json.decode(documentListStr);
@@ -44,11 +48,10 @@ class ProcessorRepositoryConfig {
       String _liveTableTag = liveTable['tags'] as String;
       _liveTables.add(LiveTable(liveTable['ID'].toString(), _liveTableTag));
     }
-
     print('Setup is done');
-
   }
 
+  @override
   LiveTable GetLiveTable(String tagID){
     assert(_documentID!=null);
     assert(_liveTables!=null);
@@ -62,6 +65,7 @@ class ProcessorRepositoryConfig {
     return lt;
   }
 
+  @override
   String GetURL(String livetableTagID){
     assert(_documentID!=null);
     assert(_liveTables!=null);

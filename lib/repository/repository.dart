@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:techviz/bloc/taskViewBloc.dart';
+import 'package:techviz/repository/async/UserRouting.dart';
 import 'package:techviz/repository/slotFloorRepository.dart';
 import 'package:techviz/repository/async/SlotMachineRouting.dart';
 import 'package:techviz/repository/escalationPathRepository.dart';
@@ -38,6 +40,16 @@ import 'package:techviz/repository/userSectionRepository.dart';
 import 'package:techviz/repository/userSkillsRepository.dart';
 import 'package:techviz/repository/userStatusRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
+import 'package:kiwi/kiwi.dart' as kiwi;
+
+import 'async/MessageClient.dart';
+import 'async/TaskRouting.dart';
+import 'local/taskStatusTable.dart';
+import 'local/taskTypeTable.dart';
+import 'local/userSectionTable.dart';
+import 'local/userTable.dart';
+import 'service/taskService.dart';
+
 
 enum Flavor {
   MOCK,
@@ -47,7 +59,14 @@ enum Flavor {
 
 typedef fncOnMessage = void Function(String);
 
-class Repository{
+class Repository {
+  UserRepository _userRepository;
+  UserSectionRepository _userSectionRepository;
+  TaskTypeRepository _taskTypeRepository;
+  TaskStatusRepository _taskStatusRepository;
+  SlotFloorRepository _slotFloorRepository;
+
+  ILocalRepository _localRepository;
   static Flavor _flavor;
 
   static final Repository _singleton = Repository._internal();
@@ -56,18 +75,25 @@ class Repository{
   }
   Repository._internal();
 
-
   Future<void> configure(Flavor flavor, {String configJSON}) async {
     _flavor = flavor;
+
+    _localRepository ??= LocalRepository();
 
     if(_flavor == Flavor.PROCESSOR){
       SessionClient client = SessionClient();
       var config = ProcessorRepositoryConfig();
       await config.Setup(client);
     }
+
+		_configureInjector();
   }
 
-  Future<void> preFetch(fncOnMessage onMessage) async{
+  void setLocalDatabase(ILocalRepository localRepository){
+    _localRepository = localRepository;
+  }
+
+  Future<void> preFetch(fncOnMessage onMessage) async {
     onMessage('Cleaning up local database...');
 
 
@@ -76,7 +102,7 @@ class Repository{
     await localRepo.dropDatabase();
   }
 
-  Future<void> initialFetch(fncOnMessage onMessage) async{
+  Future<void> initialFetch(fncOnMessage onMessage) async {
 
     LocalRepository localRepo = LocalRepository();
     await localRepo.open();
@@ -85,7 +111,7 @@ class Repository{
     await userRepository.fetch();
 
     onMessage('Fetching Roles...');
-    await rolesRepository.fetch();
+    await roleRepository.fetch();
     await userRolesRepository.fetch();
 
     onMessage('Fetching User Status...');
@@ -108,35 +134,99 @@ class Repository{
     await userSectionRepository.fetch();
   }
 
-  UserSectionRepository get userSectionRepository {
-    switch(_flavor) {
-      default: return UserSectionRepository(remoteRepository: ProcessorUserSectionRepository());
-    }
+  void _configureInjector(){
+    kiwi.Container container = kiwi.Container();
+    container.clear();
+    container.registerInstance(TaskRepository(ProcessorTaskRepository(ProcessorRepositoryConfig()), _localRepository, TaskRouting()));
+    container.registerInstance(UserRoleRepository(ProcessorUserRoleRepository(), _localRepository));
+    container.registerInstance(RoleRepository(ProcessorRoleRepository(), _localRepository));
   }
 
+  void startServices(){
+    TaskService().listenRemote();
+    TaskService().listenLocal();
+  }
+
+  void stopServices(){
+    TaskService().shutdown();
+  }
+
+  void disposeBlocs(){
+    TaskViewBloc().dispose();
+  }
+
+  //TASKS
+  TaskRepository get taskRepository => kiwi.Container().resolve<TaskRepository>();
+  UserRoleRepository get userRolesRepository => kiwi.Container().resolve<UserRoleRepository>();
+  RoleRepository get roleRepository => kiwi.Container().resolve<RoleRepository>();
+
+
+  //USERS
+  UserRepository get userRepository {
+    IUserTable userTableImpl = UserTable(_localRepository);
+    if(_userRepository==null){
+      IUserRouting userRouting = UserRouting(MessageClient());
+      return UserRepository(ProcessorUserRepository(ProcessorRepositoryConfig()),userRouting, userTableImpl);
+    }
+    assert(_userRepository!=null);
+    return _userRepository;
+  }
+  set userRepository(UserRepository userRepository){
+    _userRepository = userRepository;
+  }
+
+  //USERSECTIONS
+  UserSectionRepository get userSectionRepository {
+    IUserSectionTable userSectionTable = UserSectionTable(_localRepository);
+    if(_userSectionRepository!=null){
+      return _userSectionRepository;
+    }
+    return _userSectionRepository = UserSectionRepository(ProcessorUserSectionRepository(), userSectionTable);
+  }
+  set userSectionRepository(UserSectionRepository userSectionRepository){
+    _userSectionRepository = userSectionRepository;
+  }
+
+  TaskTypeRepository get taskTypeRepository {
+    if(_taskTypeRepository!=null){
+      return _taskTypeRepository;
+    }
+    return _taskTypeRepository = TaskTypeRepository(ProcessorTaskTypeRepository(ProcessorRepositoryConfig()), TaskTypeTable(_localRepository));
+  }
+  set taskTypeRepository(TaskTypeRepository taskTypeRepository){
+    _taskTypeRepository = taskTypeRepository;
+  }
+
+
+  TaskStatusRepository get taskStatusRepository {
+    if(_taskStatusRepository!=null){
+      return _taskStatusRepository;
+    }
+    return _taskStatusRepository = TaskStatusRepository(ProcessorTaskStatusRepository(ProcessorRepositoryConfig()), TaskStatusTable(_localRepository));
+  }
+  set taskStatusRepository(TaskStatusRepository taskStatusRepository){
+    _taskStatusRepository = taskStatusRepository;
+  }
+
+
+  SlotFloorRepository get slotFloorRepository {
+    if(_slotFloorRepository!=null){
+      return _slotFloorRepository;
+    }
+    return _slotFloorRepository = SlotFloorRepository(ProcessorSlotFloorRepository(ProcessorRepositoryConfig()), SlotMachineRouting());
+  }
+  set slotFloorRepository(SlotFloorRepository slotFloorRepository){
+    _slotFloorRepository = slotFloorRepository;
+  }
+
+
+// TODO(rmathias): ABOVE MUST BE REVISED
   SectionRepository get sectionRepository {
     switch(_flavor) {
       default: return SectionRepository(remoteRepository: ProcessorSectionRepository());
     }
   }
 
-  UserRepository get userRepository {
-    switch(_flavor) {
-      default: return UserRepository(remoteRepository: ProcessorUserRepository());
-    }
-  }
-
-  RoleRepository get rolesRepository {
-    switch(_flavor) {
-      default: return RoleRepository(remoteRepository: ProcessorRoleRepository());
-    }
-  }
-
-  UserRoleRepository get userRolesRepository {
-    switch(_flavor) {
-      default: return UserRoleRepository(remoteRepository: ProcessorUserRoleRepository());
-    }
-  }
 
   UserStatusRepository get userStatusRepository {
     switch(_flavor) {
@@ -144,34 +234,9 @@ class Repository{
     }
   }
 
-  TaskTypeRepository get taskTypeRepository {
-    switch(_flavor) {
-      default: return TaskTypeRepository(remoteRepository: ProcessorTaskTypeRepository());
-    }
-  }
-
-  TaskStatusRepository get taskStatusRepository {
-    switch(_flavor) {
-      default: return TaskStatusRepository(remoteRepository: ProcessorTaskStatusRepository());
-    }
-  }
-
   TaskUrgencyRepository get taskUrgencyRepository {
     switch(_flavor) {
       default: return TaskUrgencyRepository(remoteRepository: ProcessorTaskUrgencyRepository());
-    }
-  }
-
-  TaskRepository get taskRepository {
-    switch(_flavor) {
-     default:return TaskRepository(remoteRepository: ProcessorTaskRepository());
-    }
-  }
-
-  //SLOTMACHINE
-  SlotFloorRepository get slotFloorRepository {
-    switch(_flavor) {
-      default:return SlotFloorRepository(remoteRepository: ProcessorSlotFloorRepository(), remoteRouting: SlotMachineRouting());
     }
   }
 

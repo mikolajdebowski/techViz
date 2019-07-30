@@ -37,8 +37,8 @@ android {
         applicationId "com.vizexplorer.techviz"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 63
-        versionName "0.8"
+        versionCode appVersionCode.toInteger()
+        versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 

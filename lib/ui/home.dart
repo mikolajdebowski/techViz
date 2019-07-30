@@ -1,37 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:techviz/ui/home.attendant.dart';
-import 'package:techviz/common/slideRightRoute.dart';
+import 'package:techviz/repository/repository.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizSelector.dart';
-import 'package:techviz/ui/home.manager.dart';
-import 'package:techviz/ui/menu.dart';
+import 'package:techviz/repository/userStatusRepository.dart';
+import 'package:techviz/ui/managerView.dart';
 import 'package:techviz/model/userSection.dart';
 import 'package:techviz/model/userStatus.dart';
-import 'package:techviz/repository/session.dart';
+import 'package:techviz/session.dart';
 import 'package:techviz/repository/userSectionRepository.dart';
 import 'package:techviz/ui/sectionSelector.dart';
 import 'package:techviz/ui/slotLookup.dart';
 import 'package:techviz/ui/statusSelector.dart';
+import 'package:techviz/ui/taskView.dart';
 
+import 'drawer.dart';
+
+enum HomeViewType{
+  TaskView,ManagerView
+}
 
 class Home extends StatefulWidget {
-  Home({Key key}) : super(key: key);
+  final HomeViewType homeViewType;
+  const Home(this.homeViewType);
 
   @override
   _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> with WidgetsBindingObserver {
+  HomeViewType homeViewType;
+  GlobalKey<ScaffoldState> scaffoldStateKey;
   GlobalKey<dynamic> homeChildKey;
   bool initialLoading = false;
 
   List<UserSection> currentSections = <UserSection>[];
   UserStatus currentUserStatus;
-
-  String _userStatusText;
-  bool _isOnline = false;
-
 
   String get getSectionsText {
     String sections = "";
@@ -53,18 +57,14 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+
+    homeViewType = widget.homeViewType;
+    scaffoldStateKey = GlobalKey();
+
     WidgetsBinding.instance.addObserver(this);
     loadDefaultSections();
-
-    Session session = Session();
-    if(session.role.isManager || session.role.isSupervisor){
-      homeChildKey = GlobalKey<HomeManagerState>();
-    }
-    else if(session.role.isAttendant){
-      homeChildKey = GlobalKey<HomeAttendantState>();
-    }
-
-
+    loadCurrentStatus();
+    loadView();
   }
 
   @override
@@ -73,16 +73,13 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     super.dispose();
   }
 
-  void goToMenu() {
-    Navigator.push<Menu>(
-      context,
-      SlideRightRoute(widget: Menu()),
-    );
+  void openDrawer() {
+    scaffoldStateKey.currentState.openDrawer();
   }
 
   void loadDefaultSections() {
-    UserSectionRepository userSectionRepo = UserSectionRepository();
-    Session session = Session();
+    UserSectionRepository userSectionRepo = Repository().userSectionRepository;
+    ISession session = Session();
     userSectionRepo.getUserSection(session.user.userID).then((List<UserSection> list) {
       setState(() {
         currentSections = list;
@@ -90,6 +87,28 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     });
   }
 
+  void loadCurrentStatus() {
+
+    UserStatusRepository userStatusRepo = Repository().userStatusRepository;
+    ISession session = Session();
+    userStatusRepo.getStatuses().then((List<UserStatus> list) {
+      setState(() {
+        currentUserStatus = list.where((UserStatus status)=> status.id == session.user.userStatusID.toString()).first;
+      });
+    });
+  }
+
+  void loadView() {
+    assert(homeViewType!=null);
+    if(homeViewType == HomeViewType.ManagerView){
+      homeChildKey = GlobalKey<ManagerViewState>();
+    }else if(homeViewType == HomeViewType.TaskView){
+      homeChildKey = GlobalKey<TaskViewState>();
+    }
+    assert(homeChildKey!=null);
+  }
+
+  //EVENTS
   void onUserSectionsChangedCallback(List<UserSection> sections) {
     print("onUserSectionsChangedCallback: ${sections.length.toString()}");
     setState(() {
@@ -98,21 +117,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     homeChildKey.currentState.onUserSectionsChanged(currentSections);
   }
 
-  void onMyStatusSelectorCallbackOK(UserStatus userStatusSelected) {
-    if (userStatusSelected.isOnline) {
-      Session().UpdateConnectionStatus(ConnectionStatus.Online);
-    } else {
-      Session().UpdateConnectionStatus(ConnectionStatus.Offline);
-    }
-
-    _userStatusText = userStatusSelected.description;
-    _isOnline = userStatusSelected.isOnline;
-
-    homeChildKey.currentState.onUserStatusChanged(userStatusSelected); // TODO(rmathias): NULL?
-  }
-
   void goToSectionSelector() {
-    var selector = SectionSelector(onUserSectionsChanged: onUserSectionsChangedCallback);
+    SectionSelector selector = SectionSelector(onUserSectionsChanged: onUserSectionsChangedCallback);
 
     Navigator.push<VizSelector>(
       context,
@@ -121,11 +127,25 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   }
 
   void goToStatusSelector() {
-    var selector = StatusSelector(onTapOK: onMyStatusSelectorCallbackOK, preSelectedID: Session().user.userStatusID);
-    Navigator.push<VizSelector>(
+    StatusSelector selector = StatusSelector();
+    Navigator.push<UserStatus>(
       context,
       MaterialPageRoute(builder: (context) => selector),
-    );
+    ).then((UserStatus userStatusSelected) {
+      if (userStatusSelected != null) {
+        if (userStatusSelected.isOnline) {
+          Session().UpdateConnectionStatus(ConnectionStatus.Online);
+        } else {
+          Session().UpdateConnectionStatus(ConnectionStatus.Offline);
+        }
+
+        setState(() {
+          currentUserStatus = userStatusSelected;
+        });
+
+        homeChildKey.currentState.onUserStatusChanged(userStatusSelected); // TODO(rmathias): NULL?
+      }
+    });
   }
 
   void goToSearchSelector() {
@@ -137,17 +157,17 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    VizButton leadingMenuButton = VizButton(title: 'Menu', onTap: goToMenu);
+    VizButton leadingMenuButton = VizButton(title: 'Menu', onTap: (){ openDrawer(); });
 
-    String statusText = _userStatusText == null ? "OFF SHIFT" : _userStatusText;
-    Color statusTextColor = _isOnline == false ? Colors.red : Colors.black;
+    String _statusText = currentUserStatus == null ? '-' : currentUserStatus.description;
+    Color _statusTextColor = currentUserStatus == null || currentUserStatus.isOnline == false ? Colors.red : Colors.black;
 
     Column statusInnerWidget = Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Text('My Status', style: TextStyle(color: Color(0xFF566474), fontSize: 13.0)),
-        Text(statusText, style: TextStyle(color: statusTextColor, fontSize: 16.0), overflow: TextOverflow.ellipsis)
+        Text(_statusText, style: TextStyle(color: _statusTextColor, fontSize: 16.0), overflow: TextOverflow.ellipsis)
       ],
     );
 
@@ -165,53 +185,28 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
     VizButton sectionsWidgetBtn = VizButton(customWidget: sectionsInnerWidget, flex: 3, onTap: goToSectionSelector);
 
-    //NOTIFICATIONS
-//    var notificationInnerWidget = Column(
-//      crossAxisAlignment: CrossAxisAlignment.center,
-//      mainAxisAlignment: MainAxisAlignment.center,
-//      children: <Widget>[
-//        Text('Offline', style: TextStyle(color: Color(0xFF566474), fontSize: 13.0)),
-//        Row(
-//          mainAxisAlignment: MainAxisAlignment.center,
-//          children: <Widget>[
-//            Text('7', style: TextStyle(color: Colors.black, fontSize: 18.0), overflow: TextOverflow.ellipsis),
-//            ImageIcon(AssetImage("assets/images/ic_alert.png"), size: 15.0, color: Color(0xFFCD0000))
-//          ],
-//        )
-//      ],
-//    );
-
-    //var notificationWidgetBtn = VizButton(customWidget: notificationInnerWidget, flex: 3);
     Spacer notificationWidgetBtn = Spacer(flex: 3);
-
-    //SEARCH
     VizButton searchIconWidget = VizButton(customWidget: ImageIcon(AssetImage("assets/images/ic_search.png"), size: 30.0), onTap: goToSearchSelector, flex: 1);
-
-    //
     List<Widget> actionBarCentralWidgets = <Widget>[statusWidgetBtn, sectionsWidgetBtn, notificationWidgetBtn, searchIconWidget];
 
-    Widget view;
-
-    Session session = Session();
-    if(session.role.isManager || session.role.isSupervisor){
-      view = HomeManager(homeChildKey);
-    }
-    else if(session.role.isAttendant){
-      view = HomeAttendant(homeChildKey);
-    }
-
     return Scaffold(
+      key: scaffoldStateKey,
       resizeToAvoidBottomPadding: false,
       backgroundColor: Colors.black,
       appBar: ActionBar(title: 'TechViz', leadingWidget: leadingMenuButton, centralWidgets: actionBarCentralWidgets),
-      body: SafeArea(child: view), // This trailing comma makes auto-formatting nicer for build methods.
+      body: SafeArea(child: bodyWidget),
+      drawer: SafeArea(child: MenuDrawer(homeChildKey)),
     );
   }
+
+  Widget get bodyWidget{
+    return homeChildKey is LabeledGlobalKey<ManagerViewState> ? ManagerView(homeChildKey) : TaskView(homeChildKey);
+  }
+
+
 }
 
-
-abstract class TechVizHome{
+abstract class TechVizHome {
   void onUserStatusChanged(UserStatus us);
-  void onUserSectionsChanged(Object obj);
+  void onUserSectionsChanged(List<UserSection> sections);
 }
-

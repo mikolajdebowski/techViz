@@ -20,7 +20,7 @@ class VizChart extends StatelessWidget {
   final ChartType chartType;
   final Function parser;
 
-  VizChart(Key key, this.chartData, this.chartType, {this.parser}) : super(key: key);
+  const VizChart(Key key, this.chartData, this.chartType, {this.parser}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +49,7 @@ class VizChart extends StatelessWidget {
           fillColorFn: (ChartData stats, _) {
             if(stats.color!=null){
               return stats.color as Color;
-            }
+            } else return null;
           },
           data: data,
           labelAccessorFn: (ChartData stats, _) {
@@ -83,7 +83,7 @@ class VizChart extends StatelessWidget {
         fillColorFn: (ChartData stats, _) {
           if(stats.color!=null){
             return stats.color as Color;
-          }
+          } else return null;
         }),
     ];
     return StackedHorizontalBarChart(seriesToBuild);

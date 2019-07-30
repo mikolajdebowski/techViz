@@ -9,3 +9,7 @@ build/
 pubspec.lock
 .flutter-plugins
 ios/Podfile.lock
+
+
+
+coverage/*

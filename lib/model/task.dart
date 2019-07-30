@@ -1,36 +1,44 @@
 import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/model/taskType.dart';
 
+import 'escalationPath.dart';
+
 class Task {
-  final String id;
-  final int version;
-  final bool dirty;
-  final String location;
-  final String machineId;
-  final String userID;
+  String id;
+  int version;
+  int dirty;
+  String location;
+  String machineId;
+  String userID;
 
-  final TaskType taskType;
-  final int taskTypeID;
-  final TaskStatus taskStatus;
-  final int taskStatusID;
+  TaskType taskType;
+  int taskTypeID;
+  TaskStatus taskStatus;
+  int taskStatusID;
 
-  final int taskUrgencyID;
+  int taskUrgencyID;
 
-  final DateTime taskCreated;
-  final DateTime taskAssigned;
-  final double amount;
-  final String eventDesc;
-  final String playerID;
+  DateTime taskCreated;
+  DateTime taskAssigned;
+  double amount;
+  String eventDesc;
+  String playerID;
 
-  final String playerFirstName;
-  final String playerLastName;
-  final String playerTier;
-  final String playerTierColorHEX;
+  String playerFirstName;
+  String playerLastName;
+  String playerTier;
+  String playerTierColorHEX;
 
-  final String urgencyHEXColor;
+  String urgencyHEXColor;
 
-  const Task({this.id, this.version, this.userID, this.dirty, this.location, this.taskType, this.taskStatus, this.machineId, this.taskCreated, this.taskAssigned, this.amount, this.eventDesc, this.playerID,
-  this.playerFirstName, this.playerLastName, this.playerTier, this.playerTierColorHEX, this.urgencyHEXColor, this.taskTypeID, this.taskStatusID, this.taskUrgencyID});
+  bool isTechTask;
 
+  String cancellationReason;
+  EscalationPath escalationPath;
+  TaskType escalationTaskType;
+  String notes;
+
+  Task({this.id, this.version, this.userID, this.dirty, this.location, this.taskType, this.taskStatus, this.machineId, this.taskCreated, this.taskAssigned, this.amount, this.eventDesc, this.playerID,
+  this.playerFirstName, this.playerLastName, this.playerTier, this.playerTierColorHEX, this.urgencyHEXColor, this.taskTypeID, this.taskStatusID, this.taskUrgencyID, this.isTechTask = false});
 
 }

@@ -1,13 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
-
-import 'package:techviz/model/userSection.dart';
 import 'package:techviz/repository/local/localRepository.dart';
 import 'package:techviz/repository/processor/processorRepositoryConfig.dart';
-import 'package:techviz/repository/remoteRepository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
-class ProcessorUserSectionRepository implements IRemoteRepository<UserSection> {
+import '../userSectionRepository.dart';
+
+class ProcessorUserSectionRepository implements IUserSectionRemoteRepository {
   @override
   Future fetch() {
     print('Fetching '+ toString());
@@ -15,7 +14,7 @@ class ProcessorUserSectionRepository implements IRemoteRepository<UserSection> {
     Completer _completer = Completer<void>();
     SessionClient client = SessionClient();
 
-    var config = ProcessorRepositoryConfig();
+    ProcessorRepositoryConfig config = ProcessorRepositoryConfig();
     String liveTableID = config.GetLiveTable(LiveTableType.TECHVIZ_MOBILE_USER_SECTION.toString()).id;
     String url = 'live/${config.DocumentID}/$liveTableID/select.json';
 
@@ -24,7 +23,7 @@ class ProcessorUserSectionRepository implements IRemoteRepository<UserSection> {
         dynamic decoded = json.decode(rawResult);
         List<dynamic> rows = decoded['Rows'] as List<dynamic>;
 
-        var _columnNames = (decoded['ColumnNames'] as String).split(',');
+        List<String> _columnNames = (decoded['ColumnNames'] as String).split(',');
 
         LocalRepository localRepo = LocalRepository();
         await localRepo.open();

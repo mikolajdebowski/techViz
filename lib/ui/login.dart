@@ -5,18 +5,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techviz/common/LowerCaseTextFormatter.dart';
 import 'package:techviz/common/slideRightRoute.dart';
 import 'package:techviz/components/VizAlert.dart';
-import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizLoadingIndicator.dart';
 import 'package:techviz/components/VizOptionButton.dart';
-import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizRainbow.dart';
+import 'package:techviz/repository/userRepository.dart';
 import 'package:techviz/ui/config.dart';
 import 'package:techviz/repository/async/DeviceRouting.dart';
 import 'package:techviz/repository/async/MessageClient.dart';
-import 'package:techviz/repository/async/UserRouting.dart';
-import 'package:techviz/repository/local/userTable.dart';
 import 'package:techviz/repository/repository.dart';
-import 'package:techviz/repository/session.dart';
+import 'package:techviz/session.dart';
 import 'package:techviz/ui/roleSelector.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 import 'package:logging/logging.dart';
@@ -32,9 +29,9 @@ class Login extends StatefulWidget {
 
 class LoginState extends State<Login> {
   bool _isLoading = false;
-  bool _loginEnabled = false;
   String _loadingMessage = '...';
   AppInfo appInfo;
+  bool _loginEnabled;
 
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -43,32 +40,31 @@ class LoginState extends State<Login> {
     'password': null,
   };
 
-  final usernameAddressController = TextEditingController();
-  final passwordAddressController = TextEditingController();
+  final usernameController = TextEditingController();
+  final passwordController = TextEditingController();
   final FocusNode txtPwdFocusNode = FocusNode();
   final FocusNode btnLoginFocusNode = FocusNode();
 
 
   SharedPreferences prefs;
 
-
   @override
   void initState() {
 
-    usernameAddressController.addListener(_printUsernameValue);
-    passwordAddressController.addListener(_printPasswordValue);
+    usernameController.addListener(_checkIfLoginEnable);
+    passwordController.addListener(_checkIfLoginEnable);
 
     SharedPreferences.getInstance().then((onValue) {
       prefs = onValue;
 
       if (prefs.getKeys().contains(Login.USERNAME)) {
-        usernameAddressController.text = prefs.getString(Login.USERNAME);
+        usernameController.text = prefs.getString(Login.USERNAME);
       }
 
       Utils.isEmulator.then((bool isEmulator){
         if(isEmulator){
           if (prefs.getKeys().contains(Login.PASSWORD)) {
-            passwordAddressController.text = prefs.getString(Login.PASSWORD);
+            passwordController.text = prefs.getString(Login.PASSWORD);
           }
         }
       });
@@ -112,20 +108,16 @@ class LoginState extends State<Login> {
       _loadingMessage = 'Updating user and device info...';
     });
 
-    Session session = Session();
-    await MessageClient().Init();
+    await MessageClient().Connect();
 
-    var toSendUserStatus = {'userStatusID': 10, 'userID': userID, 'deviceID': deviceInfo.DeviceID }; //FORCE OFF-SHIFT REMOTE
-    var toSendDeviceDetails = {'userID': userID, 'deviceID': deviceInfo.DeviceID, 'model': deviceInfo.Model, 'OSName': deviceInfo.OSName, 'OSVersion': deviceInfo.OSVersion };
-
-    var userUpdateFuture = UserRouting().PublishMessage(toSendUserStatus).then<dynamic>((dynamic user) async{
-      await UserTable.updateStatusID(userID, "10"); //FORCE OFF-SHIFT LOCALLY
-      await session.init(userID);
-
-      return Future<dynamic>.value(user);
+    UserRepository userRepository = Repository().userRepository;
+    Future userUpdateFuture = userRepository.update(userID, statusID: "10").then<int>((int result) async { //FORCE OFF-SHIFT LOCALLY
+      await Session().init(userID);
+      return result; // TODO(rmathias): DOES IT IS NECESSARY?
     });
 
-    var deviceUpdateFuture = DeviceRouting().PublishMessage(toSendDeviceDetails);
+    dynamic toSendDeviceDetails = {'userID': userID, 'deviceID': deviceInfo.DeviceID, 'model': deviceInfo.Model, 'OSName': deviceInfo.OSName, 'OSVersion': deviceInfo.OSVersion };
+    Future deviceUpdateFuture = DeviceRouting().PublishMessage(toSendDeviceDetails);
 
     Future.wait<void>([userUpdateFuture, deviceUpdateFuture]).then((List<dynamic> l){
       _completer.complete();
@@ -157,16 +149,18 @@ class LoginState extends State<Login> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String serverUrl = prefs.get(Config.SERVERURL) as String;
 
-    client.init(ClientType.PROCESSOR, serverUrl);
+    client.init(ProcessorClient(serverUrl));
 
     Future<String> authResponse = client.auth(_formData['username'], _formData['password']);
     authResponse.then((String response) async {
 
-      await prefs.setString(Login.USERNAME, usernameAddressController.text);
-      await prefs.setString(Login.PASSWORD, passwordAddressController.text);
+      await prefs.setString(Login.USERNAME, usernameController.text);
+      await prefs.setString(Login.PASSWORD, passwordController.text);
 
       await loadInitialData();
-      await setupUser(usernameAddressController.text);
+      await setupUser(usernameController.text);
+
+      Repository().startServices();
 
       Future.delayed( Duration(milliseconds:  200), () {
         Navigator.pushReplacement(context, MaterialPageRoute<RoleSelector>(builder: (BuildContext context) => RoleSelector()));
@@ -187,34 +181,34 @@ class LoginState extends State<Login> {
   Widget build(BuildContext context) {
     SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
 
-    var textFieldStyle = TextStyle(
+    TextStyle textFieldStyle = TextStyle(
         fontStyle: FontStyle.italic,
         fontSize: 20.0,
-        color: Color(0xFFffffff),
+        color: Color(0XFFFFFFFF),
         fontWeight: FontWeight.w500,
         fontFamily: "Roboto");
 
-    var hintTextFieldStyle = TextStyle(fontStyle: FontStyle.italic,
+    TextStyle hintTextFieldStyle = TextStyle(fontStyle: FontStyle.italic,
         fontSize: 20.0,
-        color: Color(0xFFE0E0E0),
+        color: Color(0X66FFFFFF),
         fontWeight: FontWeight.w500,
         fontFamily: "Roboto");
 
-    var textFieldBorder = OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(4.0)));
-    var defaultPadding = EdgeInsets.all(6.0);
-    var textFieldContentPadding = EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0);
+    OutlineInputBorder textFieldBorder = OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(4.0)));
+    EdgeInsets defaultPadding = EdgeInsets.all(6.0);
+    EdgeInsets textFieldContentPadding = EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0);
 
-    var backgroundDecoration = BoxDecoration(
+    BoxDecoration backgroundDecoration = BoxDecoration(
         gradient: LinearGradient(
             colors: const [Color(0xFFd6dfe3), Color(0xFFb1c2cb)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             tileMode: TileMode.repeated));
 
-    var txtFieldUser = Padding(
+    Padding txtFieldUser = Padding(
       padding: defaultPadding,
       child: TextFormField(
-          controller: usernameAddressController,
+          controller: usernameController,
           inputFormatters: [LowerCaseTextFormatter()],
           autocorrect: false,
           onSaved: (String value) {
@@ -239,7 +233,7 @@ class LoginState extends State<Login> {
       padding: defaultPadding,
       child: TextFormField(
           focusNode: txtPwdFocusNode,
-          controller: passwordAddressController,
+          controller: passwordController,
           onSaved: (String value) {
             //print('saving password: $value');
             _formData['password'] = value;
@@ -260,13 +254,13 @@ class LoginState extends State<Login> {
           style: textFieldStyle),
     );
 
-    final btnLogin = VizOptionButton('Login', onTap: loginTap, enabled: _loginEnabled, selected: true);
+    final VizOptionButton btnLogin = VizOptionButton('Login', onTap: loginTap, enabled: _loginEnabled, selected: true);
 
-    var btnBox = Padding(
+    Padding btnBox = Padding(
         padding: defaultPadding,
         child: btnLogin);
 
-    var loginForm = Column(
+    Column loginForm = Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[Row(
@@ -297,10 +291,9 @@ class LoginState extends State<Login> {
     );
 
 
-    var configBtn = IconButton(
+    IconButton configBtn = IconButton(
       icon: Icon(Icons.settings),
       onPressed: () {
-//        Navigator.pushReplacementNamed(context, '/config');
         Navigator.push<Login>(
           context,
           SlideRightRoute(widget: Config()),
@@ -308,18 +301,18 @@ class LoginState extends State<Login> {
       },
     );
 
-    var loggingBtn = IconButton(
+    IconButton loggingBtn = IconButton(
       icon: Icon(Icons.list),
       onPressed: () {
         Navigator.pushNamed(context, '/logging');
       },
     );
 
-    var topActions = Row(mainAxisAlignment: MainAxisAlignment.end,children: <Widget>[
+    Row topActions = Row(mainAxisAlignment: MainAxisAlignment.end,children: <Widget>[
         configBtn, loggingBtn,
     ]);
 
-    var container = Container(
+    Container container = Container(
         decoration: backgroundDecoration,
         child: Stack(
           children: <Widget>[
@@ -333,41 +326,22 @@ class LoginState extends State<Login> {
           ],
         ));
 
-    var safe = SafeArea(child: container);
-    return Scaffold(backgroundColor: Colors.black, body: safe);
-  }
 
-  void _printUsernameValue() {
-    _checkIfLoginEnable();
-  }
-
-  void _printPasswordValue() {
-    _checkIfLoginEnable();
+    return Scaffold(backgroundColor: Colors.black, body: SafeArea(child: container));
   }
 
   void _checkIfLoginEnable() {
-    if(usernameAddressController.text.isNotEmpty && passwordAddressController.text.isNotEmpty){
-      setState(() {
-        _loginEnabled = true;
-      });
-    } else{
-      setState(() {
-        _loginEnabled = false;
-      });
-    }
-
+    setState(() {
+      _loginEnabled = usernameController.text.isNotEmpty && passwordController.text.isNotEmpty;
+    });
   }
-
 }
-
-
 
 class UsernameFieldValidator {
   static String validate(String value){
     return value.isEmpty ? 'Username is required' : null;
   }
 }
-
 
 class PasswordFieldValidator {
   static String validate(String value){

@@ -17,6 +17,8 @@ class ReassignPresenter {
 
   void loadUsers() {
     UserRepository _repository = Repository().userRepository;
+
+
     _repository.usersBySectionsByTaskCount().then((List<Map> list){
 
       List<ReassignUser> toReturn = list.map((Map map) => ReassignUser.fromMap(map)).toList();

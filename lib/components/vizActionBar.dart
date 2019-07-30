@@ -33,18 +33,17 @@ class ActionBarState extends State<ActionBar> {
     List<Widget> children = <Widget>[];
     SizedBox leadingContainer;
 
-    //the backbutton when the view can pop
-    if (Navigator.of(context).canPop()) {
+    if (widget.leadingWidget != null) {
+      leadingContainer = SizedBox(width: 100.0, child: Flex(direction: Axis.horizontal, children: <Widget>[widget.leadingWidget]));
+    }
+    else if(Navigator.of(context).canPop()){
       VizButton backBtn = VizButton(title: 'Back', onTap: (){
         if(widget.onCustomBackButtonActionTapped!=null){
           widget.onCustomBackButtonActionTapped();
         }
         Navigator.maybePop(context);
       });
-
       leadingContainer = SizedBox(width: 100.0, child: Flex(direction: Axis.horizontal, children: <Widget>[backBtn]));
-    } else if (widget.leadingWidget != null) {
-      leadingContainer = SizedBox(width: 100.0, child: Flex(direction: Axis.horizontal, children: <Widget>[widget.leadingWidget]));
     }
 
     if (leadingContainer != null)

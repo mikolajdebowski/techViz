@@ -6,16 +6,30 @@ import 'package:techviz/ui/config.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
-class MessageClient {
+
+abstract class IMessageClient{
+  Future Connect();
+  void ResetChannel();
+  Future _bindQueue(String routingKey);
+  void _addRoutingKeyListener(String routingKey, StreamController<AmqpMessage> subscription);
+  void _removeRoutingKeyListener(String routingKey);
+  Future<Exchange> _getDefaultExchange(Channel channel);
+  Future<Exchange> _getExchange(Channel _channel);
+  Future PublishMessage(dynamic object, String routingKeyPattern, {bool wait = false, Function parser});
+  StreamController ListenQueue(String routingKeyPattern, Function onData, {Function onError, bool timeOutEnabled = true, Function parser, bool appendDeviceID = true});
+  Future Close();
+}
+
+class MessageClient implements IMessageClient{
   static final MessageClient _instance = MessageClient._internal();
   Client _rabbitmqClient;
   String _exchangeName;
-  final Duration _timeoutDuration = Duration(seconds: 10);
   Consumer _consumer;
   Exchange _exchange;
-
-  Map<String, List<StreamController<AmqpMessage>>> _mapStreamControllers;
   String _deviceID;
+
+  final Duration _timeoutDuration = Duration(seconds: 10);
+  final Map<String, List<StreamController<AmqpMessage>>> _mapStreamControllers = <String, List<StreamController<AmqpMessage>>>{};
 
   factory MessageClient() {
     return _instance;
@@ -23,8 +37,9 @@ class MessageClient {
 
   MessageClient._internal();
 
-  Future Init() async {
-    print('MessageClient: Init');
+  @override
+  Future Connect() async {
+    print('MessageClient: Connect');
     if(_exchangeName==null){
       //CONFIGURATION
       String loadedConfig = await rootBundle.loadString('assets/json/config.json');
@@ -41,7 +56,6 @@ class MessageClient {
 
     Completer<void> _completer = Completer<void>();
     _rabbitmqClient = null;
-    _mapStreamControllers = <String, List<StreamController<AmqpMessage>>>{};
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String host = prefs.getString(Config.SERVERURL);
@@ -66,12 +80,17 @@ class MessageClient {
       }).then((Consumer consumer){
         _consumer = consumer;
         _consumer.listen((AmqpMessage message){
-          //print('RoutingKey: ${message.routingKey}');
+          print('Received message for RoutingKey: ${message.routingKey}');
           //print('Payload: ${message.payloadAsString}');
           var mapEntry = _mapStreamControllers[message.routingKey];
           if(mapEntry!=null){
             mapEntry.forEach((StreamController ss){
-              ss.add(message);
+              if(ss.isClosed==false){
+                ss.add(message);
+              }
+              else{
+                print('StreamController closed, message ignored');
+              }
             });
           }
         });
@@ -91,18 +110,20 @@ class MessageClient {
     return _completer.future;
   }
 
+  @override
   void ResetChannel() async{
     Channel channel = await _rabbitmqClient.channel();
     _exchange = await _getExchange(channel);
   }
 
+  @override
   Future _bindQueue(String routingKey) async{
     try{
       return _consumer.queue.bind(_exchange, routingKey);
     }
     catch(e){
       if(e.runtimeType == StateError){
-        await Init();
+        await Connect();
         return await _bindQueue(routingKey);
       }
       else
@@ -110,6 +131,7 @@ class MessageClient {
     }
   }
 
+  @override
   void _addRoutingKeyListener(String routingKey, StreamController<AmqpMessage> subscription) async{
     print('_addRoutingKeyListener  $routingKey');
     await _bindQueue(routingKey);
@@ -120,6 +142,7 @@ class MessageClient {
     _mapStreamControllers[routingKey].add(subscription);
   }
 
+  @override
   void _removeRoutingKeyListener(String routingKey){
     print('_removeRoutingKeyListener  $routingKey');
     _consumer.queue.unbind(_exchange, routingKey);
@@ -128,10 +151,12 @@ class MessageClient {
     }
   }
 
+  @override
   Future<Exchange> _getDefaultExchange(Channel channel){
     return channel.exchange(_exchangeName, ExchangeType.TOPIC, durable: true);
   }
 
+  @override
   Future<Exchange> _getExchange(Channel _channel)  {
     return _getDefaultExchange(_channel).timeout(_timeoutDuration).then((Exchange exchange) {
       print('channel OK');
@@ -155,8 +180,9 @@ class MessageClient {
     });
   }
 
+  @override
   Future PublishMessage(dynamic object, String routingKeyPattern, {bool wait = false, Function parser}) async {
-    Completer<void> _completer = Completer<void>();
+    Completer<dynamic> _completer = Completer<dynamic>();
     _completer.future.timeout(_timeoutDuration, onTimeout: (){
       _completer.completeError(TimeoutException('Max connect timeout reached after ${_timeoutDuration.inSeconds} seconds.'));
     });
@@ -193,6 +219,7 @@ class MessageClient {
     return _completer.future;
   }
 
+  @override
   StreamController ListenQueue(String routingKeyPattern, Function onData, {Function onError, bool timeOutEnabled = true, Function parser, bool appendDeviceID = true}) {
     String routingKey = '$routingKeyPattern';
     if(appendDeviceID!=null && appendDeviceID){
@@ -205,12 +232,13 @@ class MessageClient {
 
     StreamController<AmqpMessage> sc = StreamController<AmqpMessage>(onCancel: onCancel);
     sc.stream.listen((AmqpMessage message){
-      onData(parser!=null ? parser(message.payloadAsString): message.payloadAsString);
+      onData(parser!=null ? parser(message.payloadAsJson): message.payloadAsJson);
     });
     _addRoutingKeyListener(routingKey, sc);
     return sc;
   }
 
+  @override
   Future Close(){
     if(_rabbitmqClient!=null){
       return _rabbitmqClient.close();

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class VizElevated extends StatefulWidget {
-  VizElevated(
+  const VizElevated(
       {Key key,
       this.title,
       this.onTap,

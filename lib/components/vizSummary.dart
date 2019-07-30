@@ -15,7 +15,7 @@ class VizSummary extends StatefulWidget {
   final bool isProcessing;
   final OnScroll onScroll;
 
-  VizSummary(this.title, this.data, {Key key, this.onSwipeLeft, this.onSwipeRight, this.onMetricTap, this.isProcessing = false, this.onScroll}) : super(key: key);
+  const VizSummary(this.title, this.data, {Key key, this.onSwipeLeft, this.onSwipeRight, this.onMetricTap, this.isProcessing = false, this.onScroll}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => VizSummaryState();
@@ -46,9 +46,9 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
   Widget build(BuildContext context) {
     BoxDecoration boxDecoration = BoxDecoration(
         borderRadius: BorderRadius.circular(4.0),
-        border: Border.all(color: Color(0xFFFFFFFF)),
-        gradient: LinearGradient(
-            colors: const [Color(0xFF81919D), Color(0xFFAAB7BD)], begin: Alignment.topCenter, end: Alignment.bottomCenter, tileMode: TileMode.repeated));
+        border: Border.all(color: Colors.white),
+        color: Colors.white
+    );
 
 
     Container container;
@@ -93,8 +93,8 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
-              header,child
-
+              header,
+              child,
             ],
           ),
         );

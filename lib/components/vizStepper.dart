@@ -120,7 +120,7 @@ class VizStepper extends StatefulWidget {
   /// new one.
   ///
   /// The [steps], [type], and [currentStep] arguments must not be null.
-  VizStepper({
+  const VizStepper({
     Key key,
     @required this.steps,
     this.type = VizStepperType.vertical,
