@@ -320,7 +320,7 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
         case 2:
         case 32:
           primaryActionImageSource = "assets/images/ic_task_cardin.png";
-          primaryActionTextSource = _selectedTask.isTechTask ? 'Tech Card in' : 'Tech Card';
+          primaryActionTextSource = _selectedTask.isTechTask ? 'Tech Card in' : 'Card in';
           primaryActionCallBack = () => updateTaskStatus(_selectedTask, _selectedTask.isTechTask == false ? 3 : 33);
           break;
         case 3:

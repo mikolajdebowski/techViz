@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:techviz/components/dataEntry/dataEntry.dart';
-import 'package:techviz/components/dataEntry/dataEntryGroup.dart';
+//import 'package:techviz/components/dataEntry/dataEntry.dart';
+//import 'package:techviz/components/dataEntry/dataEntryGroup.dart';
 import 'package:techviz/components/vizSummaryHeader.dart';
 
 class ClassForVizSummaryHeaderActions extends Mock implements VizSummaryHeaderActions{
@@ -39,39 +39,39 @@ void main(){
       expect(rowContainer.children.first.runtimeType, CircularProgressIndicator, reason: 'expects CircularProgressIndicator');
     });
 
-    testWidgets('should have 3 columns named Column1,Column2 and Column3 with values 1, 2 and 3 respectively', (WidgetTester tester) async {
-
-      List<DataEntryGroup> listEntries = <DataEntryGroup>[];
-      listEntries.add(DataEntryGroup('Column 1', <DataEntry>[]));
-      listEntries.add(DataEntryGroup('Column 2', <DataEntry>[]));
-      listEntries.add(DataEntryGroup('Column 3', <DataEntry>[]));
-
-      VizSummaryHeader header = VizSummaryHeader(headerTitle:'header title', entries: listEntries);
-      await tester.pumpWidget(MaterialApp(home: header));
-
-      Finder rowContainerFinder = find.byKey(Key('rowContainer'));
-      expect(rowContainerFinder, findsOneWidget, reason: 'expects findsOneWidget');
-
-      Finder headerItemTitleFinder = find.descendant(of: rowContainerFinder, matching: find.byKey(Key('headerItemTitle')));
-      expect(headerItemTitleFinder, findsNWidgets(3), reason: 'expects 3 title widgets');
-
-      Finder headerItemValueFinder = find.descendant(of: rowContainerFinder, matching: find.byKey(Key('headerItemValue')));
-      expect(headerItemValueFinder, findsNWidgets(3), reason: 'expects 3 value widgets');
-    });
-
-    testWidgets('should have one column with the text font highlighted in red', (WidgetTester tester) async {
-
-      List<DataEntryGroup> listEntries = <DataEntryGroup>[];
-      listEntries.add(DataEntryGroup('highlighted in red', <DataEntry>[], highlightedDecoration: (){ return Colors.red;}));
-
-      VizSummaryHeader header = VizSummaryHeader(headerTitle:'header title', entries: listEntries);
-      await tester.pumpWidget(MaterialApp(home: header));
-
-      Finder headerItemValueFinder = find.byKey(Key('headerItemValue'));
-
-      Text textWidget = tester.widget(headerItemValueFinder);
-      expect(textWidget.style.color, Colors.red, reason: 'color property should be Red');
-    });
+//    testWidgets('should have 3 columns named Column1,Column2 and Column3 with values 1, 2 and 3 respectively', (WidgetTester tester) async {
+//
+//      List<DataEntryGroup> listEntries = <DataEntryGroup>[];
+//      listEntries.add(DataEntryGroup('Column 1', <DataEntry>[]));
+//      listEntries.add(DataEntryGroup('Column 2', <DataEntry>[]));
+//      listEntries.add(DataEntryGroup('Column 3', <DataEntry>[]));
+//
+//      VizSummaryHeader header = VizSummaryHeader(headerTitle:'header title', entries: listEntries);
+//      await tester.pumpWidget(MaterialApp(home: header));
+//
+//      Finder rowContainerFinder = find.byKey(Key('rowContainer'));
+//      expect(rowContainerFinder, findsOneWidget, reason: 'expects findsOneWidget');
+//
+//      Finder headerItemTitleFinder = find.descendant(of: rowContainerFinder, matching: find.byKey(Key('headerItemTitle')));
+//      expect(headerItemTitleFinder, findsNWidgets(3), reason: 'expects 3 title widgets');
+//
+//      Finder headerItemValueFinder = find.descendant(of: rowContainerFinder, matching: find.byKey(Key('headerItemValue')));
+//      expect(headerItemValueFinder, findsNWidgets(3), reason: 'expects 3 value widgets');
+//    });
+//
+//    testWidgets('should have one column with the text font highlighted in red', (WidgetTester tester) async {
+//
+//      List<DataEntryGroup> listEntries = <DataEntryGroup>[];
+//      listEntries.add(DataEntryGroup('highlighted in red', <DataEntry>[], highlightedDecoration: (){ return Colors.red;}));
+//
+//      VizSummaryHeader header = VizSummaryHeader(headerTitle:'header title', entries: listEntries);
+//      await tester.pumpWidget(MaterialApp(home: header));
+//
+//      Finder headerItemValueFinder = find.byKey(Key('headerItemValue'));
+//
+//      Text textWidget = tester.widget(headerItemValueFinder);
+//      expect(textWidget.style.color, Colors.red, reason: 'color property should be Red');
+//    });
 
 //    testWidgets('should tap', (WidgetTester tester) async {
 //

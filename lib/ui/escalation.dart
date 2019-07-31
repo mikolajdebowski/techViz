@@ -139,11 +139,17 @@ class EscalationFormState extends State<EscalationForm>
 
     List<Widget> items = <Widget>[];
 
+
+    String escalationPathFormFieldValidator(EscalationPath value){
+      if(value == null)
+        return 'Select Escalation Path';
+
+      return null;
+    }
+
     //ESCALATION PATH
     FormField<EscalationPath> escalationPathFormField = FormField<EscalationPath>(
-      validator: (value) {
-        return value ?? 'Select Escalation Path';
-      },
+      validator: escalationPathFormFieldValidator,
       builder: (FormFieldState<EscalationPath> state) {
         return InputDecorator(
           decoration: InputDecoration(

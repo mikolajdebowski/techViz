@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techviz/common/LowerCaseTextFormatter.dart';
+import 'package:techviz/common/slideRightRoute.dart';
 import 'package:techviz/components/VizAlert.dart';
-import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizLoadingIndicator.dart';
+import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizRainbow.dart';
 import 'package:techviz/repository/userRepository.dart';
 import 'package:techviz/ui/config.dart';
@@ -30,6 +31,7 @@ class LoginState extends State<Login> {
   bool _isLoading = false;
   String _loadingMessage = '...';
   AppInfo appInfo;
+  bool _loginEnabled;
 
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -38,8 +40,8 @@ class LoginState extends State<Login> {
     'password': null,
   };
 
-  final usernameAddressController = TextEditingController();
-  final passwordAddressController = TextEditingController();
+  final usernameController = TextEditingController();
+  final passwordController = TextEditingController();
   final FocusNode txtPwdFocusNode = FocusNode();
   final FocusNode btnLoginFocusNode = FocusNode();
 
@@ -49,17 +51,20 @@ class LoginState extends State<Login> {
   @override
   void initState() {
 
+    usernameController.addListener(_checkIfLoginEnable);
+    passwordController.addListener(_checkIfLoginEnable);
+
     SharedPreferences.getInstance().then((onValue) {
       prefs = onValue;
 
       if (prefs.getKeys().contains(Login.USERNAME)) {
-        usernameAddressController.text = prefs.getString(Login.USERNAME);
+        usernameController.text = prefs.getString(Login.USERNAME);
       }
 
       Utils.isEmulator.then((bool isEmulator){
         if(isEmulator){
           if (prefs.getKeys().contains(Login.PASSWORD)) {
-            passwordAddressController.text = prefs.getString(Login.PASSWORD);
+            passwordController.text = prefs.getString(Login.PASSWORD);
           }
         }
       });
@@ -96,7 +101,7 @@ class LoginState extends State<Login> {
   }
 
   Future setupUser(String userID) async{
-    Completer _completer = Completer<void>();
+    Completer<void> _completer = Completer<void>();
     DeviceInfo deviceInfo = await Utils.deviceInfo;
 
     setState(() {
@@ -123,7 +128,7 @@ class LoginState extends State<Login> {
     return _completer.future;
   }
 
-  void loginTap() async {
+  void loginTap(dynamic args) async {
     if(_isLoading)
       return;
 
@@ -149,11 +154,11 @@ class LoginState extends State<Login> {
     Future<String> authResponse = client.auth(_formData['username'], _formData['password']);
     authResponse.then((String response) async {
 
-      await prefs.setString(Login.USERNAME, usernameAddressController.text);
-      await prefs.setString(Login.PASSWORD, passwordAddressController.text);
+      await prefs.setString(Login.USERNAME, usernameController.text);
+      await prefs.setString(Login.PASSWORD, passwordController.text);
 
       await loadInitialData();
-      await setupUser(usernameAddressController.text);
+      await setupUser(usernameController.text);
 
       Repository().startServices();
 
@@ -176,47 +181,48 @@ class LoginState extends State<Login> {
   Widget build(BuildContext context) {
     SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
 
-    var textFieldStyle = TextStyle(
+    TextStyle textFieldStyle = TextStyle(
         fontStyle: FontStyle.italic,
         fontSize: 20.0,
-        color: Color(0xFFffffff),
+        color: Color(0XFFFFFFFF),
         fontWeight: FontWeight.w500,
         fontFamily: "Roboto");
 
-    var textFieldBorder = OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(4.0)));
-    var defaultPadding = EdgeInsets.all(6.0);
-    var textFieldContentPadding = EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0);
+    TextStyle hintTextFieldStyle = TextStyle(fontStyle: FontStyle.italic,
+        fontSize: 20.0,
+        color: Color(0X66FFFFFF),
+        fontWeight: FontWeight.w500,
+        fontFamily: "Roboto");
 
-    var backgroundDecoration = BoxDecoration(
+    OutlineInputBorder textFieldBorder = OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(4.0)));
+    EdgeInsets defaultPadding = EdgeInsets.all(6.0);
+    EdgeInsets textFieldContentPadding = EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0);
+
+    BoxDecoration backgroundDecoration = BoxDecoration(
         gradient: LinearGradient(
             colors: const [Color(0xFFd6dfe3), Color(0xFFb1c2cb)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             tileMode: TileMode.repeated));
 
-    var txtFieldUser = Padding(
+    Padding txtFieldUser = Padding(
       padding: defaultPadding,
       child: TextFormField(
-          controller: usernameAddressController,
+          controller: usernameController,
           inputFormatters: [LowerCaseTextFormatter()],
           autocorrect: false,
           onSaved: (String value) {
             _formData['username'] = value;
             //print('saving username: $value');
           },
-          validator: (String value) {
-            if (value.isEmpty) {
-              return 'Username is required';
-            }
-            return null;
-          },
+          validator: UsernameFieldValidator.validate,
           onEditingComplete: (){
             FocusScope.of(context).requestFocus(txtPwdFocusNode);
           },
           decoration: InputDecoration(
               fillColor: Colors.black87,
               filled: true,
-              hintStyle: textFieldStyle,
+              hintStyle: hintTextFieldStyle,
               hintText: 'Username',
               border: textFieldBorder,
               contentPadding: textFieldContentPadding),
@@ -227,42 +233,34 @@ class LoginState extends State<Login> {
       padding: defaultPadding,
       child: TextFormField(
           focusNode: txtPwdFocusNode,
-          controller: passwordAddressController,
+          controller: passwordController,
           onSaved: (String value) {
             //print('saving password: $value');
             _formData['password'] = value;
           },
           autocorrect: false,
-          validator: (String value) {
-            if (value.isEmpty) {
-              return 'Password is required';
-            }
-            return null;
-          },
+          validator: PasswordFieldValidator.validate,
           onEditingComplete: (){
-            loginTap();
+            loginTap(null);
           },
           obscureText: true,
           decoration: InputDecoration(
               fillColor: Colors.black87,
               filled: true,
               hintText: 'Password',
-              hintStyle: textFieldStyle,
+              hintStyle: hintTextFieldStyle,
               border: textFieldBorder,
               contentPadding: textFieldContentPadding),
           style: textFieldStyle),
     );
 
-    final btnLogin = VizButton(title: 'Login', onTap: loginTap, highlighted: false);
+    final VizOptionButton btnLogin = VizOptionButton('Login', onTap: loginTap, enabled: _loginEnabled, selected: true);
 
-    var btnBox = Padding(
+    Padding btnBox = Padding(
         padding: defaultPadding,
-        child: SizedBox(
-            height: 45.0,
-            width: 100.0,
-            child: Flex(direction: Axis.horizontal, children: <Widget>[btnLogin])));
+        child: btnLogin);
 
-    var loginForm = Column(
+    Column loginForm = Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[Row(
@@ -293,38 +291,60 @@ class LoginState extends State<Login> {
     );
 
 
-    var configBtn = IconButton(
+    IconButton configBtn = IconButton(
       icon: Icon(Icons.settings),
       onPressed: () {
-        Navigator.pushReplacementNamed(context, '/config');
+        Navigator.push<Login>(
+          context,
+          SlideRightRoute(widget: Config()),
+        );
       },
     );
 
-    var loggingBtn = IconButton(
+    IconButton loggingBtn = IconButton(
       icon: Icon(Icons.list),
       onPressed: () {
         Navigator.pushNamed(context, '/logging');
       },
     );
 
-    var topActions = Row(mainAxisAlignment: MainAxisAlignment.end,children: <Widget>[
-          loggingBtn, configBtn,
-          ]);
+    Row topActions = Row(mainAxisAlignment: MainAxisAlignment.end,children: <Widget>[
+        configBtn, loggingBtn,
+    ]);
 
-    var container = Container(
+    Container container = Container(
         decoration: backgroundDecoration,
         child: Stack(
           children: <Widget>[
             topActions,
-            Align(alignment: Alignment.center, child: loginForm),
+            Align(alignment: Alignment.center, child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: loginForm,
+            )),
             Align(alignment: Alignment.bottomCenter, child: VizRainbow()),
             VizLoadingIndicator(message: _loadingMessage, isLoading: _isLoading)
           ],
         ));
 
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: SafeArea(child: container),
-    );
+
+    return Scaffold(backgroundColor: Colors.black, body: SafeArea(child: container));
+  }
+
+  void _checkIfLoginEnable() {
+    setState(() {
+      _loginEnabled = usernameController.text.isNotEmpty && passwordController.text.isNotEmpty;
+    });
+  }
+}
+
+class UsernameFieldValidator {
+  static String validate(String value){
+    return value.isEmpty ? 'Username is required' : null;
+  }
+}
+
+class PasswordFieldValidator {
+  static String validate(String value){
+    return value.isEmpty ? 'Password is required' : null;
   }
 }

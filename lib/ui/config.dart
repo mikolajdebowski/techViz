@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:techviz/common/LowerCaseTextFormatter.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:flutter/services.dart';
+import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizRainbow.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
@@ -17,14 +18,29 @@ class ConfigState extends State<Config> {
   SharedPreferences prefs;
   final serverAddressController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _nextEnabled = false;
 
   var default_url_options = {
     'protocols': ['Http', 'http', 'Https', 'https'],
     'require_protocol': false,
   };
 
+  void _printUrlValue() {
+    if(serverAddressController.text.isNotEmpty){
+      setState(() {
+        _nextEnabled = true;
+      });
+    } else{
+      setState(() {
+        _nextEnabled = false;
+      });
+    }
+
+  }
+
   @override
   void initState() {
+    serverAddressController.addListener(_printUrlValue);
     SharedPreferences.getInstance().then((onValue) {
       prefs = onValue;
       if (prefs.getKeys().contains(Config.SERVERURL)) {
@@ -35,7 +51,7 @@ class ConfigState extends State<Config> {
     super.initState();
   }
 
-  void onNextTap() async {
+  void onNextTap(dynamic args) async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
 
@@ -44,7 +60,13 @@ class ConfigState extends State<Config> {
       }
 
       await prefs.setString(Config.SERVERURL, serverAddressController.text);
-      Navigator.pushReplacementNamed(context, '/login');
+
+      if(Navigator.of(context).canPop()){
+        Navigator.pop(context);
+      }else{
+        Navigator.pushReplacementNamed(context, '/login');
+      }
+
     }
   }
 
@@ -62,6 +84,12 @@ class ConfigState extends State<Config> {
     var textFieldBorder = OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(4.0)));
     var defaultPadding = EdgeInsets.all(6.0);
     var textFieldContentPadding = EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0);
+
+    var hintTextFieldStyle = TextStyle(fontStyle: FontStyle.italic,
+        fontSize: 20.0,
+        color: Color(0xFFE0E0E0),
+        fontWeight: FontWeight.w500,
+        fontFamily: "Roboto");
 
     var backgroundDecoration = BoxDecoration(
         gradient: LinearGradient(
@@ -88,25 +116,18 @@ class ConfigState extends State<Config> {
             decoration: InputDecoration(
                 fillColor: Colors.black87,
                 filled: true,
-                hintStyle: textFieldStyle,
+                hintStyle: hintTextFieldStyle,
                 hintText: 'Server Address',
                 border: textFieldBorder,
                 contentPadding: textFieldContentPadding),
             style: textFieldStyle));
 
-    var btnNext = VizButton(title: 'Next', onTap: onNextTap, highlighted: true);
-
-    var btnBox = Padding(
-        padding: defaultPadding,
-        child: SizedBox(
-            height: 45.0,
-            width: 100.0,
-            child: Flex(direction: Axis.horizontal, children: <Widget>[btnNext])));
-
-    var formColumn = Expanded(
+    var formColumn = Container(
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Flexible(
+          Container(
               child: Form(
             key: _formKey,
             child: textField,
@@ -121,14 +142,10 @@ class ConfigState extends State<Config> {
     );
 
     var row = Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Container(
-          width: 40.0,
-        ),
-        formColumn,
-        btnBox
+        Expanded(child: formColumn),
       ],
     );
 
@@ -138,14 +155,18 @@ class ConfigState extends State<Config> {
           children: <Widget>[
             Align(
                 alignment: Alignment.center,
-                child: Container(
-                  height: 110.0,
-                  child: row,
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Container(
+                    height: 110.0,
+                    child: row,
+                  ),
                 )),
             Align(alignment: Alignment.bottomCenter, child: VizRainbow()),
           ],
         ));
 
-    return Scaffold(backgroundColor: Colors.black, body: SafeArea(child: container));
+    VizButton okBtn = VizButton(title: 'OK', highlighted: true, onTap: () => onNextTap(context), enabled: _nextEnabled);
+    return Scaffold(backgroundColor: Colors.black, appBar: ActionBar(title: 'Server configuration', tailWidget: okBtn), body: SafeArea(child: container), );
   }
 }

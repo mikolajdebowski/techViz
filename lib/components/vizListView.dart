@@ -66,6 +66,8 @@ class VizListViewState extends State<VizListView> {
     }
   }
 
+
+  // ignore: unused_element
   Widget _buildHeadingCell({
     BuildContext context,
     Widget label,
@@ -133,32 +135,32 @@ class VizListViewState extends State<VizListView> {
       if(!dataCell.visible)
         return;
 
-      final Widget arrow = _buildHeadingCell(
-        context: context,
-        label: Text(
-          dataCell.column.toString(),
-          textAlign: TextAlign.center,
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-        ),
-        tooltip: "",
-        numeric: false,
-        onSort: (){
-          print('sort');
-        },
-        sorted: true,
-        ascending: true,
-      );
+//      final Widget arrow = _buildHeadingCell(
+//        context: context,
+//        label: Text(
+//          dataCell.column.toString(),
+//          textAlign: TextAlign.center,
+//          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+//        ),
+//        tooltip: "",
+//        numeric: false,
+//        onSort: (){
+//          print('sort');
+//        },
+//        sorted: true,
+//        ascending: true,
+//      );
+//
+//      header.add(Expanded(
+//          child: arrow
+//      ));
 
       header.add(Expanded(
-          child: arrow
-      ));
-
-//      header.add(Expanded(
-//          child: Text(
-//        dataCell.column.toString(),
-//        textAlign: TextAlign.center,
-//        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-//      )));
+          child: Text(
+        dataCell.column.toString(),
+        textAlign: TextAlign.center,
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+      )));
     });
 
     //HEADER
