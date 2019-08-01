@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:techviz/bloc/taskViewBloc.dart';
 import 'package:techviz/components/VizButton.dart';
+import 'package:techviz/components/form/vizDropDownFormField.dart';
+import 'package:techviz/components/form/vizTextAreaFormField.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizDialog.dart';
+import 'package:techviz/components/vizSnackbar.dart';
 import 'package:techviz/model/escalationPath.dart';
 import 'package:techviz/model/task.dart';
 import 'package:techviz/model/taskType.dart';
-import 'package:techviz/presenter/escalationPathPresenter.dart';
-import 'package:techviz/repository/taskRepository.dart';
+import 'package:techviz/presenter/escalationPresenter.dart';
 
 class EscalationForm extends StatefulWidget {
   final Task task;
@@ -20,8 +20,8 @@ class EscalationForm extends StatefulWidget {
   State<StatefulWidget> createState() => EscalationFormState(task);
 }
 
-class EscalationFormState extends State<EscalationForm>
-    implements IEscalationPathPresenter {
+class EscalationFormState extends State<EscalationForm> implements EscalationPresenterView {
+  final EdgeInsets fieldPadding = EdgeInsets.only(left: 10, right: 10);
 
   Task _task;
   List<EscalationPath> _escalationPathList;
@@ -29,10 +29,11 @@ class EscalationFormState extends State<EscalationForm>
 
   EscalationPath _escalationPathSelected;
   TaskType _taskTypeSelected;
-  EscalationPathPresenter _presenter;
-  ScrollController _scrollController;
+
+  EscalationPresenter _presenter;
   TextEditingController _notesController;
   bool _btnDisabled = false;
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<FormFieldState> _formFieldTaskTypeKey = GlobalKey<FormFieldState>();
 
@@ -40,13 +41,10 @@ class EscalationFormState extends State<EscalationForm>
 
   @override
   void initState() {
-    _presenter = EscalationPathPresenter(this);
+    _presenter = EscalationPresenter(this);
     _presenter.loadEscalationPath(_task.isTechTask);
     _presenter.loadTaskType();
-
-    _scrollController = ScrollController();
     _notesController = TextEditingController();
-
     super.initState();
   }
 
@@ -55,6 +53,9 @@ class EscalationFormState extends State<EscalationForm>
   void onEscalationPathLoaded(List<EscalationPath> escalationPathList) {
     setState(() {
       _escalationPathList = escalationPathList;
+      if(_escalationPathList.length==1){
+        _escalationPathSelected = _escalationPathList.first;
+      }
     });
   }
 
@@ -65,23 +66,49 @@ class EscalationFormState extends State<EscalationForm>
     });
   }
 
-  @override
-  void onLoadError(dynamic error) {
-    print(error);
-
-    setState(() {
-      _btnDisabled = true;
-    });
-  }
-
   //VIEW
   bool get taskTypeRequired {
     return _escalationPathSelected != null &&
         (_escalationPathSelected.id == 2 || _escalationPathSelected.id == 3);
   }
 
+  void onOKTap(){
+    if (_btnDisabled)
+      return;
+
+    if(!_formKey.currentState.validate())
+      return;
+
+
+    final VizSnackbar snackbar = VizSnackbar.Loading('Escalating...');
+    snackbar.show(context);
+
+    setState(() {
+      _btnDisabled = true;
+    });
+
+    _task.dirty = 1;
+    _task.taskStatusID = 5;
+    _task.escalationPath = _escalationPathSelected;
+    _task.escalationTaskType = taskTypeRequired ? _taskTypeSelected : null;
+    _task.notes = _notesController.text;
+
+    _presenter.escalateTask(_task).then((dynamic r){
+      snackbar.dismiss();
+      Navigator.of(context).pop(true);
+    }).catchError((dynamic error){
+      snackbar.dismiss();
+      VizDialog.Alert(context, "Error", error.toString()).then((bool returned){
+        Navigator.of(context).pop(false);
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+
+
+
     Container container = Container(
         constraints: BoxConstraints.expand(),
         decoration: BoxDecoration(
@@ -91,37 +118,20 @@ class EscalationFormState extends State<EscalationForm>
                 end: Alignment.bottomCenter,
                 tileMode: TileMode.repeated)),
         child: SingleChildScrollView(
-            controller: _scrollController,
-            child: Form(key: _formKey, child: formWidget())));
+            child: Form(key: _formKey, child: formWidget)));
 
     VizButton okBtn = VizButton(
         title: 'OK',
         highlighted: true,
-        onTap: () {
-          if (_btnDisabled)
-            return;
+        onTap: onOKTap);
 
-          if (_formKey.currentState.validate()) {
-            setState(() {
-              _btnDisabled = true;
-            });
-
-            _task.dirty = 1;
-            _task.taskStatusID = 5;
-            _task.escalationPath = _escalationPathSelected;
-            _task.escalationTaskType = taskTypeRequired ? _taskTypeSelected : null;
-            _task.notes = _notesController.text;
-            TaskViewBloc().update(_task);
-
-            Navigator.of(context).pop(true);
-          }
-        });
     ActionBar ab = ActionBar(
         title: 'Escalate Task ${_task.location}',
         tailWidget: okBtn,
         onCustomBackButtonActionTapped: () {
           Navigator.of(context).pop(false);
         });
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: ab,
@@ -129,7 +139,7 @@ class EscalationFormState extends State<EscalationForm>
     );
   }
 
-  Widget formWidget() {
+  Widget get formWidget {
     if (_escalationPathList == null) {
       return Center(
         child: Padding(
@@ -137,164 +147,81 @@ class EscalationFormState extends State<EscalationForm>
       );
     }
 
-    List<Widget> items = <Widget>[];
-
-
-    String escalationPathFormFieldValidator(EscalationPath value){
-      if(value == null)
-        return 'Select Escalation Path';
-
-      return null;
-    }
-
-    //ESCALATION PATH
-    FormField<EscalationPath> escalationPathFormField = FormField<EscalationPath>(
-      validator: escalationPathFormFieldValidator,
-      builder: (FormFieldState<EscalationPath> state) {
-        return InputDecorator(
-          decoration: InputDecoration(
-            contentPadding: EdgeInsets.only(top: 10.0),
-            isDense: true,
-            icon: Icon(Icons.trending_up, color: Colors.white),
-            labelStyle: TextStyle(color: Colors.white),
-            labelText: 'Escalation Path',
-          ),
-          isEmpty: _escalationPathSelected == null,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Theme(
-                  data: Theme.of(context)
-                      .copyWith(canvasColor: Color(0xFF8B9EA7)),
-                  child: DropdownButtonHideUnderline(
-                      child: DropdownButton<EscalationPath>(
-                    isDense: true, style: TextStyle(color: Colors.white, fontSize: 16),
-                    isExpanded: true,
-                    value: _escalationPathSelected,
-                    onChanged: (EscalationPath newValue) {
-                      state.didChange(newValue);
-                      setState(() {
-                        _escalationPathSelected = newValue;
-                        _taskTypeSelected = null;
-
-                        if(_formFieldTaskTypeKey.currentState!=null){
-                          _formFieldTaskTypeKey.currentState.reset();
-                        }
-                      });
-                    },
-                    items: _escalationPathList.map((EscalationPath ep) {
-                      return DropdownMenuItem<EscalationPath>(
-                        value: ep,
-                        child: Text(ep.description),
-                      );
-                    }).toList(),
-                  ))),
-              Text(
-                state.hasError ? state.errorText : '',
-                style:
-                    TextStyle(color: Colors.redAccent.shade700, fontSize: 12.0),
-              )
-            ],
-          ),
-        );
+    List<Widget> formFields = <Widget>[];
+    VizDropdownFormField escalationPathFormField = VizDropdownFormField<EscalationPath>(
+      validator: (EscalationPath value){
+        if(value == null)
+          return 'Select Escalation Path';
+        return null;
       },
+      onChanged: (EscalationPath newValue){
+         setState(() {
+            _escalationPathSelected = newValue;
+            _taskTypeSelected = null;
+
+            if(_formFieldTaskTypeKey.currentState!=null){
+              _formFieldTaskTypeKey.currentState.reset();
+            }
+            _formKey.currentState.validate();
+         });
+      },
+      leadingIcon: Icons.trending_up,
+      labelText: 'Escalation path',
+      initialValue: _escalationPathSelected,
+      items: _escalationPathList.map((EscalationPath ep) {
+          return DropdownMenuItem<EscalationPath>(
+            value: ep,
+            child: Text(ep.description),
+          );
+        }).toList(),
     );
 
-    items.add(Padding(
-        padding: EdgeInsets.only(left: 10, right: 10),
+
+    formFields.add(Padding(
+        padding: fieldPadding,
         child: escalationPathFormField));
 
     //TASKTYPE
     if (taskTypeRequired) {
-      FormField<TaskType> taskTypeFormField = FormField<TaskType>(
+      VizDropdownFormField taskTypeFormField = VizDropdownFormField<TaskType>(
         key: _formFieldTaskTypeKey,
-        validator: (value) {
+        validator: (TaskType value){
           if (taskTypeRequired && value == null)
-            return 'Select Task Type';
+            return 'Select a Task Type';
           return null;
         },
-        builder: (FormFieldState<TaskType> state) {
-          return InputDecorator(
-              decoration: InputDecoration(
-                  isDense: true,
-                  contentPadding: EdgeInsets.only(top: 10.0),
-                  icon: Icon(Icons.sort, color: Colors.white),
-                  labelText: 'Task Type',
-                  labelStyle: TextStyle(color: Colors.white)),
-              isEmpty: _taskTypeSelected == null,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Theme(
-                      data: Theme.of(context)
-                          .copyWith(canvasColor: Color(0xFF8B9EA7)),
-                      child: DropdownButtonHideUnderline(
-                          child: DropdownButton<TaskType>(
-                        style: TextStyle(color: Colors.white, fontSize: 16),
-                        isDense: true,
-                        isExpanded: true,
-                        value: _taskTypeSelected,
-                        onChanged: (TaskType newValue) {
-                          state.didChange(newValue);
-                          setState(() {
-                            _taskTypeSelected = newValue;
-                          });
-                        },
-                        items: _taskTypeList.map((TaskType tt) {
-                          return DropdownMenuItem<TaskType>(
-                            value: tt,
-                            child: Text(tt.description),
-                          );
-                        }).toList(),
-                      ))),
-                  Text(
-                    state.hasError ? state.errorText : '',
-                    style: TextStyle(
-                        color: Colors.redAccent.shade700, fontSize: 12.0),
-                  )
-                ],
-              ));
+        onChanged: (TaskType newValue){
+          setState(() {
+            _taskTypeSelected = newValue;
+            _formKey.currentState.validate();
+          });
         },
+        leadingIcon: Icons.sort,
+        labelText: 'Task Type',
+        initialValue: _taskTypeSelected,
+        items: _taskTypeList.map((TaskType tt) {
+          return DropdownMenuItem<TaskType>(
+            value: tt,
+            child: Text(tt.description),
+          );
+        }).toList(),
       );
 
-      items.add(Padding(
+      formFields.add(Padding(
           padding: EdgeInsets.only(left: 10, right: 10),
           child: taskTypeFormField));
     }
 
-    FormField<String> notesFormField = FormField<String>(builder: (FormFieldState<String> state) {
-      return TextFormField(
-          maxLength: 4000,
-          maxLines: 3,
-          style: TextStyle(color: Colors.white, fontSize: 14),
-          controller: _notesController,
-          textInputAction: TextInputAction.done,
-          cursorColor: const Color(0xFF424242),
-          decoration: const InputDecoration(
-            labelStyle: TextStyle(color: Colors.white, fontSize: 16),
-            isDense: true,
-            focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.black45)),
-            icon: Icon(Icons.note_add, color: Colors.white),
-            labelText: 'Notes',
-          ));
-    });
+    VizTextAreaFormField notesFormField = VizTextAreaFormField(
+        labelText: 'Notes',
+        leadingIcon: Icons.note_add,
+        textEditingController: _notesController);
 
-    items.add(Padding(
-        padding: EdgeInsets.only(left: 10, right: 10), child: notesFormField));
+    formFields.add(Padding(padding: fieldPadding, child: notesFormField));
 
     return Column(
-      children: items,
+      children: formFields,
     );
   }
 
-  @override
-  void onEscalationError(dynamic error) {
-    if(error.runtimeType == TaskNotAvailableException){
-      VizDialog.Alert(context, "Error", error.toString()).then((bool returned){
-        Navigator.of(context).pop(false);
-      });
-    }
-  }
 }

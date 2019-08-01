@@ -9,20 +9,17 @@ class EscalationPathTable extends LocalTable {
     createSQL = '''
               CREATE TABLE $tableName ( 
                   EscalationPathId INT PRIMARY KEY NOT NULL, 
-                  Description TEXT NOT NULL,
-                  LookupName TEXT NOT NULL,
-                  IsTechPath INT NOT NULL)
+                  Description TEXT NOT NULL)
               ''';
   }
 
   Future<List<EscalationPath>> getAll(bool techPaths) async {
-
-    List<Map<String, dynamic>> queryResult = await localRepo.db.query(
-        tableName,
-        where: 'IsTechPath = ?',
-        whereArgs: [techPaths? 1 : 0].toList());
-
+    List<Map<String, dynamic>> queryResult = await localRepo.db.query(tableName);
     List<EscalationPath> output = queryResult.map((Map<String, dynamic> entry) => parser(entry)).toList();
+
+    if(techPaths){
+      return output.where((EscalationPath path) => path.id == 2).toList();
+    }
     return output;
   }
 

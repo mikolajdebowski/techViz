@@ -114,10 +114,11 @@ class TaskRepository{
   }
 
   Future escalateTask(String taskID, EscalationPath escalationPath, {TaskType escalationTaskType, String notes}) async {
+    List<int> openTasksIDs = [3,33];
     Completer<dynamic> _completer = Completer<dynamic>();
 
     List<dynamic> taskStatusCheck = await LocalRepository().db.rawQuery("SELECT TASKSTATUSID FROM TASK WHERE _ID = '$taskID';");
-    if(taskStatusCheck.isEmpty || taskStatusCheck.first['TASKSTATUSID'] != 3){
+    if(taskStatusCheck.isEmpty || openTasksIDs.contains(taskStatusCheck.first['TASKSTATUSID']) == false){
       throw TaskNotAvailableException();
     }
 
@@ -131,6 +132,7 @@ class TaskRepository{
 
     taskRouting.PublishMessage(message).then((dynamic d) async{
       await localRepository.db.rawUpdate('UPDATE TASK SET _DIRTY = 1 WHERE _ID = ?', [taskID].toList());
+
       _completer.complete(d);
     }).catchError((dynamic error){
       _completer.completeError(error);

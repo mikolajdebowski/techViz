@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:techviz/repository/local/escalationPathTable.dart';
 import 'package:techviz/repository/processor/processorLiveTable.dart';
 import 'package:techviz/repository/processor/processorRepositoryConfig.dart';
 import 'package:techviz/repository/remoteRepository.dart';
@@ -24,13 +23,10 @@ class ProcessorEscalationPathRepository extends ProcessorLiveTable<dynamic> impl
 
         int _id = int.parse(values[_columnNames.indexOf("IsSubscribed")].toString());
         String _description = values[_columnNames.indexOf("IsSubscribedDescription")] as String;
-        String _lookupName = values[_columnNames.indexOf("LookupName")] as String;
 
         Map<String,dynamic> entry = <String,dynamic>{};
         entry['EscalationPathId'] = _id;
         entry['Description'] = _description;
-        entry['LookupName'] = _lookupName;
-        entry['IsTechPath'] = 0;
 
         output.add(entry);
       });
