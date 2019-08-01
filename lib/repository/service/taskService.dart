@@ -69,14 +69,9 @@ class TaskService{
 			);
 		}
 
-		Future escalate(Task task){
-			return Repository().taskRepository.escalateTask(
-					task.id, task.escalationPath, escalationTaskType: task.escalationTaskType, notes: task.notes
-			);
-		}
-
 		void onTaskListReceived(List<Task> event) {
 			Future.forEach(event, (Task task){
+
 				if(task.dirty == 1){
 					print('Sending ${task.location} status ${task.taskStatusID} due dirty == 1\n');
 
@@ -91,17 +86,17 @@ class TaskService{
 						case 33:
 							futureAction = updateStatus(task);
 							break;
-						case 5:
-							futureAction = escalate(task);
 					}
 
-					futureAction.then((dynamic result){
-						print('Sent! output: $result');
-						task.dirty = 2;
-						TaskViewBloc().update(task);
-					}).catchError((dynamic error){
-						throw error;
-					});
+					if(futureAction!=null){
+						futureAction.then((dynamic result){
+							print('Sent! output: $result');
+							task.dirty = 2;
+							TaskViewBloc().update(task);
+						}).catchError((dynamic error){
+							throw error;
+						});
+					}
 				}
 			});
 		}
