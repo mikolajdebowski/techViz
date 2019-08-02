@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'dataEntry/dataEntry.dart';
-import 'dataEntry/dataEntryCell.dart';
+import 'dataEntry/dataEntryColumn.dart';
 import 'vizListViewRow.dart';
 
 typedef SwipeActionCallback = void Function(dynamic tag);
@@ -16,8 +16,14 @@ class VizListView extends StatefulWidget {
   final SwipeAction onSwipeLeft;
   final SwipeAction onSwipeRight;
   final OnScroll onScroll;
+  final String noDataMessage;
+  final double maxHeight;
+  final List<DataEntryColumn> columnsDefinition;
 
-  const VizListView({Key key, this.data, this.onSwipeLeft, this.onSwipeRight, this.onScroll}) : super(key: key);
+  VizListView(this.data, this.columnsDefinition, {Key key, this.onSwipeLeft, this.onSwipeRight, this.onScroll, this.noDataMessage, this.maxHeight}) : super(key: key){
+    assert(data!=null);
+    assert(columnsDefinition!=null);
+  }
 
   @override
   State<StatefulWidget> createState() => VizListViewState();
@@ -25,9 +31,6 @@ class VizListView extends StatefulWidget {
 
 class VizListViewState extends State<VizListView> {
   final double paddingValue = 5.0;
-  final int numOfRows = 4;
-//  final double headingRowHeight = 56.0;
-
   static const double _sortArrowPadding = 2.0;
   static const double _headingFontSize = 12.0;
   static const Duration _sortArrowAnimationDuration = Duration(milliseconds: 150);
@@ -38,13 +41,17 @@ class VizListViewState extends State<VizListView> {
   @override
   void initState() {
     _scrollController = ScrollController();
-    _scrollController.addListener(() {
-      if (_scrollController.offset >= _scrollController.position.maxScrollExtent) {
-        widget.onScroll(ScrollingStatus.ReachOnBottom);
-      } else if (_scrollController.offset <= _scrollController.position.minScrollExtent) {
-        widget.onScroll(ScrollingStatus.ReachOnTop);
-      }
-    });
+
+    if(widget.onScroll!=null){
+      _scrollController.addListener(() {
+        if (_scrollController.offset >= _scrollController.position.maxScrollExtent) {
+          widget.onScroll(ScrollingStatus.ReachOnBottom);
+        } else if (_scrollController.offset <= _scrollController.position.minScrollExtent) {
+          widget.onScroll(ScrollingStatus.ReachOnTop);
+        }
+      });
+    }
+
     super.initState();
   }
 
@@ -123,16 +130,19 @@ class VizListViewState extends State<VizListView> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.data.isEmpty) {
-      return Padding(
-        padding: EdgeInsets.only(top: paddingValue, bottom: paddingValue),
-        child: Text('No data to show'),
+    if (widget.data == null || widget.data.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: EdgeInsets.only(top: paddingValue, bottom: paddingValue),
+          child: Text(widget.noDataMessage != null ? widget.noDataMessage : 'No data'),
+        ),
       );
     }
 
     List<Widget> header = <Widget>[];
-    widget.data.first.columns.forEach((DataEntryCell dataCell) {
-      if(!dataCell.visible)
+
+    widget.columnsDefinition.forEach((DataEntryColumn column){
+      if(!column.visible)
         return;
 
 //      final Widget arrow = _buildHeadingCell(
@@ -156,11 +166,13 @@ class VizListViewState extends State<VizListView> {
 //      ));
 
       header.add(Expanded(
+          flex: column.flex,
           child: Text(
-        dataCell.column.toString(),
-        textAlign: TextAlign.center,
-        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-      )));
+            column.columnName.toString(),
+            textAlign: TextAlign.center,
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+          )));
+
     });
 
     //HEADER
@@ -170,9 +182,10 @@ class VizListViewState extends State<VizListView> {
 
     //LISTVIEW
     List<VizListViewRow> rowsList =
-    widget.data.map((DataEntry row) => VizListViewRow(row, onSwipeLeft: widget.onSwipeLeft, onSwipeRight: widget.onSwipeRight, onSwiping: onRowSwiping)).toList();
+    widget.data.map((DataEntry row) => VizListViewRow(row, widget.columnsDefinition, onSwipeLeft: widget.onSwipeLeft, onSwipeRight: widget.onSwipeRight, onSwiping: onRowSwiping)).toList();
 
-    double maxHeight = widget.data.isEmpty ? VizListViewRow.rowHeight : (widget.data.length < numOfRows ? widget.data.length * VizListViewRow.rowHeight : VizListViewRow.rowHeight * numOfRows);
+    double maxHeight = widget.maxHeight !=null ? widget.maxHeight : MediaQuery.of(context).size.height;
+    maxHeight += 15; //THIS "MARGIN" IS INTENTIONAL, SO USER CAN SEE THAT THERE ARE MORE DATA IN THE LIST
 
     Container listViewContainer = Container(
       constraints: BoxConstraints(maxHeight: maxHeight),
@@ -183,12 +196,14 @@ class VizListViewState extends State<VizListView> {
     );
 
     return SingleChildScrollView(
-      child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Container(
+      child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        Container(
           decoration: BoxDecoration(color: Color(0xFFF1F1F1)),
           child: Padding(
             padding: const EdgeInsets.all(4.0),
             child: headerRow,
-          )), listViewContainer]),
+          )),
+        listViewContainer]),
     );
   }
 }

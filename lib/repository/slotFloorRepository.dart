@@ -59,6 +59,8 @@ class SlotFloorRepository {
           _cachedLocalData[idx].machineStatusID = received.machineStatusID;
           _cachedLocalData[idx].updatedAt = received.updatedAt;
           _cachedLocalData[idx].dirty = received.dirty;
+          _cachedLocalData[idx].machineTypeName = received.machineTypeName;
+          _cachedLocalData[idx].denom = received.denom;
         }
       }
       else{
