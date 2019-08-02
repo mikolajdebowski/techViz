@@ -11,7 +11,6 @@ import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/userStatusRepository.dart';
 import 'package:techviz/session.dart';
 import 'package:techviz/repository/taskRepository.dart';
-import 'package:techviz/ui/profile.dart';
 import 'package:techviz/viewmodel/managerViewUserStatus.dart';
 
 abstract class IManagerViewPresenter {
