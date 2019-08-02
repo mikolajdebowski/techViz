@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:techviz/components/dataEntry/dataEntry.dart';
 import 'package:techviz/components/dataEntry/dataEntryCell.dart';
 import 'package:techviz/components/dataEntry/dataEntryGroup.dart';
+import 'package:techviz/model/role.dart';
 import 'package:techviz/model/slotMachine.dart';
 import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/model/taskType.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/repository/repository.dart';
+import 'package:techviz/repository/userStatusRepository.dart';
 import 'package:techviz/session.dart';
 import 'package:techviz/repository/taskRepository.dart';
+import 'package:techviz/ui/profile.dart';
 import 'package:techviz/viewmodel/managerViewUserStatus.dart';
 
 abstract class IManagerViewPresenter {
@@ -43,6 +46,8 @@ class ManagerViewPresenter{
         return '${hours.toString().padLeft(2, '0')}:${mins.toString().padLeft(2, '0')}';
       };
 
+
+      // ACT-1491 - Manager/Supervisor or Tech Manager/Supervisor should not be able to reassign to themselves if they are Off Shift
       DataEntry mapToDataEntry(Map<String, dynamic> mapEntry){
 
         List<DataEntryCell> columns = <DataEntryCell>[];
@@ -55,11 +60,34 @@ class ManagerViewPresenter{
         columns.add(DataEntryCell('User', mapEntry['UserID'], alignment: DataAlignment.center));
         columns.add(DataEntryCell('Time Taken', timeElapsedParsed(mapEntry['ElapsedTime'].toString()), alignment: DataAlignment.center));
 
+        UserStatusRepository userStatusRepo = Repository().userStatusRepository;
+        UserStatus currentUserStatus;
+        ISession session = Session();
+        userStatusRepo.getStatuses().then((List<UserStatus> list) {
+          currentUserStatus = list.where((UserStatus status)=> status.id == session.user.userStatusID.toString()).first;
+        });
+        Role role = Session().role;
+
+
         return DataEntry(mapEntry['_ID'].toString(), columns, onSwipeRightActionConditional: (){
           String userID = mapEntry['UserID'].toString();
-          return userID == null || userID != Session().user.userID.toString();
+          bool shouldAllowTakeTask = userID == null || userID != Session().user.userID.toString();
+
+          if(role.isManager || role.isSupervisor || role.isTechManager || role.isTechSupervisor) {
+            if (currentUserStatus.description == 'OFF SHIFT') {
+              shouldAllowTakeTask = false;
+            }
+          }
+
+          return shouldAllowTakeTask;
         });
       }
+
+
+
+
+
+
 
       DataEntry mapToDataEntryForUnassigned(Map<String, dynamic> mapEntry){
 
@@ -72,11 +100,34 @@ class ManagerViewPresenter{
         columns.add(DataEntryCell('Status', listStatusesWhere!=null && listStatusesWhere.isNotEmpty ? listStatusesWhere.first : mapEntry['TaskStatusID'].toString(), alignment: DataAlignment.center));
         columns.add(DataEntryCell('Time Taken', timeElapsedParsed(mapEntry['ElapsedTime'].toString()), alignment: DataAlignment.center));
 
+        UserStatusRepository userStatusRepo = Repository().userStatusRepository;
+        UserStatus currentUserStatus;
+        ISession session = Session();
+        userStatusRepo.getStatuses().then((List<UserStatus> list) {
+          currentUserStatus = list.where((UserStatus status)=> status.id == session.user.userStatusID.toString()).first;
+        });
+        Role role = Session().role;
+
+
         return DataEntry(mapEntry['_ID'].toString(), columns, onSwipeRightActionConditional: (){
           String userID = mapEntry['UserID'].toString();
-          return userID == null || userID != Session().user.userID.toString();
+          bool shouldAllowTakeTask = userID == null || userID != Session().user.userID.toString();
+
+          if(role.isManager || role.isSupervisor || role.isTechManager || role.isTechSupervisor) {
+            if (currentUserStatus.description == 'OFF SHIFT') {
+              shouldAllowTakeTask = false;
+            }
+          }
+
+          return shouldAllowTakeTask;
         });
       }
+
+
+
+
+
+
 
       //from ACT-1344
       //Assigned: UserID is not null AND TaskStatusID is not equal to 7 (reassigned)
@@ -170,18 +221,6 @@ class ManagerViewPresenter{
     Repository().userRepository.teamAvailabilitySummary().then(handleTeamAvailabilityList).catchError(handleTeamAvailabilityError);
   }
 
-  List<DataEntry> sortAlphabeticallyByAttendantName(List<DataEntry> coll){
-    int compateTo(DataEntry a, DataEntry b){
-      DataEntryCell userNameA = a.columns.where((DataEntryCell cell) => cell.column == 'Attendant').first;
-      DataEntryCell userNameB = b.columns.where((DataEntryCell cell) => cell.column == 'Attendant').first;
-      return userNameA.value.toString().compareTo(userNameB.value.toString());
-    }
-
-    coll.sort((DataEntry a, DataEntry b) => compateTo(a,b));
-    return coll;
-  }
-
-
   void loadSlotFloorSummary(){
 
     void handleSlotFloorList(List<SlotMachine> slotMachineList) async {
@@ -216,7 +255,11 @@ class ManagerViewPresenter{
         columns.add(DataEntryCell('Game/Theme', slotMachine.machineTypeName));
         columns.add(DataEntryCell('Denom', slotMachine.denom.toString(), alignment: DataAlignment.center));
         columns.add(DataEntryCell('PlayerID', slotMachine.playerID, alignment: DataAlignment.center));
-        return DataEntry(slotMachine.standID, columns, onSwipeLeftActionConditional: (){return false;}, onSwipeRightActionConditional: (){return false;});
+        return DataEntry(slotMachine.standID, columns, onSwipeRightActionConditional: (){
+          return allowToReserve(slotMachine.machineStatusID);
+        }, onSwipeLeftActionConditional: (){
+          return allowToCancelReservation(slotMachine.machineStatusID);
+        });
       }
 
       //RESERVED MACHINES: CAN ONLY BE CANCELED; CANOT BE RESERVED
@@ -229,7 +272,9 @@ class ManagerViewPresenter{
         columns.add(DataEntryCell('Duration', slotMachine.reservationTime, alignment: DataAlignment.center));
         return DataEntry(slotMachine.standID, columns, onSwipeLeftActionConditional: (){
           return allowToCancelReservation(slotMachine.machineStatusID);
-        }, onSwipeRightActionConditional: (){return false;});
+        }, onSwipeRightActionConditional: (){
+          return false;
+        });
       }
 
       //OUT OF SERVICE MACHINES, CAN NOT BE RESERVED OR CANCELED
@@ -240,7 +285,11 @@ class ManagerViewPresenter{
         columns.add(DataEntryCell('Game/Theme', slotMachine.machineTypeName));
         columns.add(DataEntryCell('Denom', slotMachine.denom.toString(), alignment: DataAlignment.center));
         columns.add(DataEntryCell('Status', slotMachine.machineStatusDescription, alignment: DataAlignment.center));
-        return DataEntry(slotMachine.standID, columns, onSwipeLeftActionConditional: (){return false;}, onSwipeRightActionConditional: (){return false;});
+        return DataEntry(slotMachine.standID, columns, onSwipeLeftActionConditional: (){
+          return false;
+        }, onSwipeRightActionConditional: (){
+          return false;
+        });
       }
 
       Iterable<SlotMachine> activeGamesWhere = slotMachineList.where((SlotMachine sm)=> sm.machineStatusID != '0');
@@ -271,6 +320,17 @@ class ManagerViewPresenter{
     }
 
     Repository().slotFloorRepository.slotFloorSummary().then(handleSlotFloorList).catchError(handleSlotFloorError);
+  }
+
+  List<DataEntry> sortAlphabeticallyByAttendantName(List<DataEntry> coll){
+    int compateTo(DataEntry a, DataEntry b){
+      DataEntryCell userNameA = a.columns.where((DataEntryCell cell) => cell.column == 'Attendant').first;
+      DataEntryCell userNameB = b.columns.where((DataEntryCell cell) => cell.column == 'Attendant').first;
+      return userNameA.value.toString().compareTo(userNameB.value.toString());
+    }
+
+    coll.sort((DataEntry a, DataEntry b) => compateTo(a,b));
+    return coll;
   }
 
   void loadUserStatusList(String currentUserStatusID){

@@ -18,7 +18,7 @@ class RoleRepository {
 
     List<Role> toReturn = <Role>[];
     queryResult.forEach((Map<String, dynamic> role) {
-      var t = Role(
+      Role t = Role(
         id: role['UserRoleID'] as int,
         description: role['UserRoleName'] as String,
         isAttendant: role['IsAttendant'] == 1,
