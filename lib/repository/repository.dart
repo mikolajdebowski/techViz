@@ -215,7 +215,7 @@ class Repository {
     if(_slotFloorRepository!=null){
       return _slotFloorRepository;
     }
-    return _slotFloorRepository = SlotFloorRepository(ProcessorSlotFloorRepository(ProcessorRepositoryConfig()), SlotMachineRouting());
+    return _slotFloorRepository = SlotFloorRepository(ProcessorSlotFloorRepository(ProcessorRepositoryConfig()), SlotMachineRouting(MessageClient()));
   }
   set slotFloorRepository(SlotFloorRepository slotFloorRepository){
     _slotFloorRepository = slotFloorRepository;

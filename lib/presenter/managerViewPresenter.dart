@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:techviz/components/dataEntry/dataEntry.dart';
 import 'package:techviz/components/dataEntry/dataEntryCell.dart';
+import 'package:techviz/components/dataEntry/dataEntryColumn.dart';
 import 'package:techviz/components/dataEntry/dataEntryGroup.dart';
 import 'package:techviz/model/slotMachine.dart';
 import 'package:techviz/model/taskStatus.dart';
@@ -49,11 +50,11 @@ class ManagerViewPresenter{
         Iterable<TaskType> listTypeWhere = listTypes.where((TaskType tt) => tt.taskTypeId == int.parse(mapEntry['TaskTypeID'].toString()));
         Iterable<TaskStatus> listStatusesWhere = listStatuses.where((TaskStatus ts) => ts.id == int.parse(mapEntry['TaskStatusID'].toString()));
 
-        columns.add(DataEntryCell('Location', mapEntry['Location'], alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Location', mapEntry['Location']));
         columns.add(DataEntryCell('Type', listTypeWhere!=null && listTypeWhere.isNotEmpty ? listTypeWhere.first : mapEntry['TaskTypeID'].toString()));
-        columns.add(DataEntryCell('Status', listStatusesWhere!=null && listStatusesWhere.isNotEmpty ? listStatusesWhere.first : mapEntry['TaskStatusID'].toString(), alignment: DataAlignment.center));
-        columns.add(DataEntryCell('User', mapEntry['UserID'], alignment: DataAlignment.center));
-        columns.add(DataEntryCell('Time Taken', timeElapsedParsed(mapEntry['ElapsedTime'].toString()), alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Status', listStatusesWhere!=null && listStatusesWhere.isNotEmpty ? listStatusesWhere.first : mapEntry['TaskStatusID'].toString()));
+        columns.add(DataEntryCell('User', mapEntry['UserID']));
+        columns.add(DataEntryCell('Time Taken', timeElapsedParsed(mapEntry['ElapsedTime'].toString())));
 
         return DataEntry(mapEntry['_ID'].toString(), columns, onSwipeRightActionConditional: (){
           String userID = mapEntry['UserID'].toString();
@@ -67,10 +68,10 @@ class ManagerViewPresenter{
         Iterable<TaskType> listTypeWhere = listTypes.where((TaskType tt) => tt.taskTypeId == int.parse(mapEntry['TaskTypeID'].toString()));
         Iterable<TaskStatus> listStatusesWhere = listStatuses.where((TaskStatus ts) => ts.id == int.parse(mapEntry['TaskStatusID'].toString()));
 
-        columns.add(DataEntryCell('Location', mapEntry['Location'], alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Location', mapEntry['Location']));
         columns.add(DataEntryCell('Type', listTypeWhere!=null && listTypeWhere.isNotEmpty ? listTypeWhere.first : mapEntry['TaskTypeID'].toString()));
-        columns.add(DataEntryCell('Status', listStatusesWhere!=null && listStatusesWhere.isNotEmpty ? listStatusesWhere.first : mapEntry['TaskStatusID'].toString(), alignment: DataAlignment.center));
-        columns.add(DataEntryCell('Time Taken', timeElapsedParsed(mapEntry['ElapsedTime'].toString()), alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Status', listStatusesWhere!=null && listStatusesWhere.isNotEmpty ? listStatusesWhere.first : mapEntry['TaskStatusID'].toString()));
+        columns.add(DataEntryCell('Time Taken', timeElapsedParsed(mapEntry['ElapsedTime'].toString())));
 
         return DataEntry(mapEntry['_ID'].toString(), columns, onSwipeRightActionConditional: (){
           String userID = mapEntry['UserID'].toString();
@@ -78,28 +79,47 @@ class ManagerViewPresenter{
         });
       }
 
-      //from ACT-1344
+      List<DataEntryColumn> assignedColumnsDefinition = [
+        DataEntryColumn('Location', alignment: DataAlignment.center),
+        DataEntryColumn('Type', alignment: DataAlignment.center),
+        DataEntryColumn('Status', alignment: DataAlignment.center),
+        DataEntryColumn('User', alignment: DataAlignment.center),
+        DataEntryColumn('Time Taken', alignment: DataAlignment.center)
+      ];
+
+      List<DataEntryColumn> unassignedColumnsDefinition = [
+        DataEntryColumn('Location', alignment: DataAlignment.center),
+        DataEntryColumn('Type', alignment: DataAlignment.center),
+        DataEntryColumn('Status', alignment: DataAlignment.center),
+        DataEntryColumn('Time Taken', alignment: DataAlignment.center),
+      ];
+
+
+      List<DataEntryGroup> group = <DataEntryGroup>[];
+
       //Assigned: UserID is not null AND TaskStatusID is not equal to 7 (reassigned)
       Iterable<Map<String,dynamic>> assignedWhere = openTasksList.where((Map<String,dynamic> map)=> (map['UserID'] != null && map['UserID'].toString().isNotEmpty) && map['TaskStatusID'] != '7');
       List<DataEntry> assignedList = assignedWhere != null ? assignedWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntry(d)).toList(): <DataEntry>[];
+      group.add(DataEntryGroup('Assigned', assignedList, assignedColumnsDefinition));
+
 
       //Unassigned: UserID is null OR TaskStatusID = 7 (reassigned)
       Iterable<Map<String,dynamic>> unassignedWhere = openTasksList.where((Map<String,dynamic> map)=> (map['UserID'] == null || map['UserID'].toString().isEmpty) || map['TaskStatusID'] == '7');
       List<DataEntry> unassignedList = unassignedWhere != null ? unassignedWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntryForUnassigned(d)).toList(): <DataEntry>[];
+      group.add(DataEntryGroup('Unassigned', unassignedList, unassignedColumnsDefinition));
+
 
       //Overdue: TaskUrgencyID is 3 (overdue)
       Iterable<Map<String,dynamic>> overdueWhere = openTasksList.where((Map<String,dynamic> map)=> map['TaskUrgencyID'] == '3');
       List<DataEntry> overdueList = overdueWhere != null ? overdueWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntry(d)).toList(): <DataEntry>[];
+      group.add(DataEntryGroup('Overdue', overdueList, assignedColumnsDefinition, highlightedDecoration: (){ return overdueList.isNotEmpty ? Color(0xFFFF0000): null; }));
+
 
       //Escalated: IsTechTask is 1 AND ParentID is not null (all escalated tasks are for technicians and have a parentID)
       Iterable<Map<String,dynamic>> escalatedWhere = openTasksList.where((Map<String,dynamic> map)=> map['IsTechTask']  == '1' && (map['ParentID'] != null && map['ParentID'].toString().isNotEmpty));
       List<DataEntry> escalatedList = escalatedWhere != null ? escalatedWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntry(d)).toList(): <DataEntry>[];
+      group.add(DataEntryGroup('Escalated', escalatedList, assignedColumnsDefinition));
 
-      List<DataEntryGroup> group = <DataEntryGroup>[];
-      group.add(DataEntryGroup('Assigned', assignedList));
-      group.add(DataEntryGroup('Unassigned', unassignedList));
-      group.add(DataEntryGroup('Overdue', overdueList, highlightedDecoration: (){ return overdueList.isNotEmpty ? Color(0xFFFF0000): null; }));
-      group.add(DataEntryGroup('Escalated', escalatedList));
 
       _view.onOpenTasksLoaded(group);
 
@@ -118,33 +138,33 @@ class ManagerViewPresenter{
 
       DataEntry toAvailableDataEntryParser(Map map){
         List<DataEntryCell> columns = <DataEntryCell>[];
-        columns.add(DataEntryCell('Sections', map['SectionCount'], alignment: DataAlignment.center));
-        columns.add(DataEntryCell('Attendant', map['UserName'], alignment: DataAlignment.left));
-        columns.add(DataEntryCell('Task Count', map['TaskCount'], alignment: DataAlignment.center));
-        columns.add(DataEntryCell('StatusID', map['UserStatusID'], visible: false));
+        columns.add(DataEntryCell('Sections', map['SectionCount']));
+        columns.add(DataEntryCell('Attendant', map['UserName']));
+        columns.add(DataEntryCell('Task Count', map['TaskCount']));
+        columns.add(DataEntryCell('StatusID', map['UserStatusID']));
         return DataEntry(map['UserID'], columns);
       }
 
       DataEntry toOnBreakDataEntryParser(Map map){
         List<DataEntryCell> columns = <DataEntryCell>[];
-        columns.add(DataEntryCell('Attendant', map['UserName'], alignment: DataAlignment.left));
-        columns.add(DataEntryCell('Break', map['UserStatusName'], alignment: DataAlignment.center));
-        columns.add(DataEntryCell('StatusID', map['UserStatusID'], visible: false));
+        columns.add(DataEntryCell('Attendant', map['UserName']));
+        columns.add(DataEntryCell('Break', map['UserStatusName']));
+        columns.add(DataEntryCell('StatusID', map['UserStatusID']));
         return DataEntry(map['UserID'], columns);
       }
 
       DataEntry toOtherDataEntryParser(Map map){
         List<DataEntryCell> columns = <DataEntryCell>[];
-        columns.add(DataEntryCell('Attendant', map['UserName'], alignment: DataAlignment.left));
-        columns.add(DataEntryCell('Status', map['UserStatusName'], alignment: DataAlignment.center));
-        columns.add(DataEntryCell('StatusID', map['UserStatusID'], visible: false));
+        columns.add(DataEntryCell('Attendant', map['UserName']));
+        columns.add(DataEntryCell('Status', map['UserStatusName']));
+        columns.add(DataEntryCell('StatusID', map['UserStatusID']));
         return DataEntry(map['UserID'], columns);
       }
 
       DataEntry toOffShiftDataEntryParser(Map map){
         List<DataEntryCell> columns = <DataEntryCell>[];
-        columns.add(DataEntryCell('Attendant', map['UserName'], alignment: DataAlignment.left));
-        columns.add(DataEntryCell('StatusID', map['UserStatusID'], visible: false));
+        columns.add(DataEntryCell('Attendant', map['UserName']));
+        columns.add(DataEntryCell('StatusID', map['UserStatusID']));
         return DataEntry(map['UserID'], columns);
       }
 
@@ -154,11 +174,35 @@ class ManagerViewPresenter{
       List<DataEntry> otherList = listMap.where((Map map)=> ['70','75','80','90'].contains(map['UserStatusID'])).map((Map map) => toOtherDataEntryParser(map)).toList();
       List<DataEntry> offShift = listMap.where((Map map)=> ['10'].contains(map['UserStatusID'])).map((Map map) => toOffShiftDataEntryParser(map)).toList();
 
+      List<DataEntryColumn> availableColumnsDefinition = [
+        DataEntryColumn('Sections', alignment: DataAlignment.center),
+        DataEntryColumn('Attendant', alignment: DataAlignment.center),
+        DataEntryColumn('Task Count', alignment: DataAlignment.center),
+        DataEntryColumn('StatusID', alignment: DataAlignment.center, visible: false)
+      ];
 
-      group.add(DataEntryGroup('Available', sortAlphabeticallyByAttendantName(availableList)));
-      group.add(DataEntryGroup('On Break', sortAlphabeticallyByAttendantName(onBreakList)));
-      group.add(DataEntryGroup('Other', sortAlphabeticallyByAttendantName(otherList)));
-      group.add(DataEntryGroup('Off Shift', sortAlphabeticallyByAttendantName(offShift)));
+      List<DataEntryColumn> onBreakColumnsDefinition = [
+        DataEntryColumn('Attendant', alignment: DataAlignment.center),
+        DataEntryColumn('Break', alignment: DataAlignment.center),
+        DataEntryColumn('StatusID', alignment: DataAlignment.center, visible: false)
+      ];
+
+      List<DataEntryColumn> otherColumnsDefinition = [
+        DataEntryColumn('Attendant', alignment: DataAlignment.center),
+        DataEntryColumn('Status', alignment: DataAlignment.center),
+        DataEntryColumn('StatusID', alignment: DataAlignment.center, visible: false)
+      ];
+
+      List<DataEntryColumn> offShiftColumnsDefinition = [
+        DataEntryColumn('Attendant', alignment: DataAlignment.center),
+        DataEntryColumn('StatusID', alignment: DataAlignment.center, visible: false)
+      ];
+
+
+      group.add(DataEntryGroup('Available', sortAlphabeticallyByAttendantName(availableList), availableColumnsDefinition));
+      group.add(DataEntryGroup('On Break', sortAlphabeticallyByAttendantName(onBreakList), onBreakColumnsDefinition));
+      group.add(DataEntryGroup('Other', sortAlphabeticallyByAttendantName(otherList), otherColumnsDefinition));
+      group.add(DataEntryGroup('Off Shift', sortAlphabeticallyByAttendantName(offShift), offShiftColumnsDefinition));
 
       _view.onTeamAvailabilityLoaded(group);
     }
@@ -172,8 +216,8 @@ class ManagerViewPresenter{
 
   List<DataEntry> sortAlphabeticallyByAttendantName(List<DataEntry> coll){
     int compateTo(DataEntry a, DataEntry b){
-      DataEntryCell userNameA = a.columns.where((DataEntryCell cell) => cell.column == 'Attendant').first;
-      DataEntryCell userNameB = b.columns.where((DataEntryCell cell) => cell.column == 'Attendant').first;
+      DataEntryCell userNameA = a.cell.where((DataEntryCell cell) => cell.columnName == 'Attendant').first;
+      DataEntryCell userNameB = b.cell.where((DataEntryCell cell) => cell.columnName == 'Attendant').first;
       return userNameA.value.toString().compareTo(userNameB.value.toString());
     }
 
@@ -198,10 +242,10 @@ class ManagerViewPresenter{
       DataEntry slotMachineToDataEntryForActiveGames(SlotMachine slotMachine){
         List<DataEntryCell> columns = <DataEntryCell>[];
 
-        columns.add(DataEntryCell('Location/StandID', slotMachine.standID, alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Location/StandID', slotMachine.standID));
         columns.add(DataEntryCell('Game/Theme', slotMachine.machineTypeName));
-        columns.add(DataEntryCell('Denom', slotMachine.denom.toString(), alignment: DataAlignment.center));
-        columns.add(DataEntryCell('Status', slotMachine.machineStatusDescription, alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Denom', slotMachine.denom.toString()));
+        columns.add(DataEntryCell('Status', slotMachine.machineStatusDescription));
         return DataEntry(slotMachine.standID, columns, onSwipeRightActionConditional: (){
           return allowToReserve(slotMachine.machineStatusID);
         }, onSwipeLeftActionConditional: (){
@@ -212,21 +256,21 @@ class ManagerViewPresenter{
       //MACHINES IN USE: CAN NOT BE RESERVED OR CANCELED
       DataEntry slotMachineToDataEntryForHeadCount(SlotMachine slotMachine){
         List<DataEntryCell> columns = <DataEntryCell>[];
-        columns.add(DataEntryCell('Location/StandID', slotMachine.standID, alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Location/StandID', slotMachine.standID));
         columns.add(DataEntryCell('Game/Theme', slotMachine.machineTypeName));
-        columns.add(DataEntryCell('Denom', slotMachine.denom.toString(), alignment: DataAlignment.center));
-        columns.add(DataEntryCell('PlayerID', slotMachine.playerID, alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Denom', slotMachine.denom.toString()));
+        columns.add(DataEntryCell('PlayerID', slotMachine.playerID));
         return DataEntry(slotMachine.standID, columns, onSwipeLeftActionConditional: (){return false;}, onSwipeRightActionConditional: (){return false;});
       }
 
       //RESERVED MACHINES: CAN ONLY BE CANCELED; CANOT BE RESERVED
       DataEntry slotMachineToDataEntryForReserved(SlotMachine slotMachine){
         List<DataEntryCell> columns = <DataEntryCell>[];
-        columns.add(DataEntryCell('Location/StandID', slotMachine.standID, alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Location/StandID', slotMachine.standID));
         columns.add(DataEntryCell('Game/Theme', slotMachine.machineTypeName));
-        columns.add(DataEntryCell('Denom', slotMachine.denom.toString(), alignment: DataAlignment.center));
-        columns.add(DataEntryCell('PlayerID', slotMachine.playerID, alignment: DataAlignment.center));
-        columns.add(DataEntryCell('Duration', slotMachine.reservationTime, alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Denom', slotMachine.denom.toString()));
+        columns.add(DataEntryCell('PlayerID', slotMachine.playerID));
+        columns.add(DataEntryCell('Duration', slotMachine.reservationTime));
         return DataEntry(slotMachine.standID, columns, onSwipeLeftActionConditional: (){
           return allowToCancelReservation(slotMachine.machineStatusID);
         }, onSwipeRightActionConditional: (){return false;});
@@ -236,10 +280,10 @@ class ManagerViewPresenter{
       DataEntry slotMachineToDataEntryForOutOfService(SlotMachine slotMachine){
         List<DataEntryCell> columns = <DataEntryCell>[];
 
-        columns.add(DataEntryCell('Location/StandID', slotMachine.standID, alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Location/StandID', slotMachine.standID));
         columns.add(DataEntryCell('Game/Theme', slotMachine.machineTypeName));
-        columns.add(DataEntryCell('Denom', slotMachine.denom.toString(), alignment: DataAlignment.center));
-        columns.add(DataEntryCell('Status', slotMachine.machineStatusDescription, alignment: DataAlignment.center));
+        columns.add(DataEntryCell('Denom', slotMachine.denom.toString()));
+        columns.add(DataEntryCell('Status', slotMachine.machineStatusDescription));
         return DataEntry(slotMachine.standID, columns, onSwipeLeftActionConditional: (){return false;}, onSwipeRightActionConditional: (){return false;});
       }
 
@@ -255,15 +299,43 @@ class ManagerViewPresenter{
       Iterable<SlotMachine> outOfServiceWhere = slotMachineList.where((SlotMachine sm)=> sm.machineStatusID == '0');
       List<DataEntry> outOfServiceList = outOfServiceWhere != null ? outOfServiceWhere.map<DataEntry>((SlotMachine sm)=> slotMachineToDataEntryForOutOfService(sm)).toList(): <DataEntry>[];
 
+
+      List<DataEntryColumn> activeGamesColumnsDefinition = [
+        DataEntryColumn('Location/StandID', alignment: DataAlignment.center),
+        DataEntryColumn('Game/Theme', alignment: DataAlignment.center, flex: 3),
+        DataEntryColumn('Denom', alignment: DataAlignment.center),
+        DataEntryColumn('Status', alignment: DataAlignment.center)
+      ];
+
+      List<DataEntryColumn> headCountColumnsDefinition = [
+        DataEntryColumn('Location/StandID', alignment: DataAlignment.center),
+        DataEntryColumn('Game/Theme', alignment: DataAlignment.center, flex: 3),
+        DataEntryColumn('Denom', alignment: DataAlignment.center),
+        DataEntryColumn('PlayerID', alignment: DataAlignment.center)
+      ];
+
+      List<DataEntryColumn> reservedColumnsDefinition = [
+        DataEntryColumn('Location/StandID', alignment: DataAlignment.center),
+        DataEntryColumn('Game/Theme', alignment: DataAlignment.center, flex: 2),
+        DataEntryColumn('Denom', alignment: DataAlignment.center),
+        DataEntryColumn('PlayerID', alignment: DataAlignment.center),
+        DataEntryColumn('Duration', alignment: DataAlignment.center)
+      ];
+
+      List<DataEntryColumn> outOfServiceColumnsDefinition = [
+        DataEntryColumn('Location/StandID', alignment: DataAlignment.center),
+        DataEntryColumn('Game/Theme', alignment: DataAlignment.center, flex: 3),
+        DataEntryColumn('Denom', alignment: DataAlignment.center),
+        DataEntryColumn('Status', alignment: DataAlignment.center)
+      ];
+
       List<DataEntryGroup> group = <DataEntryGroup>[];
-      group.add(DataEntryGroup('Active Games', activeGamesList));
-      group.add(DataEntryGroup('Head Count', headCountList));
-      group.add(DataEntryGroup('Reserved', reservedList));
-      group.add(DataEntryGroup('Out of Service', outOfServiceList, highlightedDecoration: (){ return outOfServiceList.isNotEmpty ? Color(0xFFFF0000): null; }));
+      group.add(DataEntryGroup('Active Games', activeGamesList, activeGamesColumnsDefinition));
+      group.add(DataEntryGroup('Head Count', headCountList, headCountColumnsDefinition));
+      group.add(DataEntryGroup('Reserved', reservedList, reservedColumnsDefinition));
+      group.add(DataEntryGroup('Out of Service', outOfServiceList, outOfServiceColumnsDefinition, highlightedDecoration: (){ return outOfServiceList.isNotEmpty ? Color(0xFFFF0000): null; }));
 
       _view.onSlotFloorSummaryLoaded(group);
-
-
     }
 
     void handleSlotFloorError(dynamic error){

@@ -7,6 +7,7 @@ import 'package:techviz/components/vizShimmer.dart';
 
 import 'dataEntry/dataEntry.dart';
 import 'dataEntry/dataEntryCell.dart';
+import 'dataEntry/dataEntryColumn.dart';
 
 typedef onSwipingCallback = void Function(
     bool isOpen, GlobalKey<SlidableState> key);
@@ -26,13 +27,16 @@ class VizListViewRow extends StatefulWidget {
   final SwipeAction onSwipeRight;
   final onSwipingCallback onSwiping;
   final Swipable swipable;
+  final List<DataEntryColumn> columnsDefinition;
 
-  const VizListViewRow(this.dataEntry,
+  const VizListViewRow(
+      this.dataEntry,
+      this.columnsDefinition,
       {Key key,
       this.onSwipeLeft,
       this.onSwipeRight,
       this.onSwiping,
-      this.swipable})
+      this.swipable, })
       : super(key: key);
 
   @override
@@ -42,13 +46,16 @@ class VizListViewRow extends StatefulWidget {
 class VizListViewRowState extends State<VizListViewRow> {
   static Color leftBtnColor = const Color(0xFF96CF96);
   static Color rightBtnColor = const Color(0xFFFFA500);
+  static Color backgroundColor = Colors.white;
+
+
   bool isBeingPressed = false;
   final double rowHeight = 35.0;
   final GlobalKey<SlidableState> _slidableKey = GlobalKey<SlidableState>();
   SlidableController _slidableController;
 
   Color get bgRowColor {
-    return isBeingPressed ? Colors.lightBlue : Colors.transparent;
+    return isBeingPressed ? Colors.lightBlue : Colors.white;
   }
 
   BoxDecoration get decoration {
@@ -86,6 +93,11 @@ class VizListViewRowState extends State<VizListViewRow> {
     ));
   }
 
+  Map toMapDic(List<DataEntryColumn> list) {
+    Map<String,DataEntryColumn> map = {};
+    list.forEach((DataEntryColumn column){ map[column.columnName] = column; });
+    return map;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,32 +106,44 @@ class VizListViewRowState extends State<VizListViewRow> {
         border: Border(bottom: BorderSide(color: Color(0xFF898989), width: 1.0)));
 
     List<Widget> columns = <Widget>[];
+    Map<String,DataEntryColumn> columnsMap = toMapDic(widget.columnsDefinition);
 
-    widget.dataEntry.columns.forEach((DataEntryCell dataCell) {
-      if(!dataCell.visible)
+    widget.dataEntry.cell.forEach((DataEntryCell dataCell) {
+      DataEntryColumn columnDefinition = columnsMap[dataCell.columnName];
+
+      if(!columnDefinition.visible)
         return;
 
-      String text = dataCell.toString();
-      TextStyle style = TextStyle(fontSize: 12);
+      Widget cellWidget;
 
-      TextAlign align = dataCell.alignment == DataAlignment.left
-          ? TextAlign.left
-          : (dataCell.alignment == DataAlignment.right
-              ? TextAlign.right
-              : TextAlign.center);
+      if(dataCell.value is Widget){
+        cellWidget = dataCell.value;
+      }
+      else{
+
+        String text = dataCell.value.toString();
+        TextStyle style = TextStyle(fontSize: 12);
+
+        TextAlign align = columnDefinition.alignment == DataAlignment.left
+            ? TextAlign.left
+            : (columnDefinition.alignment == DataAlignment.right
+            ? TextAlign.right
+            : TextAlign.center);
 
 
-      AutoSizeText txtField = AutoSizeText(
-        text,
-        textAlign: align,
-        style: style,
-        overflow: TextOverflow.ellipsis,
-        softWrap: true,
-        maxLines: 2,
-      );
+        cellWidget = AutoSizeText(
+          text,
+          textAlign: align,
+          style: style,
+          overflow: TextOverflow.ellipsis,
+          softWrap: true,
+          maxLines: 2,
+        );
+      }
 
       columns.add(Expanded(
-          child: Padding(padding: EdgeInsets.only(left: 5, right: 5), child: txtField)));
+        flex: columnDefinition.flex,
+          child: Padding(padding: EdgeInsets.all(5), child: cellWidget)));
     });
 
     Row dataRow = Row(
