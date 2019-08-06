@@ -8,7 +8,6 @@ import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/model/taskType.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/repository/repository.dart';
-import 'package:techviz/repository/userStatusRepository.dart';
 import 'package:techviz/session.dart';
 import 'package:techviz/repository/taskRepository.dart';
 import 'package:techviz/viewmodel/managerViewUserStatus.dart';
