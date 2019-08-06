@@ -197,7 +197,7 @@ class ManagerViewPresenter{
     void handleSlotFloorList(List<SlotMachine> slotMachineList) async {
 
       bool allowToReserve(dynamic statusID){
-        return statusID == '3';
+        return statusID == '3' || statusID == '2';
       }
 
       bool allowToCancelReservation(dynamic statusID){
