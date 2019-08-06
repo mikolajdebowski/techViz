@@ -37,14 +37,6 @@ class ManagerViewPresenter{
       List<TaskType> listTypes = await Repository().taskTypeRepository.getAll();
 
 
-      UserStatusRepository userStatusRepo = Repository().userStatusRepository;
-      UserStatus currentUserStatus;
-      ISession session = Session();
-      await userStatusRepo.getStatuses().then((List<UserStatus> list) {
-        currentUserStatus = list.where((UserStatus status)=> status.id == session.user.userStatusID.toString()).first;
-      });
-
-
       Function timeElapsedParsed = (String elapsedTimeInSeconds){
         int elapsedTime = int.parse(elapsedTimeInSeconds);
         int hours = (elapsedTime/60).floor();
@@ -73,7 +65,7 @@ class ManagerViewPresenter{
           Role role = Session().role;
           bool shouldAllowTakeTask = userID == null || userID != Session().user.userID.toString();
           if(role.isManager || role.isSupervisor || role.isTechManager || role.isTechSupervisor) {
-            if (currentUserStatus.id == '10') {
+            if (Session().user.userStatusID == 10) {
               shouldAllowTakeTask = false;
             }
           }
@@ -81,11 +73,6 @@ class ManagerViewPresenter{
           return shouldAllowTakeTask;
         });
       }
-
-
-
-
-
 
 
       DataEntry mapToDataEntryForUnassigned(Map<String, dynamic> mapEntry){
@@ -105,7 +92,7 @@ class ManagerViewPresenter{
           Role role = Session().role;
           bool shouldAllowTakeTask = userID == null || userID != Session().user.userID.toString();
           if(role.isManager || role.isSupervisor || role.isTechManager || role.isTechSupervisor) {
-            if (currentUserStatus.id == '10') {
+            if (Session().user.userStatusID == 10) {
               shouldAllowTakeTask = false;
             }
           }
@@ -113,12 +100,6 @@ class ManagerViewPresenter{
           return shouldAllowTakeTask;
         });
       }
-
-
-
-
-
-
 
       //from ACT-1344
       //Assigned: UserID is not null AND TaskStatusID is not equal to 7 (reassigned)
