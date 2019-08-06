@@ -10,7 +10,7 @@ import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/session.dart';
 import 'package:techviz/repository/userSectionRepository.dart';
 import 'package:techviz/ui/sectionSelector.dart';
-import 'package:techviz/ui/slotLookup.dart';
+import 'package:techviz/ui/slotFloor.dart';
 import 'package:techviz/ui/statusSelector.dart';
 import 'package:techviz/ui/taskView.dart';
 

@@ -4,9 +4,9 @@ typedef ActionConditional = bool Function();
 
 class DataEntry{
   final String id;
-  final List<DataEntryCell> columns;
+  final List<DataEntryCell> cell;
   final ActionConditional onSwipeLeftActionConditional;
   final ActionConditional onSwipeRightActionConditional;
 
-  DataEntry(this.id, this.columns, {this.onSwipeLeftActionConditional, this.onSwipeRightActionConditional});
+  DataEntry(this.id, this.cell, {this.onSwipeLeftActionConditional, this.onSwipeRightActionConditional});
 }

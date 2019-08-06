@@ -243,6 +243,8 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
 
       List<Widget> taskDetailsHeader = <Widget>[taskInfo];
 
+      print(_selectedTask.playerID);
+
       if (_selectedTask.playerID != null && _selectedTask.playerID.isNotEmpty) {
         String playerName = '${_selectedTask.playerFirstName} ${_selectedTask.playerLastName}';
 

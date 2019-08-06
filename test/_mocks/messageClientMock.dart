@@ -2,7 +2,10 @@ import 'dart:async';
 
 import 'package:techviz/repository/async/MessageClient.dart';
 
-class MessageClientMock implements IMessageClient{
+class MessageClientMock<T> implements IMessageClient{
+	StreamController<T> fakeStreamController;
+	MessageClientMock(this.fakeStreamController);
+
 	@override
 	Future Close() {
 		throw UnimplementedError();
@@ -15,7 +18,7 @@ class MessageClientMock implements IMessageClient{
 
 	@override
 	StreamController ListenQueue(String routingKeyPattern, Function onData, {Function onError, bool timeOutEnabled = true, Function parser, bool appendDeviceID = true}) {
-		throw UnimplementedError();
+		return fakeStreamController;
 	}
 
 	@override

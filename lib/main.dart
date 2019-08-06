@@ -60,6 +60,9 @@ class TechVizAppState extends State<TechVizApp> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
     return MaterialApp(
+      theme: ThemeData(
+        scaffoldBackgroundColor: Colors.black
+      ),
       debugShowCheckedModeBanner: false,
       title: 'TechViz',
       home: Splash(),
