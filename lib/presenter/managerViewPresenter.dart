@@ -26,7 +26,6 @@ abstract class IManagerViewPresenter {
 
 class ManagerViewPresenter{
   IManagerViewPresenter _view;
-
   ManagerViewPresenter(this._view){
     assert(_view != null);
   }
@@ -36,6 +35,15 @@ class ManagerViewPresenter{
     void handleOpenTasksList(dynamic openTasksList) async {
       List<TaskStatus> listStatuses = await Repository().taskStatusRepository.getAll();
       List<TaskType> listTypes = await Repository().taskTypeRepository.getAll();
+
+
+      UserStatusRepository userStatusRepo = Repository().userStatusRepository;
+      UserStatus currentUserStatus;
+      ISession session = Session();
+      await userStatusRepo.getStatuses().then((List<UserStatus> list) {
+        currentUserStatus = list.where((UserStatus status)=> status.id == session.user.userStatusID.toString()).first;
+      });
+
 
       Function timeElapsedParsed = (String elapsedTimeInSeconds){
         int elapsedTime = int.parse(elapsedTimeInSeconds);
@@ -59,21 +67,13 @@ class ManagerViewPresenter{
         columns.add(DataEntryCell('User', mapEntry['UserID'], alignment: DataAlignment.center));
         columns.add(DataEntryCell('Time Taken', timeElapsedParsed(mapEntry['ElapsedTime'].toString()), alignment: DataAlignment.center));
 
-        UserStatusRepository userStatusRepo = Repository().userStatusRepository;
-        UserStatus currentUserStatus;
-        ISession session = Session();
-        userStatusRepo.getStatuses().then((List<UserStatus> list) {
-          currentUserStatus = list.where((UserStatus status)=> status.id == session.user.userStatusID.toString()).first;
-        });
-        Role role = Session().role;
-
 
         return DataEntry(mapEntry['_ID'].toString(), columns, onSwipeRightActionConditional: (){
           String userID = mapEntry['UserID'].toString();
+          Role role = Session().role;
           bool shouldAllowTakeTask = userID == null || userID != Session().user.userID.toString();
-
           if(role.isManager || role.isSupervisor || role.isTechManager || role.isTechSupervisor) {
-            if (currentUserStatus.description == 'OFF SHIFT') {
+            if (currentUserStatus.id == '10') {
               shouldAllowTakeTask = false;
             }
           }
@@ -99,21 +99,13 @@ class ManagerViewPresenter{
         columns.add(DataEntryCell('Status', listStatusesWhere!=null && listStatusesWhere.isNotEmpty ? listStatusesWhere.first : mapEntry['TaskStatusID'].toString(), alignment: DataAlignment.center));
         columns.add(DataEntryCell('Time Taken', timeElapsedParsed(mapEntry['ElapsedTime'].toString()), alignment: DataAlignment.center));
 
-        UserStatusRepository userStatusRepo = Repository().userStatusRepository;
-        UserStatus currentUserStatus;
-        ISession session = Session();
-        userStatusRepo.getStatuses().then((List<UserStatus> list) {
-          currentUserStatus = list.where((UserStatus status)=> status.id == session.user.userStatusID.toString()).first;
-        });
-        Role role = Session().role;
-
 
         return DataEntry(mapEntry['_ID'].toString(), columns, onSwipeRightActionConditional: (){
           String userID = mapEntry['UserID'].toString();
+          Role role = Session().role;
           bool shouldAllowTakeTask = userID == null || userID != Session().user.userID.toString();
-
           if(role.isManager || role.isSupervisor || role.isTechManager || role.isTechSupervisor) {
-            if (currentUserStatus.description == 'OFF SHIFT') {
+            if (currentUserStatus.id == '10') {
               shouldAllowTakeTask = false;
             }
           }
