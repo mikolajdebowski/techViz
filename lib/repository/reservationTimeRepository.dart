@@ -21,10 +21,10 @@ class ReservationTimeRepository implements IRepository<SlotMachine>{
   Future<List<ReservationTime>> getAll() {
 
     List<ReservationTime> list = [];
-    list.add(ReservationTime(15, '15:00'));
-    list.add(ReservationTime(30, '30:00'));
-    list.add(ReservationTime(45, '45:00'));
-    list.add(ReservationTime(60, '60:00'));
+    list.add(ReservationTime(15, '15 minutes'));
+    list.add(ReservationTime(30, '30 minutes'));
+    list.add(ReservationTime(45, '45 minutes'));
+    list.add(ReservationTime(60, '1 hour'));
 
     return Future.value(list);
   }

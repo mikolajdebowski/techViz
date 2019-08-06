@@ -2,14 +2,14 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:techviz/model/user.dart';
 import 'package:techviz/repository/async/UserRouting.dart';
-import 'mock/messageClientMock.dart';
+import '../../_mocks/messageClientMock.dart';
 
 void main() {
 
   IUserRouting iUserRounting;
 
   setUpAll((){
-    iUserRounting = UserRouting(MessageClientMock());
+    iUserRounting = UserRouting(MessageClientMock<dynamic>(null));
   });
 
   test('tests parser',() {

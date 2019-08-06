@@ -92,6 +92,7 @@ class ManagerViewState extends State<ManagerView> implements TechVizHome, IManag
                 onMetricTap: onTeamAvailiblityMetricTap,
                 onScroll: _onChildScroll
             ),
+
             VizSummary('SLOT FLOOR',
                 _slotFloorList,
                 key: _slotFloorKey,
@@ -121,7 +122,7 @@ class ManagerViewState extends State<ManagerView> implements TechVizHome, IManag
     return SwipeAction('Reassign', (dynamic entry){
 
       DataEntry dataEntry = entry as DataEntry;
-      String location = dataEntry.columns.where((DataEntryCell dataCell)=> dataCell.column == 'Location').toString();
+      String location = dataEntry.cell.where((DataEntryCell dataCell)=> dataCell.columnName == 'Location').toString();
 
       ReassignTask reassignTaskView = ReassignTask(dataEntry.id, location);
 
@@ -144,7 +145,7 @@ class ManagerViewState extends State<ManagerView> implements TechVizHome, IManag
      Function reassignTaskCallback = (dynamic entry){
 
         DataEntry dataEntry = entry as DataEntry;
-        String location = dataEntry.columns.where((DataEntryCell cell) => cell.column == 'Location').first.value.toString();
+        String location = dataEntry.cell.where((DataEntryCell cell) => cell.columnName == 'Location').first.value.toString();
 
         GlobalKey dialogKey = GlobalKey();
         VizDialogButton btnYes = VizDialogButton('Yes', (){
@@ -187,7 +188,7 @@ class ManagerViewState extends State<ManagerView> implements TechVizHome, IManag
       setState(() {
         teamAvailabilityCurrentUserSelected = dataEntry.id;
       });
-      String currentUserStatusID = dataEntry.columns.where((DataEntryCell cell) => cell.column == 'StatusID').first.value;
+      String currentUserStatusID = dataEntry.cell.where((DataEntryCell cell) => cell.columnName == 'StatusID').first.value;
       _presenter.loadUserStatusList(currentUserStatusID);
     });
   }

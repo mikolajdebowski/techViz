@@ -11,11 +11,17 @@ abstract class ISlotMachineRouting{
 class SlotMachineRouting implements ISlotMachineRouting {
   String listeningRoutingKey = "mobile.machineStatus";
   String publishRoutingKey = "mobile.reservation";
+  IMessageClient _messageClient;
+
+  SlotMachineRouting(IMessageClient messageClient){
+    _messageClient = messageClient;
+    assert(messageClient!=null);
+  }
 
   @override
   StreamController<List<SlotMachine>> Listen() {
     StreamController<List<SlotMachine>> _controller = StreamController<List<SlotMachine>>();
-    final StreamController<dynamic> _queueController = MessageClient().ListenQueue(listeningRoutingKey, (dynamic sm){
+    final StreamController<dynamic> _queueController = _messageClient.ListenQueue(listeningRoutingKey, (dynamic sm){
 
       String startedAt = sm['startedAt'] as String;
       List<dynamic> data = sm['data'] as List<dynamic>;
@@ -40,7 +46,7 @@ class SlotMachineRouting implements ISlotMachineRouting {
 
   @override
   Future PublishMessage(dynamic message) {
-    return MessageClient().PublishMessage(message, publishRoutingKey, wait: true);
+    return _messageClient.PublishMessage(message, publishRoutingKey, wait: true);
   }
 
   @override
@@ -48,6 +54,8 @@ class SlotMachineRouting implements ISlotMachineRouting {
     return SlotMachine(
       dirty: false,
       standID: json['standId'].toString(),
+      denom: double.parse(json['denom'].toString()),
+      machineTypeName: json['machineTypeName'].toString(),
       machineStatusID:  json['statusId'].toString(),
       machineStatusDescription: json['statusDescription'].toString(),
       updatedAt: DateTime.parse(json['startedAt'].toString())
