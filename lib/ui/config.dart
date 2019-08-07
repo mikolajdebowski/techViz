@@ -20,7 +20,7 @@ class ConfigState extends State<Config> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _nextEnabled = false;
 
-  var default_url_options = {
+  Object default_url_options = {
     'protocols': ['Http', 'http', 'Https', 'https'],
     'require_protocol': false,
   };
@@ -74,31 +74,31 @@ class ConfigState extends State<Config> {
   Widget build(BuildContext context) {
     SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
 
-    var textFieldStyle = TextStyle(
+    TextStyle textFieldStyle = TextStyle(
         fontStyle: FontStyle.italic,
         fontSize: 20.0,
         color: Color(0xFFffffff),
         fontWeight: FontWeight.w500,
         fontFamily: "Roboto");
 
-    var textFieldBorder = OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(4.0)));
-    var defaultPadding = EdgeInsets.all(6.0);
-    var textFieldContentPadding = EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0);
+    OutlineInputBorder textFieldBorder = OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(4.0)));
+    EdgeInsets defaultPadding = EdgeInsets.all(6.0);
+    EdgeInsets textFieldContentPadding = EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0);
 
-    var hintTextFieldStyle = TextStyle(fontStyle: FontStyle.italic,
+    TextStyle hintTextFieldStyle = TextStyle(fontStyle: FontStyle.italic,
         fontSize: 20.0,
-        color: Color(0xFFE0E0E0),
+        color: Color(0X66FFFFFF),
         fontWeight: FontWeight.w500,
         fontFamily: "Roboto");
 
-    var backgroundDecoration = BoxDecoration(
+    BoxDecoration backgroundDecoration = BoxDecoration(
         gradient: LinearGradient(
             colors: const [Color(0xFFd6dfe3), Color(0xFFb1c2cb)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             tileMode: TileMode.repeated));
 
-    var textField = Padding(
+    Padding textField = Padding(
         padding: defaultPadding,
         child: TextFormField(
             inputFormatters: [LowerCaseTextFormatter()],
@@ -122,7 +122,7 @@ class ConfigState extends State<Config> {
                 contentPadding: textFieldContentPadding),
             style: textFieldStyle));
 
-    var formColumn = Container(
+    Container formColumn = Container(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -141,7 +141,7 @@ class ConfigState extends State<Config> {
       ),
     );
 
-    var row = Row(
+    Row row = Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -149,7 +149,7 @@ class ConfigState extends State<Config> {
       ],
     );
 
-    var container = Container(
+    Container container = Container(
         decoration: backgroundDecoration,
         child: Stack(
           children: <Widget>[

@@ -3,6 +3,7 @@ import 'package:techviz/components/dataEntry/dataEntry.dart';
 import 'package:techviz/components/dataEntry/dataEntryCell.dart';
 import 'package:techviz/components/dataEntry/dataEntryColumn.dart';
 import 'package:techviz/components/dataEntry/dataEntryGroup.dart';
+import 'package:techviz/model/role.dart';
 import 'package:techviz/model/slotMachine.dart';
 import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/model/taskType.dart';
@@ -25,7 +26,6 @@ abstract class IManagerViewPresenter {
 
 class ManagerViewPresenter{
   IManagerViewPresenter _view;
-
   ManagerViewPresenter(this._view){
     assert(_view != null);
   }
@@ -58,7 +58,15 @@ class ManagerViewPresenter{
 
         return DataEntry(mapEntry['_ID'].toString(), columns, onSwipeRightActionConditional: (){
           String userID = mapEntry['UserID'].toString();
-          return userID == null || userID != Session().user.userID.toString();
+          Role role = Session().role;
+          bool shouldAllowTakeTask = userID == null || userID != Session().user.userID.toString();
+          if(role.isManager || role.isSupervisor || role.isTechManager || role.isTechSupervisor) {
+            if (Session().user.userStatusID == 10) {
+              shouldAllowTakeTask = false;
+            }
+          }
+
+          return shouldAllowTakeTask;
         });
       }
 
@@ -75,7 +83,15 @@ class ManagerViewPresenter{
 
         return DataEntry(mapEntry['_ID'].toString(), columns, onSwipeRightActionConditional: (){
           String userID = mapEntry['UserID'].toString();
-          return userID == null || userID != Session().user.userID.toString();
+          Role role = Session().role;
+          bool shouldAllowTakeTask = userID == null || userID != Session().user.userID.toString();
+          if(role.isManager || role.isSupervisor || role.isTechManager || role.isTechSupervisor) {
+            if (Session().user.userStatusID == 10) {
+              shouldAllowTakeTask = false;
+            }
+          }
+
+          return shouldAllowTakeTask;
         });
       }
 
@@ -231,7 +247,7 @@ class ManagerViewPresenter{
     void handleSlotFloorList(List<SlotMachine> slotMachineList) async {
 
       bool allowToReserve(dynamic statusID){
-        return statusID == '3';
+        return statusID == '3' || statusID == '2';
       }
 
       bool allowToCancelReservation(dynamic statusID){
@@ -260,7 +276,11 @@ class ManagerViewPresenter{
         columns.add(DataEntryCell('Game/Theme', slotMachine.machineTypeName));
         columns.add(DataEntryCell('Denom', slotMachine.denom.toString()));
         columns.add(DataEntryCell('PlayerID', slotMachine.playerID));
-        return DataEntry(slotMachine.standID, columns, onSwipeLeftActionConditional: (){return false;}, onSwipeRightActionConditional: (){return false;});
+        return DataEntry(slotMachine.standID, columns, onSwipeLeftActionConditional: (){
+          return allowToCancelReservation(slotMachine.machineStatusID);
+          }, onSwipeRightActionConditional: (){
+          return allowToReserve(slotMachine.machineStatusID);
+        });
       }
 
       //RESERVED MACHINES: CAN ONLY BE CANCELED; CANOT BE RESERVED
@@ -273,7 +293,9 @@ class ManagerViewPresenter{
         columns.add(DataEntryCell('Duration', slotMachine.reservationTime));
         return DataEntry(slotMachine.standID, columns, onSwipeLeftActionConditional: (){
           return allowToCancelReservation(slotMachine.machineStatusID);
-        }, onSwipeRightActionConditional: (){return false;});
+        }, onSwipeRightActionConditional: (){
+          return false;
+        });
       }
 
       //OUT OF SERVICE MACHINES, CAN NOT BE RESERVED OR CANCELED
@@ -284,7 +306,11 @@ class ManagerViewPresenter{
         columns.add(DataEntryCell('Game/Theme', slotMachine.machineTypeName));
         columns.add(DataEntryCell('Denom', slotMachine.denom.toString()));
         columns.add(DataEntryCell('Status', slotMachine.machineStatusDescription));
-        return DataEntry(slotMachine.standID, columns, onSwipeLeftActionConditional: (){return false;}, onSwipeRightActionConditional: (){return false;});
+        return DataEntry(slotMachine.standID, columns, onSwipeLeftActionConditional: (){
+          return false;
+          }, onSwipeRightActionConditional: (){
+          return false;
+        });
       }
 
       Iterable<SlotMachine> activeGamesWhere = slotMachineList.where((SlotMachine sm)=> sm.machineStatusID != '0');
