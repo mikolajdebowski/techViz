@@ -319,7 +319,7 @@ class LoginState extends State<Login> {
             topActions,
             Align(alignment: Alignment.center, child: Padding(
               padding: const EdgeInsets.all(20.0),
-              child: loginForm,
+              child: SingleChildScrollView(child: loginForm),
             )),
             Align(alignment: Alignment.bottomCenter, child: VizRainbow()),
             VizLoadingIndicator(message: _loadingMessage, isLoading: _isLoading)
