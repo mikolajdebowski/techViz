@@ -5,7 +5,6 @@ import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/roleListPresenter.dart';
 import 'package:techviz/presenter/statusListPresenter.dart';
 import 'package:techviz/session.dart';
-import 'package:techviz/ui/stats.dart';
 
 class Profile extends StatefulWidget {
   final IRoleListPresenter roleListPresenter;
@@ -102,12 +101,13 @@ class ProfileState extends State<Profile> implements IRoleListView<Role>, IStatu
 
   @override
   Widget build(BuildContext context) {
-    var leftPanel = Expanded(flex: 1, child: _buildProfileList());
-    var rightPanel = Expanded(flex: 2, child: Stats());
+    Expanded leftPanel = Expanded(flex: 1, child: _buildProfileList());
+//    Expanded rightPanel = Expanded(flex: 2, child: Stats());
 
     Container container = Container(
       child: Row(
-        children: <Widget>[leftPanel, rightPanel],
+//        children: <Widget>[leftPanel, rightPanel],
+        children: <Widget>[leftPanel],
       ),
       decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -117,8 +117,8 @@ class ProfileState extends State<Profile> implements IRoleListView<Role>, IStatu
               tileMode: TileMode.repeated)),
     );
 
-    var safe = SafeArea(child: container, top: false, bottom: false);
-    return Scaffold(backgroundColor: Colors.black, appBar: ActionBar(title: 'My Profile'), body: safe);
+    return Scaffold(backgroundColor: Colors.black, appBar: ActionBar(title: 'My Profile'),
+        body: SafeArea(child: container, top: false, bottom: false));
   }
 
   @override
