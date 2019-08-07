@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:techviz/components/vizSnackbar.dart';
 import 'package:techviz/model/role.dart';
 import 'package:techviz/ui/taskView.dart';
+import 'package:techviz/ui/workOrder.dart';
 import '../session.dart';
 import 'home.dart';
 import 'managerView.dart';
@@ -72,6 +73,10 @@ class MenuDrawerState extends State<MenuDrawer> {
         Navigator.pushReplacement(context, MaterialPageRoute<Home>(builder: (BuildContext context) => Home(HomeViewType.ManagerView)));
       }, selected: widget.holderKey is LabeledGlobalKey<ManagerViewState>, key: Key('managerSummaryItemKey')));
     }
+
+    menuChildren.add(MenuDrawerItem('Create Work Order', (){
+      Navigator.push(context, MaterialPageRoute<Home>(builder: (BuildContext context) => WorkOrder()));
+    }));
 
     menuChildren.add(MenuDrawerItem('My Profile', (){
       Navigator.pushNamed(context, '/profile');
