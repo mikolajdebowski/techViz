@@ -44,6 +44,7 @@ import 'package:kiwi/kiwi.dart' as kiwi;
 
 import 'async/MessageClient.dart';
 import 'async/TaskRouting.dart';
+import 'local/escalationPathTable.dart';
 import 'local/taskStatusTable.dart';
 import 'local/taskTypeTable.dart';
 import 'local/userSectionTable.dart';
@@ -65,6 +66,7 @@ class Repository {
   TaskTypeRepository _taskTypeRepository;
   TaskStatusRepository _taskStatusRepository;
   SlotFloorRepository _slotFloorRepository;
+  EscalationPathRepository _escalationPathRepository;
 
   ILocalRepository _localRepository;
   static Flavor _flavor;
@@ -213,10 +215,20 @@ class Repository {
     if(_slotFloorRepository!=null){
       return _slotFloorRepository;
     }
-    return _slotFloorRepository = SlotFloorRepository(ProcessorSlotFloorRepository(ProcessorRepositoryConfig()), SlotMachineRouting());
+    return _slotFloorRepository = SlotFloorRepository(ProcessorSlotFloorRepository(ProcessorRepositoryConfig()), SlotMachineRouting(MessageClient()));
   }
   set slotFloorRepository(SlotFloorRepository slotFloorRepository){
     _slotFloorRepository = slotFloorRepository;
+  }
+
+  EscalationPathRepository get escalationPathRepository {
+    if(_escalationPathRepository!=null){
+      return _escalationPathRepository;
+    }
+    return _escalationPathRepository = EscalationPathRepository(ProcessorEscalationPathRepository(), EscalationPathTable(_localRepository));
+  }
+  set escalationPathRepository(EscalationPathRepository escalationPathRepository){
+    _escalationPathRepository = escalationPathRepository;
   }
 
 
@@ -264,11 +276,7 @@ class Repository {
     }
   }
 
-  EscalationPathRepository get escalationPathRepository {
-    switch(_flavor) {
-      default:return EscalationPathRepository(remoteRepository: ProcessorEscalationPathRepository());
-    }
-  }
+
 
   UserSkillsRepository get userSkillsRepository {
     return UserSkillsRepository(remoteRepository: ProcessorUserSkillsRepository());

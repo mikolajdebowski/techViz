@@ -46,12 +46,11 @@ class LocalRepository implements ILocalRepository{
           TaskTable(this).create(db);
           TaskTypeTable(this).create(db);
           TaskStatusTable(this).create(db);
+          EscalationPathTable(this).create(db);
 
-          // TODO(rmathias): from here and bellow should be revised
+
+          //REVISE BELOW THIS
           TaskUrgencyTable.create(db);
-
-          EscalationPathTable().create(db);
-
           RoleTable().create(db);
 
 

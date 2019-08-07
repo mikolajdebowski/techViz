@@ -4,6 +4,7 @@ import 'package:techviz/components/vizListViewRow.dart';
 import 'package:techviz/components/vizSummaryHeader.dart';
 
 import 'dataEntry/dataEntry.dart';
+import 'dataEntry/dataEntryColumn.dart';
 import 'dataEntry/dataEntryGroup.dart';
 
 class VizSummary extends StatefulWidget {
@@ -82,9 +83,15 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
           );
         }
         else {
-          Iterable<DataEntryGroup> where = widget.data.where((DataEntryGroup group)=> group.headerTitle == _selectedEntryKey);
-          List<DataEntry> filtered = where.first.entries;
-          child = VizListView(data: filtered, onSwipeRight: widget.onSwipeRight, onSwipeLeft: widget.onSwipeLeft, onScroll: widget.onScroll);
+          double listViewMaxHeight(int rowCount) {
+            return rowCount == 0 ? VizListViewRow.rowHeight : (rowCount < 4 ? rowCount * VizListViewRow.rowHeight : VizListViewRow.rowHeight * 4);
+          }
+
+          Iterable<DataEntryGroup> _filterWhere = widget.data.where((DataEntryGroup group)=> group.headerTitle == _selectedEntryKey);
+          List<DataEntry> _filteredData = _filterWhere.first.entries;
+          List<DataEntryColumn> _columnsDefinition = _filterWhere.first.columnsDefinition;
+          double _maxHeight = listViewMaxHeight(_filteredData.length);
+          child = VizListView(_filteredData, _columnsDefinition, onSwipeRight: widget.onSwipeRight, onSwipeLeft: widget.onSwipeLeft, onScroll: widget.onScroll, maxHeight: _maxHeight);
         }
 
         container = Container(
