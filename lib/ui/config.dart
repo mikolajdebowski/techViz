@@ -157,10 +157,10 @@ class ConfigState extends State<Config> {
                 alignment: Alignment.center,
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
-                  child: Container(
+                  child: SingleChildScrollView(child:Container(
                     height: 110.0,
                     child: row,
-                  ),
+                  )),
                 )),
             Align(alignment: Alignment.bottomCenter, child: VizRainbow()),
           ],
