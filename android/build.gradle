@@ -9,6 +9,8 @@ buildscript {
         classpath 'com.android.tools.build:gradle:3.0.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
+    ext.appVersionCode = 1
+    ext.appVersionName = '1.0.0'
 }
 
 allprojects {
@@ -28,9 +30,4 @@ subprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
-}
-
-ext {
-    appVersionCode = 1
-    appVersionName = '1.0.0'
 }
