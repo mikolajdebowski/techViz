@@ -38,7 +38,7 @@ class SectionSelectorState extends State<SectionSelector>
 
   void onTap(BuildContext context) async {
 
-    final VizSnackbar _snackbar = VizSnackbar.Loading('Sending request...');
+    final VizSnackbar _snackbar = VizSnackbar.Processing('Sending request...');
     _snackbar.show(context);
 
     Session session = Session();

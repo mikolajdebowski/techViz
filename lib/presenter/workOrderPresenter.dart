@@ -23,8 +23,10 @@ class WorkOrderPresenter{
   Future create(TaskType taskType, {String location, String assetNumber, String notes, DateTime dueDate}){
     Completer _completer = Completer<void>();
 
+
+
     Future<void>.delayed(Duration(seconds: 2), (){
-      _completer.complete();
+      _completer.completeError('ops');
     });
 
     return _completer.future;

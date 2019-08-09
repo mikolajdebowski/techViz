@@ -219,7 +219,7 @@ class SlotFloorState extends State<SlotFloor> {
   }
 
   void _cancelReservation(final SlotMachine slotMachine){
-    final VizSnackbar _snackbar = VizSnackbar.Loading('Cancelling reservation...');
+    final VizSnackbar _snackbar = VizSnackbar.Processing('Cancelling reservation...');
     _snackbar.show(context);
 
     _slotFloorRepository.cancelReservation(slotMachine.standID).then((dynamic result) {

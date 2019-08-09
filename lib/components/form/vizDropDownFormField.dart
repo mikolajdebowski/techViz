@@ -38,7 +38,9 @@ class VizDropdownFormField<T> extends FormField<T> {
 							isDense: true,
 							onChanged: (T value){
 								field.didChange(value);
-								onChanged(value);
+								if(onChanged!=null){
+									onChanged(value);
+								}
 							},
 							items: items,
 						),

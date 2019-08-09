@@ -5,6 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/form/vizDropDownFormField.dart';
 import 'package:techviz/components/vizActionBar.dart';
+import 'package:techviz/components/vizDialog.dart';
+import 'package:techviz/components/vizSnackbar.dart';
 import 'package:techviz/model/taskType.dart';
 import 'package:techviz/presenter/workOrderPresenter.dart';
 
@@ -14,40 +16,30 @@ class WorkOrder extends StatefulWidget {
 }
 
 class WorkOrderState extends State<WorkOrder> implements WorkOrderPresenterView{
-  bool _formOK;
   final DateFormat _formatDueDate = DateFormat("yyyy-MM-dd");
   WorkOrderPresenter _presenter;
-  List<TaskType> _taskTypeList;
+  List<TaskType> _taskTypeList = [];
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-
-  String _location = "";
-  String _mNumber = "";
 
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _mNumberController = TextEditingController();
+  TaskType _selectedTaskType;
 
   @override
   void initState() {
     super.initState();
     _presenter = WorkOrderPresenter(this);
     _presenter.loadTaskType();
-
-    _locationController.addListener(_validateForm);
   }
 
-  void _validateForm(){
-    _formKey.currentState.validate();
-  }
 
   @override
   Widget build(BuildContext context) {
     TextFormField locationFormField = TextFormField(
       controller: _locationController,
       validator: (String value){
-        return value.isEmpty && _mNumber.isEmpty ? 'Location or Asset Number should be informed' : null;
+        return value.isEmpty && _mNumberController.value.text.isEmpty ? 'Location or Asset Number is required' : null;
       },
-      textInputAction: TextInputAction.done,
       maxLength: 10,
       style: TextStyle(color: Colors.white),
       decoration: InputDecoration(
@@ -55,11 +47,14 @@ class WorkOrderState extends State<WorkOrder> implements WorkOrderPresenterView{
         icon: Icon(Icons.location_on, color: Colors.white),
         labelText: 'Location',
         hintText: '01-01-01',
-      ),
+      )
     );
 
     VizDropdownFormField typeFormField = VizDropdownFormField<TaskType>(
       labelText: 'Type',
+      validator: (TaskType taskType){
+        return taskType == null? 'Type is required' : null;
+      },
       items: _taskTypeList.map((TaskType tt) {
         return DropdownMenuItem<TaskType>(
           value: tt,
@@ -67,16 +62,17 @@ class WorkOrderState extends State<WorkOrder> implements WorkOrderPresenterView{
         );
       }).toList(),
       leadingIcon: Icons.edit,
+      onChanged: (TaskType taskType){
+        setState(() {
+          _selectedTaskType = taskType;
+        });
+      },
     );
 
     TextFormField assetNumberFormField = TextFormField(
+      controller: _mNumberController,
       validator: (String value){
-        return value.isEmpty && _location.isEmpty ? 'Asset Number or Location should be informed' : null;
-      },
-      onSaved: (String value){
-        setState(() {
-          _mNumber = value;
-        });
+        return value.isEmpty && _locationController.value.text.isEmpty ? 'Asset Number or Location is required' : null;
       },
       textInputAction: TextInputAction.done,
       maxLength: 10,
@@ -112,7 +108,6 @@ class WorkOrderState extends State<WorkOrder> implements WorkOrderPresenterView{
     Form form = Form(
         key: _formKey,
         child: Container(
-            constraints: BoxConstraints.expand(height: MediaQuery.of(context).size.height),
             decoration: BoxDecoration(
                 gradient: LinearGradient(
                     colors: const [Color(0xFF586676), Color(0xFF8B9EA7)],
@@ -126,12 +121,18 @@ class WorkOrderState extends State<WorkOrder> implements WorkOrderPresenterView{
               ),
             )));
 
-    VizButton okBtn = VizButton(title: 'Save', highlighted: true, enabled: _formOK, onTap: () {
-        if(_formKey.currentState.validate())
+    VizButton okBtn = VizButton(title: 'Save', highlighted: true, onTap: () {
+        if(!_formKey.currentState.validate())
           return;
 
-        setState(() {
-          _formOK = true;
+        final VizSnackbar _snackbar = VizSnackbar.Processing('Creating Work Order...');
+        _snackbar.show(context);
+
+        _presenter.create(_selectedTaskType).then((dynamic d){
+          _snackbar.dismiss();
+        }).catchError((dynamic error){
+          _snackbar.dismiss();
+          VizDialog.Alert(context, 'Error', error.toString());
         });
     });
 

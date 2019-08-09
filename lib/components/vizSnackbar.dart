@@ -35,9 +35,8 @@ class VizSnackbar{
 		return VizSnackbar(message, Icons.error, Colors.red, Duration(seconds: 10), mainButton: mainButton);
 	}
 
-	static VizSnackbar Loading(String message) {
+	static VizSnackbar Processing(String message) {
 		return VizSnackbar(message, Icons.sync, Colors.white, null, showProgressIndicator : true);
 	}
-
 
 }
