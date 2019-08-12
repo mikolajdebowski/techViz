@@ -3,7 +3,7 @@ class TaskType{
   final String description;
   final String lookupName;
 
-  const TaskType({this.taskTypeId, this.description, this.lookupName});
+  const TaskType(this.taskTypeId, this.description, this.lookupName);
 
   @override
   String toString(){

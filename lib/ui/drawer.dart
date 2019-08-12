@@ -75,6 +75,7 @@ class MenuDrawerState extends State<MenuDrawer> {
     }
 
     menuChildren.add(MenuDrawerItem('Create Work Order', (){
+      Navigator.pop(context);
       Navigator.push(context, MaterialPageRoute<Home>(builder: (BuildContext context) => WorkOrder()));
     }));
 
@@ -97,8 +98,6 @@ class MenuDrawerState extends State<MenuDrawer> {
         ),
       ),
     ));
-
-
 
     return Drawer(
       child: Container(

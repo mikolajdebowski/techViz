@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:techviz/model/taskType.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/taskTypeRepository.dart';
+import 'package:techviz/repository/workOrder.repository.dart';
+
+import '../session.dart';
 
 abstract class WorkOrderPresenterView {
   void onTaskTypeLoaded(List<TaskType> taskTypeList);
@@ -10,8 +13,8 @@ abstract class WorkOrderPresenterView {
 
 class WorkOrderPresenter{
   WorkOrderPresenterView _view;
-  final TaskTypeRepository _taskTypeRepository = Repository().taskTypeRepository;
-
+  final ITaskTypeRepository _taskTypeRepository = Repository().taskTypeRepository;
+  final IWorkOrderRepository _workOrderRepository = Repository().workOrderRepository;
   WorkOrderPresenter(this._view);
 
   void loadTaskType(){
@@ -20,13 +23,25 @@ class WorkOrderPresenter{
     });
   }
 
-  Future create(TaskType taskType, {String location, String assetNumber, String notes, DateTime dueDate}){
+  Future create(TaskType taskType, {String location, String mNumber, String notes, DateTime dueDate}){
     Completer _completer = Completer<void>();
 
+    _workOrderRepository.create(
+        Session().user.userID,
+        taskType.taskTypeId,
+        location: location,
+        mNumber: mNumber,
+        notes: notes,
+        dueDate: dueDate).then((dynamic v){
+      int validmachine = v['validmachine'];
+      if(validmachine==0){
+        _completer.completeError('Invalid Location/Asset Number');
+        return;
+      }
 
-
-    Future<void>.delayed(Duration(seconds: 2), (){
-      _completer.completeError('ops');
+      _completer.complete();
+    }).catchError((dynamic error){
+      _completer.completeError(error);
     });
 
     return _completer.future;
