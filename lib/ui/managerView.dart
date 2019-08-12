@@ -338,10 +338,7 @@ class ManagerViewState extends State<ManagerView> implements TechVizHome, IManag
         initialLoadTeamAvailability = false;
       } else if(initialLoadTeamAvailability == false){
         RenderBox openTasksBox = _openTasksKey.currentContext.findRenderObject();
-        double openTasksHeight = openTasksBox.size.height;
-
-        double offset = openTasksHeight + 4;
-        _mainController.jumpTo(offset);
+        _mainController.jumpTo(openTasksBox.size.height);
       }
     }
   }
