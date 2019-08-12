@@ -321,14 +321,7 @@ class ManagerViewState extends State<ManagerView> implements TechVizHome, IManag
       if(initialLoadSlotFloorSummary == true){
         initialLoadSlotFloorSummary = false;
       } else if(initialLoadSlotFloorSummary == false){
-        RenderBox openTasksBox = _openTasksKey.currentContext.findRenderObject();
-        double openTasksHeight = openTasksBox.size.height;
-
-        RenderBox teamAvaBox = _teamAvaKey.currentContext.findRenderObject();
-        double teamAvaBoxHeight = teamAvaBox.size.height;
-
-        double offset = openTasksHeight + teamAvaBoxHeight + 4;
-        _mainController.animateTo(offset, curve: Curves.linear, duration: Duration(milliseconds: 300));
+        _mainController.jumpTo(_mainController.position.maxScrollExtent);
       }
     }
   }
@@ -348,7 +341,7 @@ class ManagerViewState extends State<ManagerView> implements TechVizHome, IManag
         double openTasksHeight = openTasksBox.size.height;
 
         double offset = openTasksHeight + 4;
-        _mainController.animateTo(offset, curve: Curves.linear, duration: Duration(milliseconds: 300));
+        _mainController.jumpTo(offset);
       }
     }
   }

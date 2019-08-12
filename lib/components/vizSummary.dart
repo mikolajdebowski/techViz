@@ -76,23 +76,11 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
       } else {
 
         Widget child;
-
-        if(widget.isProcessing){
-          child = Center(
-            child: Padding(padding: EdgeInsets.all(5.0), child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)))
-          );
-        }
-        else {
-          double listViewMaxHeight(int rowCount) {
-            return rowCount == 0 ? VizListViewRow.rowHeight : (rowCount < 4 ? rowCount * VizListViewRow.rowHeight : VizListViewRow.rowHeight * 4);
-          }
-
-          Iterable<DataEntryGroup> _filterWhere = widget.data.where((DataEntryGroup group)=> group.headerTitle == _selectedEntryKey);
-          List<DataEntry> _filteredData = _filterWhere.first.entries;
-          List<DataEntryColumn> _columnsDefinition = _filterWhere.first.columnsDefinition;
-          double _maxHeight = listViewMaxHeight(_filteredData.length);
-          child = VizListView(_filteredData, _columnsDefinition, onSwipeRight: widget.onSwipeRight, onSwipeLeft: widget.onSwipeLeft, onScroll: widget.onScroll, maxHeight: _maxHeight);
-        }
+        Iterable<DataEntryGroup> _filterWhere = widget.data.where((DataEntryGroup group)=> group.headerTitle == _selectedEntryKey);
+        List<DataEntry> _filteredData = _filterWhere.first.entries;
+        List<DataEntryColumn> _columnsDefinition = _filterWhere.first.columnsDefinition;
+        double _maxHeight = listViewMaxHeight(_filteredData.length);
+        child = VizListView(_filteredData, _columnsDefinition, onSwipeRight: widget.onSwipeRight, onSwipeLeft: widget.onSwipeLeft, onScroll: widget.onScroll, maxHeight: _maxHeight);
 
         container = Container(
           key: Key('container'),
@@ -112,6 +100,10 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
       padding: EdgeInsets.only(left: 5, top: 5, right: 5),
       child: container,
     );
+  }
+
+  double listViewMaxHeight(int rowCount) {
+    return rowCount == 0 ? VizListViewRow.rowHeight : (rowCount < 4 ? rowCount * VizListViewRow.rowHeight : VizListViewRow.rowHeight * 4);
   }
 
   @override
