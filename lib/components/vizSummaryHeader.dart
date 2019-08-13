@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -54,7 +55,8 @@ class VizSummaryHeader extends StatelessWidget {
         String title = dataEntryGroup.headerTitle.toUpperCase() + ' (' + dataEntryGroup.entries.length.toString() + ')';
         TextStyle style = TextStyle(color: highlightedFontColor, fontWeight: FontWeight.w600);
         Key key = Key('headerItemTitle');
-        Text txtField = Text(
+
+        AutoSizeText txtField = AutoSizeText(
           title,
           key: key,
           textAlign: TextAlign.center,
