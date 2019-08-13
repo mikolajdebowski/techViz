@@ -92,7 +92,7 @@ class TaskTable extends LocalTable implements ITaskTable{
     String sql = "UPDATE TASK SET ";
     row.forEach((String key, dynamic value)
     {
-        if(value == null){
+        if(value == null || (value is String && value == 'null')){
           sql += " $key = null,";
         }
         else if(value.runtimeType == String || value.runtimeType == DateTime){
@@ -139,8 +139,6 @@ class TaskTable extends LocalTable implements ITaskTable{
 
   Task _fromMap(Map<String, dynamic> task){
 
-    print(task);
-
     return Task(
         dirty: task['_DIRTY'] as int,
         version: task['_VERSION'] as int,
@@ -153,7 +151,7 @@ class TaskTable extends LocalTable implements ITaskTable{
         playerID: task['PLAYERID']!=null ? task['PLAYERID'] as String : '',
         playerFirstName: task['PLAYERFIRSTNAME']!=null ? task['PLAYERFIRSTNAME'] as String : '',
         playerLastName: task['PLAYERLASTNAME']!=null ? task['PLAYERLASTNAME'] as String : '',
-        playerTier: task['PLAYERTIER']!=null ? task['PlayerTier'] as String : null,
+        playerTier: task['PLAYERTIER']!=null ? task['PLAYERTIER'] as String : null,
         playerTierColorHEX: task['PLAYERTIERCOLORHEX']!=null ? task['PLAYERTIERCOLORHEX'] as String : null,
         taskType: TaskType(taskTypeId: task['TASKTYPEID'] as int, description: task['TaskTypeDescription'].toString(), lookupName: task['TaskTypeLookupName'].toString()),
         taskStatus: TaskStatus(id: task['TASKSTATUSID'] as int, description: task['TaskStatusDescription'] as String),

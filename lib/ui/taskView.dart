@@ -243,24 +243,22 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
 
       List<Widget> taskDetailsHeader = <Widget>[taskInfo];
 
-      print(_selectedTask.playerID);
-      print(_selectedTask.playerFirstName);
-      print(_selectedTask.playerLastName);
-      print(_selectedTask.playerTier);
-      print(_selectedTask.playerTierColorHEX);
-
-      if (_selectedTask.playerID != null && _selectedTask.playerID.isNotEmpty) {
+      if(_selectedTask.playerID != null && _selectedTask.playerID.isNotEmpty) {
         String playerName = '${_selectedTask.playerFirstName} ${_selectedTask.playerLastName}';
 
         BoxDecoration boxDecoForTierWidget;
         String tier = _selectedTask.playerTier;
         String tierColorHexStr = _selectedTask.playerTierColorHEX;
+        Color tierFontColor;
+
         if (tier != null && tierColorHexStr != null) {
           tierColorHexStr = tierColorHexStr.replaceAll('#', '');
           Color hexColor = Color(int.parse('0xFF$tierColorHexStr'));
           boxDecoForTierWidget = BoxDecoration(borderRadius: BorderRadius.circular(6.0), color: hexColor);
+          tierFontColor = Colors.black;
         } else {
           boxDecoForTierWidget = BoxDecoration(borderRadius: BorderRadius.circular(6.0), border: Border.all(color: Colors.white));
+          tierFontColor = Colors.white;
         }
 
         Expanded playerInfo = Expanded(
@@ -283,9 +281,9 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
                             softWrap: false,
                             style: TextStyle(color: Colors.white, fontSize: 14.0, fontWeight: FontWeight.bold)),
                         Container(
+                          padding: EdgeInsets.only(left: 10, right: 10, top: 1, bottom: 1),
                           decoration: boxDecoForTierWidget,
-                          width: 100,
-                          height: 10,
+                          child: Text(tier.toUpperCase(), style: TextStyle(color: tierFontColor, fontSize: 12),),
                         )
                       ],
                     )));

@@ -48,41 +48,6 @@ class TaskRepository{
     return TaskTable(localRepository).insertOrUpdate([map]);
   }
 
-  StreamController listenQueue(Function onData, Function onError)  {
-    return taskRouting.ListenQueue((dynamic receivedTask) async{
-      dynamic task = jsonDecode(receivedTask.toString());
-
-      Map<String,dynamic> taskMapped = <String,dynamic>{};
-      taskMapped['_ID'] = task['_ID'];
-      taskMapped['_DIRTY'] = false;
-      taskMapped['_VERSION'] =  task['_version'];
-      taskMapped['USERID'] = task['userID'];
-      taskMapped['LOCATION'] = task['location'];
-      taskMapped['TASKSTATUSID'] = task['taskStatusID'];
-      taskMapped['TASKTYPEID'] = task['taskTypeID'];
-      taskMapped['MACHINEID'] = task['machineID'];
-      taskMapped['TASKURGENCYID'] = task['taskUrgencyID'];
-
-      taskMapped['TASKCREATED'] = task['taskCreated'];
-      taskMapped['TASKASSIGNED'] = task['taskAssigned'];
-      taskMapped['PLAYERID'] = task['playerID'];
-      taskMapped['AMOUNT'] = task['amount'] == null ||  task['amount'] =='' ? 0.0 : task['amount'];
-
-      taskMapped['EVENTDESC'] = task['eventDesc'];
-      taskMapped['PLAYERFIRSTNAME'] = task['firstName'];
-      taskMapped['PLAYERLASTNAME'] = task['lastName'];
-      taskMapped['PLAYERTIER'] = task['tier'];
-      taskMapped['PLAYERTIERCOLORHEX'] = task['tierColorHex'];
-
-      await TaskTable(localRepository).insertOrUpdate([taskMapped]);
-      Task taskUpdate = await TaskTable(localRepository).getTask(task['_ID'].toString());
-      onData(taskUpdate);
-
-    }, onError: onError, onCancel: (){
-      print('onCancel called');
-    });
-  }
-
   Future update(String taskID, {String taskStatusID, String cancellationReason, TaskUpdateCallBack callBack} ) async {
     List<int> openTasksIDs = [1,2,3,31,32,33];
 
