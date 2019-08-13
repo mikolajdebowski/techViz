@@ -17,7 +17,7 @@ class VizDropdownFormField<T> extends FormField<T> {
 		onSaved: onSaved,
 		validator: validator,
 		autovalidate: autovalidate,
-		initialValue: items.contains(initialValue) ? initialValue : null,
+		initialValue: initialValue,
 		builder: (FormFieldState<T> field) {
 			InputDecoration decoration = InputDecoration(
 				contentPadding: EdgeInsets.only(top: 10.0),
