@@ -139,6 +139,8 @@ class TaskTable extends LocalTable implements ITaskTable{
 
   Task _fromMap(Map<String, dynamic> task){
 
+    print(task);
+
     return Task(
         dirty: task['_DIRTY'] as int,
         version: task['_VERSION'] as int,
@@ -148,7 +150,7 @@ class TaskTable extends LocalTable implements ITaskTable{
         amount: task['AMOUNT'] as double,
         eventDesc: task['EVENTDESC'] as String,
         taskCreated: DateTime.parse(task['TASKCREATED'] as String),
-        playerID: task['PLAYERID']!=null ? task['PlayerID'] as String : '',
+        playerID: task['PLAYERID']!=null ? task['PLAYERID'] as String : '',
         playerFirstName: task['PLAYERFIRSTNAME']!=null ? task['PLAYERFIRSTNAME'] as String : '',
         playerLastName: task['PLAYERLASTNAME']!=null ? task['PLAYERLASTNAME'] as String : '',
         playerTier: task['PLAYERTIER']!=null ? task['PlayerTier'] as String : null,
