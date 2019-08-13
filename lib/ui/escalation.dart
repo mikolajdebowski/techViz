@@ -106,9 +106,6 @@ class EscalationFormState extends State<EscalationForm> implements EscalationPre
 
   @override
   Widget build(BuildContext context) {
-
-
-
     Container container = Container(
         constraints: BoxConstraints.expand(),
         decoration: BoxDecoration(
