@@ -64,7 +64,8 @@ class VizSummaryHeader extends StatelessWidget {
           maxLines: 1,
         );
 
-        Container containerHeader = Container(decoration: decorationEntryHeader, child: Center(child: txtField));
+        Container containerHeader = Container(decoration: decorationEntryHeader, child: Center(child: SizedBox(child: txtField,
+        height: 17,)));
 
         Container underline = Container(
           height: 2,
