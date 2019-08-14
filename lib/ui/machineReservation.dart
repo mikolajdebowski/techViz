@@ -133,7 +133,7 @@ class MachineReservationState extends State<MachineReservation> {
               _btnEnabled = false;
             });
 
-            final VizSnackbar _snackbar = VizSnackbar.Loading('Creating reservation...');
+            final VizSnackbar _snackbar = VizSnackbar.Processing('Creating reservation...');
             _snackbar.show(context);
 
             Session session = Session();

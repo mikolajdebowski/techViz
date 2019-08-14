@@ -23,7 +23,13 @@ class MessageClientMock<T> implements IMessageClient{
 
 	@override
 	Future PublishMessage(dynamic object, String routingKeyPattern, {bool wait = false, Function parser}) {
-		return Future<bool>.value(true);
+		Completer _completer = Completer<dynamic>();
+
+		fakeStreamController.stream.listen((dynamic data){
+			_completer.complete(data);
+		});
+
+		return _completer.future;
 	}
 
 	@override

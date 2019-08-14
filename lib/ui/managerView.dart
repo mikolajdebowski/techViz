@@ -269,7 +269,7 @@ class ManagerViewState extends State<ManagerView> implements TechVizHome, IManag
         );
       }).then((bool remove){
         if(remove !=null && remove){
-          final VizSnackbar _snackbar = VizSnackbar.Loading('Removing reservation...');
+          final VizSnackbar _snackbar = VizSnackbar.Processing('Removing reservation...');
           _snackbar.show(context);
 
           Repository().slotFloorRepository.cancelReservation(standID).then((dynamic result) {

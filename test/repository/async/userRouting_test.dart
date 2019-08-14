@@ -1,15 +1,18 @@
 
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:techviz/model/user.dart';
 import 'package:techviz/repository/async/UserRouting.dart';
 import '../../_mocks/messageClientMock.dart';
 
 void main() {
-
+  StreamController<dynamic> streamController;
   IUserRouting iUserRounting;
 
-  setUpAll((){
-    iUserRounting = UserRouting(MessageClientMock<dynamic>(null));
+  setUp((){
+    streamController = StreamController<dynamic>();
+    iUserRounting = UserRouting(MessageClientMock<dynamic>(streamController));
   });
 
   test('tests parser',() {
@@ -21,8 +24,14 @@ void main() {
     expect(() => iUserRounting.listenQueue(null), throwsUnimplementedError);
   });
 
-  test('publishMessage should return true',() async{
-      expect(await iUserRounting.publishMessage('whatever'), true);
+  test('publishMessage should return true',(){
+      Future<dynamic> future = iUserRounting.publishMessage('whatever');
+      streamController.add(true);
+      expect(future, completion(true));
+  });
+
+  tearDown((){
+    streamController?.close();
   });
 }
 

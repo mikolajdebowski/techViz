@@ -80,7 +80,7 @@ class EscalationFormState extends State<EscalationForm> implements EscalationPre
       return;
 
 
-    final VizSnackbar snackbar = VizSnackbar.Loading('Escalating...');
+    final VizSnackbar snackbar = VizSnackbar.Processing('Escalating...');
     snackbar.show(context);
 
     setState(() {

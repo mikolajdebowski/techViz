@@ -182,22 +182,26 @@ class MessageClient implements IMessageClient{
 
   @override
   Future PublishMessage(dynamic object, String routingKeyPattern, {bool wait = false, Function parser}) async {
+    String _callbackRoutingKey = '$routingKeyPattern.update.$_deviceID';
+
     Completer<dynamic> _completer = Completer<dynamic>();
     _completer.future.timeout(_timeoutDuration, onTimeout: (){
+      if(wait)
+        _removeRoutingKeyListener(_callbackRoutingKey);
+
       _completer.completeError(TimeoutException('Max connect timeout reached after ${_timeoutDuration.inSeconds} seconds.'));
     });
 
-    if(wait!=null && wait){
-      String routingKey = '$routingKeyPattern.update.$_deviceID';
+
+    if(wait){
       StreamController<AmqpMessage> sc = StreamController<AmqpMessage>();
       sc.stream.listen((AmqpMessage message){
-        _removeRoutingKeyListener(routingKey);
+        _removeRoutingKeyListener(_callbackRoutingKey);
         if(!_completer.isCompleted){
           _completer.complete(parser == null ? message.payloadAsJson : parser(message.payloadAsJson));
         }
-
       });
-      _addRoutingKeyListener(routingKey, sc);
+      _addRoutingKeyListener(_callbackRoutingKey, sc);
     }
     
     Map<String,dynamic> mapObject = object as Map<String,dynamic>;
@@ -210,10 +214,17 @@ class MessageClient implements IMessageClient{
     props.contentType = 'application/json';
 
     String encoded = JsonEncoder().convert(mapObject);
-    _exchange.publish(encoded, "$routingKeyPattern.update", properties: props);
+    try{
+      _exchange.publish(encoded, "$routingKeyPattern.update", properties: props);
+      if(!wait){
+        _completer.complete();
+      }
+    }
+    catch(error){
+      if(wait)
+        _removeRoutingKeyListener(_callbackRoutingKey);
 
-    if(!wait){
-      _completer.complete();
+      _completer.completeError(error);
     }
 
     return _completer.future;

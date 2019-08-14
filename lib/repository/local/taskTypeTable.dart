@@ -33,9 +33,9 @@ class TaskTypeTable extends LocalTable implements ITaskTypeTable{
     List<TaskType> toReturn = <TaskType>[];
     queryResult.forEach((Map<String, dynamic> task) {
       TaskType t = TaskType(
-        taskTypeId: task['TaskTypeID'] as int,
-        description: task['TaskTypeDescription'] as String,
-        lookupName: task['LookupName'] as String,
+        task['TaskTypeID'] as int,
+        task['TaskTypeDescription'] as String,
+        task['LookupName'] as String,
       );
       toReturn.add(t);
     });

@@ -33,7 +33,7 @@ class VizSelectorState extends State<VizSelector> {
   VizSelectorState(this.options);
 
   void onOkTap(BuildContext context){
-    final VizSnackbar snackbar = VizSnackbar.Loading('Sending request...');
+    final VizSnackbar snackbar = VizSnackbar.Processing('Sending request...');
     snackbar.show(context);
 
     List<IVizSelectorOption> selectedOptions = options.where((IVizSelectorOption option) => option.selected).toList();

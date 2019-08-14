@@ -20,7 +20,6 @@ class VizDropdownFormField<T> extends FormField<T> {
 		initialValue: initialValue,
 		builder: (FormFieldState<T> field) {
 			InputDecoration decoration = InputDecoration(
-				contentPadding: EdgeInsets.only(top: 10.0),
 				isDense: true,
 				icon: Icon(leadingIcon, color: Colors.white),
 				labelStyle: TextStyle(color: Colors.white),
@@ -39,9 +38,11 @@ class VizDropdownFormField<T> extends FormField<T> {
 							isDense: true,
 							onChanged: (T value){
 								field.didChange(value);
-								onChanged(value);
+								if(onChanged!=null){
+									onChanged(value);
+								}
 							},
-							items: items.toList(),
+							items: items,
 						),
 					),
 				)

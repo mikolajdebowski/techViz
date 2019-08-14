@@ -153,7 +153,7 @@ class TaskTable extends LocalTable implements ITaskTable{
         playerLastName: task['PLAYERLASTNAME']!=null ? task['PLAYERLASTNAME'] as String : '',
         playerTier: task['PLAYERTIER']!=null ? task['PLAYERTIER'] as String : null,
         playerTierColorHEX: task['PLAYERTIERCOLORHEX']!=null ? task['PLAYERTIERCOLORHEX'] as String : null,
-        taskType: TaskType(taskTypeId: task['TASKTYPEID'] as int, description: task['TaskTypeDescription'].toString(), lookupName: task['TaskTypeLookupName'].toString()),
+        taskType: TaskType(task['TASKTYPEID'] as int, task['TaskTypeDescription'].toString(), task['TaskTypeLookupName'].toString()),
         taskStatus: TaskStatus(id: task['TASKSTATUSID'] as int, description: task['TaskStatusDescription'] as String),
         urgencyHEXColor: task['ColorHex'] as String,
         isTechTask: task['ISTECHTASK'] as int == 1

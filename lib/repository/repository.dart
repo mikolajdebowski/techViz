@@ -39,6 +39,7 @@ import 'package:techviz/repository/userRoleRepository.dart';
 import 'package:techviz/repository/userSectionRepository.dart';
 import 'package:techviz/repository/userSkillsRepository.dart';
 import 'package:techviz/repository/userStatusRepository.dart';
+import 'package:techviz/repository/workOrder.repository.dart';
 import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 import 'package:kiwi/kiwi.dart' as kiwi;
 
@@ -63,10 +64,11 @@ typedef fncOnMessage = void Function(String);
 class Repository {
   UserRepository _userRepository;
   UserSectionRepository _userSectionRepository;
-  TaskTypeRepository _taskTypeRepository;
+  ITaskTypeRepository _taskTypeRepository;
   TaskStatusRepository _taskStatusRepository;
   SlotFloorRepository _slotFloorRepository;
   EscalationPathRepository _escalationPathRepository;
+  IWorkOrderRepository _workOrderRepository;
 
   ILocalRepository _localRepository;
   static Flavor _flavor;
@@ -76,6 +78,8 @@ class Repository {
     return _singleton;
   }
   Repository._internal();
+
+
 
   Future<void> configure(Flavor flavor, {String configJSON}) async {
     _flavor = flavor;
@@ -189,13 +193,13 @@ class Repository {
     _userSectionRepository = userSectionRepository;
   }
 
-  TaskTypeRepository get taskTypeRepository {
+  ITaskTypeRepository get taskTypeRepository {
     if(_taskTypeRepository!=null){
       return _taskTypeRepository;
     }
     return _taskTypeRepository = TaskTypeRepository(ProcessorTaskTypeRepository(ProcessorRepositoryConfig()), TaskTypeTable(_localRepository));
   }
-  set taskTypeRepository(TaskTypeRepository taskTypeRepository){
+  set taskTypeRepository(ITaskTypeRepository taskTypeRepository){
     _taskTypeRepository = taskTypeRepository;
   }
 
@@ -232,7 +236,19 @@ class Repository {
   }
 
 
-// TODO(rmathias): ABOVE MUST BE REVISED
+  IWorkOrderRepository get workOrderRepository {
+    if(_workOrderRepository!=null){
+      return _workOrderRepository;
+    }
+    return _workOrderRepository = WorkOrderRepository(MessageClient());
+  }
+  set workOrderRepository(IWorkOrderRepository workOrderRepository){
+    _workOrderRepository = workOrderRepository;
+  }
+
+
+
+  // TODO(rmathias): BELLOW MUST BE REVISED
   SectionRepository get sectionRepository {
     switch(_flavor) {
       default: return SectionRepository(remoteRepository: ProcessorSectionRepository());
