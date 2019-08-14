@@ -217,11 +217,11 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
       }
 
       Expanded taskInfo = Expanded(
-          flex: 2,
-          child: Padding(
-              padding: EdgeInsets.all(5.0),
-              child: Container(
+          flex: 1,
+          child: Container(
+                  margin: EdgeInsets.all(5),
                   constraints: BoxConstraints.tightFor(height: 70.0),
+                  padding: EdgeInsets.all(5),
                   decoration: actionBoxDecoration,
                   child: Column(
                     children: <Widget>[
@@ -233,77 +233,62 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
                                 fontSize: 14.0,
                               ))),
                       Padding(
-                          padding: EdgeInsets.only(top: 5.0, left: 4.0),
+                          padding: EdgeInsets.only(top: 5.0),
                           child: Text(taskInfoDescription,
                               overflow: TextOverflow.fade,
                               softWrap: false,
-                              style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 14.0, fontWeight: FontWeight.bold)))
+                              style: TextStyle(color: Colors.white, fontSize: 14.0, fontWeight: FontWeight.bold)))
                     ],
-                  ))));
+                  )));
 
       List<Widget> taskDetailsHeader = <Widget>[taskInfo];
 
-      print(_selectedTask.playerID);
-
-      if (_selectedTask.playerID != null && _selectedTask.playerID.isNotEmpty) {
+      if(_selectedTask.playerID != null && _selectedTask.playerID.isNotEmpty) {
         String playerName = '${_selectedTask.playerFirstName} ${_selectedTask.playerLastName}';
 
         BoxDecoration boxDecoForTierWidget;
         String tier = _selectedTask.playerTier;
         String tierColorHexStr = _selectedTask.playerTierColorHEX;
+        Color tierFontColor;
+
         if (tier != null && tierColorHexStr != null) {
           tierColorHexStr = tierColorHexStr.replaceAll('#', '');
           Color hexColor = Color(int.parse('0xFF$tierColorHexStr'));
           boxDecoForTierWidget = BoxDecoration(borderRadius: BorderRadius.circular(6.0), color: hexColor);
+          tierFontColor = Colors.black;
         } else {
           boxDecoForTierWidget = BoxDecoration(borderRadius: BorderRadius.circular(6.0), border: Border.all(color: Colors.white));
+          tierFontColor = Colors.white;
         }
 
-        Align playerTierWidget = Align(
-          alignment: Alignment.centerRight,
-          child: Container(
-            padding: EdgeInsets.all(2.0),
+        Expanded playerInfo = Expanded(
+            flex: 1,
             child: Container(
-              width: 10.0,
-              decoration: boxDecoForTierWidget,
-            ),
-          ),
-        );
+                    margin: EdgeInsets.only(top: 5, right: 5, bottom: 5),
+                    padding: EdgeInsets.all(5),
+                    constraints: BoxConstraints.tightFor(height: 70.0),
+                    decoration: actionBoxDecoration,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text('Player Info',
+                            style: TextStyle(
+                              color: Color(0xFF444444),
+                              fontSize: 14.0,
+                            )),
+                        Text(playerName,
+                            overflow: TextOverflow.fade,
+                            softWrap: false,
+                            style: TextStyle(color: Colors.white, fontSize: 14.0, fontWeight: FontWeight.bold)),
+                        Container(
+                          padding: EdgeInsets.only(left: 10, right: 10, top: 1, bottom: 1),
+                          decoration: boxDecoForTierWidget,
+                          child: Text(tier.toUpperCase(), style: TextStyle(color: tierFontColor, fontSize: 12),),
+                        )
+                      ],
+                    )));
 
-        Align playerDetailsWidget = Align(
-            alignment: Alignment.center,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Padding(
-                    padding: EdgeInsets.only(top: 5.0),
-                    child: Text('Customer',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Color(0xFF444444),
-                          fontSize: 14.0,
-                        ))),
-                Padding(
-                    padding: EdgeInsets.only(top: 3.0),
-                    child: Text(playerName,
-                        maxLines: 2,
-                        textAlign: TextAlign.center,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(color: Color(0xFFFFFFFF), fontSize: playerName.length > 20 ? 12.0 : 14.0, fontWeight: FontWeight.bold)))
-              ],
-            ));
-
-        Expanded taskCustomer = Expanded(
-            flex: 3,
-            child: Container(
-                margin: EdgeInsets.only(left: 2.0),
-                constraints: BoxConstraints.tightFor(height: 60.0),
-                decoration: actionBoxDecoration,
-                child: Stack(
-                  children: <Widget>[playerDetailsWidget, playerTierWidget],
-                )));
-
-        taskDetailsHeader.add(taskCustomer);
+        taskDetailsHeader.add(playerInfo);
       }
 
       //primary action

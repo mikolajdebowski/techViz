@@ -25,28 +25,30 @@ class TaskService{
 
 			print(receivedTask);
 
-			dynamic mapped = {
-				'_ID': receivedTask['_ID'].toString(),
-				'_VERSION': receivedTask['_version'].toString(),
-				'_DIRTY': false,
-				'USERID': receivedTask['userID'].toString(),
-				'MACHINEID': receivedTask['userID'].toString(),
-				'TASKSTATUSID': int.parse(receivedTask['taskStatusID'].toString()),
-				'TASKTYPEID': int.parse(receivedTask['taskTypeID'].toString()),
-				'TASKURGENCYID': int.parse(receivedTask['taskUrgencyID'].toString()),
-				'LOCATION': receivedTask['location'].toString(),
-				'TASKCREATED': receivedTask['taskCreated'].toString(),
-				'TASKASSIGNED': receivedTask['taskAssigned'].toString(),
-				'LOCATION': receivedTask['location'].toString(),
-				'AMOUNT': receivedTask['AMOUNT']==null? 0.0: double.parse(receivedTask['AMOUNT'].toString()),
-				'EVENTDESC': receivedTask['eventDesc'].toString(),
-				'PLAYERID': receivedTask['playerID'].toString(),
-				'PLAYERFIRSTNAME': receivedTask['firstname'].toString(),
-				'PLAYERLASTNAME': receivedTask['lastName'].toString(),
-				'PLAYERTIER': receivedTask['tier'].toString(),
-				'PLAYERTIERCOLORHEX': receivedTask['tierColorHex'].toString(),
-				'ISTECHTASK': int.parse(receivedTask['IsTechTask'].toString()),
-			};
+			Map<String,dynamic> mapped = <String,dynamic>{};
+			mapped['_ID'] = receivedTask['_ID'];
+			mapped['_VERSION'] = receivedTask['_version'];
+			mapped['_DIRTY'] = false;
+			mapped['USERID'] = receivedTask['userID'];
+			mapped['MACHINEID'] = receivedTask['machineID'];
+			mapped['LOCATION'] = receivedTask['location'];
+			mapped['ISTECHTASK'] = int.parse(receivedTask['IsTechTask'].toString());
+			mapped['TASKSTATUSID'] = int.parse(receivedTask['taskStatusID'].toString());
+			mapped['TASKTYPEID'] = int.parse(receivedTask['taskTypeID'].toString());
+			mapped['TASKURGENCYID'] = int.parse(receivedTask['taskUrgencyID'].toString());
+			mapped['TASKCREATED'] = receivedTask['taskCreated'];
+			mapped['TASKASSIGNED'] = receivedTask['taskAssigned'];
+
+			mapped['EVENTDESC'] = receivedTask['eventDesc'];
+			mapped['AMOUNT'] = receivedTask['amount']==null? 0.0: double.parse(receivedTask['amount'].toString());
+
+			mapped['PLAYERID'] = receivedTask['playerID'];
+			mapped['PLAYERFIRSTNAME'] = receivedTask['firstName'];
+			mapped['PLAYERLASTNAME'] = receivedTask['lastName'];
+			mapped['PLAYERTIER'] = receivedTask['tier'];
+			mapped['PLAYERTIERCOLORHEX'] = receivedTask['tierColorHex'];
+
+
 
 			await repo.insertOrUpdate(mapped);
 			Task taskOutput = await repo.getTask(receivedTask['_ID'].toString());
