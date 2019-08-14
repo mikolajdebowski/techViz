@@ -41,13 +41,9 @@ class ManagerViewState extends State<ManagerView> implements TechVizHome, IManag
   final GlobalKey _teamAvaKey = GlobalKey();
   final GlobalKey _slotFloorKey = GlobalKey();
 
-
   bool _openTasksLoading = true;
   bool _slotFloorLoading = true;
   bool _teamAvailabilityLoading = true;
-
-  bool initialLoadSlotFloorSummary = true;
-  bool initialLoadTeamAvailability = true;
 
   String teamAvailabilityCurrentUserSelected;
 
@@ -317,12 +313,6 @@ class ManagerViewState extends State<ManagerView> implements TechVizHome, IManag
         _slotFloorLoading = false;
         _slotFloorList = list;
       });
-
-      if(initialLoadSlotFloorSummary == true){
-        initialLoadSlotFloorSummary = false;
-      } else if(initialLoadSlotFloorSummary == false){
-        _mainController.jumpTo(_mainController.position.maxScrollExtent);
-      }
     }
   }
 
@@ -333,19 +323,6 @@ class ManagerViewState extends State<ManagerView> implements TechVizHome, IManag
         _teamAvailabilityLoading = false;
         _teamAvailabilityList = list;
       });
-
-      if(initialLoadTeamAvailability == true){
-        initialLoadTeamAvailability = false;
-      } else if(initialLoadTeamAvailability == false){
-
-        RenderBox openTasksBox = _openTasksKey.currentContext.findRenderObject();
-        bool isMinMaxZero = _mainController.position.maxScrollExtent == 0.0 && _mainController.position.minScrollExtent == 0.0;
-        bool isMaxExtendOffset = _mainController.position.maxScrollExtent == _mainController.offset;
-
-        if(_mainController.offset != openTasksBox.size.height && !isMinMaxZero && !isMaxExtendOffset) {
-          _mainController.jumpTo(openTasksBox.size.height);
-        }
-      }
     }
   }
 
