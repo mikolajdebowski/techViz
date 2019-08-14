@@ -41,13 +41,9 @@ class ManagerViewState extends State<ManagerView> implements TechVizHome, IManag
   final GlobalKey _teamAvaKey = GlobalKey();
   final GlobalKey _slotFloorKey = GlobalKey();
 
-
   bool _openTasksLoading = true;
   bool _slotFloorLoading = true;
   bool _teamAvailabilityLoading = true;
-
-  bool initialLoadSlotFloorSummary = true;
-  bool initialLoadTeamAvailability = true;
 
   String teamAvailabilityCurrentUserSelected;
 
@@ -100,7 +96,7 @@ class ManagerViewState extends State<ManagerView> implements TechVizHome, IManag
                 onSwipeLeft: onSlotFloorSwipeLeft(),
                 onMetricTap: onSlotFloorMetricTap,
                 isProcessing: _slotFloorLoading,
-                onScroll: _onChildScroll)
+                onScroll: _onChildScroll),
           ],
         ),
       ),
@@ -317,19 +313,6 @@ class ManagerViewState extends State<ManagerView> implements TechVizHome, IManag
         _slotFloorLoading = false;
         _slotFloorList = list;
       });
-
-      if(initialLoadSlotFloorSummary == true){
-        initialLoadSlotFloorSummary = false;
-      } else if(initialLoadSlotFloorSummary == false){
-        RenderBox openTasksBox = _openTasksKey.currentContext.findRenderObject();
-        double openTasksHeight = openTasksBox.size.height;
-
-        RenderBox teamAvaBox = _teamAvaKey.currentContext.findRenderObject();
-        double teamAvaBoxHeight = teamAvaBox.size.height;
-
-        double offset = openTasksHeight + teamAvaBoxHeight + 4;
-        _mainController.animateTo(offset, curve: Curves.linear, duration: Duration(milliseconds: 300));
-      }
     }
   }
 
@@ -340,16 +323,6 @@ class ManagerViewState extends State<ManagerView> implements TechVizHome, IManag
         _teamAvailabilityLoading = false;
         _teamAvailabilityList = list;
       });
-
-      if(initialLoadTeamAvailability == true){
-        initialLoadTeamAvailability = false;
-      } else if(initialLoadTeamAvailability == false){
-        RenderBox openTasksBox = _openTasksKey.currentContext.findRenderObject();
-        double openTasksHeight = openTasksBox.size.height;
-
-        double offset = openTasksHeight + 4;
-        _mainController.animateTo(offset, curve: Curves.linear, duration: Duration(milliseconds: 300));
-      }
     }
   }
 

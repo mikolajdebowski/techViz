@@ -16,13 +16,21 @@ class VizSummary extends StatefulWidget {
   final bool isProcessing;
   final OnScroll onScroll;
 
-  const VizSummary(this.title, this.data, {Key key, this.onSwipeLeft, this.onSwipeRight, this.onMetricTap, this.isProcessing = false, this.onScroll}) : super(key: key);
+  const VizSummary(this.title, this.data,
+      {Key key,
+      this.onSwipeLeft,
+      this.onSwipeRight,
+      this.onMetricTap,
+      this.isProcessing = false,
+      this.onScroll})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() => VizSummaryState();
 }
 
-class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActions {
+class VizSummaryState extends State<VizSummary>
+    implements VizSummaryHeaderActions {
   bool _expanded = false;
   String _selectedEntryKey;
 
@@ -48,9 +56,7 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
     BoxDecoration boxDecoration = BoxDecoration(
         borderRadius: BorderRadius.circular(4.0),
         border: Border.all(color: Colors.white),
-        color: Colors.white
-    );
-
+        color: Colors.white);
 
     Container container;
     if (widget.data == null) {
@@ -63,9 +69,13 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
           padding: EdgeInsets.all(10.0),
         )),
       );
-    }
-    else{
-      VizSummaryHeader header = VizSummaryHeader(headerTitle: widget.title, entries: widget.data, actions: this, selectedEntryKey: _selectedEntryKey, isProcessing: widget.isProcessing);
+    } else {
+      VizSummaryHeader header = VizSummaryHeader(
+          headerTitle: widget.title,
+          entries: widget.data,
+          actions: this,
+          selectedEntryKey: _selectedEntryKey,
+          isProcessing: widget.isProcessing);
 
       if (!_expanded) {
         container = Container(
@@ -74,24 +84,30 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
           child: header,
         );
       } else {
-
         Widget child;
+        Iterable<DataEntryGroup> _filterWhere = widget.data.where(
+            (DataEntryGroup group) => group.headerTitle == _selectedEntryKey);
+        List<DataEntry> _filteredData = _filterWhere.first.entries;
+        List<DataEntryColumn> _columnsDefinition =
+            _filterWhere.first.columnsDefinition;
+        double _maxHeight = listViewMaxHeight(_filteredData.length);
 
-        if(widget.isProcessing){
-          child = Center(
-            child: Padding(padding: EdgeInsets.all(5.0), child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)))
-          );
-        }
-        else {
-          double listViewMaxHeight(int rowCount) {
-            return rowCount == 0 ? VizListViewRow.rowHeight : (rowCount < 4 ? rowCount * VizListViewRow.rowHeight : VizListViewRow.rowHeight * 4);
-          }
-
-          Iterable<DataEntryGroup> _filterWhere = widget.data.where((DataEntryGroup group)=> group.headerTitle == _selectedEntryKey);
-          List<DataEntry> _filteredData = _filterWhere.first.entries;
-          List<DataEntryColumn> _columnsDefinition = _filterWhere.first.columnsDefinition;
-          double _maxHeight = listViewMaxHeight(_filteredData.length);
-          child = VizListView(_filteredData, _columnsDefinition, onSwipeRight: widget.onSwipeRight, onSwipeLeft: widget.onSwipeLeft, onScroll: widget.onScroll, maxHeight: _maxHeight);
+        if (widget.isProcessing) {
+          child = Container(
+              height: _maxHeight,
+              child: Center(
+                  child: Padding(
+                      padding: EdgeInsets.all(5.0),
+                      child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2)))));
+        } else {
+          child = VizListView(_filteredData, _columnsDefinition,
+              onSwipeRight: widget.onSwipeRight,
+              onSwipeLeft: widget.onSwipeLeft,
+              onScroll: widget.onScroll,
+              maxHeight: _maxHeight);
         }
 
         container = Container(
@@ -114,19 +130,25 @@ class VizSummaryState extends State<VizSummary> implements VizSummaryHeaderActio
     );
   }
 
+  double listViewMaxHeight(int rowCount) {
+    return rowCount == 0
+        ? VizListViewRow.rowHeight
+        : (rowCount < 4
+            ? rowCount * VizListViewRow.rowHeight
+            : VizListViewRow.rowHeight * 4);
+  }
+
   @override
   void onItemTap(String selectedEntryKey) {
-
-    if(widget.onMetricTap!=null){
+    if (widget.onMetricTap != null) {
       widget.onMetricTap();
     }
 
     setState(() {
-      if(_selectedEntryKey == selectedEntryKey){
+      if (_selectedEntryKey == selectedEntryKey) {
         _expanded = false;
         _selectedEntryKey = null;
-      }
-      else{
+      } else {
         _selectedEntryKey = selectedEntryKey;
         _expanded = true;
       }
