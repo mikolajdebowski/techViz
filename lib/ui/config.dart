@@ -156,7 +156,6 @@ class ConfigState extends State<Config> {
             Align(
               alignment: Alignment.center,
               child: SingleChildScrollView(child:Container(
-                height: 110.0,
                 child: row,
               )),
             ),
