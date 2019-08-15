@@ -103,6 +103,7 @@ class WorkOrderState extends State<WorkOrder> implements WorkOrderPresenterView 
     );
 
     DateTimeField dueDateFormField = DateTimeField(
+      readOnly: true,
       key: Key('dueDateFormField'),
       onChanged: (DateTime selectedDueDate) {
         setState(() {
