@@ -73,6 +73,7 @@ class LoginState extends State<Login> {
     getAppInfo();
 
     super.initState();
+    _checkIfLoginEnable();
   }
 
 
