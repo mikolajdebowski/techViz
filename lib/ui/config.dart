@@ -154,14 +154,11 @@ class ConfigState extends State<Config> {
         child: Stack(
           children: <Widget>[
             Align(
-                alignment: Alignment.center,
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: SingleChildScrollView(child:Container(
-                    height: 110.0,
-                    child: row,
-                  )),
-                )),
+              alignment: Alignment.center,
+              child: SingleChildScrollView(child:Container(
+                child: row,
+              )),
+            ),
             Align(alignment: Alignment.bottomCenter, child: VizRainbow()),
           ],
         ));
