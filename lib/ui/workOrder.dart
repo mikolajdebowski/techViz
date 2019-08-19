@@ -140,6 +140,9 @@ class WorkOrderState extends State<WorkOrder> implements WorkOrderPresenterView 
         title: 'Save',
         highlighted: true,
         onTap: () {
+
+          FocusScope.of(context).requestFocus(FocusNode());
+
           if (!_formKey.currentState.validate()) return;
 
           final VizSnackbar _snackbar = VizSnackbar.Processing('Creating Work Order...');
