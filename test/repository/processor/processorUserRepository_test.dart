@@ -1,8 +1,8 @@
+import 'package:techviz/common/http/client/sessionClient.dart';
 import 'package:techviz/repository/processor/exception/invalidResponseException.dart';
 import 'package:techviz/repository/processor/processorRepositoryConfig.dart';
 import 'package:techviz/repository/processor/processorUserRepository.dart';
 import 'package:test_api/test_api.dart';
-import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 import '../mock/processorClientMock.dart';
 

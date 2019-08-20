@@ -8,7 +8,8 @@ import 'package:techviz/ui/login.dart';
 import 'package:techviz/ui/profile.dart';
 import 'package:techviz/repository/async/MessageClient.dart';
 import 'package:techviz/ui/splash.dart';
-import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
+
+import 'common/utils.dart';
 
 void main() {
   SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight])

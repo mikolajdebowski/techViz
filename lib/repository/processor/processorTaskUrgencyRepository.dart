@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:techviz/common/http/client/sessionClient.dart';
 import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/repository/local/localRepository.dart';
 import 'package:techviz/repository/processor/processorRepositoryConfig.dart';
 import 'package:techviz/repository/remoteRepository.dart';
-import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 class ProcessorTaskUrgencyRepository implements IRemoteRepository<TaskStatus>{
 

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
+
+import 'package:techviz/common/http/client/sessionClient.dart';
 
 abstract class IProcessorRepositoryConfig{
   Future<void> Setup(SessionClient client);

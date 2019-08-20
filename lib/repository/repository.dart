@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:techviz/bloc/taskViewBloc.dart';
+import 'package:techviz/common/http/client/sessionClient.dart';
 import 'package:techviz/repository/async/UserRouting.dart';
 import 'package:techviz/repository/slotFloorRepository.dart';
 import 'package:techviz/repository/async/SlotMachineRouting.dart';
@@ -40,7 +41,6 @@ import 'package:techviz/repository/userSectionRepository.dart';
 import 'package:techviz/repository/userSkillsRepository.dart';
 import 'package:techviz/repository/userStatusRepository.dart';
 import 'package:techviz/repository/workOrder.repository.dart';
-import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 import 'package:kiwi/kiwi.dart' as kiwi;
 
 import 'async/MessageClient.dart';

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:techviz/common/deviceInfo.dart';
+import 'package:techviz/common/utils.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
@@ -11,7 +13,6 @@ import 'package:techviz/repository/async/SectionRouting.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/session.dart';
 import 'package:techviz/repository/userSectionRepository.dart';
-import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 
 typedef FncOnUserSectionsChanged = void Function(List<UserSection> sections);
 

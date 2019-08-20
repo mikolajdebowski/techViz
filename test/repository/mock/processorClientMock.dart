@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart';
-import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
+import 'package:techviz/common/http/client/client.dart';
 
 class ProcessorClientMock implements IHttpClient{
   dynamic processorResponse;

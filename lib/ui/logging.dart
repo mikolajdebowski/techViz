@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
+import 'package:techviz/common/utils.dart';
 
 class Logging extends StatefulWidget {
   @override

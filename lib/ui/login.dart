@@ -3,7 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techviz/common/LowerCaseTextFormatter.dart';
+import 'package:techviz/common/appInfo.dart';
+import 'package:techviz/common/deviceInfo.dart';
+import 'package:techviz/common/http/client/processorClient.dart';
+import 'package:techviz/common/http/client/sessionClient.dart';
 import 'package:techviz/common/slideRightRoute.dart';
+import 'package:techviz/common/utils.dart';
 import 'package:techviz/components/VizAlert.dart';
 import 'package:techviz/components/VizLoadingIndicator.dart';
 import 'package:techviz/components/VizOptionButton.dart';
@@ -15,7 +20,6 @@ import 'package:techviz/repository/async/MessageClient.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/session.dart';
 import 'package:techviz/ui/roleSelector.dart';
-import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 import 'package:logging/logging.dart';
 
 class Login extends StatefulWidget {

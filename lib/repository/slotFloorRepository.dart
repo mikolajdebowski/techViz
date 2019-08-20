@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'package:rxdart/rxdart.dart';
+import 'package:techviz/common/deviceInfo.dart';
+import 'package:techviz/common/utils.dart';
 import 'package:techviz/model/slotMachine.dart';
 import 'package:synchronized/synchronized.dart';
-import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
 import 'async/SlotMachineRouting.dart';
 
 abstract class ISlotFloorRemoteRepository {

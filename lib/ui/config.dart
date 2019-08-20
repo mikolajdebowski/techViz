@@ -5,7 +5,7 @@ import 'package:techviz/components/VizButton.dart';
 import 'package:flutter/services.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizRainbow.dart';
-import 'package:vizexplorer_mobile_common/vizexplorer_mobile_common.dart';
+import 'package:validators/validators.dart';
 
 class Config extends StatefulWidget {
   static const String SERVERURL = 'SERVERURL';
@@ -107,7 +107,7 @@ class ConfigState extends State<Config> {
             },
             autocorrect: false,
             validator: (String value) {
-              if (!Validator.isUrl(value, default_url_options)) {
+              if (!isURL(value)) {
                 return 'Please enter valid URL';
               }
               return null;
