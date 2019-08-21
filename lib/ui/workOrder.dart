@@ -108,6 +108,7 @@ class WorkOrderState extends State<WorkOrder> implements WorkOrderPresenterView 
       onChanged: (DateTime selectedDueDate) {
         setState(() {
           _selectedDueDate = selectedDueDate;
+          print(_selectedDueDate);
         });
       },
       initialValue: _selectedDueDate,
@@ -115,7 +116,8 @@ class WorkOrderState extends State<WorkOrder> implements WorkOrderPresenterView 
       format: _formatDueDate,
       style: TextStyle(color: Colors.white),
       onShowPicker: (context, currentValue) {
-        return showDatePicker(context: context, firstDate: DateTime.now(), initialDate: currentValue ?? DateTime.now(), lastDate: DateTime(2100));
+        DateTime firstDate = DateTime.parse(DateFormat("yyyy-MM-dd").format(DateTime.now()));
+        return showDatePicker(context: context, firstDate: firstDate, initialDate: _selectedDueDate ?? firstDate, lastDate: DateTime(2100));
       },
     );
 
