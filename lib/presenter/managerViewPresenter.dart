@@ -155,7 +155,7 @@ class ManagerViewPresenter{
       DataEntry toAvailableDataEntryParser(Map map){
         List<DataEntryCell> columns = <DataEntryCell>[];
         columns.add(DataEntryCell('Sections', map['SectionCount']));
-        columns.add(DataEntryCell('Attendant', map['UserName']));
+        columns.add(DataEntryCell('User Name', map['UserName']));
         columns.add(DataEntryCell('Task Count', map['TaskCount']));
         columns.add(DataEntryCell('StatusID', map['UserStatusID']));
         return DataEntry(map['UserID'], columns);
@@ -163,7 +163,7 @@ class ManagerViewPresenter{
 
       DataEntry toOnBreakDataEntryParser(Map map){
         List<DataEntryCell> columns = <DataEntryCell>[];
-        columns.add(DataEntryCell('Attendant', map['UserName']));
+        columns.add(DataEntryCell('User Name', map['UserName']));
         columns.add(DataEntryCell('Break', map['UserStatusName']));
         columns.add(DataEntryCell('StatusID', map['UserStatusID']));
         return DataEntry(map['UserID'], columns);
@@ -171,7 +171,7 @@ class ManagerViewPresenter{
 
       DataEntry toOtherDataEntryParser(Map map){
         List<DataEntryCell> columns = <DataEntryCell>[];
-        columns.add(DataEntryCell('Attendant', map['UserName']));
+        columns.add(DataEntryCell('User Name', map['UserName']));
         columns.add(DataEntryCell('Status', map['UserStatusName']));
         columns.add(DataEntryCell('StatusID', map['UserStatusID']));
         return DataEntry(map['UserID'], columns);
@@ -179,7 +179,7 @@ class ManagerViewPresenter{
 
       DataEntry toOffShiftDataEntryParser(Map map){
         List<DataEntryCell> columns = <DataEntryCell>[];
-        columns.add(DataEntryCell('Attendant', map['UserName']));
+        columns.add(DataEntryCell('User Name', map['UserName']));
         columns.add(DataEntryCell('StatusID', map['UserStatusID']));
         return DataEntry(map['UserID'], columns);
       }
@@ -192,25 +192,25 @@ class ManagerViewPresenter{
 
       List<DataEntryColumn> availableColumnsDefinition = [
         DataEntryColumn('Sections', alignment: DataAlignment.center),
-        DataEntryColumn('Attendant', alignment: DataAlignment.center),
+        DataEntryColumn('User Name', alignment: DataAlignment.center),
         DataEntryColumn('Task Count', alignment: DataAlignment.center),
         DataEntryColumn('StatusID', alignment: DataAlignment.center, visible: false)
       ];
 
       List<DataEntryColumn> onBreakColumnsDefinition = [
-        DataEntryColumn('Attendant', alignment: DataAlignment.center),
+        DataEntryColumn('User Name', alignment: DataAlignment.center),
         DataEntryColumn('Break', alignment: DataAlignment.center),
         DataEntryColumn('StatusID', alignment: DataAlignment.center, visible: false)
       ];
 
       List<DataEntryColumn> otherColumnsDefinition = [
-        DataEntryColumn('Attendant', alignment: DataAlignment.center),
+        DataEntryColumn('User Name', alignment: DataAlignment.center),
         DataEntryColumn('Status', alignment: DataAlignment.center),
         DataEntryColumn('StatusID', alignment: DataAlignment.center, visible: false)
       ];
 
       List<DataEntryColumn> offShiftColumnsDefinition = [
-        DataEntryColumn('Attendant', alignment: DataAlignment.center),
+        DataEntryColumn('User Name', alignment: DataAlignment.center),
         DataEntryColumn('StatusID', alignment: DataAlignment.center, visible: false)
       ];
 
@@ -232,8 +232,8 @@ class ManagerViewPresenter{
 
   List<DataEntry> sortAlphabeticallyByAttendantName(List<DataEntry> coll){
     int compateTo(DataEntry a, DataEntry b){
-      DataEntryCell userNameA = a.cell.where((DataEntryCell cell) => cell.columnName == 'Attendant').first;
-      DataEntryCell userNameB = b.cell.where((DataEntryCell cell) => cell.columnName == 'Attendant').first;
+      DataEntryCell userNameA = a.cell.where((DataEntryCell cell) => cell.columnName == 'User Name').first;
+      DataEntryCell userNameB = b.cell.where((DataEntryCell cell) => cell.columnName == 'User Name').first;
       return userNameA.value.toString().compareTo(userNameB.value.toString());
     }
 
