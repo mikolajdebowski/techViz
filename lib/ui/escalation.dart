@@ -69,7 +69,7 @@ class EscalationFormState extends State<EscalationForm> implements EscalationPre
   //VIEW
   bool get taskTypeRequired {
     return _escalationPathSelected != null &&
-        (_escalationPathSelected.id == 2 || _escalationPathSelected.id == 3);
+        (_escalationPathSelected.id == 2 || _escalationPathSelected.id >= 3);
   }
 
   void onOKTap(){
