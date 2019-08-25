@@ -126,7 +126,9 @@ class ManagerViewPresenter{
 
 
       //Overdue: TaskUrgencyID is 3 (overdue)
-      Iterable<Map<String,dynamic>> overdueWhere = openTasksList.where((Map<String,dynamic> map)=> map['TaskUrgencyID'] == '3');
+      Iterable<Map<String,dynamic>> overdueWhere = openTasksList.where((Map<String,dynamic> map)=> map['TaskUrgencyID'] == '3' || map['TaskUrgencyID'] == '4' || map['TaskUrgencyID'] == '5');
+
+
       List<DataEntry> overdueList = overdueWhere != null ? overdueWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntry(d)).toList(): <DataEntry>[];
       group.add(DataEntryGroup('Overdue', overdueList, assignedColumnsDefinition, highlightedDecoration: (){ return overdueList.isNotEmpty ? Color(0xFFFF0000): null; }));
 
