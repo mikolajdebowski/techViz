@@ -114,10 +114,7 @@ class MenuDrawerState extends State<MenuDrawer> {
   void logOut(){
       final VizSnackbar _processingBar = VizSnackbar.Processing('Logging out...');
       _processingBar.show(context);
-      print('logout tapped');
       Session().logOut().then((dynamic d){
-        print('logOut session finished');
-
         _processingBar.dismiss();
         Navigator.pushReplacementNamed(context, '/login');
       }).catchError((dynamic error){

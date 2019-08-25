@@ -5,6 +5,8 @@ import 'package:observable/observable.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/userRepository.dart';
 
+import 'service/MQTTClientService.dart';
+
 
 
 enum ConnectionStatus{
@@ -59,7 +61,9 @@ class Session extends PropertyChangeNotifier implements ISession{
     Repository().disposeBlocs();
 
     UserRepository _repo = Repository().userRepository;
-    await _repo.update(user.userID, statusID: '10');
+    await _repo.update(user.userID, statusID: '10'); // TODO(rmathias): this is not a Session responsibility!
+
+    MQTTClientService().disconnect();
   }
 
   @override

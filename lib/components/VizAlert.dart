@@ -10,9 +10,10 @@ class VizAlert{
         builder: (BuildContext context) {
           return Center(
               child: Padding(
-                padding: const EdgeInsets.all(80.0),
-                child: Text(message),
-              ));
+                child: Text(message, maxLines: 3),
+                padding: EdgeInsets.all(15),
+              )
+          );
         });
   }
 }
