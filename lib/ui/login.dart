@@ -38,7 +38,6 @@ class LoginState extends State<Login> {
   AppInfo appInfo;
   bool _loginEnabled;
 
-
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final Map<String, String> _formData = {
     'username': null,
@@ -165,24 +164,13 @@ class LoginState extends State<Login> {
 
       //INIT AMQP MessageClient
       await MessageClient().Connect();
+      await updateDeviceAndUserInfo(usernameController.text);
 
-
-      //INIT MQQTClient Service
+      //INIT MQTTClient Service
       String broker = serverUrl.replaceAll('http://', '').replaceAll('https://', '');
       String deviceID = (await Utils.deviceInfo).DeviceID;
-      await MQTTClientService().init(broker, deviceID);
+      await MQTTClientService().init(broker, deviceID, logging: false);
       await MQTTClientService().connect();
-      MQTTClientService().subscribe('mobile.task.$deviceID');
-      MQTTClientService().subscribe('mobile.errors.$deviceID');
-
-
-
-
-      MQTTClientService().streams('mobile.task.$deviceID').listen((dynamic x){
-        print('FROM THE MQTT ${x.toString()}');
-      });
-
-      await updateDeviceAndUserInfo(usernameController.text);
 
       Repository().startServices();
 
