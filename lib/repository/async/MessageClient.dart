@@ -134,7 +134,7 @@ class MessageClient implements IMessageClient{
 
   @override
   void _addRoutingKeyListener(String routingKey, StreamController<AmqpMessage> subscription) async{
-    print('_addRoutingKeyListener  $routingKey');
+    print('AMPQ: _addRoutingKeyListener  $routingKey');
     await _bindQueue(routingKey);
 
     if(!_mapStreamControllers.containsKey(routingKey)){
@@ -145,7 +145,7 @@ class MessageClient implements IMessageClient{
 
   @override
   void _removeRoutingKeyListener(String routingKey){
-    print('_removeRoutingKeyListener  $routingKey');
+    print('AMPQ: _removeRoutingKeyListener  $routingKey');
     _consumer.queue.unbind(_exchange, routingKey);
     if(_mapStreamControllers.containsKey(routingKey)){
       _mapStreamControllers.remove(routingKey);

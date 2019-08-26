@@ -14,6 +14,7 @@ import 'package:techviz/components/VizLoadingIndicator.dart';
 import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizRainbow.dart';
 import 'package:techviz/repository/userRepository.dart';
+import 'package:techviz/service/MQTTClientService.dart';
 import 'package:techviz/ui/config.dart';
 import 'package:techviz/repository/async/DeviceRouting.dart';
 import 'package:techviz/repository/async/MessageClient.dart';
@@ -36,7 +37,6 @@ class LoginState extends State<Login> {
   String _loadingMessage = '...';
   AppInfo appInfo;
   bool _loginEnabled;
-
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final Map<String, String> _formData = {
@@ -91,7 +91,7 @@ class LoginState extends State<Login> {
   }
 
 
-  Future<void> loadInitialData() async{
+  Future<void> fetchInitialData() async{
     Repository repo = Repository();
     await repo.configure(Flavor.PROCESSOR);
 
@@ -105,7 +105,7 @@ class LoginState extends State<Login> {
     await repo.initialFetch(onMessage);
   }
 
-  Future setupUser(String userID) async{
+  Future updateDeviceAndUserInfo(String userID) async{
     Completer<void> _completer = Completer<void>();
     DeviceInfo deviceInfo = await Utils.deviceInfo;
 
@@ -113,12 +113,10 @@ class LoginState extends State<Login> {
       _loadingMessage = 'Updating user and device info...';
     });
 
-    await MessageClient().Connect();
-
     UserRepository userRepository = Repository().userRepository;
     Future userUpdateFuture = userRepository.update(userID, statusID: "10").then<int>((int result) async { //FORCE OFF-SHIFT LOCALLY
       await Session().init(userID);
-      return result; // TODO(rmathias): DOES IT IS NECESSARY?
+      return result;
     });
 
     dynamic toSendDeviceDetails = {'userID': userID, 'deviceID': deviceInfo.DeviceID, 'model': deviceInfo.Model, 'OSName': deviceInfo.OSName, 'OSVersion': deviceInfo.OSVersion };
@@ -162,24 +160,30 @@ class LoginState extends State<Login> {
       await prefs.setString(Login.USERNAME, usernameController.text);
       await prefs.setString(Login.PASSWORD, passwordController.text);
 
-      await loadInitialData();
-      await setupUser(usernameController.text);
+      await fetchInitialData();
+
+      //INIT AMQP MessageClient
+      await MessageClient().Connect();
+      await updateDeviceAndUserInfo(usernameController.text);
+
+      //INIT MQTTClient Service
+      String broker = serverUrl.replaceAll('http://', '').replaceAll('https://', '');
+      String deviceID = (await Utils.deviceInfo).DeviceID;
+      await MQTTClientService().init(broker, deviceID, logging: false);
+      await MQTTClientService().connect();
 
       Repository().startServices();
 
-      Future.delayed( Duration(milliseconds:  200), () {
-        Navigator.pushReplacement(context, MaterialPageRoute<RoleSelector>(builder: (BuildContext context) => RoleSelector()));
-      });
+      Navigator.pushReplacement(context, MaterialPageRoute<RoleSelector>(builder: (BuildContext context) => RoleSelector()));
+
     }).catchError((dynamic error) {
       final Logger log = Logger(toStringShort());
       log.info(error.toString());
-
       setState(() {
         _isLoading = false;
       });
       VizAlert.Show(context, error.toString());
     });
-
   }
 
   @override

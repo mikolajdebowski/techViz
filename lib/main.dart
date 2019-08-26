@@ -26,7 +26,6 @@ class TechVizApp extends StatefulWidget {
 
 class TechVizAppState extends State<TechVizApp> with WidgetsBindingObserver {
   AppLifecycleState _lastLifecycleState;
-
   @override
   void initState() {
     super.initState();
