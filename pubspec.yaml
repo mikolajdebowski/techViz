@@ -35,6 +35,10 @@ dependencies:
   uuid: ^2.0.2
   path_provider: ^1.2.0
 
+  mqtt_client:
+    git: git@git.internal.bis2.net:Mobile/Plugins/mqtt_client.git
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

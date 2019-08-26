@@ -142,9 +142,6 @@ class ProcessorClient implements IHttpClient {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String cookie = await prefs.get('JSESSIONID');
     var header = {'cookie': cookie, 'Content-Type': 'application/xml' };
-    String urlx = "$_serverUrl/$endPoint";
-    print('url post $urlx' );
-    print('body $body');
 
     http.post("$_serverUrl/$endPoint", headers: header, body: body).then((http.Response response)
     {
