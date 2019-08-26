@@ -108,10 +108,11 @@ class MQTTClientService implements IMQTTClientService{
 
 	@override
 	void disconnect(){
-		_statusSubject?.close();
 		_keepAliveTimer?.cancel();
 		_internalDisconnect();
+
 		_statusSubject.add(MQTTConnectionStatus.Disconnected);
+		_statusSubject?.close();
 	}
 
 	void _internalDisconnect(){
