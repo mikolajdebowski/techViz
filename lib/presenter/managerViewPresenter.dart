@@ -112,21 +112,22 @@ class ManagerViewPresenter{
 
 
       List<DataEntryGroup> group = <DataEntryGroup>[];
+      Role role = Session().role;
 
       //Assigned: UserID is not null AND TaskStatusID is not equal to 7 (reassigned)
-      Iterable<Map<String,dynamic>> assignedWhere = openTasksList.where((Map<String,dynamic> map)=> (map['UserID'] != null && map['UserID'].toString().isNotEmpty) && map['TaskStatusID'] != '7');
+      Iterable<Map<String,dynamic>> assignedWhere = openTasksList.where((Map<String,dynamic> map)=> ((map['UserID'] != null && map['UserID'].toString().isNotEmpty) && map['TaskStatusID'] != '7') &&  (map['IsTechTask']  == ((role.isTechManager || role.isTechSupervisor) ? '1' : '0')));
       List<DataEntry> assignedList = assignedWhere != null ? assignedWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntry(d)).toList(): <DataEntry>[];
       group.add(DataEntryGroup('Assigned', assignedList, assignedColumnsDefinition));
 
 
       //Unassigned: UserID is null OR TaskStatusID = 7 (reassigned)
-      Iterable<Map<String,dynamic>> unassignedWhere = openTasksList.where((Map<String,dynamic> map)=> (map['UserID'] == null || map['UserID'].toString().isEmpty) || map['TaskStatusID'] == '7');
+      Iterable<Map<String,dynamic>> unassignedWhere = openTasksList.where((Map<String,dynamic> map)=> ((map['UserID'] == null || map['UserID'].toString().isEmpty) || map['TaskStatusID'] == '7')  &&  (map['IsTechTask']  == ((role.isTechManager || role.isTechSupervisor) ? '1' : '0')));
       List<DataEntry> unassignedList = unassignedWhere != null ? unassignedWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntryForUnassigned(d)).toList(): <DataEntry>[];
       group.add(DataEntryGroup('Unassigned', unassignedList, unassignedColumnsDefinition));
 
 
       //Overdue: TaskUrgencyID is 3 (overdue)
-      Iterable<Map<String,dynamic>> overdueWhere = openTasksList.where((Map<String,dynamic> map)=> map['TaskUrgencyID'] == '3' || map['TaskUrgencyID'] == '4' || map['TaskUrgencyID'] == '5');
+      Iterable<Map<String,dynamic>> overdueWhere = openTasksList.where((Map<String,dynamic> map)=> (map['TaskUrgencyID'] == '3' || map['TaskUrgencyID'] == '4' || map['TaskUrgencyID'] == '5')  &&  (map['IsTechTask']  == ((role.isTechManager || role.isTechSupervisor) ? '1' : '0')));
 
 
       List<DataEntry> overdueList = overdueWhere != null ? overdueWhere.map<DataEntry>((Map<String,dynamic> d)=> mapToDataEntry(d)).toList(): <DataEntry>[];
@@ -140,7 +141,6 @@ class ManagerViewPresenter{
 
 
       _view.onOpenTasksLoaded(group);
-
     }
 
     void handleOpenTasksError(dynamic error){
