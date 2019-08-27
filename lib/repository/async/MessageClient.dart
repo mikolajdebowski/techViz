@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:dart_amqp/dart_amqp.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:techviz/common/deviceInfo.dart';
-import 'package:techviz/common/utils.dart';
+import 'package:techviz/common/deviceUtils.dart';
+import 'package:techviz/common/model/deviceInfo.dart';
 import 'package:techviz/ui/config.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
@@ -49,7 +49,7 @@ class MessageClient implements IMessageClient{
     }
 
     //DEVICEID
-    DeviceInfo deviceInfo = await Utils.deviceInfo;
+    DeviceInfo deviceInfo = await DeviceUtils().deviceInfo;
     _deviceID = deviceInfo.DeviceID;
 
     //UNIQUE DEVICE QUEUE

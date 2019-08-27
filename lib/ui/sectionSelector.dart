@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:techviz/common/deviceInfo.dart';
-import 'package:techviz/common/utils.dart';
+import 'package:techviz/common/deviceUtils.dart';
+import 'package:techviz/common/model/deviceInfo.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
@@ -45,7 +45,7 @@ class SectionSelectorState extends State<SectionSelector>
     Session session = Session();
     List<String> sections = sectionList.where((SectionModelPresenter s) => s.selected).map((SectionModelPresenter s)=>s.sectionID).toList();
 
-    DeviceInfo info = await Utils.deviceInfo;
+    DeviceInfo info = await DeviceUtils().deviceInfo;
     dynamic toSubmit = {'userID': session.user.userID, 'sections': sections, 'deviceID': info.DeviceID};
 
     SectionRouting().PublishMessage(toSubmit).then((dynamic list) async{

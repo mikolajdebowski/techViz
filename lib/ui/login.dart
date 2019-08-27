@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techviz/common/LowerCaseTextFormatter.dart';
-import 'package:techviz/common/appInfo.dart';
-import 'package:techviz/common/deviceInfo.dart';
+import 'package:techviz/common/deviceUtils.dart';
+import 'package:techviz/common/model/appInfo.dart';
 import 'package:techviz/common/http/client/processorClient.dart';
 import 'package:techviz/common/http/client/sessionClient.dart';
 import 'package:techviz/common/slideRightRoute.dart';
@@ -14,9 +14,9 @@ import 'package:techviz/components/VizLoadingIndicator.dart';
 import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizRainbow.dart';
 import 'package:techviz/repository/userRepository.dart';
-import 'package:techviz/service/MQTTClientService.dart';
+import 'package:techviz/service/client/MQTTClientService.dart';
+import 'package:techviz/service/deviceService.dart';
 import 'package:techviz/ui/config.dart';
-import 'package:techviz/repository/async/DeviceRouting.dart';
 import 'package:techviz/repository/async/MessageClient.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/session.dart';
@@ -65,7 +65,7 @@ class LoginState extends State<Login> {
         usernameController.text = prefs.getString(Login.USERNAME);
       }
 
-      Utils.isEmulator.then((bool isEmulator){
+      DeviceUtils().isEmulator.then((bool isEmulator){
         if(isEmulator){
           if (prefs.getKeys().contains(Login.PASSWORD)) {
             passwordController.text = prefs.getString(Login.PASSWORD);
@@ -106,29 +106,25 @@ class LoginState extends State<Login> {
   }
 
   Future updateDeviceAndUserInfo(String userID) async{
-    Completer<void> _completer = Completer<void>();
-    DeviceInfo deviceInfo = await Utils.deviceInfo;
+    setState(() {
+      _loadingMessage = 'Updating device info...';
+    });
+
+    await DeviceService().update(userID).catchError((dynamic error){
+      if(error is TimeoutException){
+        throw Exception('A timeout exception has been thrown. Please try again.');
+      }
+    });
 
     setState(() {
-      _loadingMessage = 'Updating user and device info...';
+      _loadingMessage = 'Updating user info...';
     });
 
     UserRepository userRepository = Repository().userRepository;
-    Future userUpdateFuture = userRepository.update(userID, statusID: "10").then<int>((int result) async { //FORCE OFF-SHIFT LOCALLY
+    await userRepository.update(userID, statusID: "10").then<int>((int result) async { //FORCE OFF-SHIFT LOCALLY
       await Session().init(userID);
       return result;
     });
-
-    dynamic toSendDeviceDetails = {'userID': userID, 'deviceID': deviceInfo.DeviceID, 'model': deviceInfo.Model, 'OSName': deviceInfo.OSName, 'OSVersion': deviceInfo.OSVersion };
-    Future deviceUpdateFuture = DeviceRouting().PublishMessage(toSendDeviceDetails);
-
-    Future.wait<void>([userUpdateFuture, deviceUpdateFuture]).then((List<dynamic> l){
-      _completer.complete();
-    }).catchError((dynamic error){
-      _completer.completeError(error);
-    });
-
-    return _completer.future;
   }
 
   void loginTap(dynamic args) async {
@@ -162,15 +158,15 @@ class LoginState extends State<Login> {
 
       await fetchInitialData();
 
+      //INIT MQTTClient Service
+      String broker = serverUrl.replaceAll('http://', '').replaceAll('https://', '');
+      String deviceID = (await DeviceUtils().deviceInfo).DeviceID;
+      await MQTTClientService().init(broker, deviceID, logging: false);
+      await MQTTClientService().connect();
+
       //INIT AMQP MessageClient
       await MessageClient().Connect();
       await updateDeviceAndUserInfo(usernameController.text);
-
-      //INIT MQTTClient Service
-      String broker = serverUrl.replaceAll('http://', '').replaceAll('https://', '');
-      String deviceID = (await Utils.deviceInfo).DeviceID;
-      await MQTTClientService().init(broker, deviceID, logging: false);
-      await MQTTClientService().connect();
 
       Repository().startServices();
 
