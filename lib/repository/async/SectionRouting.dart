@@ -1,9 +1,13 @@
 import 'dart:async';
 import 'package:techviz/model/section.dart';
 import 'package:techviz/repository/async/MessageClient.dart';
-import 'package:techviz/repository/async/OldRouting.dart';
 
-class SectionRouting implements OldRouting {
+abstract class ISectionRouting{
+  Future PublishMessage(dynamic object);
+  void ListenQueue(Function callback, {Function callbackError});
+}
+
+class SectionRouting implements ISectionRouting {
   String routingPattern = "mobile.section";
 
   @override
