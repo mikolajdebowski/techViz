@@ -1,58 +1,11 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:device_info/device_info.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uuid/uuid.dart';
 import 'package:package_info/package_info.dart';
-import 'package:flutter_is_emulator/flutter_is_emulator.dart';
 import 'package:path_provider/path_provider.dart';
-import 'appInfo.dart';
-import 'deviceInfo.dart';
+import 'package:techviz/common/model/appInfo.dart';
 
 class Utils {
-  static Future<bool> get isEmulator {
-    return FlutterIsEmulator.isDeviceAnEmulatorOrASimulator;
-  }
-
-  static Future<DeviceInfo> get deviceInfo async {
-    DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
-
-    DeviceInfo info = DeviceInfo();
-
-    if(Platform.isIOS){
-      IosDeviceInfo ios = await deviceInfoPlugin.iosInfo;
-      info.DeviceID = ios.identifierForVendor;
-      info.Model = ios.model;
-      info.OSVersion = ios.systemVersion;
-      info.OSName = ios.systemName;
-    }
-    else {
-      AndroidDeviceInfo android = await deviceInfoPlugin.androidInfo;
-      if (android.id == 'MASTER' || android.manufacturer == 'unknown') {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        if (prefs.getKeys().contains("UUID")) {
-          info.DeviceID = prefs.getString("UUID");
-        }
-        else {
-          var uuid = Uuid();
-          String strUUID = uuid.v4().toString().toUpperCase();
-          prefs.setString("UUID", strUUID);
-          info.DeviceID = strUUID;
-        }
-      }
-      else info.DeviceID = android.id;
-
-      info.Model = android.model;
-      info.OSVersion = android.version.release;
-      info.OSName = android.brand;
-
-    }
-
-    return info;
-  }
-
-
   static Future<AppInfo> get packageInfo async {
     final PackageInfo packageInfo = await PackageInfo.fromPlatform();
     AppInfo info = AppInfo();

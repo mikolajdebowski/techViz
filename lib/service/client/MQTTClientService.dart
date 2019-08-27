@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:mqtt_client/mqtt_client.dart' as mqtt;
 import 'package:rxdart/rxdart.dart';
 
@@ -10,14 +11,6 @@ abstract class IMQTTClientService{
 	int publishMessage(String routingKey, dynamic message);
 	Stream<MQTTConnectionStatus> get status;
 	Stream<dynamic> streams(String routingKey);
-}
-
-enum MQTTConnectionStatus{
-	Disconnected,
-	Connected,
-	Connecting,
-	Error,
-	Unknown
 }
 
 class MQTTClientService implements IMQTTClientService{
@@ -149,6 +142,11 @@ class MQTTClientService implements IMQTTClientService{
 	int publishMessage(String routingKey, dynamic message){
 		final mqtt.MqttClientPayloadBuilder builder =
 		mqtt.MqttClientPayloadBuilder();
+
+		if(message is Map){
+			message = json.encode(message);
+		}
+
 		builder.addString(message);
 
 		int messageId = _mqttClient.publishMessage(routingKey, mqtt.MqttQos.atLeastOnce, builder.payload);
@@ -235,4 +233,12 @@ class MQTTClientService implements IMQTTClientService{
   void _onDisconnected() {
 		print('MQTT client disconnected!');
   }
+}
+
+enum MQTTConnectionStatus{
+	Disconnected,
+	Connected,
+	Connecting,
+	Error,
+	Unknown
 }

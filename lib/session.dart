@@ -5,7 +5,7 @@ import 'package:observable/observable.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/userRepository.dart';
 
-import 'service/MQTTClientService.dart';
+import 'package:techviz/service/client/MQTTClientService.dart';
 
 
 

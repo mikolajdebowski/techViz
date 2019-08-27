@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:rxdart/rxdart.dart';
-import 'package:techviz/common/deviceInfo.dart';
-import 'package:techviz/common/utils.dart';
+import 'package:techviz/common/deviceUtils.dart';
+import 'package:techviz/common/model/deviceInfo.dart';
 import 'package:techviz/model/slotMachine.dart';
 import 'package:synchronized/synchronized.dart';
 import 'async/SlotMachineRouting.dart';
@@ -104,7 +104,7 @@ class SlotFloorRepository {
   Future setReservation(String userID, String standId, String playerID, String time) async {
     Completer _completer = Completer<void>();
 
-    DeviceInfo info = await Utils.deviceInfo;
+    DeviceInfo info = await DeviceUtils().deviceInfo;
 
     dynamic message = {'deviceId': '${info.DeviceID}', 'userId': '$userID', 'standId': '$standId', 'playerId': '$playerID', 'reservationTimeId': int.parse(time), 'reservationStatusId': 0, 'siteId': 1};
 
@@ -120,7 +120,7 @@ class SlotFloorRepository {
   Future cancelReservation(String standId) async {
     Completer _completer = Completer<void>();
 
-    DeviceInfo info = await Utils.deviceInfo;
+    DeviceInfo info = await DeviceUtils().deviceInfo;
 
     dynamic message = {'deviceId': '${info.DeviceID}', 'standId': '$standId', 'reservationStatusId': 1, 'siteId': 1};
 
