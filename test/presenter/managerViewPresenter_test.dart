@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:techviz/components/dataEntry/dataEntryGroup.dart';
+import 'package:techviz/model/role.dart';
 import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/model/taskType.dart';
 import 'package:techviz/presenter/managerViewPresenter.dart';
@@ -13,6 +14,7 @@ import 'package:techviz/repository/taskStatusRepository.dart';
 import 'package:techviz/repository/taskTypeRepository.dart';
 import 'package:techviz/repository/userRepository.dart';
 import 'package:kiwi/kiwi.dart' as kiwi;
+import 'package:techviz/session.dart';
 
 import '../repository/async/mock/taskRoutingMock.dart';
 import '../repository/mock/localRepositoryMock.dart';
@@ -131,6 +133,8 @@ class UserRemoteRepositoryMock implements IUserRemoteRepository{
 void main(){
 
   setUpAll((){
+    Role role = Role(isSupervisor: true);
+    Session().role = role;
     kiwi.Container().registerInstance(TaskRepository(TaskRemoteRepositoryMock(), LocalRepositoryMock(), TaskRoutingMock()));
 
     Repository().taskTypeRepository = TaskTypeRepository(null, TaskTypeTableMock());
