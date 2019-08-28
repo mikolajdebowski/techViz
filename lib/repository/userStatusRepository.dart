@@ -18,7 +18,7 @@ class UserStatusRepository implements IRepository<UserStatus> {
     List<UserStatus> toReturn = <UserStatus>[];
     queryResult.forEach((Map<String, dynamic> status) {
       var t = UserStatus(
-        id: status['UserStatusID'] as String,
+        id: status['UserStatusID'] as int,
         description: status['Description'] as String,
         isOnline: (status['IsOnline'] as int) == 1 ? true : false,
       );

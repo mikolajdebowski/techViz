@@ -93,7 +93,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     ISession session = Session();
     userStatusRepo.getStatuses().then((List<UserStatus> list) {
       setState(() {
-        currentUserStatus = list.where((UserStatus status)=> status.id == session.user.userStatusID.toString()).first;
+        currentUserStatus = list.where((UserStatus status)=> status.id == session.user.userStatusID).first;
       });
     });
   }

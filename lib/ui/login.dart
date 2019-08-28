@@ -161,7 +161,7 @@ class LoginState extends State<Login> {
       //INIT MQTTClient Service
       String broker = serverUrl.replaceAll('http://', '').replaceAll('https://', '');
       String deviceID = (await DeviceUtils().deviceInfo).DeviceID;
-      await MQTTClientService().init(broker, deviceID, logging: false);
+      await MQTTClientService().init(broker, deviceID, logging: true);
       await MQTTClientService().connect();
 
       //INIT AMQP MessageClient

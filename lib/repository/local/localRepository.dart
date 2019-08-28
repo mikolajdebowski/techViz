@@ -64,7 +64,7 @@ class LocalRepository implements ILocalRepository{
 
           await db.execute('''
             create table UserStatus ( 
-                UserStatusID TEXT NOT NULL,
+                UserStatusID INT NOT NULL,
                 Description TEXT NOT NULL,
                 IsOnline INTEGER NOT NULL
                 )

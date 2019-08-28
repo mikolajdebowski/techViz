@@ -14,10 +14,10 @@ class Profile extends StatefulWidget {
   State<StatefulWidget> createState() => ProfileState(roleListPresenter ?? RoleListPresenter.build());
 }
 
-class ProfileState extends State<Profile> implements IRoleListView<Role>, IStatusListPresenter<UserStatus> {
+class ProfileState extends State<Profile> implements IRoleListView<Role>, IStatusView{
   final List<ProfileItem> _userInfo = [];
   RoleListPresenter roleListPresenter;
-  StatusListPresenter statusListPresenter;
+  StatusPresenter statusListPresenter;
 
   List<UserStatus> _statuses;
   List<Role> _roles;
@@ -32,7 +32,7 @@ class ProfileState extends State<Profile> implements IRoleListView<Role>, IStatu
     roleListPresenter.view(this);
     roleListPresenter.loadUserRoles(session.user.userID);
 
-    statusListPresenter = StatusListPresenter(this);
+    statusListPresenter = StatusPresenter(this);
     statusListPresenter.loadUserStatus();
 
     _userInfo.add(ProfileItem(columnName: 'UserID', value: session.user.userID));
