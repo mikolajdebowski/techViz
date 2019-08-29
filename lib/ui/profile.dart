@@ -3,7 +3,7 @@ import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/model/role.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/roleListPresenter.dart';
-import 'package:techviz/presenter/statusListPresenter.dart';
+import 'package:techviz/presenter/statusPresenter.dart';
 import 'package:techviz/session.dart';
 
 class Profile extends StatefulWidget {
@@ -52,7 +52,7 @@ class ProfileState extends State<Profile> implements IRoleListView<Role>, IStatu
       }
       else{
         int id = _userInfo[index].value as int;
-        String statusDescription = _statuses.where((UserStatus status) => status.id == id.toString()).first.description;
+        String statusDescription = _statuses.where((UserStatus status) => status.id == id).first.description;
         subItem = Text(statusDescription);
       }
     }

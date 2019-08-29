@@ -5,7 +5,7 @@ import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizDialog.dart';
 import 'package:techviz/components/vizSnackbar.dart';
 import 'package:techviz/model/userStatus.dart';
-import 'package:techviz/presenter/statusListPresenter.dart';
+import 'package:techviz/presenter/statusPresenter.dart';
 import 'package:techviz/session.dart';
 class StatusSelector extends StatefulWidget {
   final IStatusPresenter statusPresenter;
@@ -40,6 +40,7 @@ class StatusSelectorState extends State<StatusSelector> implements IStatusView {
     _statusPresenter.update(session.user.userID, statusID: _selectedStatus.id).then((dynamic d){
       _snackbar.dismiss();
       Session().user.userStatusID = _selectedStatus.id;
+      Navigator.of(buildContext).pop(_selectedStatus);
     }).catchError((dynamic error){
       _snackbar.dismiss();
       VizDialog.Alert(context, 'Error', error.toString());

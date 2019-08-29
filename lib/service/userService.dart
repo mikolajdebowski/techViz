@@ -31,6 +31,7 @@ class UserService implements IUserService{
 
 		_mqttClientServiceInstance.subscribe(routingKeyForCallback);
 		_mqttClientServiceInstance.streams(routingKeyForCallback).listen((dynamic responseCallback){
+			_mqttClientServiceInstance.unsubscribe(routingKeyForCallback);
 			_completer.complete();
 		});
 

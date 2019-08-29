@@ -13,7 +13,6 @@ import 'package:techviz/components/VizAlert.dart';
 import 'package:techviz/components/VizLoadingIndicator.dart';
 import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizRainbow.dart';
-import 'package:techviz/repository/userRepository.dart';
 import 'package:techviz/service/client/MQTTClientService.dart';
 import 'package:techviz/service/deviceService.dart';
 import 'package:techviz/ui/config.dart';
@@ -105,25 +104,15 @@ class LoginState extends State<Login> {
     await repo.initialFetch(onMessage);
   }
 
-  Future updateDeviceAndUserInfo(String userID) async{
+  Future updateDeviceInfo() async{
     setState(() {
       _loadingMessage = 'Updating device info...';
     });
 
-    await DeviceService().update(userID).catchError((dynamic error){
+    await DeviceService().update(Session().user.userID).catchError((dynamic error){
       if(error is TimeoutException){
         throw Exception('A timeout exception has been thrown. Please try again.');
       }
-    });
-
-    setState(() {
-      _loadingMessage = 'Updating user info...';
-    });
-
-    UserRepository userRepository = Repository().userRepository;
-    await userRepository.update(userID, statusID: "10").then<int>((int result) async { //FORCE OFF-SHIFT LOCALLY
-      await Session().init(userID);
-      return result;
     });
   }
 
@@ -158,16 +147,20 @@ class LoginState extends State<Login> {
 
       await fetchInitialData();
 
+      Session().init(usernameController.text);
+
       //INIT MQTTClient Service
       String broker = serverUrl.replaceAll('http://', '').replaceAll('https://', '');
       String deviceID = (await DeviceUtils().deviceInfo).DeviceID;
-      await MQTTClientService().init(broker, deviceID, logging: true);
+      await MQTTClientService().init(broker, deviceID, logging: false);
       await MQTTClientService().connect();
 
       //INIT AMQP MessageClient
       await MessageClient().Connect();
-      await updateDeviceAndUserInfo(usernameController.text);
+      await updateDeviceInfo();
 
+
+      //INIT DEFAULT LISTENERS
       Repository().startServices();
 
       Navigator.pushReplacement(context, MaterialPageRoute<RoleSelector>(builder: (BuildContext context) => RoleSelector()));
