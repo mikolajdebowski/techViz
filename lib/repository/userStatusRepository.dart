@@ -1,14 +1,19 @@
 import 'dart:async';
 import 'package:techviz/model/userStatus.dart';
-import 'package:techviz/repository/common/IRepository.dart';
 import 'package:techviz/repository/local/localRepository.dart';
 import 'package:techviz/repository/remoteRepository.dart';
 
-class UserStatusRepository implements IRepository<UserStatus> {
+abstract class IUserStatusRepository{
+  Future<List<UserStatus>> getStatuses();
+  Future fetch();
+}
+
+class UserStatusRepository implements IUserStatusRepository {
   IRemoteRepository remoteRepository;
+  ILocalRepository localRepository;
+  UserStatusRepository(this.remoteRepository, this.localRepository);
 
-  UserStatusRepository({this.remoteRepository});
-
+  @override
   Future<List<UserStatus>> getStatuses() async {
     LocalRepository localRepo = LocalRepository();
 
@@ -17,14 +22,13 @@ class UserStatusRepository implements IRepository<UserStatus> {
 
     List<UserStatus> toReturn = <UserStatus>[];
     queryResult.forEach((Map<String, dynamic> status) {
-      var t = UserStatus(
-        id: status['UserStatusID'] as int,
-        description: status['Description'] as String,
-        isOnline: (status['IsOnline'] as int) == 1 ? true : false,
+      UserStatus t = UserStatus(
+        status['UserStatusID'] as int,
+        status['Description'] as String,
+        (status['IsOnline'] as int) == 1 ? true : false,
       );
       toReturn.add(t);
     });
-
     return toReturn;
   }
 

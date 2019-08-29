@@ -15,8 +15,8 @@ abstract class IStatusPresenter {
 
 class StatusPresenter implements IStatusPresenter {
   IStatusView _view;
-  UserStatusRepository _repository;
-  UserService userService;
+  IUserStatusRepository _repository;
+  IUserService userService;
 
   StatusPresenter(this._view, {this.userService}){
     _repository = Repository().userStatusRepository;
