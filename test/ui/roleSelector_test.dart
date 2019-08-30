@@ -4,13 +4,13 @@ import 'package:mockito/mockito.dart';
 import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/model/role.dart';
 import 'package:techviz/model/user.dart';
-import 'package:techviz/presenter/roleListPresenter.dart';
+import 'package:techviz/presenter/rolePresenter.dart';
 import 'package:techviz/session.dart';
 import 'package:techviz/ui/roleSelector.dart';
 
 
-class RoleListPresenterMockAllRoles extends Mock implements IRoleListPresenter{
-  IRoleListView<Role> _view;
+class RoleListPresenterMockAllRoles extends Mock implements IRolePresenter{
+  IRoleView _view;
 
   @override
   void loadUserRoles(String userID) {
@@ -26,13 +26,13 @@ class RoleListPresenterMockAllRoles extends Mock implements IRoleListPresenter{
   }
 
   @override
-  void view(IRoleListView view) {
+  void view(IRoleView view) {
     _view = view;
   }
 }
 
-class RoleListPresenterMockNoRoles extends Mock implements IRoleListPresenter{
-  IRoleListView<Role> _view;
+class RoleListPresenterMockNoRoles extends Mock implements IRolePresenter{
+  IRoleView _view;
 
   @override
   void loadUserRoles(String userID) {
@@ -40,12 +40,10 @@ class RoleListPresenterMockNoRoles extends Mock implements IRoleListPresenter{
   }
 
   @override
-  void view(IRoleListView view) {
+  void view(IRoleView view) {
     _view = view;
   }
 }
-
-
 
 void main(){
 
@@ -77,8 +75,8 @@ void main(){
 
       testWidgets('test for role ${rolesArr[i]} , with id ${idsArr[i]}', (WidgetTester tester) async {
 
-        IRoleListPresenter presenter = RoleListPresenterMockAllRoles();
-        RoleSelector selector = RoleSelector(roleListPresenter: presenter);
+        IRolePresenter presenter = RoleListPresenterMockAllRoles();
+        RoleSelector selector = RoleSelector(rolePresenter: presenter);
         await tester.pumpWidget(makeTestableWidget(child: selector));
 
         Iterable<VizOptionButton> listOfBtns = tester.widgetList<VizOptionButton>(find.byType(VizOptionButton));
@@ -92,8 +90,8 @@ void main(){
 
   testWidgets('tests if all user roles were added', (WidgetTester tester) async {
 
-    IRoleListPresenter presenter = RoleListPresenterMockAllRoles();
-    RoleSelector selector = RoleSelector(roleListPresenter: presenter);
+    IRolePresenter presenter = RoleListPresenterMockAllRoles();
+    RoleSelector selector = RoleSelector(rolePresenter: presenter);
     await tester.pumpWidget(makeTestableWidget(child: selector));
 
     Iterable<VizOptionButton> listOfBtns = tester.widgetList<VizOptionButton>(find.byType(VizOptionButton));
@@ -105,8 +103,8 @@ void main(){
 
   testWidgets('tests if theres no roles for the user', (WidgetTester tester) async {
 
-    IRoleListPresenter presenter = RoleListPresenterMockNoRoles();
-    RoleSelector selector = RoleSelector(roleListPresenter: presenter);
+    IRolePresenter presenter = RoleListPresenterMockNoRoles();
+    RoleSelector selector = RoleSelector(rolePresenter: presenter);
     await tester.pumpWidget(makeTestableWidget(child: selector));
 
     expect(find.text('No roles available for the user'), findsOneWidget);

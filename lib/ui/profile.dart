@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/model/role.dart';
 import 'package:techviz/model/userStatus.dart';
-import 'package:techviz/presenter/roleListPresenter.dart';
+import 'package:techviz/presenter/rolePresenter.dart';
 import 'package:techviz/presenter/statusPresenter.dart';
 import 'package:techviz/session.dart';
 
 class Profile extends StatefulWidget {
-  final IRoleListPresenter roleListPresenter;
+  final IRolePresenter roleListPresenter;
   const Profile({this.roleListPresenter, Key key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => ProfileState(roleListPresenter ?? RoleListPresenter.build());
+  State<StatefulWidget> createState() => ProfileState(roleListPresenter ?? RolePresenter.build());
 }
 
-class ProfileState extends State<Profile> implements IRoleListView<Role>, IStatusView{
+class ProfileState extends State<Profile> implements IRoleView, IStatusView{
   final List<ProfileItem> _userInfo = [];
-  RoleListPresenter roleListPresenter;
+  RolePresenter roleListPresenter;
   StatusPresenter statusListPresenter;
 
   List<UserStatus> _statuses;
@@ -139,6 +139,12 @@ class ProfileState extends State<Profile> implements IRoleListView<Role>, IStatu
       _statuses = result;
     });
   }
+
+  @override
+  void onRoleUpdated(String roleID) {}
+
+  @override
+  void onRoleUpdateError(dynamic error) {}
 }
 
 abstract class ListItem {}

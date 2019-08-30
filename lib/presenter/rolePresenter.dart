@@ -3,35 +3,42 @@ import 'package:techviz/model/userRole.dart';
 import 'package:techviz/repository/roleRepository.dart';
 import 'package:techviz/repository/userRoleRepository.dart';
 import 'package:techviz/repository/repository.dart';
+import 'package:techviz/service/userService.dart';
 
 
 
-abstract class IRoleListView<Role> {
+abstract class IRoleView {
   void onRoleListLoaded(List<Role> result);
   void onLoadError(dynamic error);
+
+  void onRoleUpdated(String roleID);
+  void onRoleUpdateError(dynamic error);
 }
 
-abstract class IRoleListPresenter {
-  IRoleListView<Role> _view;
+abstract class IRolePresenter {
+  IRoleView _view;
   void loadUserRoles(String userID);
-  void view(IRoleListView view);
+  void view(IRoleView view);
+  void updateRole(String userID, String roleID);
 }
 
-class RoleListPresenter implements IRoleListPresenter{
+class RolePresenter implements IRolePresenter{
   @override
-  IRoleListView<Role> _view;
+  IRoleView _view;
 
   UserRoleRepository _userRoleRepository;
   RoleRepository _roleRepository;
+  IUserService _userService;
 
   @override
-  void view(IRoleListView view) {
+  void view(IRoleView view) {
     _view = view;
   }
 
-  RoleListPresenter(){
+  RolePresenter(){
     _userRoleRepository = Repository().userRolesRepository;
     _roleRepository = Repository().roleRepository;
+    _userService = UserService();
   }
 
   @override
@@ -45,6 +52,15 @@ class RoleListPresenter implements IRoleListPresenter{
     _view.onRoleListLoaded(roleList);
   }
 
-  factory RoleListPresenter.build() => RoleListPresenter();
+  @override
+  void updateRole(String userID, String roleID) {
+    _userService.update(userID, roleID: roleID).then((dynamic x){
+      _view.onRoleUpdated(roleID);
+    }).catchError((dynamic error){
 
+    });
+
+  }
+
+  factory RolePresenter.build() => RolePresenter();
 }
