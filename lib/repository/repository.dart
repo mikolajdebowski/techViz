@@ -146,6 +146,8 @@ class Repository {
     container.registerInstance(TaskRepository(ProcessorTaskRepository(ProcessorRepositoryConfig()), _localRepository, TaskRouting()));
     container.registerInstance(UserRoleRepository(ProcessorUserRoleRepository(), _localRepository));
     container.registerInstance(RoleRepository(ProcessorRoleRepository(), _localRepository));
+    container.registerInstance<IUserStatusRepository, UserStatusRepository>(UserStatusRepository(ProcessorUserStatusRepository(), _localRepository));
+
   }
 
   void startServices(){
@@ -165,7 +167,7 @@ class Repository {
   TaskRepository get taskRepository => kiwi.Container().resolve<TaskRepository>();
   UserRoleRepository get userRolesRepository => kiwi.Container().resolve<UserRoleRepository>();
   RoleRepository get roleRepository => kiwi.Container().resolve<RoleRepository>();
-
+  IUserStatusRepository get userStatusRepository => kiwi.Container().resolve<IUserStatusRepository>();
 
   //USERS
   UserRepository get userRepository {
@@ -252,13 +254,6 @@ class Repository {
   SectionRepository get sectionRepository {
     switch(_flavor) {
       default: return SectionRepository(remoteRepository: ProcessorSectionRepository());
-    }
-  }
-
-
-  UserStatusRepository get userStatusRepository {
-    switch(_flavor) {
-      default: return UserStatusRepository(remoteRepository: ProcessorUserStatusRepository());
     }
   }
 

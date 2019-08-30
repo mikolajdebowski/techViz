@@ -1,10 +1,11 @@
 import 'package:mockito/mockito.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rxdart/subjects.dart';
-import 'package:techviz/common/deviceUtils.dart';
 import 'package:techviz/common/model/deviceInfo.dart';
 import 'package:techviz/service/client/MQTTClientService.dart';
 import 'package:techviz/service/deviceService.dart';
+
+import '../_mocks/deviceUtilsMock.dart';
 
 class MQTTClientServiceMock extends Mock implements IMQTTClientService{
 	Map<String,BehaviorSubject<dynamic>> subjects = <String,BehaviorSubject<dynamic>>{};
@@ -25,19 +26,6 @@ class MQTTClientServiceMock extends Mock implements IMQTTClientService{
 	}
 }
 
-class DeviceUtilsMock extends Mock implements IDeviceUtils{
-	@override
-	Future<DeviceInfo> get deviceInfo{
-		DeviceInfo deviceInfo = DeviceInfo();
-		deviceInfo.DeviceID = '123';
-		deviceInfo.Model = 'test';
-		deviceInfo.OSVersion = 'os1';
-		deviceInfo.OSName = 'osTest';
-
-		return Future<DeviceInfo>.value(deviceInfo);
-	}
-}
-
 void main() {
 	DeviceService _deviceService;
 	MQTTClientServiceMock _clientServiceMock;
@@ -47,14 +35,13 @@ void main() {
 	});
 
 	test('update Future should complete', () async {
-		Future<void> updateFuture = _deviceService.update('irrelevantPayload');
+		Future<void> updateFuture = _deviceService.update('irrelevantUserId');
 
 		DeviceUtilsMock deviceUtilsMock = DeviceUtilsMock();
 		DeviceInfo deviceInfo = await deviceUtilsMock.deviceInfo;
 		String routingKeyForPublish = 'mobile.device.update.${deviceInfo.DeviceID}';
 		_clientServiceMock.simulateStreamPayload(routingKeyForPublish, 'irrelevantPayload');
 
-		expect(updateFuture, completion(any));
+		expect(updateFuture, completion(anything));
 	});
-
 }

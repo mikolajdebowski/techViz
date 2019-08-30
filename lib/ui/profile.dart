@@ -3,7 +3,7 @@ import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/model/role.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/roleListPresenter.dart';
-import 'package:techviz/presenter/statusListPresenter.dart';
+import 'package:techviz/presenter/statusPresenter.dart';
 import 'package:techviz/session.dart';
 
 class Profile extends StatefulWidget {
@@ -14,10 +14,10 @@ class Profile extends StatefulWidget {
   State<StatefulWidget> createState() => ProfileState(roleListPresenter ?? RoleListPresenter.build());
 }
 
-class ProfileState extends State<Profile> implements IRoleListView<Role>, IStatusListPresenter<UserStatus> {
+class ProfileState extends State<Profile> implements IRoleListView<Role>, IStatusView{
   final List<ProfileItem> _userInfo = [];
   RoleListPresenter roleListPresenter;
-  StatusListPresenter statusListPresenter;
+  StatusPresenter statusListPresenter;
 
   List<UserStatus> _statuses;
   List<Role> _roles;
@@ -32,7 +32,7 @@ class ProfileState extends State<Profile> implements IRoleListView<Role>, IStatu
     roleListPresenter.view(this);
     roleListPresenter.loadUserRoles(session.user.userID);
 
-    statusListPresenter = StatusListPresenter(this);
+    statusListPresenter = StatusPresenter(this);
     statusListPresenter.loadUserStatus();
 
     _userInfo.add(ProfileItem(columnName: 'UserID', value: session.user.userID));
@@ -52,7 +52,7 @@ class ProfileState extends State<Profile> implements IRoleListView<Role>, IStatu
       }
       else{
         int id = _userInfo[index].value as int;
-        String statusDescription = _statuses.where((UserStatus status) => status.id == id.toString()).first.description;
+        String statusDescription = _statuses.where((UserStatus status) => status.id == id).first.description;
         subItem = Text(statusDescription);
       }
     }
