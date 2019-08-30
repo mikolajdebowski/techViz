@@ -2,29 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
+import 'package:techviz/components/vizDialog.dart';
+import 'package:techviz/components/vizSnackbar.dart';
 import 'package:techviz/repository/repository.dart';
-import 'package:techviz/repository/userRepository.dart';
 import 'package:techviz/ui/home.dart';
 import 'package:techviz/model/role.dart';
-import 'package:techviz/presenter/roleListPresenter.dart';
+import 'package:techviz/presenter/rolePresenter.dart';
 import 'package:techviz/session.dart';
 
 class RoleSelector extends StatefulWidget {
-  final IRoleListPresenter roleListPresenter;
+  final IRolePresenter rolePresenter;
 
-  const RoleSelector({this.roleListPresenter, Key key}) : super(key: key);
+  const RoleSelector({this.rolePresenter, Key key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => RoleSelectorState(roleListPresenter ?? RoleListPresenter.build());
+  State<StatefulWidget> createState() => RoleSelectorState(rolePresenter ?? RolePresenter.build());
 }
 
-class RoleSelectorState extends State<RoleSelector> implements IRoleListView<Role> {
+class RoleSelectorState extends State<RoleSelector> implements IRoleView {
   List<Role> roleList = <Role>[];
-
-  IRoleListPresenter roleListPresenter;
+  IRolePresenter rolePresenter;
   String selectedRoleID;
-
-  RoleSelectorState(this.roleListPresenter);
+  RoleSelectorState(this.rolePresenter);
+  VizSnackbar _snackbar;
 
   @override
   void initState() {
@@ -32,23 +32,18 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListView<Rol
 
     Session session = Session();
 
-    roleListPresenter.view(this);
-    roleListPresenter.loadUserRoles(session.user.userID);
+    rolePresenter.view(this);
+    rolePresenter.loadUserRoles(session.user.userID);
   }
 
   void validate(BuildContext context) async {
     if(selectedRoleID == null)
       return;
 
-    Session session = Session();
-    UserRepository userRepository = Repository().userRepository;
+    _snackbar = VizSnackbar.Processing('Updating...');
+    _snackbar.show(context);
 
-    await userRepository.update(session.user.userID, roleID: selectedRoleID);
-
-    session.role = (await Repository().roleRepository.getAll(ids: [selectedRoleID])).first;
-    session.user.userRoleID =  session.role.id;
-
-    goToHomeGivingRole(session.role);
+    rolePresenter.updateRole(Session().user.userID, selectedRoleID);
   }
 
   void goToHomeGivingRole(Role role){
@@ -139,5 +134,19 @@ class RoleSelectorState extends State<RoleSelector> implements IRoleListView<Rol
         }
       }
     });
+  }
+
+  @override
+  void onRoleUpdated(String roleID) async {
+    _snackbar?.dismiss();
+    Session().role = (await Repository().roleRepository.getAll(ids: [selectedRoleID])).first;
+    Session().user.userRoleID =  Session().role.id;
+    goToHomeGivingRole(Session().role);
+  }
+
+  @override
+  void onRoleUpdateError(dynamic error) {
+    _snackbar?.dismiss();
+    VizDialog.Alert(context, 'Error', error.toString());
   }
 }
