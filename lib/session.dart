@@ -6,6 +6,7 @@ import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/userRepository.dart';
 
 import 'package:techviz/service/client/MQTTClientService.dart';
+import 'package:techviz/service/userService.dart';
 
 
 
@@ -60,8 +61,8 @@ class Session extends PropertyChangeNotifier implements ISession{
     Repository().stopServices();
     Repository().disposeBlocs();
 
-    UserRepository _repo = Repository().userRepository;
-    await _repo.update(user.userID, statusID: '10'); // TODO(rmathias): this is not a Session responsibility!
+    UserService userService = UserService();
+    await userService.update(user.userID, statusID: 10);
 
     MQTTClientService().disconnect();
   }
