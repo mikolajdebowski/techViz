@@ -58,7 +58,7 @@ void main() {
     Repository().taskTypeRepository = TaskTypeRepository(null, TaskTypeTableMock());
     Repository().taskStatusRepository = TaskStatusRepository(null, TaskStatusTableMock());
     Repository().slotFloorRepository = SlotFloorRepository(SlotFloorRemoteRepositoryMock(), null);
-    Repository().userRepository = UserRepository(UserRemoteRepositoryMock(), null, null);
+    Repository().userRepository = UserRepository(UserRemoteRepositoryMock(), null);
   });
 
   testWidgets('Pumps ManagerView', (WidgetTester tester) async {

@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:techviz/bloc/taskViewBloc.dart';
 import 'package:techviz/common/http/client/sessionClient.dart';
-import 'package:techviz/repository/async/UserRouting.dart';
 import 'package:techviz/repository/slotFloorRepository.dart';
 import 'package:techviz/repository/async/SlotMachineRouting.dart';
 import 'package:techviz/repository/escalationPathRepository.dart';
@@ -173,8 +172,7 @@ class Repository {
   UserRepository get userRepository {
     IUserTable userTableImpl = UserTable(_localRepository);
     if(_userRepository==null){
-      IUserRouting userRouting = UserRouting(MessageClient());
-      return UserRepository(ProcessorUserRepository(ProcessorRepositoryConfig()),userRouting, userTableImpl);
+      return UserRepository(ProcessorUserRepository(ProcessorRepositoryConfig()), userTableImpl);
     }
     assert(_userRepository!=null);
     return _userRepository;

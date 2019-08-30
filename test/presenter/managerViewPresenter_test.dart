@@ -139,7 +139,7 @@ void main(){
 
     Repository().taskTypeRepository = TaskTypeRepository(null, TaskTypeTableMock());
     Repository().taskStatusRepository = TaskStatusRepository(null, TaskStatusTableMock());
-    Repository().userRepository = UserRepository(UserRemoteRepositoryMock(), null, null);
+    Repository().userRepository = UserRepository(UserRemoteRepositoryMock(), null);
     Repository().slotFloorRepository = SlotFloorRepository(SlotFloorRemoteRepositoryMock(), null);
   });
 

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:techviz/model/user.dart';
-import 'package:techviz/repository/async/UserRouting.dart';
 import 'package:techviz/repository/local/userTable.dart';
 
 
@@ -13,10 +12,9 @@ abstract class IUserRemoteRepository{
 class UserRepository {
 
   IUserRemoteRepository remoteRepository;
-  IUserRouting userRouting;
   IUserTable localTable;
 
-  UserRepository(this.remoteRepository, this.userRouting, this.localTable){
+  UserRepository(this.remoteRepository, this.localTable){
     assert(remoteRepository!=null);
   }
 

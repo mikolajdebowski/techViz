@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:techviz/model/user.dart';
-import 'package:techviz/repository/async/UserRouting.dart';
 import 'package:techviz/repository/local/userTable.dart';
 import 'package:techviz/repository/userRepository.dart';
 
@@ -26,23 +25,6 @@ class UserRemoteRepositoryMock implements IUserRemoteRepository{
   Future<List<Map>> teamAvailabilitySummary() {
     List<Map> map = <Map>[];
     return Future<List<Map>>.value(map);
-  }
-}
-
-class UserRoutingMock implements IUserRouting{
-  @override
-  void listenQueue(Function callback, {Function callbackError}) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future publishMessage(dynamic message) {
-    return Future<int>.value(1);
-  }
-
-  @override
-  User parser(dynamic dynamic) {
-    return null;
   }
 }
 
@@ -72,7 +54,7 @@ void main(){
   UserRepository mockRepository;
 
   setUpAll(() async{
-    mockRepository = UserRepository(UserRemoteRepositoryMock(), UserRoutingMock(), UserTableMock());
+    mockRepository = UserRepository(UserRemoteRepositoryMock(), UserTableMock());
   });
 
   test('fetch should 1, which means one user has been inserted in the local database', () async {
