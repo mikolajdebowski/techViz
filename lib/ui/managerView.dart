@@ -14,6 +14,7 @@ import 'package:techviz/model/userSection.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/managerViewPresenter.dart';
 import 'package:techviz/repository/repository.dart';
+import 'package:techviz/service/userService.dart';
 import 'package:techviz/session.dart';
 import 'package:techviz/ui/home.dart';
 import 'package:techviz/ui/reassignTask.dart';
@@ -193,12 +194,11 @@ class ManagerViewState extends State<ManagerView> implements TechVizHome, IManag
     Future<bool> onTap(BuildContext context, List<IVizSelectorOption> selectedOptions){
       Completer _completer = Completer<bool>();
 
-      Repository().userRepository.updateRemote(teamAvailabilityCurrentUserSelected, statusID: selectedOptions.first.id).then((dynamic result){
+      UserService().update(teamAvailabilityCurrentUserSelected, statusID: selectedOptions.first.id).then((dynamic result){
         _completer.complete(true);
       }).catchError((dynamic error){
         _completer.completeError(error);
       });
-
       return _completer.future;
     }
 

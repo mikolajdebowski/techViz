@@ -87,14 +87,6 @@ void main(){
     expect(await mockRepository.getUser("2"), null);
   });
 
-  test('should update roleID', () async {
-    expect(await mockRepository.update("1", roleID: "1"), 1);
-  });
-
-  test('should update statusID', () async {
-    expect(await mockRepository.update("1", statusID: "1"), 1);
-  });
-
   test('usersBySectionsByTaskCount', () async {
     expect(await mockRepository.usersBySectionsByTaskCount(), isInstanceOf<List<Map>>());
   });
