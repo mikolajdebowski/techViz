@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizSelector.dart';
 import 'package:techviz/repository/userStatusRepository.dart';
+import 'package:techviz/service/client/MQTTClientService.dart';
 import 'package:techviz/ui/managerView.dart';
 import 'package:techviz/model/userSection.dart';
 import 'package:techviz/model/userStatus.dart';
@@ -13,6 +16,7 @@ import 'package:techviz/ui/sectionSelector.dart';
 import 'package:techviz/ui/slotFloor.dart';
 import 'package:techviz/ui/statusSelector.dart';
 import 'package:techviz/ui/taskView.dart';
+import 'package:connectivity/connectivity.dart';
 
 import 'drawer.dart';
 
@@ -37,6 +41,16 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   List<UserSection> currentSections = <UserSection>[];
   UserStatus currentUserStatus;
 
+  StreamSubscription<MQTTConnectionStatus> vizStatus;
+  StreamSubscription<ConnectivityResult> wifiStatus;
+  Color networkIndicatorColor = Colors.green;
+  String wifiStatusMsg = "No issues";  // wifi 'Not connected' or 'No issues'
+  String serviceStatusMsg = "No issues";  // service 'Not connected' or 'No issues'
+  bool isWifiActive = true;
+  bool isServiceActive = true;
+  bool isConnected = true;
+
+
   String get getSectionsText {
     String sections = "";
     if (currentSections.isEmpty) {
@@ -55,7 +69,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   }
 
   @override
-  void initState() {
+  void initState(){
     super.initState();
 
     homeViewType = widget.homeViewType;
@@ -65,16 +79,133 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     loadDefaultSections();
     loadCurrentStatus();
     loadView();
+    listenForWifiStatusChange();
+    listenForMQTTStatusChange();
+  }
+
+  /*
+    Color of button icon indicates network status:
+    Red    - Not connected to the "Local wifi connection"
+    Orange - No connection to "VizExplorer services connection"
+    Green  - No issues
+  */
+  void listenForWifiStatusChange() {
+    wifiStatus = Connectivity().onConnectivityChanged.listen((ConnectivityResult status) {
+      print('wifi status changed to: ${status.toString()}');
+      setState(() {
+        if(status == ConnectivityResult.wifi){
+          isWifiActive = true;
+          wifiStatusMsg = "No issues";
+          networkIndicatorColor = Colors.green;
+        }else if(status == ConnectivityResult.none || status == ConnectivityResult.mobile){
+          isWifiActive = false;
+          wifiStatusMsg = "Not connected";
+          networkIndicatorColor = Colors.red;
+        }
+      });
+    });
+  }
+
+  void listenForMQTTStatusChange() {
+    vizStatus = MQTTClientService().status.listen((MQTTConnectionStatus status) async{
+//      print('MQTT service status changed to: ${status.toString()}');
+      ConnectivityResult connectivityResult = await Connectivity().checkConnectivity();
+      if(connectivityResult == ConnectivityResult.wifi){
+        setState(() {
+          if(status == MQTTConnectionStatus.Connected){
+            isServiceActive = true;
+            serviceStatusMsg = "No issues";
+            networkIndicatorColor = Colors.green;
+          }else{
+            isServiceActive = false;
+            serviceStatusMsg = "Not connected";
+            networkIndicatorColor = Colors.orange;
+          }
+        });
+      }
+    });
   }
 
   @override
   void dispose() {
+    wifiStatus.cancel();
+    vizStatus.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
   void openDrawer() {
     scaffoldStateKey.currentState.openDrawer();
+  }
+
+  void _openNetworkDialog(){
+    setState(() {
+      String wifiTxt = "Local Wifi Connection: ";
+      String serviceTxt = "VizExplorer Service Connection: ";
+
+      showDialog<bool>(context: context, builder: (BuildContext context) {
+        if(isWifiActive) {
+          return AlertDialog(
+            title: Text('Network Status'),
+            content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Row(children: <Widget>[
+                    Text(wifiTxt),
+                    Text(
+                      wifiStatusMsg,
+                      style: TextStyle(
+                          color: Colors.green),
+                    ),
+                  ]),
+                  Row(children: <Widget>[
+                    Text(serviceTxt),
+                    Text(
+                      serviceStatusMsg,
+                      style: TextStyle(
+                          color: isServiceActive ? Colors.green : Colors.red),
+                    ),
+                  ]),
+                ]),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("DONE"),
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+              )
+            ],
+          );
+        }else{
+          return AlertDialog(
+            title: Text('Network Status'),
+            content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Row(children: <Widget>[
+                    Text(wifiTxt),
+                    Text(
+                      wifiStatusMsg,
+                      style: TextStyle(
+                          color: Colors.red),
+                    ),
+                  ]),
+
+                ]),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("DONE"),
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+              )
+            ],
+          );
+        }
+      });
+    });
   }
 
   void loadDefaultSections() {
@@ -184,10 +315,41 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     );
 
     VizButton sectionsWidgetBtn = VizButton(customWidget: sectionsInnerWidget, flex: 3, onTap: goToSectionSelector);
+    Spacer notificationWidgetBtn = Spacer(flex: 1);
 
-    Spacer notificationWidgetBtn = Spacer(flex: 3);
+    Column networkStatusInnerWidget = Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text('Network', style: TextStyle(color: Color(0xFF566474), fontSize: 13.0)),
+        Container(
+          width: 20,
+          height: 20,
+          decoration: BoxDecoration(
+              color: networkIndicatorColor,
+              shape: BoxShape.circle
+          ),
+        ),
+      ],
+    );
+
+    VizButton networkStatus = VizButton(customWidget: networkStatusInnerWidget, flex: 2, onTap: (){ _openNetworkDialog();});
+
+//    VizButton simulateMQTT = VizButton(title:'mqtt',flex: 2, onTap: () async{
+//      if(isConnected){
+//        isConnected = false;
+//        MQTTClientService().disconnect();
+//      }else{
+//        isConnected = true;
+//        await MQTTClientService().init('tvdev.internal.bis2.net', '4D8E280D-B840-4773-898D-0F9F71B82ACA', logging: false);
+//        await MQTTClientService().connect();
+//        listenForMQTTStatusChange();
+//      }
+//    },);
+
     VizButton searchIconWidget = VizButton(customWidget: ImageIcon(AssetImage("assets/images/ic_search.png"), size: 30.0), onTap: goToSearchSelector, flex: 1);
-    List<Widget> actionBarCentralWidgets = <Widget>[statusWidgetBtn, sectionsWidgetBtn, notificationWidgetBtn, searchIconWidget];
+    List<Widget> actionBarCentralWidgets = <Widget>[statusWidgetBtn, sectionsWidgetBtn, notificationWidgetBtn, networkStatus, searchIconWidget];
+//    List<Widget> actionBarCentralWidgets = <Widget>[statusWidgetBtn, sectionsWidgetBtn, notificationWidgetBtn, simulateMQTT, networkStatus, searchIconWidget];
 
     return Scaffold(
       key: scaffoldStateKey,
