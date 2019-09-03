@@ -10,6 +10,7 @@ import 'package:techviz/model/userSection.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/service/taskService.dart';
 import 'package:techviz/ui/home.dart';
+import '../session.dart';
 import 'escalation.dart';
 
 class TaskView extends StatefulWidget {
@@ -87,13 +88,19 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
     StreamBuilder streamBuilderListView = StreamBuilder<List<Task>>(
         stream: TaskService().openTasks,
         builder: (context, AsyncSnapshot<List<Task>> snapshot) {
-          if (!snapshot.hasData) {
+          Iterable<Task> where;
+          if(snapshot.hasData){ //filter user tasks
+            where = snapshot.data.where((Task task)=> task.userID == Session().user.userID);
+          }
+
+          if (!snapshot.hasData || (where!=null && where.isEmpty)) {
             return Container(key: Key('taskViewEmptyContainer'));
           } else {
-            snapshot.data.sort((Task a, Task b)=> b.taskUrgencyID.compareTo(a.taskUrgencyID));
+            List<Task> filtered = where.toList();
+            filtered.sort((Task a, Task b)=> b.taskUrgencyID.compareTo(a.taskUrgencyID));
             return ListView.builder(
               key: Key('taskViewListView'),
-                itemBuilder: (BuildContext builderCtx, int index) => buildTaskItemBody(snapshot.data[index], index), itemCount: snapshot.data.length);
+                itemBuilder: (BuildContext builderCtx, int index) => buildTaskItemBody(filtered[index], index), itemCount: filtered.length);
           }
         });
 
