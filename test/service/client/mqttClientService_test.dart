@@ -5,53 +5,17 @@ import 'package:techviz/service/client/MQTTClientService.dart';
 import 'package:mqtt_client/mqtt_client.dart' as mqtt;
 import 'package:typed_data/typed_data.dart' as typed;
 
-class MqttInternalClientMock extends mqtt.MqttClient{
-	MqttInternalClientMock() : super('irrelevantURL', 'DEVICEID1');
-	mqtt.MessageIdentifierDispenser messageIdentifierDispenser = mqtt.MessageIdentifierDispenser();
-
-  final StreamController<List<mqtt.MqttReceivedMessage<mqtt.MqttMessage>>> _updatesStream = StreamController<List<mqtt.MqttReceivedMessage<mqtt.MqttMessage>>>();
-
-  @override
-	Future<mqtt.MqttClientConnectionStatus> connect([String username, String password]){
-  	var status = mqtt.MqttClientConnectionStatus();
-  	status.state = mqtt.MqttConnectionState.connected;
-  	updates = _updatesStream.stream;
-		return Future.value(status);
-	}
-
-	@override
-	void disconnect() {
-		_updatesStream?.close();
-	}
-
-	@override
-	mqtt.Subscription subscribe(String topic, mqtt.MqttQos qosLevel) {
-  	return mqtt.Subscription();
-	}
-
-	@override
-	int publishMessage(String topic, mqtt.MqttQos qualityOfService, typed.Uint8Buffer data, {bool retain = false}) {
-		final int msgId = messageIdentifierDispenser.getNextMessageIdentifier();
-  	mqtt.MqttPublishMessage _message = mqtt.MqttPublishMessage()
-			.toTopic(topic)
-			.withMessageIdentifier(msgId)
-			.withQos(qualityOfService)
-			.publishData(data);
-
-  	mqtt.MqttReceivedMessage<mqtt.MqttMessage> messageReceived = mqtt.MqttReceivedMessage<mqtt.MqttMessage>(topic, _message);
-		_updatesStream.add([messageReceived]);
-  	return msgId;
-	}
-}
+import '../../_mocks/mqttInternalClientMock.dart';
 
 void main() {
-
 	test('MQTTClientService should init', () async{
-		await MQTTClientService().init('irrelevantURL', 'irrelevantDeviceID', internalMqttClient: MqttInternalClientMock());
+		MqttInternalClientMock _client = MqttInternalClientMock('irrelevantURL', 'irrelevantDeviceID');
+		await MQTTClientService().init('irrelevantURL', 'irrelevantDeviceID', internalMqttClient: _client);
 	});
 
 	test('MQTTClientService should connect', () async{
-		await MQTTClientService().init('irrelevantURL', 'irrelevantDeviceID', internalMqttClient: MqttInternalClientMock());
+		MqttInternalClientMock _client = MqttInternalClientMock('irrelevantURL', 'irrelevantDeviceID');
+		await MQTTClientService().init('irrelevantURL', 'irrelevantDeviceID', internalMqttClient: _client);
 		await MQTTClientService().connect();
 	});
 
@@ -60,9 +24,8 @@ void main() {
 		expect(MQTTClientService().init('irrelevantURL', null), throwsAssertionError);
 	});
 
-	MqttInternalClientMock _client;
 	setUp(() async{
-		_client = MqttInternalClientMock();
+		MqttInternalClientMock _client = MqttInternalClientMock('irrelevantURL', 'irrelevantDeviceID');
 		await MQTTClientService().init('irrelevantURL', 'irrelevantDeviceID', internalMqttClient: _client);
 		await MQTTClientService().connect();
 	});

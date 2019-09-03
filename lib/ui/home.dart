@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:techviz/repository/repository.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizSelector.dart';
-import 'package:techviz/repository/userStatusRepository.dart';
-import 'package:techviz/ui/managerView.dart';
 import 'package:techviz/model/userSection.dart';
 import 'package:techviz/model/userStatus.dart';
-import 'package:techviz/session.dart';
+import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/userSectionRepository.dart';
+import 'package:techviz/repository/userStatusRepository.dart';
+import 'package:techviz/session.dart';
+import 'package:techviz/ui/managerView.dart';
+import 'package:techviz/ui/networkIndicator.dart';
 import 'package:techviz/ui/sectionSelector.dart';
 import 'package:techviz/ui/slotFloor.dart';
 import 'package:techviz/ui/statusSelector.dart';
@@ -37,6 +38,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   List<UserSection> currentSections = <UserSection>[];
   UserStatus currentUserStatus;
 
+
   String get getSectionsText {
     String sections = "";
     if (currentSections.isEmpty) {
@@ -55,7 +57,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   }
 
   @override
-  void initState() {
+  void initState(){
     super.initState();
 
     homeViewType = widget.homeViewType;
@@ -184,10 +186,12 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     );
 
     VizButton sectionsWidgetBtn = VizButton(customWidget: sectionsInnerWidget, flex: 3, onTap: goToSectionSelector);
+    Spacer notificationWidgetBtn = Spacer(flex: 1);
 
-    Spacer notificationWidgetBtn = Spacer(flex: 3);
+    VizButton networkStatus = VizButton(customWidget: NetworkIndicator(), flex: 2);
+
     VizButton searchIconWidget = VizButton(customWidget: ImageIcon(AssetImage("assets/images/ic_search.png"), size: 30.0), onTap: goToSearchSelector, flex: 1);
-    List<Widget> actionBarCentralWidgets = <Widget>[statusWidgetBtn, sectionsWidgetBtn, notificationWidgetBtn, searchIconWidget];
+    List<Widget> actionBarCentralWidgets = <Widget>[statusWidgetBtn, sectionsWidgetBtn, notificationWidgetBtn, networkStatus, searchIconWidget];
 
     return Scaffold(
       key: scaffoldStateKey,
