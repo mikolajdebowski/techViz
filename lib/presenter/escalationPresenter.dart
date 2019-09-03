@@ -30,7 +30,7 @@ class EscalationPresenter{
     });
   }
 
-  Future escalateTask(String taskID, TaskType taskType, String notes){
-    return TaskService().update(taskID, statusID: 5, notes: notes);
+  Future escalateTask(String taskID, EscalationPath path, TaskType taskType, String notes){
+    return TaskService().update(taskID, statusID: 5, escalationPath: path, taskType: taskType, notes: notes);
   }
 }

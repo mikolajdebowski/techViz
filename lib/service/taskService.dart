@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/widgets.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:techviz/common/deviceUtils.dart';
+import 'package:techviz/model/escalationPath.dart';
 import 'package:techviz/model/task.dart';
 import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/model/taskType.dart';
@@ -10,7 +11,7 @@ import 'package:synchronized/synchronized.dart';
 import 'client/MQTTClientService.dart';
 
 abstract class ITaskService{
-	Future update(String taskID, {int statusID, String notes, String userID});
+	Future update(String taskID, {int statusID, String notes, String userID, EscalationPath escalationPath, TaskType taskType});
 	void listenAsync();
 	void cancelListening();
 	void dispose();
@@ -97,7 +98,7 @@ class TaskService implements ITaskService{
 	}
 
 	@override
-	Future update(String taskID, {int statusID, String notes, String userID, String cancellationReason}) async{
+	Future update(String taskID, {int statusID, String notes, String userID, EscalationPath escalationPath, TaskType taskType}) async{
 		assert(taskID!=null);
 
 		Completer _completer = Completer<int>();
@@ -122,8 +123,11 @@ class TaskService implements ITaskService{
 		if(userID!=null){
 			message['userId'] = userID;
 		}
-		if(cancellationReason!=null){
-			message['cancellationReason'] = cancellationReason;
+		if(escalationPath!=null){
+			message['EscalationPath'] = escalationPath.id;
+		}
+		if(escalationPath!=null){
+			message['EscalationTypeID'] = taskType.taskTypeId;
 		}
 
 		try{

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:techviz/components/taskList/VizTaskItem.dart';
@@ -517,7 +518,7 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
   }
 
   void _onCancelTask(BuildContext context, Task task, String cancellationReason){
-    TaskService().update(task.id, statusID: 12, cancellationReason: cancellationReason);
+    TaskService().update(task.id, statusID: 12, notes: base64.encode(utf8.encode(cancellationReason)));
     Navigator.of(context).pop(true);
   }
 
