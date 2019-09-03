@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:techviz/components/VizButton.dart';
@@ -87,13 +89,14 @@ class EscalationFormState extends State<EscalationForm> implements EscalationPre
       _btnDisabled = true;
     });
 
-    _task.dirty = 1;
-    _task.taskStatusID = 5;
-    _task.escalationPath = _escalationPathSelected;
-    _task.escalationTaskType = taskTypeRequired ? _taskTypeSelected : null;
-    _task.notes = _notesController.text;
+    String notes = _notesController.text.isNotEmpty ? base64.encode(utf8.encode(_notesController.text)): null;
 
-    _presenter.escalateTask(_task).then((dynamic r){
+    _presenter.escalateTask(
+      _task.id,
+        _escalationPathSelected,
+        taskTypeRequired ? _taskTypeSelected : null,
+        notes
+    ).then((dynamic r){
       snackbar.dismiss();
       Navigator.of(context).pop(true);
     }).catchError((dynamic error){

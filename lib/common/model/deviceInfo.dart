@@ -3,4 +3,5 @@ class DeviceInfo{
   String Model;
   String OSName;
   String OSVersion;
+  bool isEmulator;
 }

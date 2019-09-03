@@ -35,9 +35,17 @@ class VizTaskItemState extends State<VizTaskItem>{
     List<Color> mainBackgroundColor = widget.selected ? [Color(0xFF65b1d9), Color(0xFF0268a2)] : [Color(0xFFB2C7CF), Color(0xFFE4EDEF)];
     Color locationColor = widget.selected ? Colors.white : Colors.black45;
 
-    Widget statusIcon = userHasTapped == false ?
-    VizTaskItemSyncStatus(VizTaskItemSyncStatusType.New) :
-        widget.task.dirty == 0 ? VizTaskItemSyncStatus(VizTaskItemSyncStatusType.Waiting) : VizTaskItemSyncStatus(VizTaskItemSyncStatusType.Syncing);
+    Widget statusIcon;
+
+    if(widget.task.dirty == 1){
+      statusIcon = VizTaskItemSyncStatus(VizTaskItemSyncStatusType.Syncing);
+    }
+    else if(userHasTapped==false && widget.selected == false){
+      statusIcon = VizTaskItemSyncStatus(VizTaskItemSyncStatusType.New);
+    }
+    else{
+      statusIcon = VizTaskItemSyncStatus(VizTaskItemSyncStatusType.Idle);
+    }
 
     return GestureDetector(
         onTap: () {
@@ -98,7 +106,7 @@ class VizTaskItemSyncStatus extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
 
-    if(statusType == VizTaskItemSyncStatusType.Waiting)
+    if(statusType == VizTaskItemSyncStatusType.Idle)
       return Container();
 
     if(statusType == VizTaskItemSyncStatusType.New)
@@ -116,5 +124,5 @@ class VizTaskItemSyncStatus extends StatelessWidget{
 }
 
 enum VizTaskItemSyncStatusType{
-  Waiting, New, Syncing
+  Idle, New, Syncing
 }

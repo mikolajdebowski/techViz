@@ -1,6 +1,4 @@
 import 'dart:async';
-
-import 'package:techviz/bloc/taskViewBloc.dart';
 import 'package:techviz/common/http/client/sessionClient.dart';
 import 'package:techviz/repository/slotFloorRepository.dart';
 import 'package:techviz/repository/async/SlotMachineRouting.dart';
@@ -43,14 +41,11 @@ import 'package:techviz/repository/workOrder.repository.dart';
 import 'package:kiwi/kiwi.dart' as kiwi;
 
 import 'async/MessageClient.dart';
-import 'async/TaskRouting.dart';
 import 'local/escalationPathTable.dart';
 import 'local/taskStatusTable.dart';
 import 'local/taskTypeTable.dart';
 import 'local/userSectionTable.dart';
 import 'local/userTable.dart';
-import 'service/taskService.dart';
-
 
 enum Flavor {
   MOCK,
@@ -142,24 +137,11 @@ class Repository {
   void _configureInjector(){
     kiwi.Container container = kiwi.Container();
     container.clear();
-    container.registerInstance(TaskRepository(ProcessorTaskRepository(ProcessorRepositoryConfig()), _localRepository, TaskRouting()));
+    container.registerInstance(TaskRepository(ProcessorTaskRepository(ProcessorRepositoryConfig()), _localRepository));
     container.registerInstance(UserRoleRepository(ProcessorUserRoleRepository(), _localRepository));
     container.registerInstance(RoleRepository(ProcessorRoleRepository(), _localRepository));
     container.registerInstance<IUserStatusRepository, UserStatusRepository>(UserStatusRepository(ProcessorUserStatusRepository(), _localRepository));
 
-  }
-
-  void startServices(){
-    TaskService().listenRemote();
-    TaskService().listenLocal();
-  }
-
-  void stopServices(){
-    TaskService().shutdown();
-  }
-
-  void disposeBlocs(){
-    TaskViewBloc().dispose();
   }
 
   //TASKS

@@ -54,9 +54,6 @@ class Session extends PropertyChangeNotifier implements ISession{
   @override
   Future logOut() async  {
 
-    Repository().stopServices();
-    Repository().disposeBlocs();
-
     UserService userService = UserService();
     await userService.update(user.userID, statusID: 10);
 

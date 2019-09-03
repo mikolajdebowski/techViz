@@ -44,7 +44,7 @@ void main() {
 
 	test('update Future should complete if statusId is given', () async {
 		Future<void> updateFuture = _userService.update('irrelevantUserId', statusID: 1);
-		DeviceInfo _deviceInfo = await DeviceUtilsMock().deviceInfo;
+		DeviceInfo _deviceInfo = DeviceUtilsMock().deviceInfo;
 		String routingKeyForPublish = 'mobile.user.update.${_deviceInfo.DeviceID}';
 		_clientServiceMock.simulateStreamPayload(routingKeyForPublish, 'irrelevantPayload');
 
@@ -53,7 +53,7 @@ void main() {
 
 	test('update Future should complete if roleId is given', () async {
 		Future<void> updateFuture = _userService.update('irrelevantUserId', roleID: "1");
-		DeviceInfo _deviceInfo = await DeviceUtilsMock().deviceInfo;
+		DeviceInfo _deviceInfo = DeviceUtilsMock().deviceInfo;
 		String routingKeyForPublish = 'mobile.user.update.${_deviceInfo.DeviceID}';
 		_clientServiceMock.simulateStreamPayload(routingKeyForPublish, 'irrelevantPayload');
 

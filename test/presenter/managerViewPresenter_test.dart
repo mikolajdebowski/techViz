@@ -15,8 +15,6 @@ import 'package:techviz/repository/taskTypeRepository.dart';
 import 'package:techviz/repository/userRepository.dart';
 import 'package:kiwi/kiwi.dart' as kiwi;
 import 'package:techviz/session.dart';
-
-import '../repository/async/mock/taskRoutingMock.dart';
 import '../repository/mock/localRepositoryMock.dart';
 import '../repository/mock/slotFloorRemoteRepositoryMock.dart';
 import '../repository/processor/mock/TaskRemoteRepositoryMock.dart';
@@ -135,7 +133,7 @@ void main(){
   setUpAll((){
     Role role = Role(isSupervisor: true);
     Session().role = role;
-    kiwi.Container().registerInstance(TaskRepository(TaskRemoteRepositoryMock(), LocalRepositoryMock(), TaskRoutingMock()));
+    kiwi.Container().registerInstance(TaskRepository(TaskRemoteRepositoryMock(), LocalRepositoryMock()));
 
     Repository().taskTypeRepository = TaskTypeRepository(null, TaskTypeTableMock());
     Repository().taskStatusRepository = TaskStatusRepository(null, TaskStatusTableMock());

@@ -1,6 +1,6 @@
 import 'package:techviz/repository/repository.dart';
-import 'package:techviz/repository/taskRepository.dart';
 import 'package:techviz/repository/userRepository.dart';
+import 'package:techviz/service/taskService.dart';
 import 'package:techviz/viewmodel/reassignUsers.dart';
 
 abstract class IReassignPresenter {
@@ -28,7 +28,6 @@ class ReassignPresenter {
   }
 
   Future reassign(String taskID, String userID){
-    TaskRepository repo = Repository().taskRepository;
-    return repo.reassign(taskID, userID);
+    return TaskService().update(taskID, userID: userID);
   }
 }

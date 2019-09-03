@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:techviz/bloc/taskViewBloc.dart';
-import 'package:techviz/model/task.dart';
 import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/model/user.dart';
+import 'package:techviz/service/taskService.dart';
 import 'package:techviz/session.dart';
 import 'package:techviz/ui/taskView.dart';
 
@@ -23,8 +22,7 @@ void main() {
 
     expect(find.byKey(Key('taskViewEmptyContainer')), findsOneWidget);
 
-    Task newTask = Task(dirty: 0, id: '123', location: '12-12-12', userID: 'irina', taskStatus: TaskStatus(id: 1));
-    TaskViewBloc().update(newTask);
+    TaskService().inject('123', '12-12-12', 'irina', TaskStatus(id: 1));
     await tester.pump(Duration.zero);
 
     expect(find.byType(ListView), findsOneWidget);

@@ -49,7 +49,7 @@ class MessageClient implements IMessageClient{
     }
 
     //DEVICEID
-    DeviceInfo deviceInfo = await DeviceUtils().deviceInfo;
+    DeviceInfo deviceInfo = DeviceUtils().deviceInfo;
     _deviceID = deviceInfo.DeviceID;
 
     //UNIQUE DEVICE QUEUE

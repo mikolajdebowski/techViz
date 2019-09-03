@@ -104,7 +104,7 @@ class SlotFloorRepository {
   Future setReservation(String userID, String standId, String playerID, String time) async {
     Completer _completer = Completer<void>();
 
-    DeviceInfo info = await DeviceUtils().deviceInfo;
+    DeviceInfo info = DeviceUtils().deviceInfo;
 
     dynamic message = {'deviceId': '${info.DeviceID}', 'userId': '$userID', 'standId': '$standId', 'playerId': '$playerID', 'reservationTimeId': int.parse(time), 'reservationStatusId': 0, 'siteId': 1};
 
@@ -120,7 +120,7 @@ class SlotFloorRepository {
   Future cancelReservation(String standId) async {
     Completer _completer = Completer<void>();
 
-    DeviceInfo info = await DeviceUtils().deviceInfo;
+    DeviceInfo info = DeviceUtils().deviceInfo;
 
     dynamic message = {'deviceId': '${info.DeviceID}', 'standId': '$standId', 'reservationStatusId': 1, 'siteId': 1};
 
