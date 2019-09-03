@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:rxdart/rxdart.dart';
 import 'package:techviz/common/deviceUtils.dart';
 import 'package:techviz/common/model/deviceInfo.dart';
-import 'package:techviz/model/task.dart';
 import 'client/MQTTClientService.dart';
 
 abstract class IUserService{

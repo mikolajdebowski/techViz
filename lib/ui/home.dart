@@ -71,7 +71,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     loadView();
 
     UserService().userStatus.listen((int statusID){
-      setCurrentUserStatus(statusID);
+      if(statusID != Session().user.userStatusID){
+        Session().user.userStatusID = statusID;
+        setCurrentUserStatus(statusID);
+      }
     });
   }
 
@@ -96,6 +99,9 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   }
 
   void setCurrentUserStatus(int statusID) {
+    if(!mounted)
+      return;
+
     UserStatusRepository userStatusRepo = Repository().userStatusRepository;
     userStatusRepo.getStatuses().then((List<UserStatus> list) {
       setState(() {
