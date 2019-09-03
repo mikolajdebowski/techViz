@@ -1,22 +1,32 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:rxdart/rxdart.dart';
 import 'package:techviz/common/deviceUtils.dart';
 import 'package:techviz/common/model/deviceInfo.dart';
+import 'package:techviz/model/task.dart';
 import 'client/MQTTClientService.dart';
 
 abstract class IUserService{
 	Future<void> update(String userID, {int statusID, String roleID});
+	void listenAsync();
+	void cancelListening();
+	void dispose();
 }
 
 class UserService implements IUserService{
+	static final UserService _instance = UserService._internal();
+	factory UserService({IMQTTClientService mqttClientService, IDeviceUtils deviceUtils}) {
+		_instance._mqttClientServiceInstance = mqttClientService!=null? mqttClientService : MQTTClientService();
+		assert(_instance._mqttClientServiceInstance!=null);
+		return _instance;
+	}
+	UserService._internal();
+
 	IMQTTClientService _mqttClientServiceInstance;
 	IDeviceUtils _deviceUtils;
-
-	UserService({IMQTTClientService mqttClientService, IDeviceUtils deviceUtils}){
-		_mqttClientServiceInstance = mqttClientService!=null? mqttClientService : MQTTClientService();
-		_deviceUtils = deviceUtils!=null? deviceUtils : DeviceUtils();
-
-		assert(_mqttClientServiceInstance!=null);
-	}
+	final BehaviorSubject<List<Task>> _userStatusSubject = BehaviorSubject<List<Task>>();
+	Stream<dynamic> _localStream;
+	Stream<List<Task>> get userStatus => _userStatusSubject.stream;
 
 	@override
 	Future<void> update(String userID, {int statusID, String roleID}) async{
@@ -47,5 +57,26 @@ class UserService implements IUserService{
 
 		return _completer.future.timeout(Duration(seconds: 10));
 	}
+
+  @override
+  void cancelListening() {
+		String deviceID = DeviceUtils().deviceInfo.DeviceID;
+		_mqttClientServiceInstance.unsubscribe('mobile.userstatus.$deviceID');
+  }
+
+  @override
+  void dispose() {
+		_userStatusSubject?.close();
+  }
+
+  @override
+  void listenAsync() {
+		String deviceID = DeviceUtils().deviceInfo.DeviceID;
+		_localStream = _mqttClientServiceInstance.subscribe('mobile.userstatus.$deviceID');
+		_localStream.listen((dynamic data){
+				dynamic json = JsonDecoder().convert(data);
+				print(json);
+		});
+  }
 }
 

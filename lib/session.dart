@@ -4,6 +4,7 @@ import 'package:techviz/model/user.dart';
 import 'package:observable/observable.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/service/client/MQTTClientService.dart';
+import 'package:techviz/service/taskService.dart';
 import 'package:techviz/service/userService.dart';
 
 enum ConnectionStatus{
@@ -56,6 +57,9 @@ class Session extends PropertyChangeNotifier implements ISession{
 
     UserService userService = UserService();
     await userService.update(user.userID, statusID: 10);
+
+    TaskService().cancelListening();
+    UserService().cancelListening();
 
     MQTTClientService().disconnect();
   }
