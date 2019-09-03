@@ -16,7 +16,8 @@ abstract class IUserService{
 class UserService implements IUserService{
 	static final UserService _instance = UserService._internal();
 	factory UserService({IMQTTClientService mqttClientService, IDeviceUtils deviceUtils}) {
-		_instance._mqttClientServiceInstance = mqttClientService!=null? mqttClientService : MQTTClientService();
+		_instance._mqttClientServiceInstance = mqttClientService ??= MQTTClientService();
+		_instance._deviceUtils = deviceUtils ?? DeviceUtils();
 		assert(_instance._mqttClientServiceInstance!=null);
 		return _instance;
 	}
