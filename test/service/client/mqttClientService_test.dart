@@ -2,10 +2,6 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:techviz/service/client/MQTTClientService.dart';
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
 import '../../_mocks/mqttInternalClientMock.dart';
 
 void main() {
