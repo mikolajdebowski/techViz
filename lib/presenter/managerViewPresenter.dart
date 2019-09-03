@@ -9,8 +9,8 @@ import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/model/taskType.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/repository/repository.dart';
+import 'package:techviz/service/taskService.dart';
 import 'package:techviz/session.dart';
-import 'package:techviz/repository/taskRepository.dart';
 import 'package:techviz/viewmodel/managerViewUserStatus.dart';
 
 abstract class IManagerViewPresenter {
@@ -386,7 +386,6 @@ class ManagerViewPresenter{
   }
 
   Future reassign(String taskID, String userID){
-    TaskRepository repo = Repository().taskRepository;
-    return repo.reassign(taskID, userID);
+    return TaskService().update(taskID, userID: userID);
   }
 }

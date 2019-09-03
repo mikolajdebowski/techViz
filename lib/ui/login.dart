@@ -163,10 +163,6 @@ class LoginState extends State<Login> {
       await MessageClient().Connect();
       await updateDeviceInfo();
 
-
-      //INIT DEFAULT LISTENERS
-      Repository().startServices();
-
       Navigator.pushReplacement(context, MaterialPageRoute<RoleSelector>(builder: (BuildContext context) => RoleSelector()));
 
     }).catchError((dynamic error) {
