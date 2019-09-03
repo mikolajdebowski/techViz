@@ -188,7 +188,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     VizButton sectionsWidgetBtn = VizButton(customWidget: sectionsInnerWidget, flex: 3, onTap: goToSectionSelector);
     Spacer notificationWidgetBtn = Spacer(flex: 1);
 
-    VizButton networkStatus = VizButton(customWidget: NetworkIndicator(), flex: 2, onTap: (){});
+    VizButton networkStatus = VizButton(customWidget: NetworkIndicator(), flex: 2);
 
     VizButton searchIconWidget = VizButton(customWidget: ImageIcon(AssetImage("assets/images/ic_search.png"), size: 30.0), onTap: goToSearchSelector, flex: 1);
     List<Widget> actionBarCentralWidgets = <Widget>[statusWidgetBtn, sectionsWidgetBtn, notificationWidgetBtn, networkStatus, searchIconWidget];

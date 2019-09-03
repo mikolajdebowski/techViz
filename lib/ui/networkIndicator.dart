@@ -72,7 +72,6 @@ class _NetworkIndicatorState extends State<NetworkIndicator> {
     });
   }
 
-
   void _openNetworkDialog(){
     setState(() {
       String wifiTxt = "Local Wifi Connection: ";
@@ -166,8 +165,9 @@ class _NetworkIndicatorState extends State<NetworkIndicator> {
         children: <Widget>[
           Text('Network', style: TextStyle(color: Color(0xFF566474), fontSize: 13.0)),
           Container(
-            width: 20,
-            height: 20,
+            margin: EdgeInsets.only(top: 2),
+            width: 15,
+            height: 15,
             decoration: BoxDecoration(
                 color: networkIndicatorColor,
                 shape: BoxShape.circle

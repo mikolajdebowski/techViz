@@ -49,7 +49,11 @@ class VizButton extends StatelessWidget {
               color: Colors.transparent,
               child: InkWell(
                 onTap: () {
-                  if (clickable) onTap();
+                  if (clickable){
+                    if(onTap!=null){
+                      onTap();
+                    }
+                  }
 
                   clickable = false;
                   Future<void>.delayed(const Duration(seconds: 1), () {
