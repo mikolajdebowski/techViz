@@ -27,18 +27,17 @@ class _NetworkIndicatorState extends State<NetworkIndicator> {
   String serviceStatusMsg = "No issues";  // service 'Not connected' or 'No issues'
   bool isWifiActive = true;
   bool isServiceActive = true;
-  bool isConnected = true;
 
   @override
   void initState() {
     super.initState();
-    listenForWifiStatusChange();
     listenForMQTTStatusChange();
+    listenForWifiStatusChange();
   }
 
   void listenForWifiStatusChange() {
     wifiStatus = Connectivity().onConnectivityChanged.listen((ConnectivityResult status) {
-    print('wifi status changed to: ${status.toString()}');
+//    print('wifi status changed to: ${status.toString()}');
       setState(() {
         if(status == ConnectivityResult.wifi){
           isWifiActive = true;
@@ -55,7 +54,7 @@ class _NetworkIndicatorState extends State<NetworkIndicator> {
 
   void listenForMQTTStatusChange() {
     vizStatus = MQTTClientService().status.listen((MQTTConnectionStatus status) async{
-    print('MQTT service status changed to: ${status.toString()}');
+//    print('MQTT service status changed to: ${status.toString()}');
       ConnectivityResult connectivityResult = await Connectivity().checkConnectivity();
       if(connectivityResult == ConnectivityResult.wifi){
         setState(() {
@@ -157,19 +156,6 @@ class _NetworkIndicatorState extends State<NetworkIndicator> {
 
   @override
   Widget build(BuildContext context) {
-
-//    VizButton simulateMQTT = VizButton(title:'mqtt',flex: 2, onTap: () async{
-//      if(isConnected){
-//        isConnected = false;
-//        MQTTClientService().disconnect();
-//      }else{
-//        isConnected = true;
-//        await MQTTClientService().init('tvdev.internal.bis2.net', '4D8E280D-B840-4773-898D-0F9F71B82ACA', logging: false);
-//        await MQTTClientService().connect();
-//        listenForMQTTStatusChange();
-//      }
-//    },);
-
     return GestureDetector(
       onTap: () {
         _openNetworkDialog();
