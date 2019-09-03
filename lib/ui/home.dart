@@ -7,6 +7,7 @@ import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/userSectionRepository.dart';
 import 'package:techviz/repository/userStatusRepository.dart';
+import 'package:techviz/service/userService.dart';
 import 'package:techviz/session.dart';
 import 'package:techviz/ui/managerView.dart';
 import 'package:techviz/ui/networkIndicator.dart';
@@ -65,8 +66,13 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
     WidgetsBinding.instance.addObserver(this);
     loadDefaultSections();
-    loadCurrentStatus();
+
+    setCurrentUserStatus(Session().user.userStatusID);
     loadView();
+
+    UserService().userStatus.listen((int statusID){
+      setCurrentUserStatus(statusID);
+    });
   }
 
   @override
@@ -89,13 +95,11 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     });
   }
 
-  void loadCurrentStatus() {
-
+  void setCurrentUserStatus(int statusID) {
     UserStatusRepository userStatusRepo = Repository().userStatusRepository;
-    ISession session = Session();
     userStatusRepo.getStatuses().then((List<UserStatus> list) {
       setState(() {
-        currentUserStatus = list.where((UserStatus status)=> status.id == session.user.userStatusID).first;
+        currentUserStatus = list.where((UserStatus status)=> status.id == statusID).first;
       });
     });
   }

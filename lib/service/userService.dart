@@ -25,9 +25,9 @@ class UserService implements IUserService{
 
 	IMQTTClientService _mqttClientServiceInstance;
 	IDeviceUtils _deviceUtils;
-	final BehaviorSubject<List<Task>> _userStatusSubject = BehaviorSubject<List<Task>>();
+	final BehaviorSubject<int> _userStatusSubject = BehaviorSubject<int>();
 	Stream<dynamic> _localStream;
-	Stream<List<Task>> get userStatus => _userStatusSubject.stream;
+	Stream<int> get userStatus => _userStatusSubject.stream;
 
 	@override
 	Future<void> update(String userID, {int statusID, String roleID}) async{
@@ -76,7 +76,8 @@ class UserService implements IUserService{
 		_localStream = _mqttClientServiceInstance.subscribe('mobile.userstatus.$deviceID');
 		_localStream.listen((dynamic data){
 				dynamic json = JsonDecoder().convert(data);
-				print(json);
+				int userStatusID = json['UserStatusID'];
+				_userStatusSubject.add(userStatusID);
 		});
   }
 }
