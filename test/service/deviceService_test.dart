@@ -38,7 +38,7 @@ void main() {
 		Future<void> updateFuture = _deviceService.update('irrelevantUserId');
 
 		DeviceUtilsMock deviceUtilsMock = DeviceUtilsMock();
-		DeviceInfo deviceInfo = await deviceUtilsMock.deviceInfo;
+		DeviceInfo deviceInfo = deviceUtilsMock.deviceInfo;
 		String routingKeyForPublish = 'mobile.device.update.${deviceInfo.DeviceID}';
 		_clientServiceMock.simulateStreamPayload(routingKeyForPublish, 'irrelevantPayload');
 

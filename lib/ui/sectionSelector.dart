@@ -45,7 +45,7 @@ class SectionSelectorState extends State<SectionSelector>
     Session session = Session();
     List<String> sections = sectionList.where((SectionModelPresenter s) => s.selected).map((SectionModelPresenter s)=>s.sectionID).toList();
 
-    DeviceInfo info = await DeviceUtils().deviceInfo;
+    DeviceInfo info = DeviceUtils().deviceInfo;
     dynamic toSubmit = {'userID': session.user.userID, 'sections': sections, 'deviceID': info.DeviceID};
 
     SectionRouting().PublishMessage(toSubmit).then((dynamic list) async{

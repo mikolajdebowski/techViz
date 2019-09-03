@@ -86,14 +86,11 @@ class EscalationFormState extends State<EscalationForm> implements EscalationPre
     setState(() {
       _btnDisabled = true;
     });
-
-    _task.dirty = 1;
-    _task.taskStatusID = 5;
-    _task.escalationPath = _escalationPathSelected;
-    _task.escalationTaskType = taskTypeRequired ? _taskTypeSelected : null;
-    _task.notes = _notesController.text;
-
-    _presenter.escalateTask(_task).then((dynamic r){
+    _presenter.escalateTask(
+      _task.id,
+        taskTypeRequired ? _taskTypeSelected : null,
+        _task.notes
+    ).then((dynamic r){
       snackbar.dismiss();
       Navigator.of(context).pop(true);
     }).catchError((dynamic error){

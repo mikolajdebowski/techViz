@@ -7,6 +7,7 @@ import 'package:techviz/common/deviceUtils.dart';
 import 'package:techviz/common/model/appInfo.dart';
 import 'package:techviz/common/http/client/processorClient.dart';
 import 'package:techviz/common/http/client/sessionClient.dart';
+import 'package:techviz/common/model/deviceInfo.dart';
 import 'package:techviz/common/slideRightRoute.dart';
 import 'package:techviz/common/utils.dart';
 import 'package:techviz/components/VizAlert.dart';
@@ -15,6 +16,7 @@ import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizRainbow.dart';
 import 'package:techviz/service/client/MQTTClientService.dart';
 import 'package:techviz/service/deviceService.dart';
+import 'package:techviz/service/taskService.dart';
 import 'package:techviz/ui/config.dart';
 import 'package:techviz/repository/async/MessageClient.dart';
 import 'package:techviz/repository/repository.dart';
@@ -64,8 +66,8 @@ class LoginState extends State<Login> {
         usernameController.text = prefs.getString(Login.USERNAME);
       }
 
-      DeviceUtils().isEmulator.then((bool isEmulator){
-        if(isEmulator){
+      DeviceUtils().init().then((DeviceInfo info){
+        if(info.isEmulator){
           if (prefs.getKeys().contains(Login.PASSWORD)) {
             passwordController.text = prefs.getString(Login.PASSWORD);
           }
@@ -151,9 +153,11 @@ class LoginState extends State<Login> {
 
       //INIT MQTTClient Service
       String broker = serverUrl.replaceAll('http://', '').replaceAll('https://', '');
-      String deviceID = (await DeviceUtils().deviceInfo).DeviceID;
+      String deviceID = DeviceUtils().deviceInfo.DeviceID;
       await MQTTClientService().init(broker, deviceID, logging: false);
       await MQTTClientService().connect();
+
+      TaskService().listenAsync();
 
       //INIT AMQP MessageClient
       await MessageClient().Connect();

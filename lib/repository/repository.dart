@@ -1,6 +1,4 @@
 import 'dart:async';
-
-import 'package:techviz/bloc/taskViewBloc.dart';
 import 'package:techviz/common/http/client/sessionClient.dart';
 import 'package:techviz/repository/slotFloorRepository.dart';
 import 'package:techviz/repository/async/SlotMachineRouting.dart';
@@ -49,8 +47,6 @@ import 'local/taskStatusTable.dart';
 import 'local/taskTypeTable.dart';
 import 'local/userSectionTable.dart';
 import 'local/userTable.dart';
-import 'service/taskService.dart';
-
 
 enum Flavor {
   MOCK,
@@ -150,16 +146,16 @@ class Repository {
   }
 
   void startServices(){
-    TaskService().listenRemote();
-    TaskService().listenLocal();
+    //TaskService().listenRemote();
+    //TaskService().listenLocal();
   }
 
   void stopServices(){
-    TaskService().shutdown();
+    //TaskService().shutdown();
   }
 
   void disposeBlocs(){
-    TaskViewBloc().dispose();
+    //TaskViewBloc().dispose();
   }
 
   //TASKS

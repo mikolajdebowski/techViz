@@ -2,12 +2,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:techviz/components/taskList/VizTaskItem.dart';
-import 'package:techviz/bloc/taskViewBloc.dart';
 import 'package:techviz/components/vizTaskActionButton.dart';
 import 'package:techviz/components/vizTimer.dart';
 import 'package:techviz/model/task.dart';
 import 'package:techviz/model/userSection.dart';
 import 'package:techviz/model/userStatus.dart';
+import 'package:techviz/service/taskService.dart';
 import 'package:techviz/ui/home.dart';
 import 'escalation.dart';
 
@@ -31,7 +31,7 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
 
   @override
   void initState() {
-    _streamSubscription = TaskViewBloc().openTasks.listen(onTaskListReceived, onError: onTaskListenError);
+    _streamSubscription = TaskService().openTasks.listen(onTaskListReceived, onError: onTaskListenError);
     super.initState();
   }
 
@@ -72,9 +72,7 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
   }
 
   void updateTaskStatus(Task task, int statusID) {
-    task.taskStatusID = statusID;
-    task.dirty = task.dirty == 0 ? 1: task.dirty;
-    TaskViewBloc().update(task);
+    TaskService().update(task.id, statusID: statusID);
   }
 
   @override
@@ -86,11 +84,12 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
     }
 
     StreamBuilder streamBuilderListView = StreamBuilder<List<Task>>(
-        stream: TaskViewBloc().openTasks,
+        stream: TaskService().openTasks,
         builder: (context, AsyncSnapshot<List<Task>> snapshot) {
           if (!snapshot.hasData) {
             return Container(key: Key('taskViewEmptyContainer'));
           } else {
+            snapshot.data.sort((Task a, Task b)=> b.taskUrgencyID.compareTo(a.taskUrgencyID));
             return ListView.builder(
               key: Key('taskViewListView'),
                 itemBuilder: (BuildContext builderCtx, int index) => buildTaskItemBody(snapshot.data[index], index), itemCount: snapshot.data.length);
@@ -418,13 +417,6 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
   }
 
 
-
-
-
-
-
-
-
   /* Cancellation */
   final GlobalKey<FormState> _cancellationFormKey = GlobalKey<FormState>();
   void _showCancellationDialog(final String taskID) {
@@ -525,10 +517,7 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
   }
 
   void _onCancelTask(BuildContext context, Task task, String cancellationReason){
-    task.cancellationReason = cancellationReason;
-    task.taskStatusID = 12;
-    task.dirty = 1;
-    TaskViewBloc().update(task);
+    TaskService().update(task.id, statusID: 12, cancellationReason: cancellationReason);
     Navigator.of(context).pop(true);
   }
 

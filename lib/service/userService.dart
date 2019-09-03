@@ -23,7 +23,7 @@ class UserService implements IUserService{
 		assert(userID!=null);
 		assert(statusID!=null || roleID!=null);
 
-		DeviceInfo deviceInfo = await _deviceUtils.deviceInfo;
+		DeviceInfo deviceInfo = _deviceUtils.deviceInfo;
 
 		Completer _completer = Completer<void>();
 		String routingKeyForPublish = 'mobile.user.update';

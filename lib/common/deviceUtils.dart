@@ -8,44 +8,59 @@ import 'package:uuid/uuid.dart';
 import 'model/deviceInfo.dart';
 
 abstract class IDeviceUtils{
-	Future<bool> get isEmulator;
-	Future<DeviceInfo> get deviceInfo;
+	DeviceInfo get deviceInfo;
+	Future<DeviceInfo> init();
 }
 class DeviceUtils implements IDeviceUtils{
-	@override
-	Future<bool> get isEmulator => FlutterIsEmulator.isDeviceAnEmulatorOrASimulator;
+	DeviceInfo _deviceInfo;
+
+	static final DeviceUtils _singleton = DeviceUtils._internal();
+	factory DeviceUtils() {
+		return _singleton;
+	}
+	DeviceUtils._internal();
 
 	@override
-	Future<DeviceInfo> get deviceInfo async {
+	Future<DeviceInfo> init() async{
 		DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
-		DeviceInfo info = DeviceInfo();
+		_deviceInfo = DeviceInfo();
 
 		if(Platform.isIOS){
 			IosDeviceInfo ios = await deviceInfoPlugin.iosInfo;
-			info.DeviceID = ios.identifierForVendor;
-			info.Model = ios.model;
-			info.OSVersion = ios.systemVersion;
-			info.OSName = ios.systemName;
+			_deviceInfo.DeviceID = ios.identifierForVendor;
+			_deviceInfo.Model = ios.model;
+			_deviceInfo.OSVersion = ios.systemVersion;
+			_deviceInfo.OSName = ios.systemName;
 		}
 		else {
 			AndroidDeviceInfo android = await deviceInfoPlugin.androidInfo;
 			if (android.id == 'MASTER' || android.manufacturer == 'unknown') {
 				SharedPreferences prefs = await SharedPreferences.getInstance();
 				if (prefs.getKeys().contains("UUID")) {
-					info.DeviceID = prefs.getString("UUID");
+					_deviceInfo.DeviceID = prefs.getString("UUID");
 				}
 				else {
 					var uuid = Uuid();
 					String strUUID = uuid.v4().toString().toUpperCase();
 					prefs.setString("UUID", strUUID);
-					info.DeviceID = strUUID;
+					_deviceInfo.DeviceID = strUUID;
 				}
 			}
-			else info.DeviceID = android.id;
-			info.Model = android.model;
-			info.OSVersion = android.version.release;
-			info.OSName = android.brand;
+			else _deviceInfo.DeviceID = android.id;
+
+			_deviceInfo.Model = android.model;
+			_deviceInfo.OSVersion = android.version.release;
+			_deviceInfo.OSName = android.brand;
 		}
-		return info;
+
+		_deviceInfo.isEmulator = await FlutterIsEmulator.isDeviceAnEmulatorOrASimulator;
+
+		return Future<DeviceInfo>.value(_deviceInfo);
+	}
+
+  @override
+  DeviceInfo get deviceInfo{
+		assert(_deviceInfo!=null);
+		return _deviceInfo;
 	}
 }

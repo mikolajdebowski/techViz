@@ -4,23 +4,22 @@ import 'package:techviz/common/model/deviceInfo.dart';
 import 'client/MQTTClientService.dart';
 
 abstract class IDeviceService{
-	Future<void> update(String userID);
+	Future update(String userID);
 }
 
 class DeviceService implements IDeviceService{
 	IMQTTClientService _mqttClientServiceInstance;
 	IDeviceUtils _deviceUtils;
-
 	DeviceService({IMQTTClientService mqttClientService, IDeviceUtils deviceUtils}){
 		_mqttClientServiceInstance = mqttClientService!=null? mqttClientService : MQTTClientService();
-		_deviceUtils = deviceUtils!=null? deviceUtils : DeviceUtils();
-
+		_deviceUtils = deviceUtils ??= DeviceUtils();
 		assert(_mqttClientServiceInstance!=null);
+		assert(_deviceUtils!=null);
 	}
 
   @override
-  Future<void> update(String userID) async{
-  	DeviceInfo deviceInfo = await _deviceUtils.deviceInfo;
+  Future update(String userID) async{
+  	DeviceInfo deviceInfo = _deviceUtils.deviceInfo;
 
   	Completer _completer = Completer<void>();
 		String routingKeyForPublish = 'mobile.device.update';
