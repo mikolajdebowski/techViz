@@ -25,6 +25,7 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
   Task _selectedTask;
   int _openTasksCount = 0;
   StreamSubscription<List<Task>> _streamSubscription;
+  final List<int> _openTaskStatusIDs = [1,2,3,31,32,33];
 
   final defaultHeaderDecoration = BoxDecoration(
       border: Border.all(color: Colors.black, width: 0.5),
@@ -37,12 +38,13 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
     super.initState();
   }
 
-  void onTaskListReceived(List<Task> list) {
+  void onTaskListReceived(List<Task> openTasks) {
     setState(() {
-      _openTasksCount = list.length;
+      openTasks = openTasks.where((Task task)=> _openTaskStatusIDs.contains(task.taskStatusID) && task.userID == Session().user.userID).toList();
 
+      _openTasksCount = openTasks.length;
       if (_selectedTask != null && _openTasksCount > 0) {
-        Iterable<Task> exists = list.where((Task _task) => _task.id == _selectedTask.id);
+        Iterable<Task> exists = openTasks.where((Task _task) => _task.id == _selectedTask.id);
         if (exists != null && exists.isNotEmpty) {
           _selectedTask = exists.first;
         }
@@ -90,7 +92,7 @@ class TaskViewState extends State<TaskView> with WidgetsBindingObserver implemen
         builder: (context, AsyncSnapshot<List<Task>> snapshot) {
           Iterable<Task> where;
           if(snapshot.hasData){ //filter user tasks
-            where = snapshot.data.where((Task task)=> task.userID == Session().user.userID);
+            where = snapshot.data.where((Task task)=> task.userID == Session().user.userID && _openTaskStatusIDs.contains(task.taskStatusID));
           }
 
           if (!snapshot.hasData || (where!=null && where.isEmpty)) {
