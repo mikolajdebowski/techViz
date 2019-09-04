@@ -5,7 +5,6 @@ import 'package:techviz/components/vizSelector.dart';
 import 'package:techviz/model/userSection.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/repository/repository.dart';
-import 'package:techviz/repository/userSectionRepository.dart';
 import 'package:techviz/repository/userStatusRepository.dart';
 import 'package:techviz/session.dart';
 import 'package:techviz/ui/managerView.dart';
@@ -35,7 +34,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   GlobalKey<dynamic> homeChildKey;
   bool initialLoading = false;
 
-  List<UserSection> currentSections = <UserSection>[];
+  List<String> currentSections = <String>[];
   UserStatus currentUserStatus;
 
 
@@ -48,8 +47,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     if (currentSections.length > 4) {
       sections = "4+";
     } else {
-      currentSections.forEach((UserSection section) {
-        sections += section.sectionID + " ";
+      currentSections.forEach((String section) {
+        sections += section + " ";
       });
       sections = sections.trim();
     }
@@ -80,12 +79,8 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
   }
 
   void loadDefaultSections() {
-    UserSectionRepository userSectionRepo = Repository().userSectionRepository;
-    ISession session = Session();
-    userSectionRepo.getUserSection(session.user.userID).then((List<UserSection> list) {
-      setState(() {
-        currentSections = list;
-      });
+    setState(() {
+      currentSections = Session().sections;
     });
   }
 
@@ -110,22 +105,18 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     assert(homeChildKey!=null);
   }
 
-  //EVENTS
-  void onUserSectionsChangedCallback(List<UserSection> sections) {
-    print("onUserSectionsChangedCallback: ${sections.length.toString()}");
-    setState(() {
-      currentSections = sections;
-    });
-    homeChildKey.currentState.onUserSectionsChanged(currentSections);
-  }
-
   void goToSectionSelector() {
-    SectionSelector selector = SectionSelector(onUserSectionsChanged: onUserSectionsChangedCallback);
-
-    Navigator.push<VizSelector>(
+    Navigator.push<List<String>>(
       context,
-      MaterialPageRoute(builder: (context) => selector),
-    );
+      MaterialPageRoute(builder: (context) =>  SectionSelector()),
+    ).then((List<String> sections){
+
+      if(sections==null)
+        return;
+
+      Session().sections = sections;
+      loadDefaultSections();
+    });
   }
 
   void goToStatusSelector() {

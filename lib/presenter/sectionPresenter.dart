@@ -1,27 +1,28 @@
 import 'package:techviz/model/section.dart';
-import 'package:techviz/model/userSection.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/sectionRepository.dart';
-import 'package:techviz/repository/userSectionRepository.dart';
+import 'package:techviz/service/sectionService.dart';
 
-abstract class ISectionListPresenter<SectionModelPresenter> {
+abstract class ISectionView {
   void onSectionListLoaded(List<SectionModelPresenter> result);
-  void onUserSectionListLoaded(List<UserSection> result);
-
   void onLoadError(dynamic error);
 }
+abstract class ISectionPresenter{
+  Future<List<String>> update({String userID, List<String> sections, String deviceID});
+  void loadSections();
+}
 
-
-class SectionListPresenter {
-  ISectionListPresenter<SectionModelPresenter> _view;
+class SectionPresenter implements ISectionPresenter {
+  ISectionView _view;
   SectionRepository _sectionRepository;
-  UserSectionRepository _userSectionRepository;
+  ISectionService _sectionService;
 
-  SectionListPresenter(this._view) {
+  SectionPresenter(this._view) {
     _sectionRepository = Repository().sectionRepository;
-    _userSectionRepository = Repository().userSectionRepository;
+    _sectionService = _sectionService ?? SectionService();
   }
 
+  @override
   void loadSections() async {
     assert(_view != null);
 
@@ -34,15 +35,11 @@ class SectionListPresenter {
     _view.onSectionListLoaded(list);
   }
 
-  void loadUserSections(String userID) async{
-    assert(_view != null);
-
-    List<UserSection> userSectionList = await _userSectionRepository.getUserSection(userID);
-    _view.onUserSectionListLoaded(userSectionList);
+  @override
+  Future<List<String>> update({String userID, List<String> sections, String deviceID}){
+    return _sectionService.update(userID, sections, deviceID);
   }
 }
-
-
 
 class SectionModelPresenter {
   final String sectionID;

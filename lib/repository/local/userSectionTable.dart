@@ -6,7 +6,7 @@ import 'localRepository.dart';
 import 'localTable.dart';
 
 abstract class IUserSectionTable {
-  Future<List<UserSection>> getUserSection(String userID);
+  Future<List<UserSection>> getUserSections(String userID);
   Future update(String userID, List<String> sections);
 }
 
@@ -21,7 +21,7 @@ class UserSectionTable extends LocalTable implements IUserSectionTable{
   }
 
   @override
-  Future<List<UserSection>> getUserSection(String userID) async {
+  Future<List<UserSection>> getUserSections(String userID) async {
     String sql = "SELECT UserID, SectionID FROM UserSection WHERE UserID = '$userID'";
     List<Map<String, dynamic>> queryResult = await localRepo.db.rawQuery(sql);
 
