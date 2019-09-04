@@ -50,8 +50,6 @@ class SectionSelectorState extends State<SectionSelector> implements ISectionVie
         addAutomaticKeepAlives: false,
         crossAxisCount: 8,
         children: sectionList.map((SectionModelPresenter section) {
-//        bool selected = selectedStatus!= null && selectedStatus.id.toString() ==  status.id;
-
           return VizOptionButton(section.sectionID,
               onTap: onOptionSelected, tag: section.sectionID, selected: section.selected);
         }).toList());
