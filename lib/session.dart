@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:techviz/model/role.dart';
 import 'package:techviz/model/user.dart';
 import 'package:observable/observable.dart';
+import 'package:techviz/model/userSection.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/service/client/MQTTClientService.dart';
 import 'package:techviz/service/taskService.dart';
@@ -21,6 +22,7 @@ abstract class ISession{
   Future init(String userID);
   Future logOut();
   void UpdateConnectionStatus(ConnectionStatus newStatus);
+  List<String> sections;
 }
 
 class Session extends PropertyChangeNotifier implements ISession{
@@ -29,6 +31,9 @@ class Session extends PropertyChangeNotifier implements ISession{
 
   @override
   Role role;
+
+  @override
+  List<String> sections;
 
   @override
   ConnectionStatus connectionStatus;
@@ -44,6 +49,7 @@ class Session extends PropertyChangeNotifier implements ISession{
   Future init(String userID) async {
     user = await Repository().userRepository.getUser(userID);
     role = (await Repository().roleRepository.getAll(ids: [user.userRoleID.toString()])).first;
+    sections = (await Repository().userSectionRepository.getUserSections(userID)).map((UserSection us)=>us.sectionID).toList();
 
     user.changes.listen((List<ChangeRecord> changes) {
       print('changes from User: ');
@@ -72,4 +78,5 @@ class Session extends PropertyChangeNotifier implements ISession{
 
     notifyPropertyChange(#connectionStatus, oldValue, newStatus);
   }
+
 }

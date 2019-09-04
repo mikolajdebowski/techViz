@@ -14,8 +14,8 @@ class UserSectionRepository  {
   IUserSectionRemoteRepository remoteRepository;
   UserSectionRepository(this.remoteRepository, this.userSectionTable);
 
-  Future<List<UserSection>> getUserSection(String userID){
-    return userSectionTable.getUserSection(userID);
+  Future<List<UserSection>> getUserSections(String userID){
+    return userSectionTable.getUserSections(userID);
   }
 
   Future update(String userID, List<String> sections){
