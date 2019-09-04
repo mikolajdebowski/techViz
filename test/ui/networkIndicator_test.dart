@@ -38,7 +38,7 @@ void main(){
     NetworkIndicator indicator = NetworkIndicator();
     await tester.pumpWidget(makeTestableWidget(child: indicator));
 
-    RenderDecoratedBox actualBox = tester.renderObject(find.byType(DecoratedBox));
+    RenderDecoratedBox actualBox = tester.renderObject(find.byType(DecoratedBox).last);
     BoxDecoration actualDecoration = actualBox.decoration;
 
     expect(actualDecoration.color, Colors.green);
@@ -53,7 +53,7 @@ void main(){
     MQTTClientService().disconnect();
     await tester.pump();
 
-    RenderDecoratedBox actualBox = tester.renderObject(find.byType(DecoratedBox));
+    RenderDecoratedBox actualBox = tester.renderObject(find.byType(DecoratedBox).last);
     BoxDecoration actualDecoration = actualBox.decoration;
     expect(actualDecoration.color, Colors.orange);
   });
@@ -72,7 +72,7 @@ void main(){
     );
     await tester.pump();
 
-    RenderDecoratedBox actualBox = tester.renderObject(find.byType(DecoratedBox));
+    RenderDecoratedBox actualBox = tester.renderObject(find.byType(DecoratedBox).last);
     BoxDecoration actualDecoration = actualBox.decoration;
     expect(actualDecoration.color, Colors.red);
   });

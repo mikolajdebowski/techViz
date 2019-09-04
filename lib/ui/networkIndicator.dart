@@ -23,8 +23,8 @@ class _NetworkIndicatorState extends State<NetworkIndicator> {
   StreamSubscription<MQTTConnectionStatus> vizStatus;
   StreamSubscription<ConnectivityResult> wifiStatus;
   Color networkIndicatorColor = Colors.green;
-  String wifiStatusMsg = "No issues";  // wifi 'Not connected' or 'No issues'
-  String serviceStatusMsg = "No issues";  // service 'Not connected' or 'No issues'
+  String wifiStatusMsg = "Connected";  // wifi 'Not connected' or 'No issues'
+  String serviceStatusMsg = "Connected";  // service 'Not connected' or 'No issues'
   bool isWifiActive = true;
   bool isServiceActive = true;
 
@@ -41,11 +41,11 @@ class _NetworkIndicatorState extends State<NetworkIndicator> {
       setState(() {
         if(status == ConnectivityResult.wifi){
           isWifiActive = true;
-          wifiStatusMsg = "No issues";
+          wifiStatusMsg = "Connected";
           networkIndicatorColor = Colors.green;
         }else if(status == ConnectivityResult.none || status == ConnectivityResult.mobile){
           isWifiActive = false;
-          wifiStatusMsg = "Not connected";
+          wifiStatusMsg = "Not Connected";
           networkIndicatorColor = Colors.red;
         }
       });
@@ -60,11 +60,11 @@ class _NetworkIndicatorState extends State<NetworkIndicator> {
         setState(() {
           if(status == MQTTConnectionStatus.Connected){
             isServiceActive = true;
-            serviceStatusMsg = "No issues";
+            serviceStatusMsg = "Connected";
             networkIndicatorColor = Colors.green;
           }else{
             isServiceActive = false;
-            serviceStatusMsg = "Not connected";
+            serviceStatusMsg = "Not Connected";
             networkIndicatorColor = Colors.orange;
           }
         });
@@ -159,21 +159,26 @@ class _NetworkIndicatorState extends State<NetworkIndicator> {
       onTap: () {
         _openNetworkDialog();
       },
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text('Network', style: TextStyle(color: Color(0xFF566474), fontSize: 13.0)),
-          Container(
-            margin: EdgeInsets.only(top: 2),
-            width: 15,
-            height: 15,
-            decoration: BoxDecoration(
-                color: networkIndicatorColor,
-                shape: BoxShape.circle
+      child: Container(
+        width: double.infinity,
+        height: double.infinity,
+        color: Colors.transparent,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text('Network', style: TextStyle(color: Color(0xFF566474), fontSize: 13.0)),
+            Container(
+              margin: EdgeInsets.only(top: 2),
+              width: 15,
+              height: 15,
+              decoration: BoxDecoration(
+                  color: networkIndicatorColor,
+                  shape: BoxShape.circle
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
