@@ -48,7 +48,7 @@ class UserSectionRepositoryMock implements IUserSectionRemoteRepository {
 
 class UserSectionTableMock implements IUserSectionTable{
   @override
-  Future<List<UserSection>> getUserSection(String userID) {
+  Future<List<UserSection>> getUserSections(String userID) {
     return Future.value([]);
   }
 

@@ -126,7 +126,7 @@ class TaskService implements ITaskService{
 		if(escalationPath!=null){
 			message['EscalationPath'] = escalationPath.id;
 		}
-		if(escalationPath!=null){
+		if(taskType!=null){
 			message['EscalationTypeID'] = taskType.taskTypeId;
 		}
 
