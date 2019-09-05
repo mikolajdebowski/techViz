@@ -16,6 +16,7 @@ import 'package:techviz/components/VizOptionButton.dart';
 import 'package:techviz/components/vizRainbow.dart';
 import 'package:techviz/service/client/MQTTClientService.dart';
 import 'package:techviz/service/deviceService.dart';
+import 'package:techviz/service/sectionService.dart';
 import 'package:techviz/service/taskService.dart';
 import 'package:techviz/service/userService.dart';
 import 'package:techviz/ui/config.dart';
@@ -160,6 +161,7 @@ class LoginState extends State<Login> {
 
       TaskService().listenAsync();
       UserService().listenAsync();
+      SectionService().listenAsync();
 
       //INIT AMQP MessageClient
       await MessageClient().Connect();

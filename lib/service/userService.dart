@@ -60,7 +60,7 @@ class UserService implements IUserService{
 
   @override
   void cancelListening() {
-		String deviceID = DeviceUtils().deviceInfo.DeviceID;
+		String deviceID = _deviceUtils.deviceInfo.DeviceID;
 		_mqttClientServiceInstance.unsubscribe('mobile.userstatus.$deviceID');
   }
 
@@ -71,7 +71,7 @@ class UserService implements IUserService{
 
   @override
   void listenAsync() {
-		String deviceID = DeviceUtils().deviceInfo.DeviceID;
+		String deviceID = _deviceUtils.deviceInfo.DeviceID;
 		_localStream = _mqttClientServiceInstance.subscribe('mobile.userstatus.$deviceID');
 		_localStream.listen((dynamic data){
 				dynamic json = JsonDecoder().convert(data);

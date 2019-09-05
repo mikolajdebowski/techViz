@@ -158,8 +158,8 @@ class TaskService implements ITaskService{
 	}
 
 	@visibleForTesting
-	void inject(String taskID, String location, String userID, TaskStatus taskStatus){
-		Task newTask = Task(dirty: 0, id: taskID, location: location, userID: userID, taskStatus: taskStatus);
+	void inject(String taskID, String location, String userID, int taskStatusID){
+		Task newTask = Task(dirty: 0, id: taskID, location: location, userID: userID, taskStatus: TaskStatus(id: taskStatusID), taskStatusID: taskStatusID);
 		_taskList.add(newTask);
 		_openTasksSubject.add(_taskList);
 	}

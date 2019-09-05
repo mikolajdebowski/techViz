@@ -32,21 +32,19 @@ void main() {
   SectionService _sectionService;
   MQTTClientServiceMock _clientServiceMock;
   List<String> sections = ['01', '02'];
+  DeviceUtilsMock _deviceUtilsMock = DeviceUtilsMock();
 
   setUp(() async{
     Session().user = User(userID: 'dev2');
     _clientServiceMock = MQTTClientServiceMock();
-    _sectionService = SectionService(mqttClientService: _clientServiceMock, deviceUtils: DeviceUtilsMock());
+    _sectionService = SectionService(mqttClientService: _clientServiceMock, deviceUtils: _deviceUtilsMock);
   });
 
   test('update Future should complete', () async {
-    DeviceUtilsMock deviceUtilsMock = DeviceUtilsMock();
-    DeviceInfo deviceInfo = deviceUtilsMock.deviceInfo;
 
-    Future<void> updateFuture = _sectionService.update(Session().user.userID, sections, deviceInfo.DeviceID);
+    Future<void> updateFuture = _sectionService.update(Session().user.userID, sections);
 
-
-    String routingKeyForPublish = 'mobile.section.update.${deviceInfo.DeviceID}';
+    String routingKeyForPublish = 'mobile.section.update.${_deviceUtilsMock.deviceInfo.DeviceID}';
     _clientServiceMock.simulateStreamPayload(routingKeyForPublish, 'irrelevantPayload');
 
     expect(updateFuture, completion(anything));

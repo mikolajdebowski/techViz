@@ -8,6 +8,8 @@ import 'package:techviz/service/client/MQTTClientService.dart';
 import 'package:techviz/service/taskService.dart';
 import 'package:techviz/service/userService.dart';
 
+import 'service/sectionService.dart';
+
 enum ConnectionStatus{
   Offline,
   Online,
@@ -66,6 +68,7 @@ class Session extends PropertyChangeNotifier implements ISession{
 
     TaskService().cancelListening();
     UserService().cancelListening();
+    SectionService().cancelListening();
 
     MQTTClientService().disconnect();
   }

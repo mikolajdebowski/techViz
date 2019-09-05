@@ -22,7 +22,7 @@ void main() {
 
     expect(find.byKey(Key('taskViewEmptyContainer')), findsOneWidget);
 
-    TaskService().inject('123', '12-12-12', 'irina', TaskStatus(id: 1));
+    TaskService().inject('123', '12-12-12', 'irina', 1);
     await tester.pump(Duration.zero);
 
     expect(find.byType(ListView), findsOneWidget);
