@@ -71,20 +71,22 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     loadView();
 
     UserService().userStatus.listen((int statusID){
-      if(statusID == Session().user.userStatusID)
+      Session().user.userStatusID = statusID;
+
+      if(currentUserStatus!=null && currentUserStatus.id == statusID)
         return;
 
-      Session().user.userStatusID = statusID;
       setCurrentUserStatus(statusID);
 
     });
 
     SectionService().userSectionsList.listen((List<String> sectionList){
+      Session().sections = sectionList;
+
       Function eq = const ListEquality<String>().equals;
-      if(eq(sectionList, currentSections))
+      if(currentSections !=null && eq(sectionList, currentSections))
         return;
 
-      Session().sections = sectionList;
       setCurrentUserSections();
     });
   }
