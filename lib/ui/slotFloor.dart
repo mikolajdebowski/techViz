@@ -10,6 +10,7 @@ import 'package:techviz/components/vizSnackbar.dart';
 import 'package:techviz/model/slotMachine.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/slotFloorRepository.dart';
+import 'package:techviz/service/slotFloorService.dart';
 
 import 'machineReservation.dart';
 
@@ -21,18 +22,23 @@ class SlotFloor extends StatefulWidget {
 class SlotFloorState extends State<SlotFloor> {
   final TextEditingController _searchTextController = TextEditingController();
   final FocusNode _searchTextFocusNode = FocusNode();
-  final SlotFloorRepository _slotFloorRepository = Repository().slotFloorRepository;
+  //final SlotFloorRepository _slotFloorRepository = Repository().slotFloorRepository;
   String _searchKey;
+  ISlotMachineService _slotMachineService;
 
   @override
   void initState() {
-    _slotFloorRepository.listenAsync();
+    //_slotFloorRepository.listenAsync();
+    _slotMachineService = SlotMachineService();
+    _slotMachineService.listenAsync();
     _searchTextController.addListener(_searchDispatch);
     super.initState();
   }
   @override
   void dispose() {
-    _slotFloorRepository.cancelAsync();
+    _slotMachineService?.cancelListening();
+
+    //_slotFloorRepository.cancelAsync();
     _searchTextController.removeListener(_searchDispatch);
     _searchTextController.dispose();
 
@@ -89,7 +95,8 @@ class SlotFloorState extends State<SlotFloor> {
             )));
 
     StreamBuilder builder = StreamBuilder<List<SlotMachine>>(
-        stream: _slotFloorRepository.slotMachineSubject.stream,
+        //stream: _slotFloorRepository.slotMachineSubject.stream,
+        stream: _slotMachineService.machineStatus,
         builder: (BuildContext context, AsyncSnapshot<List<SlotMachine>> snapshot) {
             List<DataEntryColumn> columns = [];
             columns.add(DataEntryColumn('StandID', alignment: DataAlignment.center));
@@ -183,7 +190,7 @@ class SlotFloorState extends State<SlotFloor> {
         dirty: true
       );
 
-      _slotFloorRepository.updateLocalCache([slotToPush], 'RESERVATION');
+      //_slotFloorRepository.updateLocalCache([slotToPush], 'RESERVATION');
     });
   }
 
@@ -222,18 +229,18 @@ class SlotFloorState extends State<SlotFloor> {
     final VizSnackbar _snackbar = VizSnackbar.Processing('Cancelling reservation...');
     _snackbar.show(context);
 
-    _slotFloorRepository.cancelReservation(slotMachine.standID).then((dynamic result) {
-      var reservationStatusId = result['reservationStatusId'].toString();
-      var copy = slotMachine;
-      copy.machineStatusID = reservationStatusId == '0' ? '1' : '3';
-      copy.updatedAt = DateTime.parse(result['sentAt'].toString());
-      copy.dirty = true;
-
-      _slotFloorRepository.updateLocalCache([copy], 'CANCEL');
-
-      _snackbar.dismiss();
-    }).catchError((dynamic error){
-      _snackbar.dismiss();
-    });
+//    _slotFloorRepository.cancelReservation(slotMachine.standID).then((dynamic result) {
+//      var reservationStatusId = result['reservationStatusId'].toString();
+//      var copy = slotMachine;
+//      copy.machineStatusID = reservationStatusId == '0' ? '1' : '3';
+//      copy.updatedAt = DateTime.parse(result['sentAt'].toString());
+//      copy.dirty = true;
+//
+//      _slotFloorRepository.updateLocalCache([copy], 'CANCEL');
+//
+//      _snackbar.dismiss();
+//    }).catchError((dynamic error){
+//      _snackbar.dismiss();
+//    });
   }
 }

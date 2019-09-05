@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:rxdart/rxdart.dart';
 import 'package:techviz/common/deviceUtils.dart';
 import 'package:techviz/common/model/deviceInfo.dart';
@@ -7,6 +8,7 @@ import 'package:synchronized/synchronized.dart';
 import 'client/MQTTClientService.dart';
 
 abstract class ISlotMachineService{
+  Stream<List<SlotMachine>> get machineStatus;
   Future<void> setReservation(String standID, String userID, {String playerID, int time});
   Future<void> cancelReservation(String standID);
   void listenAsync();
@@ -28,9 +30,11 @@ class SlotMachineService implements ISlotMachineService{
   IDeviceUtils _deviceUtils;
   final BehaviorSubject<List<SlotMachine>> _machineStatusSubject = BehaviorSubject<List<SlotMachine>>();
   Stream<dynamic> _localStream;
-  Stream<List<SlotMachine>> get machineStatus => _machineStatusSubject.stream;
-  final List<SlotMachine> _slotMachines = [];
+  List<SlotMachine> _slotMachines = [];
   final _lock = Lock();
+
+  @override
+  Stream<List<SlotMachine>> get machineStatus => _machineStatusSubject.stream;
 
   @override
   Future<void> setReservation(String standID, String userID, {String playerID, int time}) async{
@@ -97,9 +101,32 @@ class SlotMachineService implements ISlotMachineService{
   @override
   void listenAsync() {
     _localStream = _mqttClientServiceInstance.subscribe('mobile.machineStatus');
-    _localStream.listen((dynamic data){
-        print(data);
+    _localStream.listen((dynamic payload){
+      List<SlotMachine> output = [];
+
+      dynamic jsonPayload = jsonDecode(payload);
+
+      String startedAt = jsonPayload['startedAt'] as String;
+      List<dynamic> data = jsonPayload['data'] as List<dynamic>;
+      data.forEach((dynamic entry){
+        entry['startedAt'] = startedAt;
+        output.add(_parser(entry));
+      });
+      _slotMachines = output;
+      _machineStatusSubject.add(_slotMachines);
     });
+  }
+
+  SlotMachine _parser(dynamic json){
+    return SlotMachine(
+        dirty: false,
+        standID: json['standId'].toString(),
+        denom: double.parse(json['denom'].toString()),
+        machineTypeName: json['machineTypeName'].toString(),
+        machineStatusID:  json['statusId'].toString(),
+        machineStatusDescription: json['statusDescription'].toString(),
+        updatedAt: DateTime.parse(json['startedAt'].toString())
+    );
   }
 }
 
