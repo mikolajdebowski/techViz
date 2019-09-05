@@ -8,7 +8,7 @@ abstract class ISectionView {
   void onLoadError(dynamic error);
 }
 abstract class ISectionPresenter{
-  Future<List<String>> update({String userID, List<String> sections, String deviceID});
+  Future<List<String>> update({String userID, List<String> sections});
   void loadSections();
 }
 
@@ -36,8 +36,8 @@ class SectionPresenter implements ISectionPresenter {
   }
 
   @override
-  Future<List<String>> update({String userID, List<String> sections, String deviceID}){
-    return _sectionService.update(userID, sections, deviceID);
+  Future<List<String>> update({String userID, List<String> sections}){
+    return _sectionService.update(userID, sections);
   }
 }
 

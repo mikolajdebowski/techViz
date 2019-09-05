@@ -132,9 +132,7 @@ class SectionSelectorState extends State<SectionSelector> implements ISectionVie
     Session session = Session();
     List<String> sections = sectionList.where((SectionModelPresenter s) => s.selected).map((SectionModelPresenter s)=>s.sectionID).toList();
 
-    DeviceInfo info = DeviceUtils().deviceInfo;
-
-    sectionPresenter.update(userID: session.user.userID, sections: sections, deviceID: info.DeviceID).then((dynamic d){
+    sectionPresenter.update(userID: session.user.userID, sections: sections).then((dynamic d){
       _snackbar.dismiss();
       Navigator.of(context).pop(sections);
     }).catchError((dynamic error){

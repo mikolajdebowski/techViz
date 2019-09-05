@@ -35,6 +35,7 @@ dependencies:
   uuid: ^2.0.2
   path_provider: ^1.2.0
   connectivity: ^0.4.3+7
+  collection: any
 
   mqtt_client:
     git: git@git.internal.bis2.net:Mobile/Plugins/mqtt_client.git

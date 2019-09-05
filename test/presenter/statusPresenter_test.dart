@@ -14,6 +14,21 @@ class UserServiceMock implements IUserService{
     assert(statusID!=null || roleID!=null);
     return Future<void>.value();
   }
+
+  @override
+  void cancelListening() {
+
+  }
+
+  @override
+  void dispose() {
+
+  }
+
+  @override
+  void listenAsync() {
+
+  }
 }
 
 class UserStatusRepositoryMock implements IUserStatusRepository{

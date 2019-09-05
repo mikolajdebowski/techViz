@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:techviz/components/VizButton.dart';
 import 'package:techviz/components/vizActionBar.dart';
@@ -6,6 +7,8 @@ import 'package:techviz/model/userSection.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/userStatusRepository.dart';
+import 'package:techviz/service/sectionService.dart';
+import 'package:techviz/service/userService.dart';
 import 'package:techviz/session.dart';
 import 'package:techviz/ui/managerView.dart';
 import 'package:techviz/ui/networkIndicator.dart';
@@ -13,7 +16,6 @@ import 'package:techviz/ui/sectionSelector.dart';
 import 'package:techviz/ui/slotFloor.dart';
 import 'package:techviz/ui/statusSelector.dart';
 import 'package:techviz/ui/taskView.dart';
-
 import 'drawer.dart';
 
 enum HomeViewType{
@@ -63,9 +65,28 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     scaffoldStateKey = GlobalKey();
 
     WidgetsBinding.instance.addObserver(this);
-    loadDefaultSections();
-    loadCurrentStatus();
+    setCurrentUserSections();
+    setCurrentUserStatus(Session().user.userStatusID);
+
     loadView();
+
+    UserService().userStatus.listen((int statusID){
+      if(statusID == Session().user.userStatusID)
+        return;
+
+      Session().user.userStatusID = statusID;
+      setCurrentUserStatus(statusID);
+
+    });
+
+    SectionService().userSectionsList.listen((List<String> sectionList){
+      Function eq = const ListEquality<String>().equals;
+      if(eq(sectionList, currentSections))
+        return;
+
+      Session().sections = sectionList;
+      setCurrentUserSections();
+    });
   }
 
   @override
@@ -78,19 +99,23 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     scaffoldStateKey.currentState.openDrawer();
   }
 
-  void loadDefaultSections() {
+  void setCurrentUserSections() {
+    if(!mounted)
+      return;
+
     setState(() {
       currentSections = Session().sections;
     });
   }
 
-  void loadCurrentStatus() {
+  void setCurrentUserStatus(int statusID) {
+    if(!mounted)
+      return;
 
     UserStatusRepository userStatusRepo = Repository().userStatusRepository;
-    ISession session = Session();
     userStatusRepo.getStatuses().then((List<UserStatus> list) {
       setState(() {
-        currentUserStatus = list.where((UserStatus status)=> status.id == session.user.userStatusID).first;
+        currentUserStatus = list.where((UserStatus status)=> status.id == statusID).first;
       });
     });
   }
@@ -115,7 +140,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
         return;
 
       Session().sections = sections;
-      loadDefaultSections();
+      setCurrentUserSections();
     });
   }
 

@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:techviz/service/client/MQTTClientService.dart';
-
 import '../../_mocks/mqttInternalClientMock.dart';
 
 void main() {
