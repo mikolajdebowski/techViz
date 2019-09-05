@@ -10,6 +10,7 @@ import '../_mocks/mqttInternalClientMock.dart';
 
 
 void main(){
+  RabbitmqConfig config = RabbitmqConfig();
 
   Widget makeTestableWidget({Widget child}){
     return MaterialApp(
@@ -19,8 +20,8 @@ void main(){
 
   MqttInternalClientMock _client;
   setUpAll(() async{
-    _client = MqttInternalClientMock('tvdev.internal.bis2.net', '4D8E280D-B840-4773-898D-0F9F71B82ACA');
-    await MQTTClientService().init('tvdev.internal.bis2.net', '4D8E280D-B840-4773-898D-0F9F71B82ACA', internalMqttClient: _client, logging: false);
+    _client = MqttInternalClientMock('4D8E280D-B840-4773-898D-0F9F71B82ACA');
+    await MQTTClientService().init('4D8E280D-B840-4773-898D-0F9F71B82ACA', internalMqttClient: _client, logging: false, config: config);
     await MQTTClientService().connect();
 
     Connectivity.methodChannel.setMockMethodCallHandler((MethodCall methodCall) async {

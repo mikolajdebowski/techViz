@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:rxdart/subjects.dart';
-import 'package:techviz/common/model/deviceInfo.dart';
 import 'package:techviz/model/user.dart';
 import 'package:techviz/service/client/MQTTClientService.dart';
 import 'package:techviz/service/sectionService.dart';
