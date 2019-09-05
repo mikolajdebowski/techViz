@@ -6,9 +6,8 @@ import 'package:typed_data/typed_data.dart' as typed;
 
 class MqttInternalClientMock extends mqtt.MqttClient{
 	MqttInternalClientMock(
-			String broker,
 			String deviceID
-			) : super(broker, deviceID);
+			) : super('irrelevant', deviceID);
 	mqtt.MessageIdentifierDispenser messageIdentifierDispenser = mqtt.MessageIdentifierDispenser();
 
 	final StreamController<List<mqtt.MqttReceivedMessage<mqtt.MqttMessage>>> _updatesStream = StreamController<List<mqtt.MqttReceivedMessage<mqtt.MqttMessage>>>();

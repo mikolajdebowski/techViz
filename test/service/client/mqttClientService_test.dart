@@ -3,27 +3,31 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:techviz/service/client/MQTTClientService.dart';
 import '../../_mocks/mqttInternalClientMock.dart';
+import '../../_mocks/rabbitmqConfigMock.dart';
 
 void main() {
+	RabbitMQConfigMock config = RabbitMQConfigMock();
+
+
+
 	test('MQTTClientService should init', () async{
-		MqttInternalClientMock _client = MqttInternalClientMock('irrelevantURL', 'irrelevantDeviceID');
-		await MQTTClientService().init('irrelevantURL', 'irrelevantDeviceID', internalMqttClient: _client);
+		MqttInternalClientMock _client = MqttInternalClientMock('irrelevantDeviceID');
+		await MQTTClientService().init('irrelevantDeviceID', internalMqttClient: _client, config: config);
 	});
 
 	test('MQTTClientService should connect', () async{
-		MqttInternalClientMock _client = MqttInternalClientMock('irrelevantURL', 'irrelevantDeviceID');
-		await MQTTClientService().init('irrelevantURL', 'irrelevantDeviceID', internalMqttClient: _client);
+		MqttInternalClientMock _client = MqttInternalClientMock( 'irrelevantDeviceID');
+		await MQTTClientService().init('irrelevantDeviceID', internalMqttClient: _client, config: config);
 		await MQTTClientService().connect();
 	});
 
-	test('MQTTClientService should throw an exception if broker or deviceId is null', () async{
-		expect(MQTTClientService().init(null, 'irrelevantDeviceID'), throwsAssertionError);
-		expect(MQTTClientService().init('irrelevantURL', null), throwsAssertionError);
+	test('MQTTClientService should throw an exception config is not given', () async{
+		expect(MQTTClientService().init('irrelevantDeviceID'), throwsAssertionError);
 	});
 
 	setUp(() async{
-		MqttInternalClientMock _client = MqttInternalClientMock('irrelevantURL', 'irrelevantDeviceID');
-		await MQTTClientService().init('irrelevantURL', 'irrelevantDeviceID', internalMqttClient: _client);
+		MqttInternalClientMock _client = MqttInternalClientMock('irrelevantDeviceID');
+		await MQTTClientService().init('irrelevantDeviceID', internalMqttClient: _client, config: config);
 		await MQTTClientService().connect();
 	});
 

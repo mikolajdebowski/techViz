@@ -4,7 +4,7 @@ import 'package:mqtt_client/mqtt_client.dart' as mqtt;
 import 'package:rxdart/rxdart.dart';
 
 abstract class IMQTTClientService{
-	Future init(String broker, String deviceID, {bool secure = false, bool logging = false});
+	Future init(String deviceID, {bool logging = false});
 	void disconnect();
 	Stream<dynamic> subscribe(String routingKey);
 	void unsubscribe(String routingKey);
@@ -18,7 +18,8 @@ class MQTTClientService implements IMQTTClientService{
 	factory MQTTClientService() => _instance;
 	MQTTClientService._();
 
-	dynamic _mqttClient;
+	//dynamic _mqttClient;
+	mqtt.MqttClient _mqttClient;
 	String _deviceID;
 	String _broker;
 	StreamSubscription _subscription;
@@ -37,22 +38,21 @@ class MQTTClientService implements IMQTTClientService{
 	}
 
 	@override
-	Future init(String broker, String deviceID, { bool secure = false, bool logging = false, dynamic internalMqttClient}) async{
-		assert(broker!=null);
+	Future init(String deviceID, { bool logging = false, dynamic internalMqttClient, RabbitmqConfig config}) async{
+
 		assert(deviceID!=null);
+		assert(config!=null);
 
 		_logging = logging;
 		_statusSubject = BehaviorSubject<MQTTConnectionStatus>();
 		_mapSubjects = {};
 
-		broker = secure ? 'wss://$broker' : 'ws://$broker';
-		broker = '$broker/mqtt';
-
 		_deviceID = deviceID;
-		_broker = broker;
+		_broker = config.broker;
 		_mqttClient = internalMqttClient != null ? internalMqttClient : mqtt.MqttClient(_broker, '');
 		_mqttClient.useWebSocket = true;
-		_mqttClient.port = secure ? 443 : 80;
+		_mqttClient.port = config.port;
+		_mqttClient.secure = config.secure;
 		_mqttClient.logging(on: _logging);
 		_mqttClient.keepAlivePeriod = 10;
 		_mqttClient.onConnected = _onConnected;
@@ -241,4 +241,11 @@ enum MQTTConnectionStatus{
 	Connecting,
 	Error,
 	Unknown
+}
+
+class RabbitmqConfig{
+	String broker;
+	int port;
+	bool secure;
+	String exchangeName;
 }

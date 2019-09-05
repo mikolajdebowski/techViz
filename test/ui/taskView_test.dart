@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/model/user.dart';
 import 'package:techviz/service/taskService.dart';
 import 'package:techviz/session.dart';

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,6 +26,7 @@ import 'package:techviz/repository/repository.dart';
 import 'package:techviz/session.dart';
 import 'package:techviz/ui/roleSelector.dart';
 import 'package:logging/logging.dart';
+import 'package:http/http.dart';
 
 class Login extends StatefulWidget {
 
@@ -154,9 +156,9 @@ class LoginState extends State<Login> {
       Session().init(usernameController.text);
 
       //INIT MQTTClient Service
-      String broker = serverUrl.replaceAll('http://', '').replaceAll('https://', '');
+      RabbitmqConfig config = await rabbitmqConfig(serverUrl);
       String deviceID = DeviceUtils().deviceInfo.DeviceID;
-      await MQTTClientService().init(broker, deviceID, logging: false);
+      await MQTTClientService().init(deviceID, logging: false, config: config);
       await MQTTClientService().connect();
 
       TaskService().listenAsync();
@@ -177,6 +179,24 @@ class LoginState extends State<Login> {
       });
       VizAlert.Show(context, error.toString());
     });
+  }
+
+  Future<RabbitmqConfig> rabbitmqConfig(String serverUrl) async{
+    Response response = await get('$serverUrl/techviz.json');
+    int statusCode = response.statusCode;
+    if(statusCode!=200){
+      throw Exception('Configuration file techviz.json not found');
+    }
+
+    RabbitmqConfig config = RabbitmqConfig();
+
+    String json = response.body;
+    dynamic rabbitmqJsonConfig = jsonDecode(json)['rabbitmq'];
+    config.port = rabbitmqJsonConfig['port'] as int;
+    config.secure = rabbitmqJsonConfig['secure'] as bool;
+    config.broker =  rabbitmqJsonConfig['broker'] as String;
+
+    return Future<RabbitmqConfig>.value(config);
   }
 
   @override
