@@ -1,6 +1,9 @@
 {
+  "auth": {
+    "type": "file"
+  },
   "rabbitmq": {
-    "port": 5672,
+    "port": 80,
     "exchange_name": "techViz"
   }
 }

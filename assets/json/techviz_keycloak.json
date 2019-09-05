@@ -1,0 +1,14 @@
+{
+  "auth": {
+    "type": "keycloak",
+    "keycloak": {
+      "realm": "ihub-vizexplorer",
+      "auth-server-url": "http://tvdev.internal.bis2.net/auth",
+      "clientId":"mobile"
+    }
+  },
+  "rabbitmq": {
+    "port": 80,
+    "exchange_name": "techViz"
+  }
+}
