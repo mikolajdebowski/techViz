@@ -43,7 +43,7 @@ class MessageClient implements IMessageClient{
     print('MessageClient: Connect');
     if(_exchangeName==null){
       //CONFIGURATION
-      String loadedConfig = await rootBundle.loadString('assets/json/config.json');
+      String loadedConfig = await rootBundle.loadString('assets/json/techviz.json');
       dynamic jsonConfig = jsonDecode(loadedConfig);
       _exchangeName = jsonConfig['rabbitmq']['exchange_name'] as String;
     }

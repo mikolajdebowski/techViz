@@ -1,0 +1,11 @@
+{
+  "auth": {
+    "type": "file"
+  },
+  "rabbitmq": {
+    "broker": "wss://tvdev.internal.bis2.net/mqtts",
+    "secure": true,
+    "port": 443,
+    "exchange_name": "techViz"
+  }
+}
