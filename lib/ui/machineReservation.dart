@@ -5,9 +5,9 @@ import 'package:techviz/components/vizActionBar.dart';
 import 'package:techviz/components/vizDialog.dart';
 import 'package:techviz/components/vizSnackbar.dart';
 import 'package:techviz/model/reservationTime.dart';
-import 'package:techviz/repository/slotFloorRepository.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/reservationTimeRepository.dart';
+import 'package:techviz/service/slotFloorService.dart';
 import 'package:techviz/session.dart';
 
 typedef OnMachineReservationResult = void Function(bool result);
@@ -23,8 +23,7 @@ class MachineReservation extends StatefulWidget {
 
 class MachineReservationState extends State<MachineReservation> {
   final ReservationTimeRepository _reservationTimeRepo = Repository().reservationTimeRepository;
-  final SlotFloorRepository _slotMachineRepositoryRepo = Repository().slotFloorRepository;
-
+  ISlotFloorService _slotMachineService;
   List<ReservationTime> times = [];
   final _formKey = GlobalKey<FormState>();
   final _txtControllerPlayerID = TextEditingController();
@@ -34,6 +33,8 @@ class MachineReservationState extends State<MachineReservation> {
   @override
   void initState() {
     super.initState();
+    _slotMachineService = SlotFloorService();
+
     _reservationTimeRepo.getAll().then((List<ReservationTime> list) {
       setState(() {
         times = list;
@@ -137,38 +138,28 @@ class MachineReservationState extends State<MachineReservation> {
             _snackbar.show(context);
 
             Session session = Session();
-            _slotMachineRepositoryRepo
-                .setReservation(session.user.userID, widget.standID, _txtControllerPlayerID.text, _ddbTimeReservation)
-                .then((dynamic result) {
+            _slotMachineService.setReservation(
+                widget.standID,
+                session.user.userID,
+                playerID: _txtControllerPlayerID.text,
+                time: int.parse(_ddbTimeReservation)).then((dynamic result){
               _snackbar.dismiss();
+              Navigator.of(context).pop();
 
-              String reservationStatusId = result['reservationStatusId'].toString();
-
-//              SlotMachine copy = widget.slotMachine;
-//              copy.machineStatusID = reservationStatusId == '0' ? '1' : '3';
-//              copy.updatedAt = DateTime.parse(result['sentAt'].toString());
-//
-//              _slotMachineRepositoryRepo.pushToController(copy, 'RESERVATION');
-
-              dynamic toReturn = {'standID': widget.standID, 'reservationStatusID' : reservationStatusId == '0' ? '1' : '3', 'updatedAt' : DateTime.parse(result['sentAt'].toString())};
-
-              Navigator.of(context).pop<dynamic>(toReturn);
-            }).catchError((dynamic error) {
+            }).catchError((dynamic error){
+              _snackbar.dismiss();
               VizDialog.Alert(context, 'Error', error.toString());
-            }).whenComplete(() {
-              _snackbar.dismiss();
-              _btnEnabled = true;
+            }).whenComplete((){
+              if(mounted){
+                setState(() {
+                  _btnEnabled = true;
+                });
+              }
             });
           }
         });
 
-    ActionBar actionBar = ActionBar(
-        title: 'Reservation for StandID ${widget.standID}',
-        tailWidget: okBtn,
-        onCustomBackButtonActionTapped: () {
-          //widget.onEscalationResult(false);
-        });
-
+    ActionBar actionBar = ActionBar(title: 'Reservation for StandID ${widget.standID}', tailWidget: okBtn);
     Theme _theme = Theme(
       data: Theme.of(context).copyWith(
           canvasColor: Color(0xFF8B9EA7),

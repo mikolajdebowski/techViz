@@ -13,7 +13,7 @@ import 'package:techviz/components/vizSummary.dart';
 import 'package:techviz/model/userSection.dart';
 import 'package:techviz/model/userStatus.dart';
 import 'package:techviz/presenter/managerViewPresenter.dart';
-import 'package:techviz/repository/repository.dart';
+import 'package:techviz/service/slotFloorService.dart';
 import 'package:techviz/service/userService.dart';
 import 'package:techviz/session.dart';
 import 'package:techviz/ui/home.dart';
@@ -272,7 +272,8 @@ class ManagerViewState extends State<ManagerView> implements TechVizHome, IManag
           final VizSnackbar _snackbar = VizSnackbar.Processing('Removing reservation...');
           _snackbar.show(context);
 
-          Repository().slotFloorRepository.cancelReservation(standID).then((dynamic result) {
+          ISlotFloorService _slotMachineService = SlotFloorService();
+          _slotMachineService.cancelReservation(standID).then((dynamic result) {
             setState(() {
               _slotFloorLoading = true;
               _slotFloorList = null;

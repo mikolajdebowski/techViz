@@ -7,7 +7,7 @@ import 'package:techviz/model/slotMachine.dart';
 import 'package:synchronized/synchronized.dart';
 import 'client/MQTTClientService.dart';
 
-abstract class ISlotMachineService{
+abstract class ISlotFloorService{
   Stream<List<SlotMachine>> get machineStatus;
   Future<void> setReservation(String standID, String userID, {String playerID, int time});
   Future<void> cancelReservation(String standID);
@@ -16,15 +16,15 @@ abstract class ISlotMachineService{
   void dispose();
 }
 
-class SlotMachineService implements ISlotMachineService{
-  static final SlotMachineService _instance = SlotMachineService._internal();
-  factory SlotMachineService({IMQTTClientService mqttClientService, IDeviceUtils deviceUtils}) {
+class SlotFloorService implements ISlotFloorService{
+  static final SlotFloorService _instance = SlotFloorService._internal();
+  factory SlotFloorService({IMQTTClientService mqttClientService, IDeviceUtils deviceUtils}) {
     _instance._mqttClientServiceInstance = mqttClientService ??= MQTTClientService();
     _instance._deviceUtils = deviceUtils ?? DeviceUtils();
     assert(_instance._mqttClientServiceInstance!=null);
     return _instance;
   }
-  SlotMachineService._internal();
+  SlotFloorService._internal();
 
   IMQTTClientService _mqttClientServiceInstance;
   IDeviceUtils _deviceUtils;
@@ -53,7 +53,16 @@ class SlotMachineService implements ISlotMachineService{
     }
     message['reservationStatusId'] = 0;
 
-    return _manageReservation(message);
+    await _manageReservation(message);
+
+    await _lock.synchronized(() async {
+      int idx = _slotMachines.indexWhere((SlotMachine slotMachine)=>slotMachine.standID == standID);
+      if(idx<0)
+        return;
+
+      _slotMachines[idx].dirty = true;
+      _machineStatusSubject.add(_slotMachines);
+    });
   }
 
   @override
@@ -64,7 +73,16 @@ class SlotMachineService implements ISlotMachineService{
 
     message['standId'] = standID;
     message['reservationStatusId'] = 1;
-    return _manageReservation(message);
+    await _manageReservation(message);
+
+    await _lock.synchronized(() async {
+      int idx = _slotMachines.indexWhere((SlotMachine slotMachine)=>slotMachine.standID == standID);
+      if(idx<0)
+        return;
+
+      _slotMachines[idx].dirty = true;
+      _machineStatusSubject.add(_slotMachines);
+    });
   }
 
   Future<void> _manageReservation(Map payload){
@@ -101,8 +119,8 @@ class SlotMachineService implements ISlotMachineService{
   @override
   void listenAsync() {
     _localStream = _mqttClientServiceInstance.subscribe('mobile.machineStatus');
-    _localStream.listen((dynamic payload){
-      List<SlotMachine> output = [];
+    _localStream.listen((dynamic payload) async{
+      List<SlotMachine> slotMachineList = [];
 
       dynamic jsonPayload = jsonDecode(payload);
 
@@ -110,9 +128,13 @@ class SlotMachineService implements ISlotMachineService{
       List<dynamic> data = jsonPayload['data'] as List<dynamic>;
       data.forEach((dynamic entry){
         entry['startedAt'] = startedAt;
-        output.add(_parser(entry));
+        slotMachineList.add(_parser(entry));
       });
-      _slotMachines = output;
+
+      await _lock.synchronized(() async {
+        _slotMachines = slotMachineList;
+      });
+
       _machineStatusSubject.add(_slotMachines);
     });
   }

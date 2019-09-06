@@ -3,10 +3,6 @@ import 'dart:math';
 import 'package:techviz/repository/slotFloorRepository.dart';
 
 class SlotFloorRemoteRepositoryMock implements ISlotFloorRemoteRepository{
-  @override
-  Future<List<Map>> fetch() {
-    throw UnimplementedError();
-  }
 
   @override
   Future<List<Map>> slotFloorSummary() {

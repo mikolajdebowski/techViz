@@ -4,14 +4,12 @@ import 'package:techviz/components/dataEntry/dataEntry.dart';
 import 'package:techviz/components/dataEntry/dataEntryCell.dart';
 import 'package:techviz/components/dataEntry/dataEntryColumn.dart';
 import 'package:techviz/components/vizActionBar.dart';
+import 'package:techviz/components/vizDialog.dart';
 import 'package:techviz/components/vizElevated.dart';
 import 'package:techviz/components/vizListView.dart';
 import 'package:techviz/components/vizSnackbar.dart';
 import 'package:techviz/model/slotMachine.dart';
-import 'package:techviz/repository/repository.dart';
-import 'package:techviz/repository/slotFloorRepository.dart';
 import 'package:techviz/service/slotFloorService.dart';
-
 import 'machineReservation.dart';
 
 class SlotFloor extends StatefulWidget {
@@ -22,14 +20,12 @@ class SlotFloor extends StatefulWidget {
 class SlotFloorState extends State<SlotFloor> {
   final TextEditingController _searchTextController = TextEditingController();
   final FocusNode _searchTextFocusNode = FocusNode();
-  //final SlotFloorRepository _slotFloorRepository = Repository().slotFloorRepository;
   String _searchKey;
-  ISlotMachineService _slotMachineService;
+  ISlotFloorService _slotMachineService;
 
   @override
   void initState() {
-    //_slotFloorRepository.listenAsync();
-    _slotMachineService = SlotMachineService();
+    _slotMachineService = SlotFloorService();
     _slotMachineService.listenAsync();
     _searchTextController.addListener(_searchDispatch);
     super.initState();
@@ -37,11 +33,8 @@ class SlotFloorState extends State<SlotFloor> {
   @override
   void dispose() {
     _slotMachineService?.cancelListening();
-
-    //_slotFloorRepository.cancelAsync();
     _searchTextController.removeListener(_searchDispatch);
     _searchTextController.dispose();
-
     super.dispose();
   }
 
@@ -95,7 +88,6 @@ class SlotFloorState extends State<SlotFloor> {
             )));
 
     StreamBuilder builder = StreamBuilder<List<SlotMachine>>(
-        //stream: _slotFloorRepository.slotMachineSubject.stream,
         stream: _slotMachineService.machineStatus,
         builder: (BuildContext context, AsyncSnapshot<List<SlotMachine>> snapshot) {
             List<DataEntryColumn> columns = [];
@@ -174,24 +166,7 @@ class SlotFloorState extends State<SlotFloor> {
 
   void _goToReservationView(final SlotMachine slotMachine){
     MachineReservation machineReservationView = MachineReservation(standID: slotMachine.standID);
-    Navigator.push<dynamic>(context, MaterialPageRoute<dynamic>(builder: (BuildContext context) => machineReservationView)).then((dynamic result){
-      if(result==null)
-        return;
-
-      SlotMachine slotToPush = SlotMachine(
-        standID: slotMachine.standID,
-        denom: slotMachine.denom,
-        machineTypeName: slotMachine.machineTypeName,
-        reservationTime: slotMachine.reservationTime,
-        updatedAt: result['updatedAt'],
-        machineStatusID: result['reservationStatusId'] == '0' ? '1' : '3',
-        machineStatusDescription: slotMachine.machineStatusDescription,
-        playerID: slotMachine.playerID,
-        dirty: true
-      );
-
-      //_slotFloorRepository.updateLocalCache([slotToPush], 'RESERVATION');
-    });
+    Navigator.push<dynamic>(context, MaterialPageRoute<dynamic>(builder: (BuildContext context) => machineReservationView));
   }
 
   void _showReservationCancelDialog(final SlotMachine slotMachine){
@@ -205,13 +180,13 @@ class SlotFloorState extends State<SlotFloor> {
         content: Text("Cancel reservation for ${slotMachine.standID}?"),
         actions: <Widget>[
           FlatButton(
-            child: Text("Cancel"),
+            child: Text("No"),
             onPressed: () {
               Navigator.of(context).pop(false);
             },
           ),
-          FlatButton(
-            child: Text("Yes"),
+          RaisedButton(
+            child: Text("Yes", style: TextStyle(color: Colors.white)),
             onPressed: () {
               Navigator.of(context).pop(true);
             },
@@ -229,18 +204,11 @@ class SlotFloorState extends State<SlotFloor> {
     final VizSnackbar _snackbar = VizSnackbar.Processing('Cancelling reservation...');
     _snackbar.show(context);
 
-//    _slotFloorRepository.cancelReservation(slotMachine.standID).then((dynamic result) {
-//      var reservationStatusId = result['reservationStatusId'].toString();
-//      var copy = slotMachine;
-//      copy.machineStatusID = reservationStatusId == '0' ? '1' : '3';
-//      copy.updatedAt = DateTime.parse(result['sentAt'].toString());
-//      copy.dirty = true;
-//
-//      _slotFloorRepository.updateLocalCache([copy], 'CANCEL');
-//
-//      _snackbar.dismiss();
-//    }).catchError((dynamic error){
-//      _snackbar.dismiss();
-//    });
+    _slotMachineService.cancelReservation(slotMachine.standID).then((dynamic result){
+      _snackbar.dismiss();
+    }).catchError((dynamic error){
+      _snackbar.dismiss();
+      VizDialog.Alert(context, 'Error', error.toString());
+    });
   }
 }
