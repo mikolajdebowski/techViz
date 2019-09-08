@@ -56,7 +56,7 @@ void main() {
     kiwi.Container().registerInstance(TaskRepository(TaskRemoteRepositoryMock(), LocalRepositoryMock()));
     Repository().taskTypeRepository = TaskTypeRepository(null, TaskTypeTableMock());
     Repository().taskStatusRepository = TaskStatusRepository(null, TaskStatusTableMock());
-    Repository().slotFloorRepository = SlotFloorRepository(SlotFloorRemoteRepositoryMock(), null);
+    Repository().slotFloorRepository = SlotFloorRepository(SlotFloorRemoteRepositoryMock());
     Repository().userRepository = UserRepository(UserRemoteRepositoryMock(), null);
   });
 

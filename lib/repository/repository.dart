@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:techviz/common/http/client/sessionClient.dart';
 import 'package:techviz/repository/slotFloorRepository.dart';
-import 'package:techviz/repository/async/SlotMachineRouting.dart';
 import 'package:techviz/repository/escalationPathRepository.dart';
 import 'package:techviz/repository/local/localRepository.dart';
 import 'package:techviz/repository/processor/ProcessorReservationTimeRepository.dart';
@@ -201,7 +200,7 @@ class Repository {
     if(_slotFloorRepository!=null){
       return _slotFloorRepository;
     }
-    return _slotFloorRepository = SlotFloorRepository(ProcessorSlotFloorRepository(ProcessorRepositoryConfig()), SlotMachineRouting(MessageClient()));
+    return _slotFloorRepository = SlotFloorRepository(ProcessorSlotFloorRepository(ProcessorRepositoryConfig()));
   }
   set slotFloorRepository(SlotFloorRepository slotFloorRepository){
     _slotFloorRepository = slotFloorRepository;
