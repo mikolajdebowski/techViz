@@ -69,7 +69,7 @@ class SlotFloorState extends State<SlotFloor> {
         child: VizElevated(
             customWidget: Row(
               children: <Widget>[
-                Padding(padding: EdgeInsets.only(left: 5.0), child: ImageIcon(AssetImage("assets/images/ic_search.png"), size: 25.0)),
+                Padding(padding: EdgeInsets.only(left: 10.0, right: 10.0), child: ImageIcon(AssetImage("assets/images/ic_search.png"), size: 25.0)),
                 Expanded(
                     child: Container(
                         decoration: BoxDecoration(borderRadius: BorderRadius.circular(5.0), color: Colors.black),
@@ -83,7 +83,16 @@ class SlotFloorState extends State<SlotFloor> {
                                 border: InputBorder.none,
                                 isDense: true,
                                 hintText: 'Search for StandID or Theme/Game',
-                                hintStyle: TextStyle(color: Colors.white70)))))
+                                hintStyle: TextStyle(color: Colors.white70))))),
+                Padding(padding: EdgeInsets.only(right: 10.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        if(_searchTextController.text.isNotEmpty){
+                          _searchTextController.clear();
+                        }
+                    },
+                      child: Icon(Icons.close, size: 38.0,),
+                )),
               ],
             )));
 
