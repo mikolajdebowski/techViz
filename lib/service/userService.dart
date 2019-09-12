@@ -61,7 +61,7 @@ class UserService extends Service implements IUserService{
 
 		return _completer.future.timeout(Service.defaultTimeoutForServices).catchError((dynamic error){
 			if(error is TimeoutException){
-				throw Exception("Mobile device has not received a response and has time out after ${Service.defaultTimeoutForServices.inSeconds.toString()} seconds. Please check network details and try again.");
+				throw Exception("Mobile device has not received a response and has timed out after ${Service.defaultTimeoutForServices.inSeconds.toString()} seconds. Please check network details and try again.");
 			}
 		});
 	}
