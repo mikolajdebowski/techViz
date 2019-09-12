@@ -128,7 +128,7 @@ class ReassignTaskState extends State<ReassignTask> implements IReassignPresente
 
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: ActionBar(title: 'Re-assign task ${widget.location}', titleColor: Colors.blue, tailWidget:okBtn),
+      appBar: ActionBar(title: 'Reassign task ${widget.location}', titleColor: Colors.blue, tailWidget:okBtn),
       body:  SafeArea(child: container),
     );
   }
