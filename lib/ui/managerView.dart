@@ -119,8 +119,8 @@ class ManagerViewState extends State<ManagerView> implements TechVizHome, IManag
     return SwipeAction('Reassign', (dynamic entry){
 
       DataEntry dataEntry = entry as DataEntry;
-      String location = dataEntry.cell.where((DataEntryCell dataCell)=> dataCell.columnName == 'Location').toString();
-
+      DataEntryCell dataCell = dataEntry.cell.where((DataEntryCell dataCell) => dataCell.columnName == 'Location').first;
+      String location = dataCell.value.toString();
       ReassignTask reassignTaskView = ReassignTask(dataEntry.id, location);
 
       Navigator.of(context).push<bool>(
