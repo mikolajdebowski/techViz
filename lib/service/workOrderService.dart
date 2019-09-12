@@ -3,7 +3,9 @@ import 'dart:convert';
 
 import 'package:intl/intl.dart';
 import 'package:techviz/common/deviceUtils.dart';
+import 'package:techviz/common/http/client/processorClient.dart';
 import 'package:techviz/common/model/deviceInfo.dart';
+import 'package:techviz/service/Service.dart';
 
 import 'client/MQTTClientService.dart';
 
@@ -11,7 +13,7 @@ abstract class IWorkOrderService{
   Future create(String userID, int taskTypeID, {String location, String mNumber, String notes, DateTime dueDate});
 }
 
-class WorkOrderService implements IWorkOrderService{
+class WorkOrderService extends Service implements IWorkOrderService {
   static final WorkOrderService _instance = WorkOrderService._internal();
 
   factory WorkOrderService({IMQTTClientService mqttClientService, IDeviceUtils deviceUtils}) {
@@ -60,7 +62,13 @@ class WorkOrderService implements IWorkOrderService{
     payload['dueDate'] = dueDate!=null? DateFormat("yyyy-MM-dd").format(dueDate) : null;
 
     _mqttClientServiceInstance.publishMessage(routingKeyForPublish, payload);
-    return _completer.future.timeout(Duration(seconds: 10));
+
+    return _completer.future.timeout(Service.defaultTimeoutForServices).catchError((dynamic error){
+      if(error is TimeoutException){
+        throw Exception("Mobile device has not received a response and has time out after ${Service.defaultTimeoutForServices.inSeconds.toString()} seconds. Please check network details and try again.");
+      }
+    });
+
   }
 
 }

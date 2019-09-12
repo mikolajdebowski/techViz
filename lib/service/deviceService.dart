@@ -1,13 +1,14 @@
 import 'dart:async';
 import 'package:techviz/common/deviceUtils.dart';
 import 'package:techviz/common/model/deviceInfo.dart';
+import 'package:techviz/service/Service.dart';
 import 'client/MQTTClientService.dart';
 
 abstract class IDeviceService{
 	Future update(String userID);
 }
 
-class DeviceService implements IDeviceService{
+class DeviceService extends Service implements IDeviceService{
 	IMQTTClientService _mqttClientServiceInstance;
 	IDeviceUtils _deviceUtils;
 	DeviceService({IMQTTClientService mqttClientService, IDeviceUtils deviceUtils}){
@@ -40,7 +41,11 @@ class DeviceService implements IDeviceService{
 
 		_mqttClientServiceInstance.publishMessage(routingKeyForPublish, message);
 
-  	return _completer.future.timeout(Duration(seconds: 10));
+		return _completer.future.timeout(Service.defaultTimeoutForServices).catchError((dynamic error){
+			if(error is TimeoutException){
+				throw Exception("Mobile device has not received a response and has time out after ${Service.defaultTimeoutForServices.inSeconds.toString()} seconds. Please check network details and try again.");
+			}
+		});
   }
 }
 
