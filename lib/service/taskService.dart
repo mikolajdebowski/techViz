@@ -1,14 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:flutter/widgets.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:synchronized/synchronized.dart';
 import 'package:techviz/common/deviceUtils.dart';
 import 'package:techviz/model/escalationPath.dart';
 import 'package:techviz/model/task.dart';
 import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/model/taskType.dart';
-import 'package:synchronized/synchronized.dart';
 import 'package:techviz/service/service.dart';
+
 import 'client/MQTTClientService.dart';
 
 abstract class ITaskService{

@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:intl/intl.dart';
 import 'package:techviz/common/deviceUtils.dart';
-import 'package:techviz/common/http/client/processorClient.dart';
 import 'package:techviz/common/model/deviceInfo.dart';
 import 'package:techviz/service/service.dart';
 
