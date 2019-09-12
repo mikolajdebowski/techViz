@@ -117,7 +117,7 @@ class LoginState extends State<Login> {
 
     await DeviceService().update(Session().user.userID).catchError((dynamic error){
       if(error is TimeoutException){
-        throw Exception('A timeout exception has been thrown. Please try again.');
+        throw Exception("Mobile device has not received a response and has time out. Please check network details and try again.");
       }
     });
   }

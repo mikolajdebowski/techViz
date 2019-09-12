@@ -160,15 +160,15 @@ class MessageClient implements IMessageClient{
   @override
   Future<Exchange> _getExchange(Channel _channel)  {
     return _getDefaultExchange(_channel).timeout(_timeoutDuration).then((Exchange exchange) {
-      print('channel OK');
+//      print('channel OK');
       return Future.value(exchange);
     }).catchError((dynamic connError){
       print(connError);
-      print('getting second channel');
+//      print('getting second channel');
 
       if(connError.runtimeType == TimeoutException || connError.runtimeType == ChannelException){
         return _rabbitmqClient.channel().timeout(_timeoutDuration, onTimeout: (){
-          throw TimeoutException('Timeout after trying to create channel');
+          throw TimeoutException('Mobile device has not received a response and has time out after trying to create channel');
         }).then((Channel channel) {
           print('new channel instance');
           _channel = channel;
@@ -190,7 +190,7 @@ class MessageClient implements IMessageClient{
       if(wait)
         _removeRoutingKeyListener(_callbackRoutingKey);
 
-      _completer.completeError(TimeoutException('Max connect timeout reached after ${_timeoutDuration.inSeconds} seconds.'));
+      _completer.completeError(TimeoutException( "Mobile device has not received a response and has time out after ${_timeoutDuration.inSeconds} seconds. Please check network details and try again."));
     });
 
 

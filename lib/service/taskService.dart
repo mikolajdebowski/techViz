@@ -1,13 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:flutter/widgets.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:synchronized/synchronized.dart';
 import 'package:techviz/common/deviceUtils.dart';
 import 'package:techviz/model/escalationPath.dart';
 import 'package:techviz/model/task.dart';
 import 'package:techviz/model/taskStatus.dart';
 import 'package:techviz/model/taskType.dart';
-import 'package:synchronized/synchronized.dart';
+import 'package:techviz/service/service.dart';
+
 import 'client/MQTTClientService.dart';
 
 abstract class ITaskService{
@@ -17,7 +20,7 @@ abstract class ITaskService{
 	void dispose();
 }
 
-class TaskService implements ITaskService{
+class TaskService extends Service implements ITaskService{
 	static final TaskService _instance = TaskService._internal();
 	factory TaskService({IMQTTClientService mqttClientService, IDeviceUtils deviceUtils}) {
 		_instance._mqttClientServiceInstance = mqttClientService!=null? mqttClientService : MQTTClientService();
@@ -143,7 +146,11 @@ class TaskService implements ITaskService{
 			_completer.completeError(error);
 		}
 
-		return _completer.future.timeout(Duration(seconds: 10));
+		return _completer.future.timeout(Service.defaultTimeoutForServices).catchError((dynamic error){
+			if(error is TimeoutException){
+				throw Exception("Mobile device has not received a response and has time out after ${Service.defaultTimeoutForServices.inSeconds.toString()} seconds. Please check network details and try again.");
+			}
+		});
 	}
 
   @override

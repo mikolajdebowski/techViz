@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:rxdart/rxdart.dart';
 import 'package:techviz/common/deviceUtils.dart';
 import 'package:techviz/common/model/deviceInfo.dart';
+import 'package:techviz/service/service.dart';
+
 import 'client/MQTTClientService.dart';
 
 abstract class ISectionService{
@@ -12,7 +15,7 @@ abstract class ISectionService{
   void dispose();
 }
 
-class SectionService implements ISectionService{
+class SectionService extends Service implements ISectionService{
   static final SectionService _instance = SectionService._internal();
   factory SectionService({IMQTTClientService mqttClientService, IDeviceUtils deviceUtils}) {
     _instance._mqttClientServiceInstance = mqttClientService ??= MQTTClientService();
@@ -52,7 +55,11 @@ class SectionService implements ISectionService{
     _mqttClientServiceInstance.publishMessage(routingKeyForPublish, message);
 
 
-    return _completer.future.timeout(Duration(seconds: 10));
+    return _completer.future.timeout(Service.defaultTimeoutForServices).catchError((dynamic error){
+      if(error is TimeoutException){
+        throw Exception("Mobile device has not received a response and has time out after ${Service.defaultTimeoutForServices.inSeconds.toString()} seconds. Please check network details and try again.");
+      }
+    });
   }
 
   @override

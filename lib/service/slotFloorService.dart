@@ -1,10 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:rxdart/rxdart.dart';
+import 'package:synchronized/synchronized.dart';
 import 'package:techviz/common/deviceUtils.dart';
 import 'package:techviz/common/model/deviceInfo.dart';
 import 'package:techviz/model/slotMachine.dart';
-import 'package:synchronized/synchronized.dart';
+import 'package:techviz/service/service.dart';
+
 import 'client/MQTTClientService.dart';
 
 abstract class ISlotFloorService{
@@ -16,7 +19,7 @@ abstract class ISlotFloorService{
   void dispose();
 }
 
-class SlotFloorService implements ISlotFloorService{
+class SlotFloorService extends Service implements ISlotFloorService{
   static final SlotFloorService _instance = SlotFloorService._internal();
   factory SlotFloorService({IMQTTClientService mqttClientService, IDeviceUtils deviceUtils}) {
     _instance._mqttClientServiceInstance = mqttClientService ??= MQTTClientService();
@@ -103,7 +106,11 @@ class SlotFloorService implements ISlotFloorService{
 
     _mqttClientServiceInstance.publishMessage(routingKeyForPublish, payload);
 
-    return _completer.future.timeout(Duration(seconds: 10));
+    return _completer.future.timeout(Service.defaultTimeoutForServices).catchError((dynamic error){
+      if(error is TimeoutException){
+        throw Exception("Mobile device has not received a response and has time out after ${Service.defaultTimeoutForServices.inSeconds.toString()} seconds. Please check network details and try again.");
+      }
+    });
   }
 
   @override
