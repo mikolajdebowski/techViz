@@ -163,7 +163,7 @@ class ManagerViewState extends State<ManagerView> implements TechVizHome, IManag
           Navigator.of(dialogKey.currentContext).pop(true);
         }, highlighted: false);
 
-        VizDialog.Confirm(dialogKey, context, 'Re-assign task', 'Are you sure you want to re-assign the task $location to yourself?', actions: [btnNo, btnYes]);
+        VizDialog.Confirm(dialogKey, context, 'Reassign task', 'Are you sure you want to reassign the task $location to yourself?', actions: [btnNo, btnYes]);
     };
 
     //action of the left of the view

@@ -164,6 +164,6 @@ class ConfigState extends State<Config> {
         ));
 
     VizButton okBtn = VizButton(title: 'OK', highlighted: true, onTap: () => onNextTap(context), enabled: _nextEnabled);
-    return Scaffold(backgroundColor: Colors.black, appBar: ActionBar(title: 'Server configuration', tailWidget: okBtn), body: SafeArea(child: container), );
+    return Scaffold(backgroundColor: Colors.black, appBar: ActionBar(title: 'Server Configuration', tailWidget: okBtn), body: SafeArea(child: container), );
   }
 }
