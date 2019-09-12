@@ -5,7 +5,7 @@ import 'package:techviz/common/deviceUtils.dart';
 import 'package:techviz/common/model/deviceInfo.dart';
 import 'package:techviz/model/slotMachine.dart';
 import 'package:synchronized/synchronized.dart';
-import 'package:techviz/service/Service.dart';
+import 'package:techviz/service/service.dart';
 import 'client/MQTTClientService.dart';
 
 abstract class ISlotFloorService{
