@@ -64,6 +64,15 @@ class MQTTClientService implements IMQTTClientService{
 				.withWillQos(mqtt.MqttQos.atLeastOnce)
 				.keepAliveFor(10).startClean();
 
+
+		//TODO change later
+		_deviceID = deviceID;
+		_broker = 'ws://tvdev.internal.bis2.net/mqtt';
+		_mqttClient = internalMqttClient != null ? internalMqttClient : mqtt.MqttClient(_broker, '');
+		_mqttClient.useWebSocket = true;
+		_mqttClient.port = 80;
+		_mqttClient.secure = false;
+
 		_mqttClient.pongCallback = (){
 			if(_logging){
 				print(_mqttClient.connectionStatus);
