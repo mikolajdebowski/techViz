@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dart_amqp/dart_amqp.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techviz/common/deviceUtils.dart';
+import 'package:techviz/common/http/exception/VizTimeoutException.dart';
 import 'package:techviz/common/model/deviceInfo.dart';
 import 'package:techviz/ui/config.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -168,7 +169,7 @@ class MessageClient implements IMessageClient{
 
       if(connError.runtimeType == TimeoutException || connError.runtimeType == ChannelException){
         return _rabbitmqClient.channel().timeout(_timeoutDuration, onTimeout: (){
-          throw TimeoutException('Mobile device has not received a response and has timed out after trying to create channel');
+          throw VizTimeoutException('Mobile device has not received a response and has timed out after trying to create channel');
         }).then((Channel channel) {
           print('new channel instance');
           _channel = channel;
@@ -190,7 +191,7 @@ class MessageClient implements IMessageClient{
       if(wait)
         _removeRoutingKeyListener(_callbackRoutingKey);
 
-      _completer.completeError(TimeoutException( "Mobile device has not received a response and has timed out after ${_timeoutDuration.inSeconds} seconds. Please check network details and try again."));
+      _completer.completeError(VizTimeoutException( "Mobile device has not received a response and has timed out after ${_timeoutDuration.inSeconds} seconds. Please check network details and try again."));
     });
 
 

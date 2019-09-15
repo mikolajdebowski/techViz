@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:synchronized/synchronized.dart';
 import 'package:techviz/common/deviceUtils.dart';
+import 'package:techviz/common/http/exception/VizTimeoutException.dart';
 import 'package:techviz/model/escalationPath.dart';
 import 'package:techviz/model/task.dart';
 import 'package:techviz/model/taskStatus.dart';
@@ -148,7 +149,7 @@ class TaskService extends Service implements ITaskService{
 
 		return _completer.future.timeout(Service.defaultTimeoutForServices).catchError((dynamic error){
 			if(error is TimeoutException){
-				throw Exception("Mobile device has not received a response and has timed out after ${Service.defaultTimeoutForServices.inSeconds.toString()} seconds. Please check network details and try again.");
+				throw VizTimeoutException("Mobile device has not received a response and has timed out after ${Service.defaultTimeoutForServices.inSeconds.toString()} seconds. Please check network details and try again.");
 			}
 		});
 	}
