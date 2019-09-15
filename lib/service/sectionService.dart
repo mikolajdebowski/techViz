@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:rxdart/rxdart.dart';
 import 'package:techviz/common/deviceUtils.dart';
+import 'package:techviz/common/http/exception/VizTimeoutException.dart';
 import 'package:techviz/common/model/deviceInfo.dart';
 import 'package:techviz/service/service.dart';
 
@@ -57,7 +58,7 @@ class SectionService extends Service implements ISectionService{
 
     return _completer.future.timeout(Service.defaultTimeoutForServices).catchError((dynamic error){
       if(error is TimeoutException){
-        throw Exception("Mobile device has not received a response and has timed out after ${Service.defaultTimeoutForServices.inSeconds.toString()} seconds. Please check network details and try again.");
+        throw VizTimeoutException("Mobile device has not received a response and has timed out after ${Service.defaultTimeoutForServices.inSeconds.toString()} seconds. Please check network details and try again.");
       }
     });
   }

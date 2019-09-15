@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:techviz/common/LowerCaseTextFormatter.dart';
 import 'package:techviz/common/deviceUtils.dart';
+import 'package:techviz/common/http/exception/VizTimeoutException.dart';
 import 'package:techviz/common/model/appInfo.dart';
 import 'package:techviz/common/http/client/processorClient.dart';
 import 'package:techviz/common/http/client/sessionClient.dart';
@@ -117,7 +118,7 @@ class LoginState extends State<Login> {
 
     await DeviceService().update(Session().user.userID).catchError((dynamic error){
       if(error is TimeoutException){
-        throw Exception("Mobile device has not received a response and has timed out. Please check network details and try again.");
+        throw VizTimeoutException("Mobile device has not received a response and has timed out. Please check network details and try again.");
       }
     });
   }

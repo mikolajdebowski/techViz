@@ -90,7 +90,7 @@ class ProcessorClient implements IHttpClient {
     }).catchError((dynamic onError){
 
       if(onError.runtimeType == TimeoutException){
-        var excp = VizTimeoutException(defaultTimeoutForAuth.inSeconds);
+        var excp = VizTimeoutException( 'Mobile device has not received a response and has timed out after ${defaultTimeoutForAuth.inSeconds.toString()} seconds. Please check network details and try again.');
         _completer.completeError(excp);
         return;
       }
@@ -128,7 +128,8 @@ class ProcessorClient implements IHttpClient {
       }
     }).catchError((dynamic onError){
       if(onError.runtimeType == TimeoutException){
-        _completer.completeError(VizTimeoutException(defaultTimeoutForPulling.inSeconds));
+        var excp = VizTimeoutException('Mobile device has not received a response and has timed out after ${defaultTimeoutForPulling.inSeconds.toString()} seconds. Please check network details and try again.');
+        _completer.completeError(excp);
         return;
       }
       _completer.completeError(onError);
