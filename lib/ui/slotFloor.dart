@@ -112,7 +112,7 @@ class SlotFloorState extends State<SlotFloor> {
               data = data.where((SlotMachine sm) => sm.standID.contains(_searchKey) || sm.machineTypeName.toLowerCase().contains(_searchKey.toLowerCase())).toList();
             }
 
-            return VizListView(_slotMachineToDataEntryParser(data), columns, noDataMessage: 'Loading...');
+            return VizListView(_slotMachineToDataEntryParser(data), columns, noDataMessage: 'No Results Found');
     });
 
     Container body = Container(
