@@ -10,17 +10,19 @@ import 'vizListViewRow.dart';
 typedef SwipeActionCallback = void Function(dynamic tag);
 typedef OnScroll = void Function(ScrollingStatus scroll);
 typedef Swipable = bool Function(dynamic parameter);
+typedef OnSort = void Function(String colName, bool ascending);
 
 class VizListView extends StatefulWidget {
   final List<DataEntry> data;
   final SwipeAction onSwipeLeft;
   final SwipeAction onSwipeRight;
   final OnScroll onScroll;
+  final OnSort onSort;
   final String noDataMessage;
   final double maxHeight;
   final List<DataEntryColumn> columnsDefinition;
 
-  VizListView(this.data, this.columnsDefinition, {Key key, this.onSwipeLeft, this.onSwipeRight, this.onScroll, this.noDataMessage, this.maxHeight}) : super(key: key){
+  VizListView(this.data, this.columnsDefinition, {Key key, this.onSwipeLeft, this.onSwipeRight, this.onScroll, this.noDataMessage, this.maxHeight, this.onSort}) : super(key: key){
     assert(data!=null);
     assert(columnsDefinition!=null);
   }
@@ -145,33 +147,34 @@ class VizListViewState extends State<VizListView> {
       if(!column.visible)
         return;
 
-//      final Widget arrow = _buildHeadingCell(
-//        context: context,
-//        label: Text(
-//          dataCell.column.toString(),
-//          textAlign: TextAlign.center,
-//          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-//        ),
-//        tooltip: "",
-//        numeric: false,
-//        onSort: (){
-//          print('sort');
-//        },
-//        sorted: true,
-//        ascending: true,
-//      );
-//
-//      header.add(Expanded(
-//          child: arrow
-//      ));
+      final Widget arrow = _buildHeadingCell(
+        context: context,
+        label: Text(
+          column.columnName.toString(),
+          textAlign: TextAlign.center,
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+        ),
+        tooltip: "",
+        numeric: false,
+        onSort: (){
+          print('sort ${column.columnName}');
+        },
+        sorted: true,
+        ascending: true,
+      );
 
       header.add(Expanded(
           flex: column.flex,
-          child: Text(
-            column.columnName.toString(),
-            textAlign: TextAlign.center,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-          )));
+          child: arrow
+      ));
+
+//      header.add(Expanded(
+//          flex: column.flex,
+//          child: Text(
+//            column.columnName.toString(),
+//            textAlign: TextAlign.center,
+//            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+//          )));
 
     });
 

@@ -15,6 +15,7 @@ class VizSummary extends StatefulWidget {
   final Function onMetricTap;
   final bool isProcessing;
   final OnScroll onScroll;
+  final OnSort onSort;
 
   const VizSummary(this.title, this.data,
       {Key key,
@@ -22,7 +23,8 @@ class VizSummary extends StatefulWidget {
       this.onSwipeRight,
       this.onMetricTap,
       this.isProcessing = false,
-      this.onScroll})
+      this.onScroll,
+      this.onSort})
       : super(key: key);
 
   @override
@@ -106,6 +108,7 @@ class VizSummaryState extends State<VizSummary>
           child = VizListView(_filteredData, _columnsDefinition,
               onSwipeRight: widget.onSwipeRight,
               onSwipeLeft: widget.onSwipeLeft,
+              onSort: widget.onSort,
               onScroll: widget.onScroll,
               maxHeight: _maxHeight);
         }

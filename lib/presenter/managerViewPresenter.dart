@@ -232,6 +232,10 @@ class ManagerViewPresenter{
     Repository().userRepository.teamAvailabilitySummary().then(handleTeamAvailabilityList).catchError(handleTeamAvailabilityError);
   }
 
+  void sortTeamAvailability(){
+    print('sorting team availability...');
+  }
+
   List<DataEntry> sortAlphabeticallyByAttendantName(List<DataEntry> coll){
     int compateTo(DataEntry a, DataEntry b){
       DataEntryCell userNameA = a.cell.where((DataEntryCell cell) => cell.columnName == 'User Name').first;

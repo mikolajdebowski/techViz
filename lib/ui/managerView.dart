@@ -60,6 +60,10 @@ class ManagerViewState extends State<ManagerView> implements TechVizHome, IManag
     _mainController = ScrollController();
   }
 
+  void sortTasksDataset(){
+    _presenter.sortTeamAvailability();
+  }
+
   @override
   Widget build(BuildContext context) {
 
