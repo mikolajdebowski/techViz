@@ -34,7 +34,7 @@ pipeline{
                     stages{
                         stage('Setup build version'){
                             steps{
-                                sh "sed -i .original 's/\${APP_VERSION}/19.3.1/g' ios/Runner/Info.plist"
+                                sh "sed -i .original 's/\${APP_VERSION}/19.3.5/g' ios/Runner/Info.plist"
                                 sh "sed -i .original 's/\${APP_BUILD_NUMBER}/${BUILD_NUMBER}/g' ios/Runner/Info.plist"
                             }
                         }
@@ -89,7 +89,7 @@ pipeline{
                     stages{
                         stage('Setup build version'){
                             steps{
-                                sh "sed -i .original 's/rootProject.appVersionName/\"19.3.3\"/g' android/app/build.gradle"
+                                sh "sed -i .original 's/rootProject.appVersionName/\"19.3.5\"/g' android/app/build.gradle"
                                 sh "sed -i .original 's/rootProject.appVersionCode.toInteger()/${BUILD_NUMBER}/g' android/app/build.gradle"
                             }
                         }
