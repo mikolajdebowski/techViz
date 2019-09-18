@@ -53,7 +53,7 @@ class MQTTClientService implements IMQTTClientService{
 		_mqttClient = internalMqttClient != null ? internalMqttClient : mqtt.MqttClient(_broker, '');
 		_mqttClient.useWebSocket = true;
 		_mqttClient.port = config.port;
-//		_mqttClient.secure = config.secure;
+		_mqttClient.secure = config.secure;
 		_mqttClient.secure = false;
 		_mqttClient.logging(on: _logging);
 		_mqttClient.keepAlivePeriod = 10;
@@ -63,15 +63,6 @@ class MQTTClientService implements IMQTTClientService{
 				.withClientIdentifier(_deviceID)
 				.withWillQos(mqtt.MqttQos.atLeastOnce)
 				.keepAliveFor(10).startClean();
-
-
-//	TODO(debowskim): change later just to enable temp login for android simulator for Glenn and Michael Shan
-//		_deviceID = deviceID;
-//		_broker = 'ws://tvdev.internal.bis2.net/mqtt';
-//		_mqttClient = internalMqttClient != null ? internalMqttClient : mqtt.MqttClient(_broker, '');
-//		_mqttClient.useWebSocket = true;
-//		_mqttClient.port = 80;
-//		_mqttClient.secure = false;
 
 		_mqttClient.pongCallback = (){
 			if(_logging){
