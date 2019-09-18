@@ -54,7 +54,6 @@ class MQTTClientService implements IMQTTClientService{
 		_mqttClient.useWebSocket = true;
 		_mqttClient.port = config.port;
 		_mqttClient.secure = config.secure;
-		_mqttClient.secure = false;
 		_mqttClient.logging(on: _logging);
 		_mqttClient.keepAlivePeriod = 10;
 		_mqttClient.onConnected = _onConnected;
