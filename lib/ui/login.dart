@@ -64,23 +64,23 @@ class LoginState extends State<Login> {
     usernameController.addListener(_checkIfLoginEnable);
     passwordController.addListener(_checkIfLoginEnable);
 
-    SharedPreferences.getInstance().then((onValue) {
+    SharedPreferences.getInstance().then((onValue) async{
       prefs = onValue;
 
-      if (prefs.getKeys().contains(Login.USERNAME)) {
+      if (prefs.getKeys().contains(Login.USERNAME))  {
         usernameController.text = prefs.getString(Login.USERNAME);
       }
 
-      DeviceUtils().init().then((DeviceInfo info){
+      await DeviceUtils().init().then((DeviceInfo info){
         if(info.isEmulator){
           if (prefs.getKeys().contains(Login.PASSWORD)) {
             passwordController.text = prefs.getString(Login.PASSWORD);
           }
         }
       });
-    });
 
-    getAppInfo();
+      getAppInfo();
+    });
 
     super.initState();
     _checkIfLoginEnable();
@@ -116,11 +116,7 @@ class LoginState extends State<Login> {
       _loadingMessage = 'Updating device info...';
     });
 
-    await DeviceService().update(Session().user.userID).catchError((dynamic error){
-      if(error is TimeoutException){
-        throw VizTimeoutException("Mobile device has not received a response and has timed out. Please check network details and try again.");
-      }
-    });
+    return DeviceService().update(Session().user.userID);
   }
 
   void loginTap(dynamic args) async {
@@ -167,17 +163,19 @@ class LoginState extends State<Login> {
       SectionService().listenAsync();
 
       //INIT AMQP MessageClient
-      await MessageClient().Connect();
+      //await MessageClient().Connect();
       await updateDeviceInfo();
 
       Navigator.pushReplacement(context, MaterialPageRoute<RoleSelector>(builder: (BuildContext context) => RoleSelector()));
 
     }).catchError((dynamic error) {
       final Logger log = Logger(toStringShort());
-      log.info(error.toString());
+      log.warning(error.toString());
+
       setState(() {
         _isLoading = false;
       });
+
       VizAlert.Show(context, error.toString());
     });
   }

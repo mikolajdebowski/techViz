@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:techviz/components/VizAlert.dart';
 import 'package:techviz/components/vizSnackbar.dart';
 import 'package:techviz/model/role.dart';
 import 'package:techviz/ui/taskView.dart';
@@ -118,7 +119,8 @@ class MenuDrawerState extends State<MenuDrawer> {
         _processingBar.dismiss();
         Navigator.pushReplacementNamed(context, '/login');
       }).catchError((dynamic error){
-        VizSnackbar.Error(error.toString()).show(context);
+        _processingBar.dismiss();
+        VizAlert.Show(context, error.toString());
       });
   }
 }
