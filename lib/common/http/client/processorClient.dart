@@ -49,9 +49,8 @@ class ProcessorClient implements IHttpClient {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('JSESSIONID', cookie);
 
-        if(responseLogin.statusCode == 403){
-            var authError = AuthError();
-           _completer.completeError(authError);
+        if(responseLogin.statusCode == 401 || responseLogin.statusCode == 403){
+           _completer.completeError(AuthError());
            return;
         }
 
