@@ -62,14 +62,9 @@ class Session extends PropertyChangeNotifier implements ISession{
 
   @override
   Future logOut() async  {
-
-    UserService userService = UserService();
-    await userService.update(user.userID, statusID: 10);
-
     TaskService().cancelListening();
     UserService().cancelListening();
     SectionService().cancelListening();
-
     MQTTClientService().disconnect();
   }
 
