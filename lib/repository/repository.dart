@@ -36,10 +36,7 @@ import 'package:techviz/repository/userRoleRepository.dart';
 import 'package:techviz/repository/userSectionRepository.dart';
 import 'package:techviz/repository/userSkillsRepository.dart';
 import 'package:techviz/repository/userStatusRepository.dart';
-import 'package:techviz/repository/workOrder.repository.dart';
 import 'package:kiwi/kiwi.dart' as kiwi;
-
-import 'async/MessageClient.dart';
 import 'local/escalationPathTable.dart';
 import 'local/taskStatusTable.dart';
 import 'local/taskTypeTable.dart';
@@ -61,7 +58,6 @@ class Repository {
   TaskStatusRepository _taskStatusRepository;
   SlotFloorRepository _slotFloorRepository;
   EscalationPathRepository _escalationPathRepository;
-  IWorkOrderRepository _workOrderRepository;
 
   ILocalRepository _localRepository;
   static Flavor _flavor;
@@ -215,19 +211,6 @@ class Repository {
   set escalationPathRepository(EscalationPathRepository escalationPathRepository){
     _escalationPathRepository = escalationPathRepository;
   }
-
-
-  IWorkOrderRepository get workOrderRepository {
-    if(_workOrderRepository!=null){
-      return _workOrderRepository;
-    }
-    return _workOrderRepository = WorkOrderRepository(MessageClient());
-  }
-  set workOrderRepository(IWorkOrderRepository workOrderRepository){
-    _workOrderRepository = workOrderRepository;
-  }
-
-
 
   // TODO(rmathias): BELLOW MUST BE REVISED
   SectionRepository get sectionRepository {

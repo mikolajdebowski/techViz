@@ -6,7 +6,6 @@ import 'package:techviz/ui/config.dart';
 import 'package:techviz/ui/logging.dart';
 import 'package:techviz/ui/login.dart';
 import 'package:techviz/ui/profile.dart';
-import 'package:techviz/repository/async/MessageClient.dart';
 import 'package:techviz/ui/splash.dart';
 
 import 'common/utils.dart';
@@ -48,9 +47,6 @@ class TechVizAppState extends State<TechVizApp> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     setState(() {
 
-      if(_lastLifecycleState == AppLifecycleState.inactive && state == AppLifecycleState.resumed){
-        MessageClient().Connect();
-      }
       _lastLifecycleState = state;
       print(_lastLifecycleState);
     });

@@ -21,7 +21,6 @@ dependencies:
   package_info: ^0.4.0
   fluttertoast: ^3.0.1
   swipedetector: ^1.2.0
-  dart_amqp: ^0.1.0
   flutter_slidable: ^0.5.0
   flutter_typeahead: ^1.5.0
   mockito: ^4.0.0
