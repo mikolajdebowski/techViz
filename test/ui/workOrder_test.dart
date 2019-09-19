@@ -4,17 +4,8 @@ import 'package:techviz/model/taskType.dart';
 import 'package:techviz/model/user.dart';
 import 'package:techviz/repository/repository.dart';
 import 'package:techviz/repository/taskTypeRepository.dart';
-import 'package:techviz/repository/workOrder.repository.dart';
 import 'package:techviz/session.dart';
 import 'package:techviz/ui/workOrder.dart';
-
-
-class WorkOrderRepositoryMock implements IWorkOrderRepository{
-  @override
-  Future create(String userID, int taskTypeID, {String location, String mNumber, String notes, DateTime dueDate}) {
-    return Future<bool>.value(true);
-  }
-}
 
 class TaskTypeRepositoryMock implements ITaskTypeRepository{
 	@override
@@ -37,7 +28,6 @@ void main() {
 	setUp((){
 		Session().user = User(userID: 'dev2');
 		Repository().taskTypeRepository = TaskTypeRepositoryMock();
-		Repository().workOrderRepository = WorkOrderRepositoryMock();
 	});
 
 	testWidgets('WorkOrder form validation', (WidgetTester tester) async {
