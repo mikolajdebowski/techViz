@@ -41,17 +41,16 @@ class ProcessorClient implements IHttpClient {
         throw Exception(responseUser.reasonPhrase);
       String cookie = responseUser.headers['set-cookie'];
 
-      var header = builderHeader(toAdd: {'Content-Type': 'application/x-www-form-urlencoded', 'cookie': cookie});
-      var formData = "j_username=$user&j_password=$pwd";
+      dynamic header = builderHeader(toAdd: {'Content-Type': 'application/x-www-form-urlencoded', 'cookie': cookie});
+      dynamic formData = "j_username=$user&j_password=$pwd";
 
       client.post("$_serverUrl/j_security_check", body: formData, headers: header).timeout(defaultTimeoutForAuth).then((http.Response responseLogin) async {
 
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('JSESSIONID', cookie);
 
-        if(responseLogin.statusCode == 403){
-            var authError = AuthError();
-           _completer.completeError(authError);
+        if(responseLogin.statusCode == 401 || responseLogin.statusCode == 403){
+           _completer.completeError(AuthError());
            return;
         }
 
@@ -90,7 +89,7 @@ class ProcessorClient implements IHttpClient {
     }).catchError((dynamic onError){
 
       if(onError.runtimeType == TimeoutException){
-        var excp = VizTimeoutException( 'Mobile device has not received a response and has timed out after ${defaultTimeoutForAuth.inSeconds.toString()} seconds. Please check network details and try again.');
+        dynamic excp = VizTimeoutException( 'Mobile device has not received a response and has timed out after ${defaultTimeoutForAuth.inSeconds.toString()} seconds. Please check network details and try again.');
         _completer.completeError(excp);
         return;
       }
@@ -105,7 +104,7 @@ class ProcessorClient implements IHttpClient {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String cookie = await prefs.get('JSESSIONID');
     Completer<String> _completer = Completer<String>();
-    var header = builderHeader(toAdd: {'cookie': cookie});
+    dynamic header = builderHeader(toAdd: {'cookie': cookie});
 
     print('Request URL: ${"$_serverUrl/$endPoint"}');
 
@@ -128,7 +127,7 @@ class ProcessorClient implements IHttpClient {
       }
     }).catchError((dynamic onError){
       if(onError.runtimeType == TimeoutException){
-        var excp = VizTimeoutException('Mobile device has not received a response and has timed out after ${defaultTimeoutForPulling.inSeconds.toString()} seconds. Please check network details and try again.');
+        dynamic excp = VizTimeoutException('Mobile device has not received a response and has timed out after ${defaultTimeoutForPulling.inSeconds.toString()} seconds. Please check network details and try again.');
         _completer.completeError(excp);
         return;
       }
@@ -142,7 +141,7 @@ class ProcessorClient implements IHttpClient {
     Completer<String> _completer = Completer<String>();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String cookie = await prefs.get('JSESSIONID');
-    var header = {'cookie': cookie, 'Content-Type': 'application/xml' };
+    dynamic header = {'cookie': cookie, 'Content-Type': 'application/xml' };
 
     http.post("$_serverUrl/$endPoint", headers: header, body: body).then((http.Response response)
     {
@@ -176,7 +175,4 @@ class ProcessorClient implements IHttpClient {
     }
     return true;
   }
-
-
-
 }
