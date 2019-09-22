@@ -108,7 +108,7 @@ class SlotFloorState extends State<SlotFloor> {
 
             List<SlotMachine> data = snapshot.data;
 
-            if (_searchKey != null && _searchKey.isNotEmpty) {
+            if (_searchKey != null && _searchKey.isNotEmpty && data != null) {
               data = data.where((SlotMachine sm) => sm.standID.contains(_searchKey) || sm.machineTypeName.toLowerCase().contains(_searchKey.toLowerCase())).toList();
             }
 
