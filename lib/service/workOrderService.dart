@@ -67,6 +67,7 @@ class WorkOrderService extends Service implements IWorkOrderService {
       if(error is TimeoutException){
         throw VizTimeoutException("Mobile device has not received a response and has timed out after ${Service.defaultTimeoutForServices.inSeconds.toString()} seconds. Please check network details and try again.");
       }
+      else throw error;
     });
 
   }
