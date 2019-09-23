@@ -12,7 +12,7 @@ abstract class WorkOrderPresenterView {
 }
 
 class WorkOrderPresenter{
-  WorkOrderPresenterView _view;
+  final WorkOrderPresenterView _view;
   final ITaskTypeRepository _taskTypeRepository = Repository().taskTypeRepository;
   IWorkOrderService workOrderService;
 

@@ -14,7 +14,7 @@ abstract class IStatusPresenter {
 }
 
 class StatusPresenter implements IStatusPresenter {
-  IStatusView _view;
+  final IStatusView _view;
   IUserStatusRepository _repository;
   IUserService userService;
 

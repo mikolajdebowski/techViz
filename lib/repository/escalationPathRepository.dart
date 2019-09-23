@@ -5,8 +5,8 @@ import 'package:techviz/repository/local/escalationPathTable.dart';
 import 'package:techviz/repository/remoteRepository.dart';
 
 class EscalationPathRepository implements IRepository<EscalationPath> {
-  IRemoteRepository _remoteRepository;
-  EscalationPathTable _escalationPathTable;
+  final IRemoteRepository _remoteRepository;
+  final EscalationPathTable _escalationPathTable;
 
   EscalationPathRepository(this._remoteRepository, this._escalationPathTable){
     assert(_remoteRepository!=null);
