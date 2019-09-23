@@ -25,7 +25,7 @@ class EscalationForm extends StatefulWidget {
 class EscalationFormState extends State<EscalationForm> implements EscalationPresenterView {
   final EdgeInsets fieldPadding = EdgeInsets.only(left: 10, right: 10);
 
-  Task _task;
+  final Task _task;
   List<EscalationPath> _escalationPathList;
   List<TaskType> _taskTypeList;
 

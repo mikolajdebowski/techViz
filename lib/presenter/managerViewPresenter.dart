@@ -25,7 +25,7 @@ abstract class IManagerViewPresenter {
 }
 
 class ManagerViewPresenter{
-  IManagerViewPresenter _view;
+  final IManagerViewPresenter _view;
   ManagerViewPresenter(this._view){
     assert(_view != null);
   }

@@ -9,7 +9,7 @@ abstract class IReassignPresenter {
 }
 
 class ReassignPresenter {
-  IReassignPresenter _view;
+  final IReassignPresenter _view;
 
   ReassignPresenter(this._view) {
     assert(_view != null);

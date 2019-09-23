@@ -13,7 +13,7 @@ abstract class ISectionPresenter{
 }
 
 class SectionPresenter implements ISectionPresenter {
-  ISectionView _view;
+  final ISectionView _view;
   SectionRepository _sectionRepository;
   ISectionService _sectionService;
 
