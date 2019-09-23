@@ -10,6 +10,8 @@ import 'package:techviz/components/vizSnackbar.dart';
 import 'package:techviz/model/taskType.dart';
 import 'package:techviz/presenter/workOrderPresenter.dart';
 
+import '../session.dart';
+
 class WorkOrder extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => WorkOrderState();
@@ -151,7 +153,9 @@ class WorkOrderState extends State<WorkOrder> implements WorkOrderPresenterView 
           _snackbar.show(context);
 
           _presenter
-              .create(_selectedTaskType,
+              .create(
+                    Session().user.userID,
+                  _selectedTaskType,
                   location: _locationController.text, mNumber: _mNumberController.text, notes: _notesController.text, dueDate: _selectedDueDate)
               .then((dynamic d) {
             _snackbar.dismiss();
