@@ -30,6 +30,7 @@ class WorkOrderService extends Service implements IWorkOrderService {
   @override
   Future create(String userID, int taskTypeID, {String location, String mNumber, String notes, DateTime dueDate})async{
     assert(userID!=null);
+    assert(location!=null || mNumber!=null);
 
     DeviceInfo deviceInfo = _deviceUtils.deviceInfo;
 
@@ -44,10 +45,9 @@ class WorkOrderService extends Service implements IWorkOrderService {
       dynamic jsonWorkOrderResult = json.decode(responseCallback);
       int validmachine = jsonWorkOrderResult['validmachine'] as int;
       if(validmachine==0){
-        _completer.completeError('Invalid Location/Asset Number');
-        return;
+        return _completer.completeError('Invalid Location/Asset Number');
       }
-      _completer.complete();
+      return _completer.complete();
     });
 
     Map<String, dynamic> payload = <String, dynamic>{};
@@ -69,8 +69,6 @@ class WorkOrderService extends Service implements IWorkOrderService {
       }
       else throw error;
     });
-
   }
-
 }
 
