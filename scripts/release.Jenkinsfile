@@ -74,7 +74,7 @@ pipeline{
                                       -F "status=2" \
                                       -F "notify=0" \
                                       -F "notes_type=0" \
-                                      -F "ipa=@/opt/benkins/workspace/Mobile/Techviz/build/ios/Temp/Runner.ipa" \
+                                      -F "ipa=@build/ios/Temp/Runner.ipa" \
                                       -H "X-HockeyAppToken: a14bddac17c24ce1b81a2791fc673272" \
                                       https://rink.hockeyapp.net/api/2/apps/upload
                             '''
