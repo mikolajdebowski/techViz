@@ -10,19 +10,19 @@ pipeline{
         // if your build DOES use a lot of resources and you do not have this, you will get a discussion
     }
     stages{
-        stage('Flutter Get Packages'){
+        stage('Get Packages'){
             steps{
                 sshagent(['4230b7aa-33c5-4a34-94ae-9fb5b004d637']) {
                     sh 'flutter packages get'
                 }
             }
         }
-        stage('Flutter Analyze/Lint') {
+        stage('Analyze/Lint') {
             steps {
                 sh 'flutter analyze'
             }
         }
-        stage('Flutter Tests'){
+        stage('Tests'){
             steps {
                 sh 'flutter test --coverage'
                 sh 'genhtml coverage/lcov.info -o coverage'

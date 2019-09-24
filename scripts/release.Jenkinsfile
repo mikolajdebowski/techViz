@@ -10,21 +10,32 @@ pipeline{
         // if your build DOES use a lot of resources and you do not have this, you will get a discussion
     }
     stages{
-        stage('Flutter Get Packages'){
+        stage('Get Packages'){
             steps{
                 sshagent(['4230b7aa-33c5-4a34-94ae-9fb5b004d637']) {
                     sh 'flutter packages get'
                 }
             }
         }
-        stage('Flutter Analyze/Lint') {
+        stage('Analyze/Lint') {
             steps {
                 sh 'flutter analyze'
             }
         }
-        stage('Flutter Tests'){
+        stage('Tests'){
             steps {
                 sh 'flutter test --coverage'
+            }
+        }
+        stage('Version'){
+            steps{
+                script {
+                    def build = readJSON file: './config/buildInfo.json'
+                    build.buildNumber = currentBuild.number
+                    env.VERSION = "${build.version}"
+                    env.ARTEFACT_NAME_IOS = "build/ios/Temp/TechViz_v${VERSION}_${BUILD_NUMBER}.ipa"
+                    env.ARTEFACT_NAME_ANDROID = "build/app/outputs/apk/release/TechViz_v${VERSION}_${BUILD_NUMBER}.apk"
+                }
             }
         }
         stage('Parallel builds'){
@@ -33,7 +44,7 @@ pipeline{
                     stages{
                         stage('Version'){
                             steps{
-                                sh "sed -i .original 's/\${APP_VERSION}/1.0.0/g' ios/Runner/Info.plist"
+                                sh "sed -i .original 's/\${APP_VERSION}/${VERSION}/g' ios/Runner/Info.plist"
                                 sh "sed -i .original 's/\${APP_BUILD_NUMBER}/${BUILD_NUMBER}/g' ios/Runner/Info.plist"
                             }
                         }
@@ -42,7 +53,7 @@ pipeline{
                                 sh 'security unlock-keychain -p !@#$%^ ~/Library/Keychains/login.keychain'
                             }
                         }
-                        stage('Build IOS Dart Code'){
+                        stage('Build IOS - Dart'){
                             steps {
                                 sh 'flutter build ios'
                             }
@@ -65,16 +76,17 @@ pipeline{
                             -exportOptionsPlist ios/Runner/exportOptionsAdHoc.plist \
                             -exportPath build/ios/Temp/
                             '''
+                            sh 'mv build/ios/Temp/Runner.ipa ${ARTEFACT_NAME_IOS}'
                             }
                         }
-                        stage('Pushing IPA to the hockeyapp'){
+                        stage('Push .IPA to HockeyApp'){
                             steps{
                                 sh '''
                             curl \
                                       -F "status=2" \
                                       -F "notify=0" \
                                       -F "notes_type=0" \
-                                      -F "ipa=@build/ios/Temp/Runner.ipa" \
+                                      -F "ipa=@${ARTEFACT_NAME_IOS}" \
                                       -H "X-HockeyAppToken: a14bddac17c24ce1b81a2791fc673272" \
                                       https://rink.hockeyapp.net/api/2/apps/upload
                             '''
@@ -85,32 +97,32 @@ pipeline{
                 }
                  stage("Android"){
                     stages{
-                        stage('Setup build version'){
+                        stage('Setup Android Version'){
                             steps{
                                 sh "sed -i .original 's/rootProject.appVersionName/\"1.0.0\"/g' android/app/build.gradle"
                                 sh "sed -i .original 's/rootProject.appVersionCode.toInteger()/${BUILD_NUMBER}/g' android/app/build.gradle"
                             }
                         }
-                        stage('Build Android Dart Code'){
+                        stage('Build Android - Dart'){
                             steps {
                                 sh 'flutter build apk'
+                                sh 'mv build/app/outputs/apk/release/app-release.apk ${ARTEFACT_NAME_ANDROID}'
                             }
                         }
-                        stage('Pushing APK to the hockeyapp'){
+                        stage('Push .APK to HockeyApp'){
                             steps{
                                 sh '''
                                     curl \
-                                              -F "status=2" \
-                                              -F "notify=0" \
-                                              -F "notes_type=0" \
-                                              -F "ipa=@build/app/outputs/apk/release/app-release.apk" \
-                                              -H "X-HockeyAppToken: a14bddac17c24ce1b81a2791fc673272" \
-                                              https://rink.hockeyapp.net/api/2/apps/upload
-                                '''
+                                        -F "status=2" \
+                                        -F "notify=0" \
+                                        -F "notes_type=0" \
+                                        -F "ipa=@${ARTEFACT_NAME_ANDROID}" \
+                                        -H "X-HockeyAppToken: a14bddac17c24ce1b81a2791fc673272" \
+                                        https://rink.hockeyapp.net/api/2/apps/upload
+                                    '''
                             }
                         }
                     }
-
                  }
                  stage("Coverage report"){
                     steps {
@@ -119,9 +131,12 @@ pipeline{
                  }
             }
         }
+
     }
     post{
         success{
+            archiveArtifacts ARTEFACT_NAME_IOS
+            archiveArtifacts ARTEFACT_NAME_ANDROID
             publishHTML (target: [
                 allowMissing: false,
                 alwaysLinkToLastBuild: false,
